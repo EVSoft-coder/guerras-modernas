@@ -72,7 +72,7 @@ CREATE TABLE `recursos` (
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `base_id` (`base_id`),
-  CONSTRAINT `recursos_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
+  CONSTRAINT `recursos_ibfk_1` FOREIGN KEY (`recursos_ibfk_1`) REFERENCES `bases` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table structure for table `edificios`
@@ -82,6 +82,8 @@ CREATE TABLE `edificios` (
   `base_id` bigint(20) unsigned NOT NULL,
   `tipo` varchar(50) NOT NULL,
   `nivel` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `edificios_base_tipo_unique` (`base_id`,`tipo`),
   CONSTRAINT `edificios_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
@@ -94,6 +96,8 @@ CREATE TABLE `tropas` (
   `base_id` bigint(20) unsigned NOT NULL,
   `unidade` varchar(50) NOT NULL,
   `quantidade` int(10) unsigned NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `tropas_base_unidade_unique` (`base_id`,`unidade`),
   CONSTRAINT `tropas_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
@@ -109,6 +113,8 @@ CREATE TABLE `ataques` (
   `tipo` enum('saque','conquista','reforco','espionagem') NOT NULL DEFAULT 'saque',
   `chegada_em` timestamp NOT NULL,
   `processado` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   CONSTRAINT `ataques_ibfk_1` FOREIGN KEY (`origem_base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ataques_ibfk_2` FOREIGN KEY (`destino_base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
@@ -122,6 +128,8 @@ CREATE TABLE `construcoes` (
   `edificio_tipo` varchar(50) NOT NULL,
   `nivel_destino` int(11) NOT NULL,
   `completado_em` timestamp NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   CONSTRAINT `construcoes_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -134,6 +142,8 @@ CREATE TABLE `treinos` (
   `unidade` varchar(50) NOT NULL,
   `quantidade` int(11) NOT NULL,
   `completado_em` timestamp NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   CONSTRAINT `treinos_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
