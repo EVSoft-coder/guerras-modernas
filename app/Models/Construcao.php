@@ -10,12 +10,12 @@ class Construcao extends Model
 
     protected $fillable = [
         'base_id',
-        'tipo',
-        'nivel_alvo',
-        'concluido_em',
+        'edificio_tipo',
+        'nivel_destino',
+        'completado_em',
     ];
 
     protected $casts = [
-        'concluido_em' => 'datetime',
+        'completado_em' => 'datetime',
     ];
 }

@@ -12,10 +12,10 @@ class Treino extends Model
         'base_id',
         'unidade',
         'quantidade',
-        'concluido_em',
+        'completado_em',
     ];
 
     protected $casts = [
-        'concluido_em' => 'datetime',
+        'completado_em' => 'datetime',
     ];
 }

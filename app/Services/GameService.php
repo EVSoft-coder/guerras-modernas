@@ -28,8 +28,8 @@ class GameService
      */
     public function iniciarConstrucao(Base $base, $tipo)
     {
-        // Verificar se já existe algo na fila para esta base
-        if ($base->construcoes()->whereNull('concluido_em')->exists()) {
+        // Verificar se já existe algo na fila para esta base (ainda não terminado)
+        if ($base->construcoes()->where('completado_em', '>', now())->exists()) {
             throw new \Exception("Já existe uma construção em andamento nesta base.");
         }
 
@@ -37,12 +37,12 @@ class GameService
         $nivelAlvo = $nivelAtual + 1;
 
         $segundos = self::tempoConstrucao($tipo, $nivelAlvo);
-        $concluidoEm = now()->addSeconds($segundos);
+        $completadoEm = now()->addSeconds($segundos);
 
         return $base->construcoes()->create([
-            'tipo' => $tipo,
-            'nivel_alvo' => $nivelAlvo,
-            'concluido_em' => $concluidoEm,
+            'edificio_tipo' => $tipo,
+            'nivel_destino' => $nivelAlvo,
+            'completado_em' => $completadoEm,
         ]);
     }
 
@@ -68,12 +68,12 @@ class GameService
 
         $speed = config('game.speed.training', 1);
         $segundos = ($unitConf['time'] * $quantidade) / $speed;
-        $concluidoEm = now()->addSeconds($segundos);
+        $completadoEm = now()->addSeconds($segundos);
 
         return $base->treinos()->create([
             'unidade' => $unidade,
             'quantidade' => $quantidade,
-            'concluido_em' => $concluidoEm,
+            'completado_em' => $completadoEm,
         ]);
     }
 
@@ -84,18 +84,18 @@ class GameService
     {
         // 1. Processar Construções
         $construcoes = $base->construcoes()
-            ->where('concluido_em', '<=', now())
+            ->where('completado_em', '<=', now())
             ->get();
 
         foreach ($construcoes as $fila) {
-            $edificio = $base->edificios()->where('tipo', $fila->tipo)->first();
+            $edificio = $base->edificios()->where('tipo', $fila->edificio_tipo)->first();
             
             if ($edificio) {
-                $edificio->update(['nivel' => $fila->nivel_alvo]);
+                $edificio->update(['nivel' => $fila->nivel_destino]);
             } else {
                 $base->edificios()->create([
-                    'tipo' => $fila->tipo,
-                    'nivel' => $fila->nivel_alvo,
+                    'tipo' => $fila->edificio_tipo,
+                    'nivel' => $fila->nivel_destino,
                 ]);
             }
 
@@ -104,7 +104,7 @@ class GameService
 
         // 2. Processar Treino de Tropas
         $treinos = $base->treinos()
-            ->where('concluido_em', '<=', now())
+            ->where('completado_em', '<=', now())
             ->get();
 
         foreach ($treinos as $treino) {
