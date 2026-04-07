@@ -1,0 +1,113 @@
+:root {
+    --bg-main: #0a0f18;
+    --bg-card: rgba(15, 23, 42, 0.8);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --primary: #0ea5e9;
+    --accent: #f59e0b;
+    --danger: #ef4444;
+    --success: #10b981;
+}
+
+body {
+    background-color: var(--bg-main);
+    background-image: radial-gradient(circle at top right, #1e293b, transparent),
+                      radial-gradient(circle at bottom left, #0f172a, transparent);
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+}
+
+.glassmorphism {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+}
+
+.text-white { color: #ffffff !important; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+.text-muted { color: #cbd5e1 !important; } /* Aumentado o brilho do muted */
+
+.card {
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    border: none;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+}
+
+.btn-primary:active { transform: scale(0.95); }
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.table tr {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.table td, .table th {
+    border: none;
+    padding: 1rem;
+}
+
+/* Badge de Recurso Melhorado */
+.res-badge {
+    padding: 10px 20px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-color);
+}
+
+.res-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height:1;
+}
+
+/* Timers */
+.countdown {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.village-view {
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 1.5rem;
+    position: relative;
+    border: 2px solid rgba(14, 165, 233, 0.3);
+    overflow: hidden;
+}
+
+.village-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 2rem;
+}
+
+.animate-glow {
+    animation: glow 3s infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 10px rgba(14, 165, 233, 0.1); }
+    to { box-shadow: 0 0 25px rgba(14, 165, 233, 0.3); }
+}
