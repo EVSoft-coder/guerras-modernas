@@ -23,8 +23,8 @@
                             <span class="text-info fw-bold">{{ $alianca->membros->count() }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span class="text-muted small">Membro desde:</span>
-                            <span class="text-white small">{{ \Carbon\Carbon::parse($jogador->updated_at)->format('d/m/Y') }}</span>
+                            <span class="text-muted small">Ponto no Ranking:</span>
+                            <span class="text-white">Em breve</span>
                         </div>
                     </div>
 
@@ -38,8 +38,46 @@
             </div>
         </div>
 
-        <!-- LISTA DE ALIADOS -->
+        <!-- LISTA DE ALIADOS E PEDIDOS -->
         <div class="col-md-8">
+            <!-- PEDIDOS DE RECRUTAMENTO (Apenas se for fundador) -->
+            @if($alianca->fundador_id === Auth::id() && $alianca->pedidos->where('status', 'pendente')->count() > 0)
+                <div class="card bg-dark border-warning/30 rounded-4 shadow-lg glassmorphism mb-4">
+                    <div class="card-header bg-warning/10 border-bottom border-warning/20 py-3">
+                        <h5 class="mb-0 text-warning fw-bold"><i class="bi bi-person-plus-fill me-2"></i> Candidaturas ao Recrutamento (Pendentes)</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-dark mb-0 align-middle">
+                                <thead class="small text-muted text-uppercase fw-bold border-bottom border-white/5">
+                                    <tr>
+                                        <th class="px-4 py-3">Candidato</th>
+                                        <th class="px-4 py-3 text-end">Ação Diplomática</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($alianca->pedidos->where('status', 'pendente') as $p)
+                                        <tr>
+                                            <td class="px-4 py-3 fw-bold text-white fs-5">{{ $p->jogador->username }}</td>
+                                            <td class="px-4 py-3 text-end">
+                                                <form action="{{ route('alianca.decidir', [$p->id, 'aprovar']) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-4 fw-bold text-uppercase x-small">Aprovar</button>
+                                                </form>
+                                                <form action="{{ route('alianca.decidir', [$p->id, 'rejeitar']) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-4 fw-bold text-uppercase x-small ms-2">Recusar</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="card bg-dark border-secondary rounded-4 shadow-lg glassmorphism h-100">
                 <div class="card-header bg-black/20 border-bottom border-white/5 py-3">
                     <h5 class="mb-0 text-white fw-bold"><i class="bi bi-people-fill text-info me-2"></i> Pessoal da Aliança (Aliados)</h5>
@@ -70,7 +108,7 @@
                                         </td>
                                         <td class="px-4 py-4 text-center">
                                             @if($m->id === $alianca->fundador_id)
-                                                <span class="badge bg-warning text-dark px-3 rounded-pill text-uppercase small fw-bold">Comante Supremo</span>
+                                                <span class="badge bg-warning text-dark px-3 rounded-pill text-uppercase small fw-bold">Comandante Supremo</span>
                                             @else
                                                 <span class="badge bg-secondary px-3 rounded-pill text-uppercase small font-normal">Oficial Coligado</span>
                                             @endif
@@ -91,10 +129,10 @@
 
 <style>
 .ls-1 { letter-spacing: 1px; }
-.x-small { font-size: 0.75rem; }
+.x-small { font-size: 0.7rem; }
 .avatar-sm { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
 .glassmorphism {
-    background: rgba(30,30,30, 0.8) !important;
+    background: rgba(30,30,30, 0.7) !important;
     backdrop-filter: blur(10px);
 }
 </style>

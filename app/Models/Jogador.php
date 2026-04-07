@@ -33,4 +33,9 @@ class Jogador extends Authenticatable
     {
         return $this->belongsTo(Alianca::class);
     }
+
+    public function pedidosAlianca()
+    {
+        return $this->hasMany(PedidoAlianca::class, 'jogador_id');
+    }
 }

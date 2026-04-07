@@ -159,4 +159,18 @@ CREATE TABLE `relatorios` (
   CONSTRAINT `relatorios_ibfk_1` FOREIGN KEY (`vencedor_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Table pedidos_alianca
+DROP TABLE IF EXISTS `pedidos_alianca`;
+CREATE TABLE `pedidos_alianca` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `jogador_id` bigint(20) unsigned NOT NULL,
+  `alianca_id` bigint(20) unsigned NOT NULL,
+  `status` enum('pendente','aprovado','rejeitado') NOT NULL DEFAULT 'pendente',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `pedidos_alianca_ibfk_1` FOREIGN KEY (`jogador_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `pedidos_alianca_ibfk_2` FOREIGN KEY (`alianca_id`) REFERENCES `aliancas` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;

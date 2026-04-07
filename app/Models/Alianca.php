@@ -23,4 +23,9 @@ class Alianca extends Model
     {
         return $this->belongsTo(Jogador::class, 'fundador_id');
     }
+
+    public function pedidos()
+    {
+        return $this->hasMany(PedidoAlianca::class, 'alianca_id');
+    }
 }

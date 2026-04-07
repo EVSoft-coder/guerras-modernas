@@ -45,6 +45,14 @@ Route::post('/alianca', [AliancaController::class, 'store'])
     ->middleware('auth')
     ->name('alianca.store');
 
+Route::post('/alianca/pedir', [AliancaController::class, 'pedir'])
+    ->middleware('auth')
+    ->name('alianca.pedir');
+
+Route::post('/alianca/decidir/{id}/{decisao}', [AliancaController::class, 'decidir'])
+    ->middleware('auth')
+    ->name('alianca.decidir');
+
 Route::post('/alianca/sair', [AliancaController::class, 'sair'])
     ->middleware('auth')
     ->name('alianca.sair');
