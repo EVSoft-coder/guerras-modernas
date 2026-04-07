@@ -33,10 +33,34 @@ class GameService
             throw new \Exception("Já existe uma construção em andamento nesta base.");
         }
 
+        // Traduzir tipo visual para chave de config se necessário
+        $tipoKey = str_replace(' ', '_', strtolower($tipo));
+        if ($tipoKey == 'refinaria') $tipoKey = 'refinaria'; // exemplo
+        
+        $conf = config("game.buildings.{$tipoKey}");
+        if (!$conf) throw new \Exception("Edifício desconhecido ($tipoKey).");
+
         $nivelAtual = $base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0;
         $nivelAlvo = $nivelAtual + 1;
 
-        $segundos = self::tempoConstrucao($tipo, $nivelAlvo);
+        // Debitar Recursos
+        $recursos = $base->recursos;
+        $scaling = config('game.scaling', 1.5);
+        
+        foreach ($conf['cost'] as $res => $baseAmount) {
+            $cost = floor($baseAmount * pow($nivelAlvo, $scaling));
+            if ($recursos->$res < $cost) {
+                throw new \Exception("Suprimentos insuficientes para nível {$nivelAlvo} de {$tipo}.");
+            }
+        }
+
+        foreach ($conf['cost'] as $res => $baseAmount) {
+            $cost = floor($baseAmount * pow($nivelAlvo, $scaling));
+            $recursos->decrement($res, $cost);
+        }
+
+        $speed = config('game.speed.construction', 1);
+        $segundos = ($conf['time_base'] * $nivelAlvo) / $speed;
         $completadoEm = now()->addSeconds($segundos);
 
         return $base->construcoes()->create([

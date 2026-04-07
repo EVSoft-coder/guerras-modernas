@@ -138,7 +138,12 @@
              <div class="card-header border-bottom border-white/5 pt-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">🏗️ Engenharia & Construções</h5>
                 @if($base->construcoes->count() > 0)
-                    <span class="badge bg-warning text-dark animate-pulse">Obras em curso...</span>
+                    @php $c = $base->construcoes->first(); @endphp
+                    <span class="badge bg-warning text-dark animate-pulse shadow-sm">
+                        <i class="bi bi-clock-history me-1"></i>
+                        <span class="countdown" data-time="{{ $c->completado_em->timestamp }}">--:--</span>
+                        ({{ $c->edificio_tipo }})
+                    </span>
                 @endif
             </div>
             <div class="card-body p-0">
@@ -147,26 +152,51 @@
                         <tr class="text-muted small">
                             <th class="ps-4">Tipo</th>
                             <th>Nível</th>
+                            <th>Custos Unitários (Next)</th>
                             <th class="text-end pe-4">Ação</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @php $tiposDisponiveis = ['mina_suprimentos', 'refinaria', 'fabrica_municoes', 'posto_recrutamento', 'quartel', 'aerodromo']; @endphp
+                        @php 
+                            $tiposDisponiveis = ['mina_suprimentos', 'refinaria', 'fabrica_municoes', 'posto_recrutamento', 'quartel', 'aerodromo']; 
+                            $scaling = config('game.scaling', 1.5);
+                            $bConf = config('game.buildings');
+                        @endphp
                         @foreach($tiposDisponiveis as $tipo)
-                            @php $ed = $base->edificios->where('tipo', $tipo)->first(); @endphp
+                            @php 
+                                $ed = $base->edificios->where('tipo', $tipo)->first(); 
+                                $nivelAtual = $ed ? $ed->nivel : 0;
+                                $nivelAlvo = $nivelAtual + 1;
+                                $config = $bConf[$tipo] ?? null;
+                            @endphp
                             <tr class="align-middle">
                                 <td class="ps-4 text-capitalize">
-                                    {{ str_replace('_', ' ', $tipo) }}
+                                    <div class="fw-bold">{{ str_replace('_', ' ', $tipo) }}</div>
+                                    <div class="x-small text-muted">{{ $config['name'] ?? '' }}</div>
                                 </td>
-                                <td><span class="text-info font-monospace">{{ $ed ? $ed->nivel : 0 }}</span></td>
+                                <td><span class="text-info font-monospace fs-5">{{ $nivelAtual }}</span></td>
+                                <td>
+                                    @if($config)
+                                        <div class="d-flex gap-3 x-small text-muted text-uppercase fw-bold">
+                                            @foreach($config['cost'] as $res => $baseAmount)
+                                                @php $finalCost = floor($baseAmount * pow($nivelAlvo, $scaling)); @endphp
+                                                <span>
+                                                    @if($res == 'suprimentos') 📦 @elseif($res == 'combustivel') ⛽ @elseif($res == 'municoes') 🚀 @else 👥 @endif
+                                                    {{ number_format($finalCost) }}
+                                                </span>
+                                            @endforeach
+                                            <span class="text-info"><i class="bi bi-hourglass-split"></i> {{ ($config['time_base'] * $nivelAlvo) / config('game.speed.construction', 1) }}s</span>
+                                        </div>
+                                    @endif
+                                </td>
                                 <td class="text-end pe-4">
                                     <form action="{{ route('base.upgrade') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="base_id" value="{{ $base->id }}">
                                         <input type="hidden" name="tipo" value="{{ $tipo }}">
-                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-glow" 
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-4 py-2 shadow-glow fw-bold x-small @if($base->construcoes->count() > 0) opacity-50 @endif" 
                                                 {{ $base->construcoes->count() > 0 ? 'disabled' : '' }}>
-                                            Upgrade
+                                            UPGRADE LVL {{ $nivelAlvo }}
                                         </button>
                                     </form>
                                 </td>
@@ -179,8 +209,16 @@
 
         <!-- TROPAS E TREINO -->
         <div class="card bg-dark border-secondary rounded-4 shadow-sm">
-            <div class="card-header border-bottom border-white/5 pt-3">
+            <div class="card-header border-bottom border-white/5 pt-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">🪖 Guarnição Militar</h5>
+                @if($base->treinos->count() > 0)
+                    @php $tr = $base->treinos->first(); @endphp
+                    <span class="badge bg-success text-white animate-pulse shadow-sm">
+                         <i class="bi bi-person-gear"></i>
+                         <span class="countdown" data-time="{{ $tr->completado_em->timestamp }}">--:--</span>
+                         ({{ $tr->unidade }} x{{ $tr->quantidade }})
+                    </span>
+                @endif
             </div>
             <div class="card-body p-0">
                 <table class="table table-dark table-hover mb-0">
@@ -188,6 +226,7 @@
                         <tr class="text-muted small">
                             <th class="ps-4">Unidade</th>
                             <th>Quantidade</th>
+                            <th>Custo por Unidade</th>
                             <th class="text-end pe-4">Recrutar</th>
                         </tr>
                     </thead>
@@ -195,12 +234,26 @@
                         @foreach(config('game.units') as $key => $unit)
                         @php $t = $base->tropas->where('unidade', $key)->first(); @endphp
                         <tr class="align-middle">
-                            <td class="ps-4"><strong>{{ $unit['name'] }}</strong></td>
-                            <td><span class="text-success fw-bold">{{ $t ? $t->quantidade : 0 }}</span></td>
+                            <td class="ps-4">
+                                <strong class="text-white">{{ $unit['name'] }}</strong>
+                                <div class="x-small text-muted">Ataque: <span class="text-danger">{{ $unit['attack'] }}</span> | Defesa: <span class="text-success">{{ $unit['defense_general'] }}</span></div>
+                            </td>
+                            <td><span class="text-success fw-bold fs-5">{{ $t ? $t->quantidade : 0 }}</span></td>
+                            <td>
+                                <div class="d-flex gap-2 x-small text-muted text-uppercase fw-bold">
+                                    @foreach($unit['cost'] as $res => $amount)
+                                        <span>
+                                            @if($res == 'suprimentos') 📦 @elseif($res == 'combustivel') ⛽ @elseif($res == 'municoes') 🚀 @else 👥 @endif
+                                            {{ number_format($amount) }}
+                                        </span>
+                                    @endforeach
+                                    <span class="text-info"><i class="bi bi-clock-history"></i> {{ $unit['time'] / config('game.speed.training', 1) }}s</span>
+                                </div>
+                            </td>
                             <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-success rounded-pill px-3" 
+                                <button class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold x-small" 
                                         onclick="abrirTreino('{{ $key }}', '{{ $unit['name'] }}')">
-                                    + Recrutar
+                                    + RECRUTAR
                                 </button>
                             </td>
                         </tr>
@@ -250,6 +303,32 @@
 </style>
 
 <script>
+    // MOTOR DE CONTAGEM REGRESSIVA
+    function initCountdowns() {
+        setInterval(() => {
+            document.querySelectorAll('.countdown').forEach(el => {
+                const target = parseInt(el.getAttribute('data-time'));
+                const now = Math.floor(Date.now() / 1000);
+                const diff = target - now;
+
+                if (diff <= 0) {
+                    el.innerText = "Concluído";
+                    el.classList.remove('countdown');
+                    // Recarregar após um pequeno delay para atualizar o estado
+                    setTimeout(() => location.reload(), 1500); 
+                    return;
+                }
+
+                const m = Math.floor(diff / 60);
+                const s = diff % 60;
+                el.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            });
+        }, 1000);
+    }
+
+    // Inicializar na carga da página
+    document.addEventListener('DOMContentLoaded', initCountdowns);
+
     function abrirTreino(key, name) {
         document.getElementById('treinoUnidade').value = key;
         document.getElementById('treinoTitle').innerText = 'Recrutar: ' + name;

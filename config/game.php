@@ -38,6 +38,44 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Building Costs and Times
+    |--------------------------------------------------------------------------
+    */
+    'buildings' => [
+        'mina_suprimentos' => [
+            'name' => 'Mina de Suprimentos',
+            'cost' => ['suprimentos' => 200, 'combustivel' => 50, 'pessoal' => 10],
+            'time_base' => 60,
+        ],
+        'refinaria' => [
+            'name' => 'Refinaria de Combustível',
+            'cost' => ['suprimentos' => 300, 'municoes' => 100, 'pessoal' => 15],
+            'time_base' => 90,
+        ],
+        'fabrica_municoes' => [
+            'name' => 'Fábrica de Munições',
+            'cost' => ['suprimentos' => 250, 'combustivel' => 100, 'pessoal' => 12],
+            'time_base' => 120,
+        ],
+        'posto_recrutamento' => [
+            'name' => 'Posto de Recrutamento',
+            'cost' => ['suprimentos' => 400, 'combustivel' => 50, 'municoes' => 50, 'pessoal' => 5],
+            'time_base' => 150,
+        ],
+        'quartel' => [
+            'name' => 'Quartel Regional',
+            'cost' => ['suprimentos' => 600, 'combustivel' => 200, 'municoes' => 200, 'pessoal' => 20],
+            'time_base' => 300,
+        ],
+        'aerodromo' => [
+            'name' => 'Aeródromo Militar',
+            'cost' => ['suprimentos' => 1000, 'combustivel' => 800, 'municoes' => 500, 'pessoal' => 30],
+            'time_base' => 600,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Unit Definitions
     |--------------------------------------------------------------------------
     */
