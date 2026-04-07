@@ -11,7 +11,7 @@ class CombatService
      * Resolve uma batalha entre Atacante e Defensor.
      * Retorna um array com o resultado (Sobreviventes, Perdas, Vencedor).
      */
-    public function resolver(array $unidadesAtacantes, Base $baseDefensora, $atacanteId)
+    public function resolver(array $unidadesAtacantes, Base $baseDefensora, $atacanteId, $tipo = 'saque')
     {
         $vencedor = 'defensor';
         $perdasAtacante = [];
@@ -36,56 +36,60 @@ class CombatService
         $bonusMuralha = 1 + ($baseDefensora->muralha_nivel * 0.05);
         $poderDefensorTotal = $poderDefensorGeneral * $bonusMuralha;
 
-        // 3. Resolução (Simples para Speed)
-        // Atacante vence se Poder Atacante > Poder Defensor
+        // 3. Resolução
         if ($poderAtacante > $poderDefensorTotal) {
             $vencedor = 'atacante';
-            $ratio = $poderDefensorTotal / $poderAtacante; // % de perdas do atacante
+            $ratio = $poderAtacante > 0 ? (min(0.9, ($poderDefensorTotal / $poderAtacante) * 0.8)) : 0;
             
-            // Perdas Atacante
             foreach ($unidadesAtacantes as $unidade => $quantidade) {
                 $perdasAtacante[$unidade] = (int)($quantidade * $ratio);
             }
-            // Defensor perde tudo
             foreach ($unidadesDefensoras as $tropa) {
                 $perdasDefensor[$tropa->unidade] = $tropa->quantidade;
+                $tropa->decrement('quantidade', $tropa->quantidade);
             }
         } else {
             $vencedor = 'defensor';
-            $ratio = $poderAtacante / $poderDefensorTotal; // % de perdas do defensor
+            $ratio = $poderDefensorTotal > 0 ? (min(0.9, ($poderAtacante / $poderDefensorTotal) * 0.8)) : 0;
             
-            // Atacante perde tudo
             foreach ($unidadesAtacantes as $unidade => $quantidade) {
                 $perdasAtacante[$unidade] = $quantidade;
             }
-            // Perdas Defensor
             foreach ($unidadesDefensoras as $tropa) {
                 $perdasDefensor[$tropa->unidade] = (int)($tropa->quantidade * $ratio);
+                $tropa->decrement('quantidade', (int)($tropa->quantidade * $ratio));
             }
         }
 
-        // 4. Calcular Saque (se o atacante vencer)
+        // 4. Lógica de Conquista ou Saque
         $saque = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0];
         if ($vencedor == 'atacante') {
-            $capacidadeTotal = 0;
-            foreach ($unidadesAtacantes as $unidade => $quantidade) {
-                $sobreviventes = $quantidade - ($perdasAtacante[$unidade] ?? 0);
-                $capacidadeTotal += config("game.units.{$unidade}.capacity") * $sobreviventes;
-            }
+            if ($tipo === 'conquista') {
+                $baseDefensora->update([
+                    'jogador_id' => $atacanteId,
+                    'nome' => "Base Conquistada"
+                ]);
+            } else {
+                $capacidadeTotal = 0;
+                foreach ($unidadesAtacantes as $unidade => $quantidade) {
+                    $sobreviventes = $quantidade - ($perdasAtacante[$unidade] ?? 0);
+                    $capacidadeTotal += config("game.units.{$unidade}.capacity", 0) * $sobreviventes;
+                }
 
-            $resDefensor = $baseDefensora->recursos;
-            foreach (['suprimentos', 'combustivel', 'municoes'] as $res) {
-                $roubado = min($resDefensor->$res * 0.5, $capacidadeTotal / 3);
-                $saque[$res] = (int)$roubado;
-                $resDefensor->decrement($res, (int)$roubado);
+                $resDefensor = $baseDefensora->recursos;
+                foreach (['suprimentos', 'combustivel', 'municoes'] as $res) {
+                    $roubado = min($resDefensor->$res * 0.5, $capacidadeTotal / 3);
+                    $saque[$res] = (int)$roubado;
+                    $resDefensor->decrement($res, (int)$roubado);
+                }
             }
         }
 
         // 5. Criar Relatório
         Relatorio::create([
             'vencedor_id' => $vencedor == 'atacante' ? $atacanteId : $baseDefensora->jogador_id,
-            'titulo' => "Batalha em " . $baseDefensora->nome,
-            'origem_nome' => "Base Desconhecida",
+            'titulo' => ($tipo === 'conquista' && $vencedor === 'atacante' ? "CONQUISTA TOTAL" : "Batalha Militar") . " em ({$baseDefensora->coordenada_x}|{$baseDefensora->coordenada_y})",
+            'origem_nome' => "Operação Direcionada",
             'destino_nome' => $baseDefensora->nome,
             'atacante_id' => $atacanteId,
             'defensor_id' => $baseDefensora->jogador_id,
@@ -93,8 +97,8 @@ class CombatService
                 'perdas_atacante' => $perdasAtacante,
                 'perdas_defensor' => $perdasDefensor,
                 'saque' => $saque,
-                'poder_atacante' => (int)$poderAtacante,
-                'poder_defensor' => (int)$poderDefensorTotal
+                'vitoria' => $vencedor == 'atacante',
+                'conquista' => ($tipo === 'conquista' && $vencedor === 'atacante')
             ]
         ]);
 
@@ -102,7 +106,8 @@ class CombatService
             'vencedor' => $vencedor,
             'perdas_atacante' => $perdasAtacante,
             'perdas_defensor' => $perdasDefensor,
-            'saque' => $saque
+            'saque' => $saque,
+            'conquista' => ($tipo === 'conquista' && $vencedor === 'atacante')
         ];
     }
 }

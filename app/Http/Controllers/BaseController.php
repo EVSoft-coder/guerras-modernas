@@ -122,4 +122,11 @@ class BaseController extends Controller
 
         return redirect()->route('dashboard')->with('success', "Operação lançada! Chegada estimada às {$chegadaEm->format('H:i:s')}");
     }
+
+    public function switchBase($id)
+    {
+        $base = Base::where('id', $id)->where('jogador_id', Auth::id())->firstOrFail();
+        session(['selected_base_id' => $base->id]);
+        return redirect()->route('dashboard')->with('success', "Comando transferido para {$base->nome}!");
+    }
 }

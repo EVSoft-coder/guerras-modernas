@@ -69,6 +69,10 @@ Route::post('/atacar', [BaseController::class, 'atacar'])
     ->middleware('auth')
     ->name('base.atacar');
 
+Route::get('/base/switch/{id}', [BaseController::class, 'switchBase'])
+    ->middleware('auth')
+    ->name('base.switch');
+
 Route::get('/relatorio/{id}', [App\Http\Controllers\RelatorioController::class, 'show'])
     ->middleware('auth')
     ->name('relatorio.show');

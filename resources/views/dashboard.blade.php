@@ -36,8 +36,24 @@
     <div class="col-md-4">
         <!-- BASE INFO -->
         <div class="card bg-dark border-secondary rounded-4 shadow-sm mb-4 overflow-hidden">
-            <div class="card-header border-bottom border-white/5 pt-3">
-                <h5 class="mb-0">📍 {{ $base->nome }}</h5>
+            <div class="card-header border-bottom border-white/5 pt-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-truncate">📍 {{ $base->nome }}</h5>
+                @if($bases->count() > 1)
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-info dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown">
+                            Trocar Base
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark shadow-xl border-white/10">
+                            @foreach($bases as $b)
+                                <li>
+                                    <a class="dropdown-item @if($b->id == $base->id) active @endif" href="{{ route('base.switch', $b->id) }}">
+                                        {{ $b->nome }} ({{ $b->coordenada_x }}|{{ $b->coordenada_y }})
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             </div>
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
