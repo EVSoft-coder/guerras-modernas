@@ -201,7 +201,7 @@
                                             @csrf
                                             <input type="hidden" name="base_id" value="{{ $base->id }}">
                                             <input type="hidden" name="tipo" value="{{ $tipo }}">
-                                            <button class="btn btn-primary rounded-4 px-4 py-2 text-uppercase fs-7 fw-black @if($base->construcoes->count() > 0) opacity-30 @endif" 
+                                            <button type="submit" class="btn btn-primary rounded-4 px-4 py-2 text-uppercase fs-7 fw-black @if($base->construcoes->count() > 0) opacity-30 @endif" 
                                                     {{ $base->construcoes->count() > 0 ? 'disabled' : '' }}>
                                                 UPGRADE
                                             </button>
@@ -386,10 +386,12 @@
     document.querySelectorAll('.ajax-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            const btn = this.querySelector('button[type="submit"]');
-            const original = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            const btn = this.querySelector('button[type="submit"]') || this.querySelector('button');
+            const original = btn ? btn.innerHTML : '...';
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            }
 
             fetch(this.action, {
                 method: 'POST',
