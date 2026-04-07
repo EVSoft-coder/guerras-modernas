@@ -8,6 +8,19 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+-- Table structure for table `aliancas`
+DROP TABLE IF EXISTS `aliancas`;
+CREATE TABLE `aliancas` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `tag` varchar(10) NOT NULL,
+  `fundador_id` bigint(20) unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tag` (`tag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Table structure for table `jogadores`
 DROP TABLE IF EXISTS `jogadores`;
 CREATE TABLE `jogadores` (
@@ -16,12 +29,15 @@ CREATE TABLE `jogadores` (
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `nome` varchar(100) DEFAULT NULL,
+  `alianca_id` bigint(20) unsigned DEFAULT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `email` (`email`)
+  UNIQUE KEY `email` (`email`),
+  KEY `alianca_id` (`alianca_id`),
+  CONSTRAINT `jogadores_ibfk_1` FOREIGN KEY (`alianca_id`) REFERENCES `aliancas` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table structure for table `bases`

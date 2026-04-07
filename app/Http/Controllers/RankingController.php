@@ -12,7 +12,7 @@ class RankingController extends Controller
      */
     public function index()
     {
-        $jogadores = Jogador::with('bases.edificios')
+        $jogadores = Jogador::with(['bases.edificios', 'alianca'])
             ->get()
             ->map(function ($jogador) {
                 $pontos = 0;

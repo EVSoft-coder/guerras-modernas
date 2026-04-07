@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MapaController;
 use App\Http\Controllers\BaseController;
 use App\Http\Controllers\RankingController;
+use App\Http\Controllers\AliancaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,6 +36,18 @@ Route::get('/mapa', [MapaController::class, 'index'])
 Route::get('/ranking', [RankingController::class, 'index'])
     ->middleware('auth')
     ->name('ranking');
+
+Route::get('/alianca', [AliancaController::class, 'index'])
+    ->middleware('auth')
+    ->name('alianca.index');
+
+Route::post('/alianca', [AliancaController::class, 'store'])
+    ->middleware('auth')
+    ->name('alianca.store');
+
+Route::post('/alianca/sair', [AliancaController::class, 'sair'])
+    ->middleware('auth')
+    ->name('alianca.sair');
 
 Route::post('/upgrade', [BaseController::class, 'upgrade'])
     ->middleware('auth')

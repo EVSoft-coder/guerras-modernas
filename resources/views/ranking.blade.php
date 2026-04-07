@@ -45,6 +45,9 @@
                                                 <div>
                                                     <div class="fw-bold fs-5 {{ $j->id === Auth::id() ? 'text-primary' : 'text-white' }}">
                                                         {{ $j->username }}
+                                                        @if($j->alianca)
+                                                            <span class="text-info small fw-normal ms-1">[{{ $j->alianca->tag }}]</span>
+                                                        @endif
                                                         @if($j->id === Auth::id())
                                                             <span class="badge bg-primary text-uppercase x-small ms-1">Tu</span>
                                                         @endif

@@ -16,6 +16,7 @@ class Jogador extends Authenticatable
         'email',
         'password',
         'nome',
+        'alianca_id',
     ];
 
     protected $hidden = [
@@ -26,5 +27,10 @@ class Jogador extends Authenticatable
     public function bases()
     {
         return $this->hasMany(Base::class);
+    }
+
+    public function alianca()
+    {
+        return $this->belongsTo(Alianca::class);
     }
 }
