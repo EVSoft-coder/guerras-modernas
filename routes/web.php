@@ -48,5 +48,9 @@ Route::post('/atacar', [BaseController::class, 'atacar'])
     ->middleware('auth')
     ->name('base.atacar');
 
+Route::get('/relatorio/{id}', [App\Http\Controllers\RelatorioController::class, 'show'])
+    ->middleware('auth')
+    ->name('relatorio.show');
+
 Route::get('/api/mapa', [MapaController::class, 'apiData'])
     ->middleware('auth');

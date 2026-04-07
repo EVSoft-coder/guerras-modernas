@@ -91,7 +91,7 @@
             <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
                 <div class="list-group list-group-flush">
                     @forelse($relatorios as $rel)
-                        <div class="list-group-item bg-transparent border-white/5 p-3">
+                        <a href="{{ route('relatorio.show', $rel->id) }}" class="list-group-item list-group-item-action bg-transparent border-white/5 p-3 text-decoration-none">
                             <div class="d-flex justify-content-between align-items-start">
                                 <span class="small fw-bold {{ $rel->vencedor_id == Auth::id() ? 'text-success' : 'text-danger' }}">
                                     {{ $rel->vencedor_id == Auth::id() ? '[VITÓRIA]' : '[DERROTA]' }}
@@ -104,7 +104,7 @@
                                     💰 Saque: +{{ array_sum($rel->detalhes['saque']) }} recursos
                                 </div>
                             @endif
-                        </div>
+                        </a>
                     @empty
                         <div class="p-4 text-center text-muted small">Sem relatórios de combate.</div>
                     @endforelse
