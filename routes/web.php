@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MapaController;
 use App\Http\Controllers\BaseController;
+use App\Http\Controllers\RankingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +31,10 @@ Route::get('/dashboard', [AuthController::class, 'dashboard'])
 Route::get('/mapa', [MapaController::class, 'index'])
     ->middleware('auth')
     ->name('mapa');
+
+Route::get('/ranking', [RankingController::class, 'index'])
+    ->middleware('auth')
+    ->name('ranking');
 
 Route::post('/upgrade', [BaseController::class, 'upgrade'])
     ->middleware('auth')

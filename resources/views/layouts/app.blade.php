@@ -21,6 +21,7 @@
                     <span class="nav-link">Olá, {{ Auth::user()->username }}</span>
                     <a class="nav-link {{ Route::is('dashboard') ? 'active fw-bold' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
                     <a class="nav-link {{ Route::is('mapa') ? 'active fw-bold' : '' }}" href="{{ route('mapa') }}">Mapa Tático</a>
+                    <a class="nav-link {{ Route::is('ranking') ? 'active fw-bold' : '' }}" href="{{ route('ranking') }}">Classificação</a>
                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                         @csrf
                         <button type="submit" class="nav-link btn btn-link text-danger">Sair</button>
