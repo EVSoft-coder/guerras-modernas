@@ -6,10 +6,8 @@
     <title>Guerras Modernas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        body { background-color: #0f172a; color: #e2e8f0; }
-        .navbar { background-color: #1e2937; }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/index.css') }}?v={{ time() }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
