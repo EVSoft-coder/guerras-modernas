@@ -1,14 +1,9 @@
-/*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19-11.4.10-MariaDB, for Linux (x86_64)
+-- MariaDB dump
 -- Host: localhost    Database: mw_guerras
--- Server version	11.4.10-MariaDB
-
 /*!40101 SET NAMES utf8mb4 */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
--- Table structure for table `aliancas`
+-- Table aliancas
 DROP TABLE IF EXISTS `aliancas`;
 CREATE TABLE `aliancas` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -21,7 +16,7 @@ CREATE TABLE `aliancas` (
   UNIQUE KEY `tag` (`tag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table structure for table `jogadores`
+-- Table jogadores
 DROP TABLE IF EXISTS `jogadores`;
 CREATE TABLE `jogadores` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -40,7 +35,7 @@ CREATE TABLE `jogadores` (
   CONSTRAINT `jogadores_ibfk_1` FOREIGN KEY (`alianca_id`) REFERENCES `aliancas` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table structure for table `bases`
+-- Table bases
 DROP TABLE IF EXISTS `bases`;
 CREATE TABLE `bases` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -59,7 +54,7 @@ CREATE TABLE `bases` (
   CONSTRAINT `bases_ibfk_1` FOREIGN KEY (`jogador_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table structure for table `recursos`
+-- Table recursos
 DROP TABLE IF EXISTS `recursos`;
 CREATE TABLE `recursos` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -72,10 +67,10 @@ CREATE TABLE `recursos` (
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `base_id` (`base_id`),
-  CONSTRAINT `recursos_ibfk_1` FOREIGN KEY (`recursos_ibfk_1`) REFERENCES `bases` (`id`) ON DELETE CASCADE
+  CONSTRAINT `recursos_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table structure for table `edificios`
+-- Table edificios
 DROP TABLE IF EXISTS `edificios`;
 CREATE TABLE `edificios` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -89,7 +84,7 @@ CREATE TABLE `edificios` (
   CONSTRAINT `edificios_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table structure for table `tropas`
+-- Table tropas
 DROP TABLE IF EXISTS `tropas`;
 CREATE TABLE `tropas` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -103,13 +98,13 @@ CREATE TABLE `tropas` (
   CONSTRAINT `tropas_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table structure for table `ataques`
+-- Table ataques
 DROP TABLE IF EXISTS `ataques`;
 CREATE TABLE `ataques` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `origem_base_id` bigint(20) unsigned NOT NULL,
   `destino_base_id` bigint(20) unsigned NOT NULL,
-  `tropas` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `tropas` longtext NOT NULL,
   `tipo` enum('saque','conquista','reforco','espionagem') NOT NULL DEFAULT 'saque',
   `chegada_em` timestamp NOT NULL,
   `processado` tinyint(1) NOT NULL DEFAULT 0,
@@ -120,7 +115,7 @@ CREATE TABLE `ataques` (
   CONSTRAINT `ataques_ibfk_2` FOREIGN KEY (`destino_base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table structure for table `construcoes`
+-- Table construcoes
 DROP TABLE IF EXISTS `construcoes`;
 CREATE TABLE `construcoes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -134,7 +129,7 @@ CREATE TABLE `construcoes` (
   CONSTRAINT `construcoes_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table structure for table `treinos`
+-- Table treinos
 DROP TABLE IF EXISTS `treinos`;
 CREATE TABLE `treinos` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -148,7 +143,7 @@ CREATE TABLE `treinos` (
   CONSTRAINT `treinos_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table structure for table `relatorios`
+-- Table relatorios
 DROP TABLE IF EXISTS `relatorios`;
 CREATE TABLE `relatorios` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -156,7 +151,7 @@ CREATE TABLE `relatorios` (
   `titulo` varchar(255) NOT NULL,
   `origem_nome` varchar(255) NOT NULL,
   `destino_nome` varchar(255) NOT NULL,
-  `detalhes` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `detalhes` longtext NOT NULL,
   `atacante_id` bigint(20) unsigned NOT NULL,
   `defensor_id` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
@@ -164,6 +159,4 @@ CREATE TABLE `relatorios` (
   CONSTRAINT `relatorios_ibfk_1` FOREIGN KEY (`vencedor_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
