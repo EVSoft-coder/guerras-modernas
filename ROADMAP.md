@@ -1,15 +1,74 @@
-# 🗺 ROADMAP: Guerras Modernas
+# 🛡️ Guerras Modernas: Strategic Roadmap (2026) 🛰️
 
-Este projeto consiste num jogo de estratégia inspirado no "Tribal Wars", mas ambientado na era moderna.
+Este documento traça o comando estratégico e o desenvolvimento técnico do simulador tático **Guerras Modernas**. 🎯💣
 
-Para ver o Roadmap detalhado e interativo, consulte o artifact `roadmap_guerras_modernas.md`.
+---
 
-## 🚀 Resumo das Fases
-1. **Fundação**: Setup de DB e Modelos Iniciais.
-2. **Economia**: Produção de recursos (Suprimentos, Combustível, Munições, Pessoal).
-3. **Construção**: Upgrades de edifícios.
-4. **Militar**: Tropas modernas e recrutamento.
-5. **Mapa**: Grid global e movimentação.
-6. **Combate**: Resolução de batalhas.
-7. **Social**: Alianças e Chat.
-8. **UI/UX**: Design Moderno e Responsivo.
+## ✅ FASE 1: Fundação & Comando (CONCLUÍDO)
+- [x] Setup inicial Laravel 12 + MySQL. 🏗️
+- [x] Motor de Autenticação Tática (Login/Registo). 🔐
+- [x] Interface Industrial Premium (Blade + Vanilla CSS). 🏛️
+- [x] Base de Dados Centralizada (mw_guerras.sql). 📊
+
+## ✅ FASE 2: Recursos & Logística (CONCLUÍDO)
+- [x] Motor de Geração Automática de Suprimentos, Combustível e Munições. 💰
+- [x] Sistema de População (Pessoal) para manutenção militar. 👥
+- [x] Atualização de Recursos baseada em tempo (Game Loop). ⏳
+- [x] Header dinâmico com indicadores HUD. 📈
+
+## ✅ FASE 3: Infraestrutura & Engenharia (CONCLUÍDO)
+- [x] Menu de Edifícios (Mina, Refinaria, Fábrica, Quartel). 🏢
+- [x] Sistema de Upgrades (Níveis 1-20). 🏗️
+- [x] Fila de Construção (Time-based). 🕒
+- [x] Bónus de produção por nível de edifício. ✨
+
+## ✅ FASE 4: Cartografia & Domínio (CONCLUÍDO)
+- [x] Mapa Tático Interativo (Coordenadas X|Y). 🗺️
+- [x] Localização de bases inimigas e aliadas. 🛰️
+- [x] Distâncias calculadas matematicamente para ataques. 📐
+- [x] Estética "Deep Space/Desert" no mapa. 🏜️
+
+## ✅ FASE 5: Motor de Batalha (CONCLUÍDO)
+- [x] GameService: O cérebro invisível do jogo. 🧠
+- [x] Algoritmos de Combate (Atacante vs Defensor). 🏹
+- [x] Relatórios Detalhados com Baixas e Saque de Recursos. 📑
+- [x] Segurança Diplomática: Acesso restrito a logs de guerra. 🛡️
+
+## ✅ FASE 6: Operações de Combate (CONCLUÍDO)
+- [x] Lançamento de Ataques de Saque. 💣
+- [x] Movimentos de Tropas em Tempo Real. 🚢
+- [x] Defesa automática baseada em Muralhas. 🏰
+- [x] Alertas de ataque hostil no Dashboard. ⚠️
+
+## ✅ FASE 7: Diplomacia & Poder Mundial (CONCLUÍDO)
+- [x] Ranking Mundial de Generais (Pontuação por Edifícios). 🏅
+- [x] **Fundação de Alianças (Coligações)**. 🤝
+- [x] **Sistema de Recrutamento (Pedir Adesão / Aprovar)**. 📉
+- [x] Tags Militares visíveis no Ranking (Ex: `admin [NATO]`). 🎖️
+
+## ✅ FASE 8: Polimento HUD & AJAX (CONCLUÍDO)
+- [x] Dashboard Ultra-Fluido: Upgrades sem Refresh. ⚡
+- [x] Sistema de Notificações "Toast" no ecrã. 🛰️
+- [x] Sincronização instantânea de recursos após ordens. 💰
+- [x] Interface de Batalha Industrial com tabelas detalhadas. 📊
+
+---
+
+## 🚀 PRÓXIMAS MISSÕES (EM CURSO)
+
+### 🛰️ FASE 9: Comunicação em Tempo Real
+- [ ] Chat da Aliança (Conversas privadas entre membros). 💬
+- [ ] Notificações Push para ataques recebidos. 🔔
+- [ ] Feed de Inteligência Global (Mundo em Guerra). 🌍
+
+### 🏁 FASE 10: Expansão Terrotorial & Conquistas
+- [ ] **Sistema de Conquista**: Capturar as bases dos outros jogadores. 🏁
+- [ ] Colonização de slots vazios no mapa. 📍
+- [ ] Múltiplas bases por jogador (Switch de Bases no Dashboard). 🏰🏰🏰
+
+---
+
+## 🛠️ Notas de Engenharia
+- **Stack**: Laravel 12, Bootstrap 5, MariaDB.
+- **Modo**: Full Bundle Deployment (via Plesk/OVH/GitHub).
+- **Estado**: **ESTÁVEL & OPERACIONAL** 🎖️
