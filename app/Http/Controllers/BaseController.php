@@ -33,9 +33,22 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
 
         try {
-            $this->gameService->iniciarConstrucao($base, $request->tipo);
+            $fila = $this->gameService->iniciarConstrucao($base, $request->tipo);
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true, 
+                    'message' => "Upgrade iniciado para {$request->tipo}!",
+                    'recursos' => $base->recursos,
+                    'tipo' => 'construcao',
+                    'item' => $fila
+                ]);
+            }
             return redirect()->back()->with('success', "Upgrade iniciado para {$request->tipo}!");
         } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'error' => $e->getMessage()], 422);
+            }
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
@@ -55,9 +68,21 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
 
         try {
-            $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
+            $fila = $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true, 
+                    'message' => "Treino de {$request->quantidade}x {$request->unidade} iniciado!",
+                    'recursos' => $base->recursos,
+                    'tipo' => 'treino',
+                    'item' => $fila
+                ]);
+            }
             return redirect()->back()->with('success', "Treino de {$request->quantidade}x {$request->unidade} iniciado!");
         } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'error' => $e->getMessage()], 422);
+            }
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }

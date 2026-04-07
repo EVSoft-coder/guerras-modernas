@@ -9,25 +9,28 @@
             
             <div class="text-center px-3 border-end border-white/5">
                 <div class="text-muted small text-uppercase fw-bold">📦 Suprimentos</div>
-                <div class="fs-4 fw-bold text-white">{{ number_format($base->recursos->suprimentos) }}</div>
+                <div class="fs-4 fw-bold text-white" id="res-suprimentos">{{ number_format($base->recursos->suprimentos) }}</div>
             </div>
             
             <div class="text-center px-3 border-end border-white/5">
                 <div class="text-muted small text-uppercase fw-bold">⛽ Combustível</div>
-                <div class="fs-4 fw-bold text-warning">{{ number_format($base->recursos->combustivel) }}</div>
+                <div class="fs-4 fw-bold text-warning" id="res-combustivel">{{ number_format($base->recursos->combustivel) }}</div>
             </div>
             
             <div class="text-center px-3 border-end border-white/5">
                 <div class="text-muted small text-uppercase fw-bold">🚀 Munições</div>
-                <div class="fs-4 fw-bold text-danger">{{ number_format($base->recursos->municoes) }}</div>
+                <div class="fs-4 fw-bold text-danger" id="res-municoes">{{ number_format($base->recursos->municoes) }}</div>
             </div>
             
             <div class="text-center px-3">
                 <div class="text-muted small text-uppercase fw-bold">👥 Pessoal</div>
-                <div class="fs-4 fw-bold text-info">{{ number_format($base->recursos->pessoal) }}</div>
+                <div class="fs-4 fw-bold text-info" id="res-pessoal">{{ number_format($base->recursos->pessoal) }}</div>
             </div>
         </div>
     </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
 
     <!-- INFORMAÇÕES DA BASE E RELATÓRIOS -->
     <div class="col-md-4">
@@ -236,5 +239,65 @@
         document.getElementById('treinoTitle').innerText = 'Recrutar: ' + name;
         new bootstrap.Modal(document.getElementById('modalTreino')).show();
     }
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} shadow-lg border-0 mb-2`;
+        toast.style.minWidth = '250px';
+        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}-fill me-2"></i> ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.5s';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+
+    function updateResources(res) {
+        document.getElementById('res-suprimentos').innerText = Number(res.suprimentos).toLocaleString();
+        document.getElementById('res-combustivel').innerText = Number(res.combustivel).toLocaleString();
+        document.getElementById('res-municoes').innerText = Number(res.municoes).toLocaleString();
+        document.getElementById('res-pessoal').innerText = Number(res.pessoal).toLocaleString();
+    }
+
+    document.addEventListener('submit', function(e) {
+        const action = e.target.getAttribute('action');
+        if (action && (action.includes('upgrade') || action.includes('treinar'))) {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('button');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    if (data.recursos) updateResources(data.recursos);
+                    const mElem = document.getElementById('modalTreino');
+                    const m = bootstrap.Modal.getInstance(mElem);
+                    if (m) m.hide();
+                    
+                    // Atualização leve do estado visual (opcional: recarregar após cooldown)
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showToast(data.error || 'Erro na operação.', 'danger');
+                }
+            })
+            .catch(() => showToast('Erro de comunicação tática.', 'danger'))
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            });
+        }
+    });
 </script>
 @endsection
