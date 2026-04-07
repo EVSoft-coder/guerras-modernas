@@ -1,0 +1,125 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Base;
+use App\Models\Edificio;
+use App\Models\Construcao;
+use App\Models\Treino;
+use App\Models\Tropas;
+use Illuminate\Support\Carbon;
+
+class GameService
+{
+    /**
+     * Calcula o tempo necessário para uma construção em segundos (Speed Mode).
+     */
+    public static function tempoConstrucao($tipo, $nivelAlvo)
+    {
+        $baseTime = 60; // 60 segundos base
+        $speed = config('game.speed.construction', 1);
+        
+        // Exemplo de curva de tempo: (tempo_base * nivel) / speed
+        return max(5, ($baseTime * $nivelAlvo) / $speed);
+    }
+
+    /**
+     * Inicia uma nova construção na fila.
+     */
+    public function iniciarConstrucao(Base $base, $tipo)
+    {
+        // Verificar se já existe algo na fila para esta base
+        if ($base->construcoes()->whereNull('concluido_em')->exists()) {
+            throw new \Exception("Já existe uma construção em andamento nesta base.");
+        }
+
+        $nivelAtual = $base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0;
+        $nivelAlvo = $nivelAtual + 1;
+
+        $segundos = self::tempoConstrucao($tipo, $nivelAlvo);
+        $concluidoEm = now()->addSeconds($segundos);
+
+        return $base->construcoes()->create([
+            'tipo' => $tipo,
+            'nivel_alvo' => $nivelAlvo,
+            'concluido_em' => $concluidoEm,
+        ]);
+    }
+
+    /**
+     * Inicia o treino de uma unidade técnica.
+     */
+    public function iniciarTreino(Base $base, $unidade, $quantidade)
+    {
+        $unitConf = config("game.units.{$unidade}");
+        if (!$unitConf) throw new \Exception("Unidade desconhecida.");
+
+        $recursos = $base->recursos;
+        foreach ($unitConf['cost'] as $res => $amount) {
+            $total = $amount * $quantidade;
+            if ($recursos->$res < $total) {
+                throw new \Exception("Recursos insuficientes.");
+            }
+        }
+
+        foreach ($unitConf['cost'] as $res => $amount) {
+            $recursos->decrement($res, $amount * $quantidade);
+        }
+
+        $speed = config('game.speed.training', 1);
+        $segundos = ($unitConf['time'] * $quantidade) / $speed;
+        $concluidoEm = now()->addSeconds($segundos);
+
+        return $base->treinos()->create([
+            'unidade' => $unidade,
+            'quantidade' => $quantidade,
+            'concluido_em' => $concluidoEm,
+        ]);
+    }
+
+    /**
+     * Verifica e finaliza construções e treinos terminados.
+     */
+    public function processarFila(Base $base)
+    {
+        // 1. Processar Construções
+        $construcoes = $base->construcoes()
+            ->where('concluido_em', '<=', now())
+            ->get();
+
+        foreach ($construcoes as $fila) {
+            $edificio = $base->edificios()->where('tipo', $fila->tipo)->first();
+            
+            if ($edificio) {
+                $edificio->update(['nivel' => $fila->nivel_alvo]);
+            } else {
+                $base->edificios()->create([
+                    'tipo' => $fila->tipo,
+                    'nivel' => $fila->nivel_alvo,
+                ]);
+            }
+
+            $fila->delete();
+        }
+
+        // 2. Processar Treino de Tropas
+        $treinos = $base->treinos()
+            ->where('concluido_em', '<=', now())
+            ->get();
+
+        foreach ($treinos as $treino) {
+            $tropa = $base->tropas()->where('unidade', $treino->unidade)->first();
+            
+            if ($tropa) {
+                $tropa->update(['quantidade' => $tropa->quantidade + $treino->quantidade]);
+            } else {
+                $base->tropas()->create([
+                    'unidade' => $treino->unidade,
+                    'quantidade' => $treino->quantidade,
+                ]);
+            }
+
+            $treino->delete();
+        }
+    }
+}

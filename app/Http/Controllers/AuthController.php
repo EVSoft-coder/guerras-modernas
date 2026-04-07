@@ -6,6 +6,9 @@ use App\Models\Jogador;
 use App\Models\Base;
 use App\Models\Recurso;
 use App\Models\Edificio;
+use App\Models\Ataque;
+use App\Services\GameService;
+use App\Services\CombatService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -90,8 +93,54 @@ class AuthController extends Controller
     public function dashboard()
     {
         $jogador = Auth::user();
-        $base = $jogador->bases()->first(); // primeira base
+        if (!$jogador) return redirect('/login');
 
-        return view('dashboard', compact('jogador', 'base'));
+        // Buscar todas as bases do jogador
+        $bases = $jogador->bases()->with('recursos', 'edificios', 'construcoes', 'treinos')->get();
+        $base = $bases->first();
+
+        if ($base) {
+            $gameService = new GameService();
+            
+            // 1. Atualizar Recursos e Fila de Construção/Treino
+            $base->atualizarRecursos();
+            $gameService->processarFila($base);
+
+            // 2. Processar Ataques que chegaram a esta base
+            $ataquesAChegar = Ataque::where('destino_base_id', $base->id)
+                ->where('chegada_em', '<=', now())
+                ->where('processado', false)
+                ->get();
+
+            if ($ataquesAChegar->count() > 0) {
+                $combatService = new CombatService();
+                foreach ($ataquesAChegar as $ataque) {
+                    $atacanteId = $ataque->origem->jogador_id;
+                    $resultado = $combatService->resolver($ataque->tropas, $base, $atacanteId);
+                    
+                    // Aplicar perdas ao defensor (base atual)
+                    foreach ($resultado['perdas_defensor'] as $unidade => $quantidade) {
+                        $tropa = $base->tropas()->where('unidade', $unidade)->first();
+                        if ($tropa) {
+                            $tropa->decrement('quantidade', $quantidade);
+                        }
+                    }
+
+                    // Marcar ataque como processado
+                    $ataque->update(['processado' => true]);
+                }
+            }
+            
+            $base->refresh();
+        }
+
+        // Buscar últimos relatórios onde o jogador esteve envolvido
+        $relatorios = \App\Models\Relatorio::where('atacante_id', $jogador->id)
+            ->orWhere('defensor_id', $jogador->id)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('dashboard', compact('jogador', 'base', 'bases', 'relatorios'));
     }
 }

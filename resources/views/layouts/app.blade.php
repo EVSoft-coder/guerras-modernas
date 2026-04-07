@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guerras Modernas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body { background-color: #0f172a; color: #e2e8f0; }
         .navbar { background-color: #1e2937; }
@@ -18,7 +19,8 @@
             @if (Auth::check())
                 <div class="navbar-nav ms-auto">
                     <span class="nav-link">Olá, {{ Auth::user()->username }}</span>
-                    <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                    <a class="nav-link {{ Route::is('dashboard') ? 'active fw-bold' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
+                    <a class="nav-link {{ Route::is('mapa') ? 'active fw-bold' : '' }}" href="{{ route('mapa') }}">Mapa Tático</a>
                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                         @csrf
                         <button type="submit" class="nav-link btn btn-link text-danger">Sair</button>
