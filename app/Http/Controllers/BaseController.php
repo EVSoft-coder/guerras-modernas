@@ -129,4 +129,10 @@ class BaseController extends Controller
         session(['selected_base_id' => $base->id]);
         return redirect()->route('dashboard')->with('success', "Comando transferido para {$base->nome}!");
     }
+
+    public function manualProcess()
+    {
+        \Illuminate\Support\Facades\Artisan::call('game:processar-batalhas');
+        return redirect()->back()->with('success', "Motor de Guerra Processado com Sucesso!");
+    }
 }

@@ -42,7 +42,14 @@
                     <div>
                         <span class="badge bg-primary px-3 rounded-pill text-uppercase mb-2">Comando Geral</span>
                         <h2 class="text-white fw-black display-5 mb-0" style="text-shadow: 0 4px 15px rgba(0,0,0,0.8);">{{ $base->nome }}</h2>
-                        <p class="text-info fw-bold mb-0">COORDENADAS TÁTICAS: <span class="badge bg-black/40 border border-info/30 fs-6">({{ $base->coordenada_x }}|{{ $base->coordenada_y }})</span></p>
+                        <p class="text-info fw-bold mb-0">
+                            COORDENADAS TÁTICAS: <span class="badge bg-black/40 border border-info/30 fs-6">({{ $base->coordenada_x }}|{{ $base->coordenada_y }})</span>
+                            @if(Auth::user()->name == 'admin')
+                                <a href="{{ route('cron.processar') }}" class="btn btn-xs btn-outline-warning rounded-pill x-small ms-3 fw-bold">
+                                    <i class="bi bi-gear-fill"></i> SINCRONIZAR GUERRA
+                                </a>
+                            @endif
+                        </p>
                     </div>
                     <div class="text-end">
                         @if($base->construcoes->count() > 0)

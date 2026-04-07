@@ -73,6 +73,10 @@ Route::get('/base/switch/{id}', [BaseController::class, 'switchBase'])
     ->middleware('auth')
     ->name('base.switch');
 
+Route::get('/cron/processar', [BaseController::class, 'manualProcess'])
+    ->middleware('auth')
+    ->name('cron.processar');
+
 Route::get('/relatorio/{id}', [App\Http\Controllers\RelatorioController::class, 'show'])
     ->middleware('auth')
     ->name('relatorio.show');
