@@ -108,6 +108,7 @@ class AuthController extends Controller
             $gameService->atualizarRecursos($base);
             $gameService->processarFila($base);
             $base->refresh();
+            $base->load(['recursos', 'edificios', 'construcoes', 'treinos']);
             
             // Guardar o ID selecionado na sessão para persistência
             session(['selected_base_id' => $base->id]);

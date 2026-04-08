@@ -207,10 +207,9 @@ class GameService
         }
 
         if ($atualizou) {
-            // Usar DB direto para garantir persistência e evitar cache de modelo
-            // Importante: Forçar ponto decimal no SQL para compatibilidade com qualquer locale (ex: transformar 0,55 em 0.55)
+            // Usar DB direto com base_id para evitar qualquer erro de mapeamento de ID
             \Illuminate\Support\Facades\DB::table('recursos')
-                ->where('id', $recursos->id)
+                ->where('base_id', $base->id)
                 ->update([
                     'suprimentos' => \Illuminate\Support\Facades\DB::raw('suprimentos + ' . number_format($ganhos['suprimentos'] ?? 0, 8, '.', '')),
                     'combustivel' => \Illuminate\Support\Facades\DB::raw('combustivel + ' . number_format($ganhos['combustivel'] ?? 0, 8, '.', '')),
@@ -219,16 +218,14 @@ class GameService
                     'updated_at'  => $agora
                 ]);
             
-            // SINCRONIZAÇÃO DA INSTÂNCIA EM MEMÓRIA:
-            // Isso evita que chamadas posteriores de ->save() no modelo Recursos sobrescrevam a BD com o valor antigo (586)
-            foreach($ganhos as $res => $val) {
-                $recursos->$res += $val;
+            // Sincronizar a instância para evitar que o Blade mostre valores antigos
+            if ($base->relationLoaded('recursos')) {
+                foreach($ganhos as $res => $val) {
+                    $base->recursos->$res += $val;
+                }
+                $base->recursos->updated_at = $agora;
+                $base->recursos->syncOriginal();
             }
-            $recursos->updated_at = $agora;
-            $recursos->syncOriginal(); 
-
-            // Log para debug em produção
-            \Log::info("Recursos atualizados para Base {$base->id}: +" . json_encode($ganhos) . " em {$segundos}s");
         }
     }
 
