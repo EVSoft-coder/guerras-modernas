@@ -111,6 +111,19 @@ class BaseController extends Controller
         $segundos = ($distancia * 100) / $speed; // Ajuste para Speed Mode
         $chegadaEm = now()->addSeconds($segundos);
 
+        // VALIDAR INVENTÁRIO TÁTICO: Garantir que as tropas existem e retirá-las da base no lançamento
+        foreach ($request->tropas as $unidade => $quantidade) {
+            if ($quantidade <= 0) continue;
+            
+            $tropaLocal = $origem->tropas()->where('unidade', $unidade)->first();
+            if (!$tropaLocal || $tropaLocal->quantidade < $quantidade) {
+                return redirect()->back()->withErrors(['error' => "Tropas insuficientes: {$unidade}"]);
+            }
+            
+            // Retirar do inventário (Estado de Trânsito)
+            $tropaLocal->decrement('quantidade', $quantidade);
+        }
+
         // Criar registro do ataque
         Ataque::create([
             'origem_base_id'  => $origem->id,
