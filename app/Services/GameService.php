@@ -219,6 +219,14 @@ class GameService
                     'updated_at'  => $agora
                 ]);
             
+            // SINCRONIZAÇÃO DA INSTÂNCIA EM MEMÓRIA:
+            // Isso evita que chamadas posteriores de ->save() no modelo Recursos sobrescrevam a BD com o valor antigo (586)
+            foreach($ganhos as $res => $val) {
+                $recursos->$res += $val;
+            }
+            $recursos->updated_at = $agora;
+            $recursos->syncOriginal(); 
+
             // Log para debug em produção
             \Log::info("Recursos atualizados para Base {$base->id}: +" . json_encode($ganhos) . " em {$segundos}s");
         }
