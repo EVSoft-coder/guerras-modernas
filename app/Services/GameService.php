@@ -169,7 +169,14 @@ class GameService
             return;
         }
 
-        if ($segundos <= 0) return;
+        $debug = "Base: {$base->id} | Agora: {$agora->format('H:i:s')} | Ultima: {$ultimaAtualizacao->format('H:i:s')} | Diff: {$segundos}s";
+        
+        if ($segundos <= 0) {
+            file_put_contents(public_path('debug_res.txt'), "SKIP: " . $debug . "\n", FILE_APPEND);
+            return;
+        }
+        
+        file_put_contents(public_path('debug_res.txt'), "PROC: " . $debug . "\n", FILE_APPEND);
 
         $config = config('game');
         $speed = $config['speed']['resources'] ?? 1;
