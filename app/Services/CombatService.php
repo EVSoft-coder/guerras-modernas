@@ -13,6 +13,10 @@ class CombatService
      */
     public function resolver(array $unidadesAtacantes, Base $baseDefensora, $atacanteId, $tipo = 'saque')
     {
+        if ($tipo === 'espionagem') {
+            return $this->resolverEspionagem($unidadesAtacantes, $baseDefensora, $atacanteId);
+        }
+
         $vencedor = 'defensor';
         $perdasAtacante = [];
         $perdasDefensor = [];
@@ -108,6 +112,65 @@ class CombatService
             'perdas_defensor' => $perdasDefensor,
             'saque' => $saque,
             'conquista' => ($tipo === 'conquista' && $vencedor === 'atacante')
+        ];
+    }
+
+    /**
+     * Resolve uma missão de reconhecimento (Espionagem).
+     */
+    protected function resolverEspionagem(array $unidadesAtacantes, Base $baseDefensora, $atacanteId)
+    {
+        $numEspioes = $unidadesAtacantes['agente_espiao'] ?? 0;
+        
+        // Se não houver espiões, a missão falha drasticamente
+        if ($numEspioes <= 0) {
+            Relatorio::create([
+                'vencedor_id' => $baseDefensora->jogador_id,
+                'titulo' => "FALHA DE INTELIGÊNCIA em ({$baseDefensora->coordenada_x}|{$baseDefensora->coordenada_y})",
+                'origem_nome' => "Infiltração Mal-Sucedida",
+                'destino_nome' => $baseDefensora->nome,
+                'atacante_id' => $atacanteId,
+                'defensor_id' => $baseDefensora->jogador_id,
+                'detalhes' => ['mensagem' => 'Tentativa de espionagem sem agentes qualificados.']
+            ]);
+            return ['vencedor' => 'defensor', 'espionagem' => false];
+        }
+
+        // Dados recolhidos
+        $tropasDetectadas = $baseDefensora->tropas->pluck('quantidade', 'unidade')->toArray();
+        $edificiosDetectados = $baseDefensora->edificios->pluck('nivel', 'tipo')->toArray();
+        $recursosDetectados = [
+            'suprimentos' => $baseDefensora->recursos->suprimentos,
+            'combustivel' => $baseDefensora->recursos->combustivel,
+            'municoes' => $baseDefensora->recursos->municoes,
+        ];
+
+        // Criar Relatório de Inteligência
+        Relatorio::create([
+            'vencedor_id' => $atacanteId,
+            'titulo' => "FICHA DE INTELIGÊNCIA: {$baseDefensora->nome}",
+            'origem_nome' => "Agência de Inteligência Central",
+            'destino_nome' => $baseDefensora->nome,
+            'atacante_id' => $atacanteId,
+            'defensor_id' => $baseDefensora->jogador_id,
+            'detalhes' => [
+                'tipo' => 'espionagem',
+                'vitoria' => true,
+                'tropas' => $tropasDetectadas,
+                'edificios' => $edificiosDetectados,
+                'recursos' => $recursosDetectados,
+                'num_espioes' => $numEspioes
+            ]
+        ]);
+
+        return [
+            'vencedor' => 'atacante',
+            'espionagem' => true,
+            'detalhes' => [
+                'tropas' => $tropasDetectadas,
+                'edificios' => $edificiosDetectados,
+                'recursos' => $recursosDetectados
+            ]
         ];
     }
 }

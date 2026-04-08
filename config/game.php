@@ -120,5 +120,16 @@ return [
             'speed' => 60,
             'capacity' => 0,
         ],
+        'agente_espiao' => [
+            'name' => 'Agente de Inteligência',
+            'cost' => ['suprimentos' => 500, 'combustivel' => 100, 'municoes' => 50, 'pessoal' => 1],
+            'time' => 600,
+            'attack' => 0,
+            'defense_general' => 1,
+            'defense_armored' => 1,
+            'speed' => 80,
+            'capacity' => 0,
+            'is_spy' => true,
+        ],
     ],
 ];

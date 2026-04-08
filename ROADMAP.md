@@ -62,13 +62,21 @@ Este documento traça o comando estratégico e o desenvolvimento técnico do sim
 
 ---
 
+## ✅ FASE 10: Comunicação & Inteligência em Tempo Real (CONCLUÍDO)
+- [x] **Chat da Aliança**: Canal seguro com polling e alertas sonoros. 💬🔊
+- [x] **Feed de Notícias de Guerra**: Atividades globais visíveis no Dashboard. 🌍
+- [x] **HUD Industrial**: Visualização de produção p/min (+X p/min). 💰
+- [x] **Mapa Tático 2.0**: Diferenciação de cores para aliados/inimigos. 🗺️🛰️
+
+---
+
 ## 🚀 PRÓXIMAS MISSÕES (EM CURSO)
 
-### 🛰️ FASE 10: Comunicação & Inteligência em Tempo Real
-- [ ] **Chat da Aliança**: Canal seguro para membros da coligação. 💬
-- [ ] **Feed de Notícias de Guerra**: Eventos globais em tempo real. 🌍
-- [ ] **Sistema de Alertas Sonoros**: Sirenes e avisos de construção. 🔊🚨
-- [ ] **Mapa Tático 2.0**: Ícones de aliança e interatividade. 🗺️
+### 🛰️ FASE 11: Espionagem & Guerra de Informação
+- [ ] **Missões de Reconhecimento**: Espionagem de tropas inimigas. 🕵️‍♂️
+- [ ] **Radar de Longo Alcance**: Detecção antecipada de ataques distantes. 📡
+- [ ] **Gráficos de Combate**: Relatórios com breakdown de danos por unidade. 📊
+- [ ] **Quadro de Honra**: Log global de vitórias heróicas e conquistas. 🏆
 
 ---
 
