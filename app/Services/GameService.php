@@ -158,7 +158,17 @@ class GameService
         $agora = now();
         $ultimaAtualizacao = $recursos->updated_at ?? $base->created_at;
         
-        $segundos = $agora->diffInSeconds($ultimaAtualizacao);
+        $segundos = $agora->diffInSeconds($ultimaAtualizacao, false);
+        
+        // Se a última atualização está no futuro, o motor gela. Vamos forçar o reset.
+        if ($segundos < -5) { 
+            \Log::warning("TIME DRIFT: Base {$base->id} está no futuro. Forçando reset de tempo.");
+            \Illuminate\Support\Facades\DB::table('recursos')
+                ->where('id', $recursos->id)
+                ->update(['updated_at' => $agora]);
+            return;
+        }
+
         if ($segundos <= 0) return;
 
         $config = config('game');
@@ -172,25 +182,38 @@ class GameService
             'pessoal' => 'posto_recrutamento'
         ];
 
+        $ganhos = [];
         $atualizou = false;
+
         foreach ($tiposLink as $res => $edificioTipo) {
-            $nivel = $base->edificios()->where('tipo', $edificioTipo)->first()?->nivel ?? 0;
+            $edificio = $base->edificios()->where('tipo', $edificioTipo)->first();
+            $nivel = $edificio ? $edificio->nivel : 0;
             $baseProd = $config['production'][$res] ?? 10;
             
-            // Formula: (BasePerHour * Speed) * (1 + Level * Scaling)
             $porHora = ($baseProd * $speed) * (1 + ($nivel * $scaling));
             $porSegundo = $porHora / 3600;
             
             $ganho = $porSegundo * $segundos;
             if ($ganho > 0.0001) {
-                $recursos->increment($res, $ganho);
+                $ganhos[$res] = $ganho;
                 $atualizou = true;
             }
         }
 
-        // Apenas atualizar o timestamp se realmente processamos algum tempo relevante
         if ($atualizou) {
-            $recursos->touch();
+            // Usar DB direto para garantir persistência e evitar cache de modelo
+            \Illuminate\Support\Facades\DB::table('recursos')
+                ->where('id', $recursos->id)
+                ->update(array_merge($ganhos, [
+                    'suprimentos' => \Illuminate\Support\Facades\DB::raw('suprimentos + ' . ($ganhos['suprimentos'] ?? 0)),
+                    'combustivel' => \Illuminate\Support\Facades\DB::raw('combustivel + ' . ($ganhos['combustivel'] ?? 0)),
+                    'municoes'    => \Illuminate\Support\Facades\DB::raw('municoes + ' . ($ganhos['municoes'] ?? 0)),
+                    'pessoal'     => \Illuminate\Support\Facades\DB::raw('pessoal + ' . ($ganhos['pessoal'] ?? 0)),
+                    'updated_at'  => $agora
+                ]));
+            
+            // Log para debug em produção
+            \Log::info("Recursos atualizados para Base {$base->id}: +" . json_encode($ganhos) . " em {$segundos}s");
         }
     }
 
