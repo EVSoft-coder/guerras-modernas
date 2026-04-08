@@ -9,9 +9,8 @@ class CombatService
 {
     /**
      * Resolve uma batalha entre Atacante e Defensor.
-     * Retorna um array com o resultado (Sobreviventes, Perdas, Vencedor).
      */
-    public function resolver(array $unidadesAtacantes, Base $baseDefensora, $atacanteId, $tipo = 'saque')
+    public function resolver(array $unidadesAtacantes, Base $baseDefensora, $atacanteId, $tipo = 'saque', Base $baseOrigem = null)
     {
         if ($tipo === 'espionagem') {
             return $this->resolverEspionagem($unidadesAtacantes, $baseDefensora, $atacanteId);
@@ -69,6 +68,11 @@ class CombatService
         $saque = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0];
         if ($vencedor == 'atacante') {
             if ($tipo === 'conquista') {
+                // RESET TOTAL DA BASE CONQUISTADA: Limpar tropas antigas e filas
+                $baseDefensora->tropas()->delete();
+                $baseDefensora->construcoes()->delete();
+                $baseDefensora->treinos()->delete();
+
                 $baseDefensora->update([
                     'jogador_id' => $atacanteId,
                     'nome' => "Base Conquistada"
@@ -81,10 +85,28 @@ class CombatService
                 }
 
                 $resDefensor = $baseDefensora->recursos;
+                $resAtacante = $baseOrigem ? $baseOrigem->recursos : null;
+
                 foreach (['suprimentos', 'combustivel', 'municoes'] as $res) {
                     $roubado = min($resDefensor->$res * 0.5, $capacidadeTotal / 3);
                     $saque[$res] = (int)$roubado;
+                    
+                    // Debitamos do perdedor e creditamos ao vencedor (se houver base de origem)
                     $resDefensor->decrement($res, (int)$roubado);
+                    if ($resAtacante) {
+                        $resAtacante->increment($res, (int)$roubado);
+                    }
+                }
+            }
+        }
+
+        // 4b. RETORNO DE TROPAS SOBREVIVENTES (Logística de Guerra)
+        if ($baseOrigem) {
+            foreach ($unidadesAtacantes as $unidade => $quantidade) {
+                $sobreviventes = $quantidade - ($perdasAtacante[$unidade] ?? 0);
+                if ($sobreviventes > 0) {
+                    $tropaLocal = $baseOrigem->tropas()->firstOrCreate(['unidade' => $unidade]);
+                    $tropaLocal->increment('quantidade', $sobreviventes);
                 }
             }
         }

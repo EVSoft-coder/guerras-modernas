@@ -37,7 +37,8 @@ class ProcessarBatalhas extends Command
                     $atq->tropas, 
                     $atq->destino, 
                     $atq->origem->jogador_id, 
-                    $atq->tipo
+                    $atq->tipo,
+                    $atq->origem
                 );
 
                 // Marcar como processado

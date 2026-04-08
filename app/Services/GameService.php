@@ -106,45 +106,49 @@ class GameService
      */
     public function processarFila(Base $base)
     {
-        // 1. Processar Construções
-        $construcoes = $base->construcoes()
-            ->where('completado_em', '<=', now())
-            ->get();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($base) {
+            // 1. Processar Construções
+            $construcoes = $base->construcoes()
+                ->where('completado_em', '<=', now())
+                ->lockForUpdate()
+                ->get();
 
-        foreach ($construcoes as $fila) {
-            $edificio = $base->edificios()->where('tipo', $fila->edificio_tipo)->first();
-            
-            if ($edificio) {
-                $edificio->update(['nivel' => $fila->nivel_destino]);
-            } else {
-                $base->edificios()->create([
-                    'tipo' => $fila->edificio_tipo,
-                    'nivel' => $fila->nivel_destino,
-                ]);
+            foreach ($construcoes as $fila) {
+                $edificio = $base->edificios()->where('tipo', $fila->edificio_tipo)->lockForUpdate()->first();
+                
+                if ($edificio) {
+                    $edificio->update(['nivel' => $fila->nivel_destino]);
+                } else {
+                    $base->edificios()->create([
+                        'tipo' => $fila->edificio_tipo,
+                        'nivel' => $fila->nivel_destino,
+                    ]);
+                }
+
+                $fila->delete();
             }
 
-            $fila->delete();
-        }
+            // 2. Processar Treino de Tropas
+            $treinos = $base->treinos()
+                ->where('completado_em', '<=', now())
+                ->lockForUpdate()
+                ->get();
 
-        // 2. Processar Treino de Tropas
-        $treinos = $base->treinos()
-            ->where('completado_em', '<=', now())
-            ->get();
+            foreach ($treinos as $treino) {
+                $tropa = $base->tropas()->where('unidade', $treino->unidade)->lockForUpdate()->first();
+                
+                if ($tropa) {
+                    $tropa->update(['quantidade' => $tropa->quantidade + $treino->quantidade]);
+                } else {
+                    $base->tropas()->create([
+                        'unidade' => $treino->unidade,
+                        'quantidade' => $treino->quantidade,
+                    ]);
+                }
 
-        foreach ($treinos as $treino) {
-            $tropa = $base->tropas()->where('unidade', $treino->unidade)->first();
-            
-            if ($tropa) {
-                $tropa->update(['quantidade' => $tropa->quantidade + $treino->quantidade]);
-            } else {
-                $base->tropas()->create([
-                    'unidade' => $treino->unidade,
-                    'quantidade' => $treino->quantidade,
-                ]);
+                $treino->delete();
             }
-
-            $treino->delete();
-        }
+        });
     }
 
     /**
