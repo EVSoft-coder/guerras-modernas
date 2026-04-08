@@ -92,17 +92,17 @@ Route::get('/relatorio/{id}', [App\Http\Controllers\RelatorioController::class, 
 Route::get('/api/mapa', [MapaController::class, 'apiData'])
     ->middleware('auth');
 Route::get('/test-db', function() {
-     = \App\Models\Base::first();
-    if (!) return 'Sem bases.';
+    $base = \App\Models\Base::first();
+    if (!$base) return 'Sem bases.';
     
-     = ->recursos;
-     = ->suprimentos;
+    $res = $base->recursos;
+    $old = $res->suprimentos;
     
     \Illuminate\Support\Facades\DB::table('recursos')
-        ->where('id', ->id)
+        ->where('id', $res->id)
         ->increment('suprimentos', 10);
         
-     = \App\Models\Base::first()->recursos->suprimentos;
+    $new = \App\Models\Base::first()->recursos->suprimentos;
     
-    return 'Base: ' . ->id . ', Antigo: ' .  . ', Novo: ' .  . ' (Diferenca: ' . ( - ) . ')';
+    return "Base: {$base->id}, Antigo: $old, Novo: $new";
 });
