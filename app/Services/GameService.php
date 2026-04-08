@@ -155,85 +155,52 @@ class GameService
         $recursos = $base->recursos;
         if (!$recursos) return;
 
-        $agora = now();
-        $ultimaAtualizacao = $recursos->updated_at ?? $base->created_at;
-        
-        $segundos = $agora->diffInSeconds($ultimaAtualizacao, false);
-        
-        // Se a última atualização está no futuro (ex: fuso horário desalinhado)
-        // Vamos apenas resetar o timestamp para o presente e permitir que o motor rode no próximo pedido.
-        if ($segundos < -1) { 
-            \Log::warning("TIME DRIFT: Base {$base->id} está no futuro ({$segundos}s). Sincronizando relógio.");
-            \Illuminate\Support\Facades\DB::table('recursos')
-                ->where('base_id', $base->id)
-                ->update(['updated_at' => $agora]);
-            $segundos = 0; // Impede ganho negativo neste pedido
-        }
-
-        $debug = "Base: {$base->id} | Agora: {$agora->format('H:i:s')} | Ultima: {$ultimaAtualizacao->format('H:i:s')} | Diff: {$segundos}s";
-        
-        if ($segundos <= 0) {
-            file_put_contents(public_path('debug_res.txt'), "SKIP: " . $debug . "\n", FILE_APPEND);
-            return;
-        }
-        
-        file_put_contents(public_path('debug_res.txt'), "PROC: " . $debug . "\n", FILE_APPEND);
-
-        $config = config('game');
-        $speed = $config['speed']['resources'] ?? 1;
-        $scaling = $config['scaling'] ?? 1.5;
-        
-        $tiposLink = [
-            'suprimentos' => 'mina_suprimentos',
-            'combustivel' => 'refinaria',
-            'municoes' => 'fabrica_municoes',
-            'pessoal' => 'posto_recrutamento'
-        ];
-
-        $ganhos = [];
-        $atualizou = false;
-
-        \Log::info("DEBUG RECURSOS: Base {$base->id} tem " . $base->edificios->count() . " edifícios carregados.");
-
-        foreach ($tiposLink as $res => $edificioTipo) {
-            // Usar query builder () para bater sempre na BD e evitar cache de relação inconsistente
-            $edificio = $base->edificios()->where('tipo', $edificioTipo)->first();
-            $nivel = $edificio ? $edificio->nivel : 0;
-            $baseProd = $config['production'][$res] ?? 10;
+        // NUCLEAR OPTION: Atualização atómica baseada no relógio interno do MySQL
+        // Esto elimina qualquer discrepância entre o relógio do PHP e o relógio da BD
+        try {
+            $config = config('game');
+            $speed = $config['speed']['resources'] ?? 1;
+            $scaling = $config['scaling'] ?? 1.5;
             
-            $porHora = ($baseProd * $speed) * (1 + ($nivel * $scaling));
-            $porSegundo = $porHora / 3600;
-            
-            $ganho = $porSegundo * $segundos;
-            
-            // \Log::info("  - $res: Lvl $nivel, Prod/h $porHora, Ganho $ganho");
+            $tiposLink = [
+                'suprimentos' => 'mina_suprimentos',
+                'combustivel' => 'refinaria',
+                'municoes' => 'fabrica_municoes',
+                'pessoal' => 'posto_recrutamento'
+            ];
 
-            if ($ganho > 0.0001) {
-                $ganhos[$res] = $ganho;
-                $atualizou = true;
+            $rates = [];
+            foreach ($tiposLink as $res => $edificioTipo) {
+                // Procurar edifício diretamente na BD para evitar cache
+                $edificio = \App\Models\Edificio::where('base_id', $base->id)->where('tipo', $edificioTipo)->first();
+                $nivel = $edificio ? $edificio->nivel : 0;
+                $baseProd = $config['production'][$res] ?? 10;
+                // Taxa por segundo (Base * Speed * (1 + Nivel * Scaling) / 3600)
+                $rates[$res] = (($baseProd * $speed) * (1 + ($nivel * $scaling))) / 3600;
             }
-        }
 
-        if ($atualizou) {
-            // Usar DB direto com base_id para evitar qualquer erro de mapeamento de ID
-            \Illuminate\Support\Facades\DB::table('recursos')
-                ->where('base_id', $base->id)
-                ->update([
-                    'suprimentos' => \Illuminate\Support\Facades\DB::raw('suprimentos + ' . number_format($ganhos['suprimentos'] ?? 0, 8, '.', '')),
-                    'combustivel' => \Illuminate\Support\Facades\DB::raw('combustivel + ' . number_format($ganhos['combustivel'] ?? 0, 8, '.', '')),
-                    'municoes'    => \Illuminate\Support\Facades\DB::raw('municoes + ' . number_format($ganhos['municoes'] ?? 0, 8, '.', '')),
-                    'pessoal'     => \Illuminate\Support\Facades\DB::raw('pessoal + ' . number_format($ganhos['pessoal'] ?? 0, 8, '.', '')),
-                    'updated_at'  => $agora
-                ]);
-            
-            // Sincronizar a instância para evitar que o Blade mostre valores antigos
-            if ($base->relationLoaded('recursos')) {
-                foreach($ganhos as $res => $val) {
-                    $base->recursos->$res += $val;
-                }
-                $base->recursos->updated_at = $agora;
-                $base->recursos->syncOriginal();
-            }
+            // Executar UPDATE atómico no MySQL usando TIMESTAMPDIFF
+            \Illuminate\Support\Facades\DB::statement("
+                UPDATE recursos 
+                SET suprimentos = suprimentos + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, updated_at, NOW()))),
+                    combustivel = combustivel + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, updated_at, NOW()))),
+                    municoes    = municoes    + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, updated_at, NOW()))),
+                    pessoal     = pessoal     + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, updated_at, NOW()))),
+                    updated_at  = NOW()
+                WHERE base_id = ?
+            ", [
+                $rates['suprimentos'], 
+                $rates['combustivel'], 
+                $rates['municoes'], 
+                $rates['pessoal'], 
+                $base->id
+            ]);
+
+            // Sincronizar a instância em memória para que o Dashboard mostre os valores atuais da BD desta transação
+            $base->refresh();
+            $base->load('recursos');
+        } catch (\Exception $e) {
+            \Log::error("Falha na Sincronização Atómica Base {$base->id}: " . $e->getMessage());
         }
     }
 
