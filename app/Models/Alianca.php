@@ -28,4 +28,9 @@ class Alianca extends Model
     {
         return $this->hasMany(PedidoAlianca::class, 'alianca_id');
     }
+
+    public function mensagens()
+    {
+        return $this->hasMany(MensagemAlianca::class, 'alianca_id');
+    }
 }

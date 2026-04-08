@@ -20,9 +20,12 @@ class AliancaController extends Controller
             return view('alianca.create', compact('aliancas', 'pedidoPendente'));
         }
 
+        $mensagens = $jogador->alianca->mensagens()->with('jogador')->latest()->take(50)->get()->reverse();
+
         return view('alianca.index', [
             'alianca' => $jogador->alianca,
-            'jogador' => $jogador
+            'jogador' => $jogador,
+            'mensagens' => $mensagens
         ]);
     }
 

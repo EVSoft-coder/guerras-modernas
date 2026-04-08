@@ -54,17 +54,21 @@ Este documento traça o comando estratégico e o desenvolvimento técnico do sim
 
 ---
 
+## ✅ FASE 9: Expansão Territorial & Conquistas (CONCLUÍDO)
+- [x] **Sistema de Conquista**: Capturar as bases dos outros jogadores. 🏁
+- [x] Colonização de slots vazios no mapa. 📍
+- [x] Múltiplas bases por jogador (Switch de Bases no Dashboard). 🏰🏰🏰
+- [x] Visual Overhaul: Village View & High Contrast. 🏛️✨
+
+---
+
 ## 🚀 PRÓXIMAS MISSÕES (EM CURSO)
 
-### 🛰️ FASE 9: Comunicação em Tempo Real
-- [ ] Chat da Aliança (Conversas privadas entre membros). 💬
-- [ ] Notificações Push para ataques recebidos. 🔔
-- [ ] Feed de Inteligência Global (Mundo em Guerra). 🌍
-
-### 🏁 FASE 10: Expansão Terrotorial & Conquistas
-- [ ] **Sistema de Conquista**: Capturar as bases dos outros jogadores. 🏁
-- [ ] Colonização de slots vazios no mapa. 📍
-- [ ] Múltiplas bases por jogador (Switch de Bases no Dashboard). 🏰🏰🏰
+### 🛰️ FASE 10: Comunicação & Inteligência em Tempo Real
+- [ ] **Chat da Aliança**: Canal seguro para membros da coligação. 💬
+- [ ] **Feed de Notícias de Guerra**: Eventos globais em tempo real. 🌍
+- [ ] **Sistema de Alertas Sonoros**: Sirenes e avisos de construção. 🔊🚨
+- [ ] **Mapa Tático 2.0**: Ícones de aliança e interatividade. 🗺️
 
 ---
 

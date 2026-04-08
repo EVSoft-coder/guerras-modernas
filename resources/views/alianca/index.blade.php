@@ -124,6 +124,47 @@
                 </div>
             </div>
         </div>
+    <div class="row mt-4">
+        <!-- CANAL DE COMUNICAÇÕES DA ALIANÇA -->
+        <div class="col-12">
+            <div class="card glassmorphism border-info/20 shadow-2xl rounded-5 overflow-hidden">
+                <div class="card-header bg-info/10 border-bottom border-white/5 py-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-white fw-black text-uppercase ls-1">📡 Frequência de Comando da Coligação</h5>
+                    <span class="badge bg-info/20 text-info border border-info/40 px-3 py-2 animate-glow">CONEXÃO SEGURA 🔒</span>
+                </div>
+                <div class="card-body p-0">
+                    <!-- ÁREA DE MENSAGENS -->
+                    <div id="chatFeed" class="p-4" style="height: 450px; overflow-y: auto; background: rgba(0,0,0,0.2);">
+                        @forelse($mensagens as $msg)
+                            <div class="mb-4 d-flex {{ $msg->jogador_id === Auth::id() ? 'justify-content-end' : 'justify-content-start' }}">
+                                <div class="p-3 rounded-4 shadow-sm border {{ $msg->jogador_id === Auth::id() ? 'bg-info/10 border-info/30 text-end' : 'bg-white/5 border-white/10' }}" style="max-width: 70%;">
+                                    <div class="d-flex justify-content-between align-items-center mb-1 gap-3">
+                                        <small class="fw-black text-info text-uppercase ls-1" style="font-size: 0.65rem;">{{ $msg->jogador->username }}</small>
+                                        <small class="text-muted" style="font-size: 0.6rem;">{{ $msg->created_at->format('H:i') }}</small>
+                                    </div>
+                                    <div class="text-white fs-6">{{ $msg->mensagem }}</div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-100 d-flex flex-column align-items-center justify-content-center text-muted">
+                                <i class="bi bi-chat-dots display-3 opacity-10 mb-3"></i>
+                                <p class="small text-uppercase ls-1">Silêncio de Rádio. Sem comunicações registadas.</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- FORMULÁRIO DE ENVIO TÁTICO -->
+                    <div class="p-4 bg-black/30 border-top border-white/5">
+                        <form id="chatForm" class="d-flex gap-3">
+                            @csrf
+                            <input type="text" id="chatInput" placeholder="Digite ordens ou relatórios de inteligência..." 
+                                   class="form-control form-control-lg bg-white/5 border-white/10 text-white placeholder-white/30 rounded-4 px-4 py-3" required>
+                            <button type="submit" class="btn btn-info rounded-4 px-5 fw-black text-uppercase ls-1">ENVIAR</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -135,5 +176,60 @@
     background: rgba(30,30,30, 0.7) !important;
     backdrop-filter: blur(10px);
 }
+#chatFeed::-webkit-scrollbar { width: 6px; }
+#chatFeed::-webkit-scrollbar-track { background: transparent; }
+#chatFeed::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.2); border-radius: 3px; }
+#chatFeed::-webkit-scrollbar-thumb:hover { background: rgba(14, 165, 233, 0.5); }
+.animate-glow { animation: pulse-glow 3s infinite alternate; }
+@keyframes pulse-glow { from { box-shadow: 0 0 10px rgba(13, 202, 240, 0.1); } to { box-shadow: 0 0 20px rgba(13, 202, 240, 0.3); } }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const feed = document.getElementById('chatFeed');
+        feed.scrollTop = feed.scrollHeight; // Scroll até ao fundo
+    });
+
+    document.getElementById('chatForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const input = document.getElementById('chatInput');
+        const msg = input.value;
+        if(!msg) return;
+
+        const btn = this.querySelector('button');
+        btn.disabled = true;
+
+        fetch('{{ route("alianca.chat.enviar") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ mensagem: msg })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                const feed = document.getElementById('chatFeed');
+                const row = document.createElement('div');
+                row.className = 'mb-4 d-flex justify-content-end';
+                row.innerHTML = `
+                    <div class="p-3 rounded-4 shadow-sm border bg-info/10 border-info/30 text-end" style="max-width: 70%;">
+                        <div class="d-flex justify-content-between align-items-center mb-1 gap-3">
+                            <small class="fw-black text-info text-uppercase ls-1" style="font-size: 0.65rem;">${data.jogador}</small>
+                            <small class="text-muted" style="font-size: 0.6rem;">${data.data}</small>
+                        </div>
+                        <div class="text-white fs-6">${data.mensagem}</div>
+                    </div>
+                `;
+                feed.appendChild(row);
+                input.value = '';
+                feed.scrollTop = feed.scrollHeight;
+            }
+        })
+        .finally(() => {
+            btn.disabled = false;
+        });
+    });
+</script>
 @endsection
