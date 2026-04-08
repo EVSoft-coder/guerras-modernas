@@ -185,8 +185,11 @@ class GameService
         $ganhos = [];
         $atualizou = false;
 
+        \Log::info("DEBUG RECURSOS: Base {$base->id} tem " . $base->edificios->count() . " edifícios carregados.");
+
         foreach ($tiposLink as $res => $edificioTipo) {
-            $edificio = $base->edificios()->where('tipo', $edificioTipo)->first();
+            // Usar a coleção carregada em vez de nova query para garantir consistência
+            $edificio = $base->edificios->where('tipo', $edificioTipo)->first();
             $nivel = $edificio ? $edificio->nivel : 0;
             $baseProd = $config['production'][$res] ?? 10;
             
@@ -194,6 +197,9 @@ class GameService
             $porSegundo = $porHora / 3600;
             
             $ganho = $porSegundo * $segundos;
+            
+            \Log::info("  - $res: Lvl $nivel, Prod/h $porHora, Ganho $ganho");
+
             if ($ganho > 0.0001) {
                 $ganhos[$res] = $ganho;
                 $atualizou = true;
