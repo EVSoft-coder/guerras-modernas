@@ -202,15 +202,16 @@ class GameService
 
         if ($atualizou) {
             // Usar DB direto para garantir persistência e evitar cache de modelo
+            // Importante: Forçar ponto decimal no SQL para compatibilidade com qualquer locale (ex: transformar 0,55 em 0.55)
             \Illuminate\Support\Facades\DB::table('recursos')
                 ->where('id', $recursos->id)
-                ->update(array_merge($ganhos, [
-                    'suprimentos' => \Illuminate\Support\Facades\DB::raw('suprimentos + ' . ($ganhos['suprimentos'] ?? 0)),
-                    'combustivel' => \Illuminate\Support\Facades\DB::raw('combustivel + ' . ($ganhos['combustivel'] ?? 0)),
-                    'municoes'    => \Illuminate\Support\Facades\DB::raw('municoes + ' . ($ganhos['municoes'] ?? 0)),
-                    'pessoal'     => \Illuminate\Support\Facades\DB::raw('pessoal + ' . ($ganhos['pessoal'] ?? 0)),
+                ->update([
+                    'suprimentos' => \Illuminate\Support\Facades\DB::raw('suprimentos + ' . number_format($ganhos['suprimentos'] ?? 0, 8, '.', '')),
+                    'combustivel' => \Illuminate\Support\Facades\DB::raw('combustivel + ' . number_format($ganhos['combustivel'] ?? 0, 8, '.', '')),
+                    'municoes'    => \Illuminate\Support\Facades\DB::raw('municoes + ' . number_format($ganhos['municoes'] ?? 0, 8, '.', '')),
+                    'pessoal'     => \Illuminate\Support\Facades\DB::raw('pessoal + ' . number_format($ganhos['pessoal'] ?? 0, 8, '.', '')),
                     'updated_at'  => $agora
-                ]));
+                ]);
             
             // Log para debug em produção
             \Log::info("Recursos atualizados para Base {$base->id}: +" . json_encode($ganhos) . " em {$segundos}s");

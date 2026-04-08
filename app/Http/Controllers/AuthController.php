@@ -114,8 +114,15 @@ class AuthController extends Controller
             
             // Obter taxas de produção p/min
             $taxas = $gameService->obterTaxasProducao($base);
+            
+            // Obter taxas p/segundo para o ticker do frontend
+            $taxasPerSecond = [];
+            foreach($taxas as $res => $minRate) {
+                $taxasPerSecond[$res] = $minRate / 60;
+            }
         } else {
             $taxas = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 'pessoal' => 0];
+            $taxasPerSecond = $taxas;
         }
 
         // Buscar últimos relatórios envolvidos
@@ -129,6 +136,6 @@ class AuthController extends Controller
             ->take(10)
             ->get();
 
-        return view('dashboard', compact('jogador', 'base', 'bases', 'relatorios', 'relatoriosGlobal', 'taxas'));
+        return view('dashboard', compact('jogador', 'base', 'bases', 'relatorios', 'relatoriosGlobal', 'taxas', 'taxasPerSecond'));
     }
 }

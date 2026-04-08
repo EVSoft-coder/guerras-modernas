@@ -15,7 +15,10 @@
             <a class="navbar-brand fw-bold" href="/">Guerras Modernas</a>
             
             @if (Auth::check())
-                <div class="navbar-nav ms-auto">
+                <div class="navbar-nav ms-auto align-items-center">
+                    <span class="nav-item me-3 text-info font-monospace x-small fw-bold border border-info/30 px-2 py-1 rounded bg-info/10" id="server-clock">
+                        {{ now()->format('H:i:s') }}
+                    </span>
                     <span class="nav-link">Olá, {{ Auth::user()->username }}</span>
                     <a class="nav-link {{ Route::is('dashboard') ? 'active fw-bold' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
                     <a class="nav-link {{ Route::is('mapa') ? 'active fw-bold' : '' }}" href="{{ route('mapa') }}">Mapa Tático</a>
@@ -40,5 +43,16 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Relógio do Servidor Global
+        let serverTime = new Date("{{ now()->toIso8601String() }}");
+        const clockEl = document.getElementById('server-clock');
+        if (clockEl) {
+            setInterval(() => {
+                serverTime.setSeconds(serverTime.getSeconds() + 1);
+                clockEl.innerText = serverTime.toLocaleTimeString('pt-PT', { hour12: false });
+            }, 1000);
+        }
+    </script>
 </body>
 </html>

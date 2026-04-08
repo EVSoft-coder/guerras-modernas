@@ -392,6 +392,31 @@
 </style>
 
 <script>
+    // Estado inicial dos recursos (Tribal Wars style ticker)
+    let currentRes = {
+        suprimentos: {{ $base->recursos->suprimentos }},
+        combustivel: {{ $base->recursos->combustivel }},
+        municoes: {{ $base->recursos->municoes }},
+        pessoal: {{ $base->recursos->pessoal }}
+    };
+
+    const productionRates = {
+        suprimentos: {{ $taxasPerSecond['suprimentos'] }},
+        combustivel: {{ $taxasPerSecond['combustivel'] }},
+        municoes: {{ $taxasPerSecond['municoes'] }},
+        pessoal: {{ $taxasPerSecond['pessoal'] }}
+    };
+
+    function tickResources() {
+        for (const res in productionRates) {
+            currentRes[res] += (productionRates[res] / 10);
+        }
+        updateHUDResources(currentRes);
+    }
+
+    // Intervalo de 100ms para suavidade
+    setInterval(tickResources, 100);
+
     // SISTEMA DE CONTAGEM REGRESSIVA + ALERTAS SONOROS
     function initCountdowns() {
         setInterval(() => {
