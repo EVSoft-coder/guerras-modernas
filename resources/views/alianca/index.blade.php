@@ -185,6 +185,48 @@
 </style>
 
 <script>
+    let lastMessageId = {{ $mensagens->last() ? $mensagens->last()->id : 0 }};
+
+    function pollMessages() {
+        fetch(`{{ route('alianca.chat.buscar') }}?last_id=${lastMessageId}`)
+            .then(r => r.json())
+            .then(messages => {
+                if (messages.length > 0) {
+                    const feed = document.getElementById('chatFeed');
+                    messages.forEach(msg => {
+                        const isMe = msg.jogador_id == {{ Auth::id() }};
+                        const row = document.createElement('div');
+                        row.className = `mb-4 d-flex ${isMe ? 'justify-content-end' : 'justify-content-start'}`;
+                        row.innerHTML = `
+                            <div class="p-3 rounded-4 shadow-sm border ${isMe ? 'bg-info/10 border-info/30 text-end' : 'bg-white/5 border-white/10'}" style="max-width: 70%;">
+                                <div class="d-flex justify-content-between align-items-center mb-1 gap-3">
+                                    <small class="fw-black text-info text-uppercase ls-1" style="font-size: 0.65rem;">${msg.jogador}</small>
+                                    <small class="text-muted" style="font-size: 0.6rem;">${msg.data}</small>
+                                </div>
+                                <div class="text-white fs-6">${msg.mensagem}</div>
+                            </div>
+                        `;
+                        feed.appendChild(row);
+                        lastMessageId = msg.id;
+                        
+                        // Play sound if not me?
+                        if (!isMe) {
+                            playChatSound();
+                        }
+                    });
+                    feed.scrollTop = feed.scrollHeight;
+                }
+            });
+    }
+
+    function playChatSound() {
+        const audio = new Audio('https://www.soundjay.com/communication/beep-07.mp3');
+        audio.volume = 0.2;
+        audio.play().catch(e => console.log('Audio block by browser'));
+    }
+
+    setInterval(pollMessages, 3000);
+
     document.addEventListener('DOMContentLoaded', () => {
         const feed = document.getElementById('chatFeed');
         feed.scrollTop = feed.scrollHeight; // Scroll até ao fundo
@@ -193,7 +235,7 @@
     document.getElementById('chatForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const input = document.getElementById('chatInput');
-        const msg = input.value;
+        const msg = input.value.trim();
         if(!msg) return;
 
         const btn = this.querySelector('button');
@@ -210,21 +252,9 @@
         .then(r => r.json())
         .then(data => {
             if(data.success) {
-                const feed = document.getElementById('chatFeed');
-                const row = document.createElement('div');
-                row.className = 'mb-4 d-flex justify-content-end';
-                row.innerHTML = `
-                    <div class="p-3 rounded-4 shadow-sm border bg-info/10 border-info/30 text-end" style="max-width: 70%;">
-                        <div class="d-flex justify-content-between align-items-center mb-1 gap-3">
-                            <small class="fw-black text-info text-uppercase ls-1" style="font-size: 0.65rem;">${data.jogador}</small>
-                            <small class="text-muted" style="font-size: 0.6rem;">${data.data}</small>
-                        </div>
-                        <div class="text-white fs-6">${data.mensagem}</div>
-                    </div>
-                `;
-                feed.appendChild(row);
+                // Polling will catch it, or we append immediately
                 input.value = '';
-                feed.scrollTop = feed.scrollHeight;
+                pollMessages(); 
             }
         })
         .finally(() => {

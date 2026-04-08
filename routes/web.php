@@ -61,6 +61,10 @@ Route::post('/alianca/chat', [App\Http\Controllers\ChatController::class, 'envia
     ->middleware('auth')
     ->name('alianca.chat.enviar');
 
+Route::get('/alianca/chat/buscar', [App\Http\Controllers\ChatController::class, 'buscar'])
+    ->middleware('auth')
+    ->name('alianca.chat.buscar');
+
 Route::post('/upgrade', [BaseController::class, 'upgrade'])
     ->middleware('auth')
     ->name('base.upgrade');

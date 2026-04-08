@@ -29,9 +29,34 @@ class ChatController extends Controller
 
         return response()->json([
             'success' => true,
-            'jogador' => $jogador->name,
+            'jogador' => $jogador->username ?? $jogador->name,
             'data' => $msg->created_at->format('H:i'),
             'mensagem' => $msg->mensagem
         ]);
+    }
+
+    public function buscar(Request $request)
+    {
+        $jogador = Jogador::find(Auth::id());
+        if (!$jogador->alianca_id) return response()->json([]);
+
+        $lastId = $request->query('last_id', 0);
+        
+        $mensagens = MensagemAlianca::with('jogador')
+            ->where('alianca_id', $jogador->alianca_id)
+            ->where('id', '>', $lastId)
+            ->oldest()
+            ->get()
+            ->map(function($msg) {
+                return [
+                    'id' => $msg->id,
+                    'jogador' => $msg->jogador->username ?? $msg->jogador->name,
+                    'jogador_id' => $msg->jogador_id,
+                    'mensagem' => $msg->mensagem,
+                    'data' => $msg->created_at->format('H:i')
+                ];
+            });
+
+        return response()->json($mensagens);
     }
 }

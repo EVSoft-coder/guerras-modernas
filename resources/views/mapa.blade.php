@@ -15,25 +15,34 @@
         <div class="tactical-map-container shadow-2xl rounded-4 overflow-hidden border border-white/5 p-4" 
              style="background: #020617;">
             
-            <div class="map-grid" style="display: grid; grid-template-columns: repeat(13, 45px); gap: 2px;">
+            <div class="map-grid position-relative" style="display: grid; grid-template-columns: repeat(13, 45px); gap: 2px;">
+                <div class="scanner-line" style="animation-duration: 3s; opacity: 0.2;"></div>
                 @for ($iy = $y - 6; $iy <= $y + 6; $iy++)
                     @for ($ix = $x - 6; $ix <= $x + 6; $ix++)
                         @php 
                             $baseAqui = $bases->where('coordenada_x', $ix)->where('coordenada_y', $iy)->first(); 
+                            $aliancaId = Auth::user()->alianca_id;
+                            $tipoIcone = 'enemy';
+                            if ($baseAqui) {
+                                if ($baseAqui->jogador_id == Auth::id()) $tipoIcone = 'owner';
+                                elseif ($aliancaId && $baseAqui->jogador->alianca_id == $aliancaId) $tipoIcone = 'ally';
+                            }
                         @endphp
                         
                         <div class="map-tile d-flex align-items-center justify-content-center position-relative" 
                              style="width: 45px; height: 45px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.03);"
-                             title="({{ $ix }}, {{ $iy }}) {{ $baseAqui ? $baseAqui->nome : 'Vazio' }}">
+                             title="({{ $ix }}, {{ $iy }}) {{ $baseAqui ? $baseAqui->nome : 'Setor Vazio' }}">
                             
                             @if ($baseAqui)
-                                <div class="base-icon {{ $baseAqui->jogador_id == Auth::id() ? 'owner' : 'enemy' }}"
+                                <div class="base-icon {{ $tipoIcone }}"
                                      data-bs-toggle="popover" 
-                                     data-bs-title="{{ $baseAqui->nome }}"
-                                     data-bs-content="Dono: {{ $baseAqui->jogador->username }}<br>QG Nível: {{ $baseAqui->qg_nivel }}<br><a href='{{ route('dashboard') }}?target={{ $baseAqui->id }}' class='btn btn-sm btn-danger mt-2'>Atacar</a>"
+                                     data-bs-title="{{ $baseAqui->nome }} [{{ $baseAqui->jogador->alianca->tag ?? 'S/A' }}]"
+                                     data-bs-content="Comandante: {{ $baseAqui->jogador->username }}<br>Nível Base: {{ $baseAqui->qg_nivel }}<br><a href='{{ route('dashboard') }}?target={{ $baseAqui->id }}' class='btn btn-sm btn-danger mt-2 w-100 fw-bold'>ORDENS DE ATAQUE</a>"
                                      data-bs-html="true">
-                                    @if ($baseAqui->jogador_id == Auth::id())
+                                    @if ($tipoIcone == 'owner')
                                         <i class="bi bi-shield-fill text-info"></i>
+                                    @elseif ($tipoIcone == 'ally')
+                                        <i class="bi bi-shield-shaded text-primary"></i>
                                     @else
                                         <i class="bi bi-house-door-fill text-danger"></i>
                                     @endif
@@ -42,7 +51,6 @@
                                 <span class="small text-white/5" style="font-size: 8px;">.</span>
                             @endif
 
-                            <!-- Radar deco -->
                             <div class="tile-coords-label">{{ $ix }},{{ $iy }}</div>
                         </div>
                     @endfor
@@ -92,6 +100,7 @@
     .base-icon { transition: transform 0.2s; cursor: pointer; font-size: 20px; }
     .base-icon:hover { transform: scale(1.3); }
     .base-icon.owner { filter: drop-shadow(0 0 5px #0ea5e9); }
+    .base-icon.ally { filter: drop-shadow(0 0 5px #3b82f6); }
     .base-icon.enemy { filter: drop-shadow(0 0 5px #ef4444); }
     
     .blink { animation: blink-animation 2s steps(5, start) infinite; -webkit-animation: blink-animation 2s steps(5, start) infinite; }

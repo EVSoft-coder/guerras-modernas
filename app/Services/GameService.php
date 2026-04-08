@@ -146,4 +146,74 @@ class GameService
             $treino->delete();
         }
     }
+
+    /**
+     * Motor de Produção: Atualiza os recursos da base com base no tempo decorrido.
+     */
+    public function atualizarRecursos(Base $base)
+    {
+        $recursos = $base->recursos;
+        $agora = now();
+        $ultimaAtualizacao = $recursos->updated_at;
+        
+        $segundos = $agora->diffInSeconds($ultimaAtualizacao);
+        if ($segundos <= 0) return;
+
+        $config = config('game');
+        $speed = $config['speed']['resources'] ?? 1;
+        $scaling = $config['scaling'] ?? 1.5;
+        
+        $tiposLink = [
+            'suprimentos' => 'mina_suprimentos',
+            'combustivel' => 'refinaria',
+            'municoes' => 'fabrica_municoes',
+            'pessoal' => 'posto_recrutamento'
+        ];
+
+        foreach ($tiposLink as $res => $edificioTipo) {
+            $nivel = $base->edificios()->where('tipo', $edificioTipo)->first()?->nivel ?? 0;
+            $baseProd = $config['production'][$res] ?? 10;
+            
+            // Formula: (BasePerHour * Speed) * (1 + Level * Scaling)
+            $porHora = ($baseProd * $speed) * (1 + ($nivel * $scaling));
+            $porSegundo = $porHora / 3600;
+            
+            $ganho = $porSegundo * $segundos;
+            if ($ganho > 0) {
+                $recursos->increment($res, floor($ganho));
+            }
+        }
+
+        // Forçar atualização do timestamp para evitar recalcular o mesmo período
+        $recursos->touch();
+    }
+
+    /**
+     * Calcula as taxas de produção atuais por minuto para a base.
+     */
+    public function obterTaxasProducao(Base $base)
+    {
+        $config = config('game');
+        $speed = $config['speed']['resources'] ?? 1;
+        $scaling = $config['scaling'] ?? 1.5;
+        
+        $tiposLink = [
+            'suprimentos' => 'mina_suprimentos',
+            'combustivel' => 'refinaria',
+            'municoes' => 'fabrica_municoes',
+            'pessoal' => 'posto_recrutamento'
+        ];
+
+        $taxas = [];
+        foreach ($tiposLink as $res => $edificioTipo) {
+            $nivel = $base->edificios()->where('tipo', $edificioTipo)->first()?->nivel ?? 0;
+            $baseProd = $config['production'][$res] ?? 10;
+            
+            // Formula: (BasePerHour * Speed) * (1 + Level * Scaling)
+            $porHora = ($baseProd * $speed) * (1 + ($nivel * $scaling));
+            $taxas[$res] = floor($porHora / 60);
+        }
+
+        return $taxas;
+    }
 }

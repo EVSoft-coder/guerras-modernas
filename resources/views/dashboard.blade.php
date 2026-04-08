@@ -8,27 +8,31 @@
             <div class="row g-4 text-center">
                 <div class="col-6 col-md-3 border-end border-white/10">
                     <div class="text-info small text-uppercase fw-bold mb-1 ls-1">📦 Suprimentos</div>
-                    <div class="res-value text-white d-flex align-items-center justify-content-center" id="res-suprimentos">
+                    <div class="res-value text-white d-flex align-items-center justify-content-center mb-0" id="res-suprimentos">
                         {{ number_format($base->recursos->suprimentos) }}
                     </div>
+                    <div class="x-small text-info opacity-80 fw-bold mt-1" id="rate-suprimentos">+{{ number_format($taxas['suprimentos']) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
                     <div class="text-warning small text-uppercase fw-bold mb-1 ls-1">⛽ Combustível</div>
-                    <div class="res-value text-warning d-flex align-items-center justify-content-center" id="res-combustivel">
+                    <div class="res-value text-warning d-flex align-items-center justify-content-center mb-0" id="res-combustivel">
                         {{ number_format($base->recursos->combustivel) }}
                     </div>
+                    <div class="x-small text-warning opacity-80 fw-bold mt-1" id="rate-combustivel">+{{ number_format($taxas['combustivel']) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
                     <div class="text-danger small text-uppercase fw-bold mb-1 ls-1">🚀 Munições</div>
-                    <div class="res-value text-danger d-flex align-items-center justify-content-center" id="res-municoes">
+                    <div class="res-value text-danger d-flex align-items-center justify-content-center mb-0" id="res-municoes">
                         {{ number_format($base->recursos->municoes) }}
                     </div>
+                    <div class="x-small text-danger opacity-80 fw-bold mt-1" id="rate-municoes">+{{ number_format($taxas['municoes']) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="text-success small text-uppercase fw-bold mb-1 ls-1">👥 Pessoal</div>
-                    <div class="res-value text-success d-flex align-items-center justify-content-center" id="res-pessoal">
+                    <div class="res-value text-success d-flex align-items-center justify-content-center mb-0" id="res-pessoal">
                         {{ number_format($base->recursos->pessoal) }}
                     </div>
+                    <div class="x-small text-success opacity-80 fw-bold mt-1" id="rate-pessoal">+{{ number_format($taxas['pessoal']) }} p/min</div>
                 </div>
             </div>
         </div>
@@ -36,7 +40,8 @@
 
     <!-- AREA VISUAL DA ALDEIA (VILLAGE VIEW LIKE TRIBAL WARS) -->
     <div class="col-12">
-        <div class="village-view shadow-2xl" style="background-image: url('{{ asset('images/base_view.png') }}');">
+        <div class="village-view shadow-2xl glint" style="background-image: url('{{ asset('images/base_view.png') }}');">
+            <div class="scanner-line"></div>
             <div class="village-overlay">
                 <div class="d-flex justify-content-between align-items-end">
                     <div>
@@ -113,8 +118,9 @@
         @endphp
 
         <div class="card glassmorphism border-danger/30 mb-4 h-auto">
-            <div class="card-header border-white/5 py-3">
+            <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 text-danger fw-bold"><i class="bi bi-broadcast"></i> Inteligência de Campanha</h6>
+                <span class="badge bg-danger/20 text-danger x-small border border-danger/30">OPERACIONAL</span>
             </div>
             <div class="card-body p-2">
                 @forelse($ataquesRecebidos as $atq)
@@ -141,6 +147,62 @@
                         <div class="x-small text-white/70 mt-1">Destino: Base Hostil ({{ $atq->tipo }})</div>
                     </div>
                 @endforeach
+            </div>
+        </div>
+
+        <!-- GLOBAL WAR FEED (TOP LEVEL FEATURE) -->
+        <div class="card glassmorphism border-info/20 mb-4 h-auto overflow-hidden">
+            <div class="card-header bg-info/5 border-bottom border-white/5 py-3">
+                <h6 class="mb-0 text-info fw-bold text-uppercase ls-1 x-small"><i class="bi bi-globe me-2"></i> Feed de Guerra Global</h6>
+            </div>
+            <div class="card-body p-0" id="globalFeed" style="max-height: 300px; overflow-y: auto;">
+                @forelse($relatoriosGlobal as $r)
+                    <div class="p-3 border-bottom border-white/5 bg-hover-white/5 transition-all">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="fw-bold text-white x-small">{{ $r->titulo }}</span>
+                            <span class="text-muted x-small" style="font-size: 0.6rem;">{{ $r->created_at->diffForHumans() }}</span>
+                        </div>
+                        <div class="text-muted x-small opacity-80">
+                            {{ $r->origem_nome }} <i class="bi bi-chevron-right mx-1"></i> {{ $r->destino_nome }}
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-4 text-center text-muted small py-5">
+                        <p class="mb-0">Aguardando comunicações de satélite...</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- ÚLTIMAS OPERAÇÕES (RELATÓRIOS PESSOAIS) -->
+        <div class="card glassmorphism border-white/10 mb-4 h-auto">
+            <div class="card-header border-white/5 py-3">
+                <h6 class="mb-0 text-white fw-bold x-small text-uppercase ls-1"><i class="bi bi-journal-text text-warning"></i> Histórico de Operações</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    @forelse($relatorios as $rel)
+                        <a href="{{ route('relatorio.show', $rel->id) }}" class="list-group-item list-group-item-action bg-transparent border-white/5 py-3 transition-all bg-hover-white/5">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-bold text-white x-small">{{ $rel->titulo }}</div>
+                                    <div class="text-muted" style="font-size: 0.6rem;">{{ $rel->created_at->format('d/m/Y H:i') }} | Op. #{{ $rel->id }}</div>
+                                </div>
+                                <div class="text-end">
+                                    @if($rel->vencedor_id == Auth::id())
+                                        <span class="badge bg-success/10 text-success border border-success/20 x-small px-2">VITÓRIA</span>
+                                    @else
+                                        <span class="badge bg-danger/10 text-danger border border-danger/20 x-small px-2">DERROTA</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </a>
+                    @empty
+                        <div class="p-4 text-center text-muted py-5" style="font-size: 0.65rem;">
+                            SEM OPERAÇÕES REGISTADAS
+                        </div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -330,7 +392,7 @@
 </style>
 
 <script>
-    // SISTEMA DE CONTAGEM REGRESSIVA
+    // SISTEMA DE CONTAGEM REGRESSIVA + ALERTAS SONOROS
     function initCountdowns() {
         setInterval(() => {
             document.querySelectorAll('.countdown').forEach(el => {
@@ -339,9 +401,13 @@
                 const diff = target - now;
 
                 if (diff <= 0) {
-                    el.innerHTML = '<span class="text-success">CONCLUÍDO</span>';
-                    el.classList.remove('countdown');
-                    setTimeout(() => location.reload(), 1500);
+                    if (!el.classList.contains('concluido')) {
+                        el.innerHTML = '<span class="text-success blink">CONFIRMADO</span>';
+                        el.classList.add('concluido');
+                        playSuccessSound();
+                        showToast('ORDENS CONCLUÍDAS: ' + (el.nextElementSibling ? el.nextElementSibling.innerText : 'Logística'), 'info');
+                        setTimeout(() => location.reload(), 3000);
+                    }
                     return;
                 }
 
@@ -350,6 +416,12 @@
                 el.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
             });
         }, 1000);
+    }
+
+    function playSuccessSound() {
+        const audio = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
+        audio.volume = 0.3;
+        audio.play().catch(e => {});
     }
     
     document.addEventListener('DOMContentLoaded', initCountdowns);

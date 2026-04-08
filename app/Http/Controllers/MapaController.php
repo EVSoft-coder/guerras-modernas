@@ -16,7 +16,7 @@ class MapaController extends Controller
         $y = $request->get('y', 500);
         $raio = 15; // Ver 30x30 tiles (raio 15)
 
-        $bases = Base::with('jogador')
+        $bases = Base::with('jogador.alianca')
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
             ->get();

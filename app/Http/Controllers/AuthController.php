@@ -105,12 +105,17 @@ class AuthController extends Controller
         if ($base) {
             $gameService = new GameService();
             // Atualizar Recursos e Fila de Construção/Treino (sempre atualiza ao ver)
-            $base->atualizarRecursos();
+            $gameService->atualizarRecursos($base);
             $gameService->processarFila($base);
             $base->refresh();
             
             // Guardar o ID selecionado na sessão para persistência
             session(['selected_base_id' => $base->id]);
+            
+            // Obter taxas de produção p/min
+            $taxas = $gameService->obterTaxasProducao($base);
+        } else {
+            $taxas = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 'pessoal' => 0];
         }
 
         // Buscar últimos relatórios envolvidos
@@ -120,6 +125,10 @@ class AuthController extends Controller
             ->take(8)
             ->get();
 
-        return view('dashboard', compact('jogador', 'base', 'bases', 'relatorios'));
+        $relatoriosGlobal = \App\Models\Relatorio::orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
+        return view('dashboard', compact('jogador', 'base', 'bases', 'relatorios', 'relatoriosGlobal', 'taxas'));
     }
 }
