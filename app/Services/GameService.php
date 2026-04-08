@@ -160,13 +160,14 @@ class GameService
         
         $segundos = $agora->diffInSeconds($ultimaAtualizacao, false);
         
-        // Se a última atualização está no futuro, o motor gela. Vamos forçar o reset.
-        if ($segundos < -5) { 
-            \Log::warning("TIME DRIFT: Base {$base->id} está no futuro. Forçando reset de tempo.");
+        // Se a última atualização está no futuro (ex: fuso horário desalinhado)
+        // Vamos apenas resetar o timestamp para o presente e permitir que o motor rode no próximo pedido.
+        if ($segundos < -1) { 
+            \Log::warning("TIME DRIFT: Base {$base->id} está no futuro ({$segundos}s). Sincronizando relógio.");
             \Illuminate\Support\Facades\DB::table('recursos')
-                ->where('id', $recursos->id)
+                ->where('base_id', $base->id)
                 ->update(['updated_at' => $agora]);
-            return;
+            $segundos = 0; // Impede ganho negativo neste pedido
         }
 
         $debug = "Base: {$base->id} | Agora: {$agora->format('H:i:s')} | Ultima: {$ultimaAtualizacao->format('H:i:s')} | Diff: {$segundos}s";
