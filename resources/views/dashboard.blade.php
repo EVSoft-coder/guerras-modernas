@@ -9,28 +9,28 @@
                 <div class="col-6 col-md-3 border-end border-white/10">
                     <div class="text-info small text-uppercase fw-bold mb-1 ls-1">📦 Suprimentos</div>
                     <div class="res-value text-white d-flex align-items-center justify-content-center mb-0" id="res-suprimentos">
-                        {{ number_format($base->recursos->suprimentos) }}
+                        {{ number_format(floor($base->recursos->suprimentos)) }}
                     </div>
                     <div class="x-small text-info opacity-80 fw-bold mt-1" id="rate-suprimentos">+{{ number_format($taxas['suprimentos']) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
                     <div class="text-warning small text-uppercase fw-bold mb-1 ls-1">⛽ Combustível</div>
                     <div class="res-value text-warning d-flex align-items-center justify-content-center mb-0" id="res-combustivel">
-                        {{ number_format($base->recursos->combustivel) }}
+                        {{ number_format(floor($base->recursos->combustivel)) }}
                     </div>
                     <div class="x-small text-warning opacity-80 fw-bold mt-1" id="rate-combustivel">+{{ number_format($taxas['combustivel']) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
                     <div class="text-danger small text-uppercase fw-bold mb-1 ls-1">🚀 Munições</div>
                     <div class="res-value text-danger d-flex align-items-center justify-content-center mb-0" id="res-municoes">
-                        {{ number_format($base->recursos->municoes) }}
+                        {{ number_format(floor($base->recursos->municoes)) }}
                     </div>
                     <div class="x-small text-danger opacity-80 fw-bold mt-1" id="rate-municoes">+{{ number_format($taxas['municoes']) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="text-success small text-uppercase fw-bold mb-1 ls-1">👥 Pessoal</div>
                     <div class="res-value text-success d-flex align-items-center justify-content-center mb-0" id="res-pessoal">
-                        {{ number_format($base->recursos->pessoal) }}
+                        {{ number_format(floor($base->recursos->pessoal)) }}
                     </div>
                     <div class="x-small text-success opacity-80 fw-bold mt-1" id="rate-pessoal">+{{ number_format($taxas['pessoal']) }} p/min</div>
                 </div>
@@ -448,10 +448,10 @@
     }
 
     function updateHUDResources(res) {
-        document.getElementById('res-suprimentos').innerText = Number(res.suprimentos).toLocaleString();
-        document.getElementById('res-combustivel').innerText = Number(res.combustivel).toLocaleString();
-        document.getElementById('res-municoes').innerText = Number(res.municoes).toLocaleString();
-        document.getElementById('res-pessoal').innerText = Number(res.pessoal).toLocaleString();
+        document.getElementById('res-suprimentos').innerText = Math.floor(res.suprimentos).toLocaleString();
+        document.getElementById('res-combustivel').innerText = Math.floor(res.combustivel).toLocaleString();
+        document.getElementById('res-municoes').innerText = Math.floor(res.municoes).toLocaleString();
+        document.getElementById('res-pessoal').innerText = Math.floor(res.pessoal).toLocaleString();
     }
 
     // INTERCEPTOR AJAX PARA ORDENS RÁPIDAS

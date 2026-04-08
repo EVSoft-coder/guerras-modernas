@@ -153,8 +153,10 @@ class GameService
     public function atualizarRecursos(Base $base)
     {
         $recursos = $base->recursos;
+        if (!$recursos) return;
+
         $agora = now();
-        $ultimaAtualizacao = $recursos->updated_at;
+        $ultimaAtualizacao = $recursos->updated_at ?? $base->created_at;
         
         $segundos = $agora->diffInSeconds($ultimaAtualizacao);
         if ($segundos <= 0) return;
@@ -170,6 +172,7 @@ class GameService
             'pessoal' => 'posto_recrutamento'
         ];
 
+        $atualizou = false;
         foreach ($tiposLink as $res => $edificioTipo) {
             $nivel = $base->edificios()->where('tipo', $edificioTipo)->first()?->nivel ?? 0;
             $baseProd = $config['production'][$res] ?? 10;
@@ -179,13 +182,16 @@ class GameService
             $porSegundo = $porHora / 3600;
             
             $ganho = $porSegundo * $segundos;
-            if ($ganho > 0) {
-                $recursos->increment($res, floor($ganho));
+            if ($ganho > 0.0001) {
+                $recursos->increment($res, $ganho);
+                $atualizou = true;
             }
         }
 
-        // Forçar atualização do timestamp para evitar recalcular o mesmo período
-        $recursos->touch();
+        // Apenas atualizar o timestamp se realmente processamos algum tempo relevante
+        if ($atualizou) {
+            $recursos->touch();
+        }
     }
 
     /**
