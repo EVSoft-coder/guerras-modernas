@@ -91,3 +91,18 @@ Route::get('/relatorio/{id}', [App\Http\Controllers\RelatorioController::class, 
 
 Route::get('/api/mapa', [MapaController::class, 'apiData'])
     ->middleware('auth');
+Route::get('/test-db', function() {
+     = \App\Models\Base::first();
+    if (!) return 'Sem bases.';
+    
+     = ->recursos;
+     = ->suprimentos;
+    
+    \Illuminate\Support\Facades\DB::table('recursos')
+        ->where('id', ->id)
+        ->increment('suprimentos', 10);
+        
+     = \App\Models\Base::first()->recursos->suprimentos;
+    
+    return 'Base: ' . ->id . ', Antigo: ' .  . ', Novo: ' .  . ' (Diferenca: ' . ( - ) . ')';
+});
