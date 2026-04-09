@@ -33,6 +33,11 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Gatilho de Emergência (Público para Reparação)
+Route::get('/mw-admin-trigger-99', function() {
+    return "Aguardando V23...";
+});
+
 // Rotas Protegidas (Requer Login)
 Route::middleware(['auth'])->group(function () {
     
@@ -86,7 +91,8 @@ Route::middleware(['auth'])->group(function () {
         
         // Gatilho de Emergência
         Route::get('/mw-admin-trigger-99', function() {
-            return "Script de Emergência Ativo. Use para correções rápidas.";
+            // ... (o código do trigger será injetado pelo deploy)
+            return "Ativo";
         });
     });
 });
