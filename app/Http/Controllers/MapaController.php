@@ -12,10 +12,15 @@ class MapaController extends Controller
      */
     public function index(Request $request)
     {
-        $x = $request->get('x', 500);
-        $y = $request->get('y', 500);
-        $raio = 15; // Ver 30x30 tiles (raio 15)
+        $x = (int) $request->get('x', 500);
+        $y = (int) $request->get('y', 500);
+        
+        // Impedir coordenadas fora do mundo (0-1000)
+        $x = max(0, min(1000, $x));
+        $y = max(0, min(1000, $y));
 
+        $raio = 6; // Ver total de 13x13 (raio 6 central)
+        
         $bases = Base::with('jogador.alianca')
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])

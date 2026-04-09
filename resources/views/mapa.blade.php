@@ -10,13 +10,26 @@
         </div>
     </div>
 
-    <!-- MAPA GRID -->
+    <!-- MAPA GRID E NAVEGAÇÃO -->
     <div class="col-auto">
-        <div class="tactical-map-container shadow-2xl rounded-4 overflow-hidden border border-white/5 p-4" 
-             style="background: #020617;">
+        <div class="tactical-map-outer d-flex flex-column align-items-center">
             
-            <div class="map-grid position-relative" style="display: grid; grid-template-columns: repeat(13, 45px); gap: 2px;">
-                <div class="scanner-line" style="animation-duration: 3s; opacity: 0.2;"></div>
+            <!-- NORTE -->
+            <a href="{{ route('mapa', ['x' => $x, 'y' => $y - 10]) }}" class="btn btn-outline-info btn-xs mb-2 rounded-pill px-4 fw-black">
+                <i class="bi bi-chevron-double-up me-2"></i> NORTE
+            </a>
+
+            <div class="d-flex align-items-center gap-2">
+                <!-- OESTE -->
+                <a href="{{ route('mapa', ['x' => $x - 10, 'y' => $y]) }}" class="btn btn-outline-info btn-xs rounded-pill p-2">
+                    <i class="bi bi-chevron-double-left"></i>
+                </a>
+
+                <div class="tactical-map-container shadow-2xl rounded-4 overflow-hidden border border-white/5 p-4" 
+                     style="background: #020617; box-shadow: 0 0 50px rgba(14, 165, 233, 0.1);">
+                    
+                    <div class="map-grid position-relative" style="display: grid; grid-template-columns: repeat(13, 45px); gap: 2px;">
+                        <div class="scanner-sweep"></div>
                 @for ($iy = $y - 6; $iy <= $y + 6; $iy++)
                     @for ($ix = $x - 6; $ix <= $x + 6; $ix++)
                         @php 
@@ -55,7 +68,16 @@
                         </div>
                     @endfor
                 @endfor
+                <!-- ESTE -->
+                <a href="{{ route('mapa', ['x' => $x + 10, 'y' => $y]) }}" class="btn btn-outline-info btn-xs rounded-pill p-2">
+                    <i class="bi bi-chevron-double-right"></i>
+                </a>
             </div>
+
+            <!-- SUL -->
+            <a href="{{ route('mapa', ['x' => $x, 'y' => $y + 10]) }}" class="btn btn-outline-info btn-xs mt-2 rounded-pill px-4 fw-black">
+                <i class="bi bi-chevron-double-down me-2"></i> SUL
+            </a>
         </div>
     </div>
 
@@ -63,18 +85,18 @@
     <div class="col-md-3">
         <div class="card bg-dark/50 border-white/5 rounded-4 shadow-sm h-100">
             <div class="card-body">
-                <h6 class="text-uppercase small text-muted mb-3">Legenda Operativa</h6>
+                <h6 class="text-uppercase small text-muted mb-3 italic">Assinaturas de Radar</h6>
                 <div class="d-flex align-items-center mb-3">
-                    <div class="tile-sample me-3 bg-info rounded-1" style="width: 20px; height: 20px;"></div>
-                    <span>Tua Jurisdição</span>
+                    <div class="tile-sample me-3 rounded-1 shadow-sm" style="width: 20px; height: 20px; background-color: #0ea5e9;"></div>
+                    <span class="small fw-bold">Tua Jurisdição</span>
                 </div>
                 <div class="d-flex align-items-center mb-3">
-                    <div class="tile-sample me-3 bg-danger rounded-1" style="width: 20px; height: 20px;"></div>
-                    <span>Forças Hostis</span>
+                    <div class="tile-sample me-3 rounded-1 shadow-sm" style="width: 20px; height: 20px; background-color: #3b82f6;"></div>
+                    <span class="small fw-bold">Aliados / Coligação</span>
                 </div>
                 <div class="d-flex align-items-center mb-4">
-                    <div class="tile-sample me-3 bg-dark border border-white/10 rounded-1" style="width: 20px; height: 20px;"></div>
-                    <span>Terreno Neutro</span>
+                    <div class="tile-sample me-3 rounded-1 shadow-sm" style="width: 20px; height: 20px; background-color: #ef4444;"></div>
+                    <span class="small fw-bold">Forças Hostis</span>
                 </div>
                 
                 <hr class="border-white/5">
@@ -95,16 +117,38 @@
 </div>
 
 <style>
-    .map-tile:hover { background: rgba(56, 189, 248, 0.1) !important; cursor: crosshair; }
-    .tile-coords-label { position: absolute; font-size: 6px; bottom: 2px; right: 2px; color: rgba(255,255,255,0.05); }
-    .base-icon { transition: transform 0.2s; cursor: pointer; font-size: 20px; }
-    .base-icon:hover { transform: scale(1.3); }
-    .base-icon.owner { filter: drop-shadow(0 0 5px #0ea5e9); }
-    .base-icon.ally { filter: drop-shadow(0 0 5px #3b82f6); }
-    .base-icon.enemy { filter: drop-shadow(0 0 5px #ef4444); }
+    .map-tile { transition: background 0.1s; }
+    .map-tile:hover { background: rgba(56, 189, 248, 0.15) !important; cursor: crosshair; }
+    .tile-coords-label { position: absolute; font-size: 6px; bottom: 2px; right: 2px; color: rgba(255,255,255,0.08); font-family: 'JetBrains Mono', monospace; }
     
-    .blink { animation: blink-animation 2s steps(5, start) infinite; -webkit-animation: blink-animation 2s steps(5, start) infinite; }
+    .base-icon { transition: all 0.2s; cursor: pointer; font-size: 20px; z-index: 5; }
+    .base-icon:hover { transform: scale(1.4) rotate(5deg); }
+    .base-icon.owner { color: #0ea5e9; filter: drop-shadow(0 0 8px #0ea5e9); }
+    .base-icon.ally { color: #3b82f6; filter: drop-shadow(0 0 8px #3b82f6); }
+    .base-icon.enemy { color: #ef4444; filter: drop-shadow(0 0 8px #ef4444); }
+    
+    .scanner-sweep {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, #0ea5e9, transparent);
+        box-shadow: 0 0 15px #0ea5e9;
+        opacity: 0.3;
+        z-index: 10;
+        animation: scan 4s linear infinite;
+    }
+    
+    @keyframes scan {
+        0% { top: 0; }
+        100% { top: 100%; }
+    }
+
+    .blink { animation: blink-animation 2s steps(5, start) infinite; }
     @keyframes blink-animation { to { visibility: hidden; } }
+    
+    .popover { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(14, 165, 233, 0.3); backdrop-filter: blur(10px); color: white; }
+    .popover-header { background: rgba(14, 165, 233, 0.1); border-bottom: 1px solid rgba(14, 165, 233, 0.2); color: #0ea5e9; font-weight: 900; text-transform: uppercase; }
+    .popover-body { color: rgba(255,255,255,0.8); }
 </style>
 
 <script>
