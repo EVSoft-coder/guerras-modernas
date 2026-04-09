@@ -108,6 +108,12 @@ class BaseController extends Controller
         $distancia = sqrt(pow($destino->coordenada_x - $origem->coordenada_x, 2) + pow($destino->coordenada_y - $origem->coordenada_y, 2));
         
         $speed = config('game.speed.travel', 1);
+        
+        // APLICAR TECH: Logística Avançada (+10% velocidade por nível)
+        $nivelLogistica = Auth::user()->obterNivelTech('logistica');
+        $multiplicadorVel = 1 + ($nivelLogistica * 0.10);
+        $speed *= $multiplicadorVel;
+
         $segundos = ($distancia * 100) / $speed; // Ajuste para Speed Mode
         $chegadaEm = now()->addSeconds($segundos);
 

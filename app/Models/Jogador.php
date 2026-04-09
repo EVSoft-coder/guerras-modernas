@@ -23,6 +23,23 @@ class Jogador extends Authenticatable
         'remember_token',
     ];
 
+    public function pesquisas()
+    {
+        return $this->hasMany(Pesquisa::class);
+    }
+
+    /**
+     * Obtém o nível atual de uma tecnologia terminada.
+     */
+    public function obterNivelTech($tipo)
+    {
+        return $this->pesquisas()
+            ->where('tipo', $tipo)
+            ->where('completado_em', '<=', now())
+            ->orderBy('nivel', 'desc')
+            ->first()?->nivel ?? 0;
+    }
+
     public function bases()
     {
         return $this->hasMany(Base::class);

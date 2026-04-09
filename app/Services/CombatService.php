@@ -22,9 +22,16 @@ class CombatService
         
         // 1. Calcular Poder Total Atacante
         $poderAtacante = 0;
-        foreach ($unidadesAtacantes as $unidade => $quantidade) {
-            $conf = config("game.units.{$unidade}");
-            $poderAtacante += $conf['attack'] * $quantidade;
+        foreach ($unidadesAtacantes as $unidade => $qtd) {
+            $poderAtacante += ($qtd * (config("game.units.{$unidade}.attack") ?? 0));
+        }
+
+        // APLICAR TECH: Sistemas de Pontaria (+5% por nível)
+        $jogadorAtacante = \App\Models\Jogador::find($atacanteId);
+        if ($jogadorAtacante) {
+            $nivelPontaria = $jogadorAtacante->obterNivelTech('pontaria');
+            $multiplicadorAtq = 1 + ($nivelPontaria * 0.05);
+            $poderAtacante *= $multiplicadorAtq;
         }
 
         // 2. Calcular Poder Total Defensor
@@ -33,6 +40,14 @@ class CombatService
         foreach ($unidadesDefensoras as $tropa) {
             $conf = config("game.units.{$tropa->unidade}");
             $poderDefensorGeneral += $conf['defense_general'] * $tropa->quantidade;
+        }
+
+        // APLICAR TECH: Blindagem Reativa (+5% por nível)
+        $jogadorDefensor = $baseDefensora->jogador;
+        if ($jogadorDefensor) {
+            $nivelBlindagem = $jogadorDefensor->obterNivelTech('blindagem');
+            $multiplicadorDef = 1 + ($nivelBlindagem * 0.05);
+            $poderDefensorGeneral *= $multiplicadorDef;
         }
 
         // Bónus de Muralha: cada nível dá 5% de bónus

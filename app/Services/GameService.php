@@ -82,7 +82,12 @@ class GameService
         
         // CÁLCULO DE CAPACIDADE DE PESSOAL (POPULAÇÃO)
         $nivelRecrutamento = $base->edificios()->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0;
-        $capacidadeTotal = (100 * ($nivelRecrutamento + 1)) * 1.5; // Ex: Lvl 0 = 150, Lvl 1 = 300, etc.
+        $capacidadeBase = (100 * ($nivelRecrutamento + 1)) * 1.5; // Ex: Lvl 0 = 150, Lvl 1 = 300, etc.
+
+        // APLICAR TECH: Logística Avançada (+10% capacidade por nível)
+        $nivelLogistica = $base->jogador->obterNivelTech('logistica');
+        $multiplicadorCap = 1 + ($nivelLogistica * 0.10);
+        $capacidadeTotal = $capacidadeBase * $multiplicadorCap;
         
         $pessoalOcupado = 0;
         $tropasAtuais = $base->tropas;
@@ -111,6 +116,56 @@ class GameService
         return $base->treinos()->create([
             'unidade' => $unidade,
             'quantidade' => $quantidade,
+            'completado_em' => $completadoEm,
+        ]);
+    }
+
+    /**
+     * Inicia uma nova pesquisa tecnológica (Nível de Comando).
+     */
+    public function iniciarPesquisa(Base $base, $tipo)
+    {
+        $jogador = $base->jogador;
+        
+        // Verificar se Laboratório existe e nível
+        $laboratorio = $base->edificios()->where('tipo', 'centro_pesquisa')->first();
+        if (!$laboratorio || $laboratorio->nivel < 1) {
+            throw new \Exception("Necessita de um Centro de Pesquisa operacional (Nível 1) para iniciar I&D.");
+        }
+
+        // Verificar se já existe pesquisa em andamento para este JOGADOR
+        if (\App\Models\Pesquisa::where('jogador_id', $jogador->id)->where('completado_em', '>', now())->exists()) {
+            throw new \Exception("O seu departamento de I&D já está ocupado com outro projeto.");
+        }
+
+        $conf = config("game.research.{$tipo}");
+        if (!$conf) throw new \Exception("Tecnologia desconhecida ($tipo).");
+
+        $nivelAtual = \App\Models\Pesquisa::where('jogador_id', $jogador->id)->where('tipo', $tipo)->orderBy('nivel', 'desc')->first()?->nivel ?? 0;
+        $nivelAlvo = $nivelAtual + 1;
+
+        // Debitar Recursos (Escala 2x por nível)
+        $recursos = $base->recursos;
+        foreach ($conf['cost'] as $res => $baseAmount) {
+            $cost = floor($baseAmount * pow($nivelAlvo, 1.8));
+            if ($recursos->$res < $cost) {
+                throw new \Exception("Recursos insuficientes na base para financiar esta pesquisa.");
+            }
+        }
+
+        foreach ($conf['cost'] as $res => $baseAmount) {
+            $cost = floor($baseAmount * pow($nivelAlvo, 1.8));
+            $recursos->decrement($res, $cost);
+        }
+
+        $speed = config('game.speed.construction', 1); // pesquisas usam speed de construção
+        $segundos = ($conf['time_base'] * $nivelAlvo) / $speed;
+        $completadoEm = now()->addSeconds($segundos);
+
+        return \App\Models\Pesquisa::create([
+            'jogador_id'    => $jogador->id,
+            'tipo'          => $tipo,
+            'nivel'         => $nivelAlvo,
             'completado_em' => $completadoEm,
         ]);
     }
@@ -173,6 +228,22 @@ class GameService
                 }
 
                 $treino->delete();
+            }
+
+            // 3. Processar Pesquisas Tecnológicas (Global do Jogador)
+            $pesquisas = \App\Models\Pesquisa::where('jogador_id', $base->jogador_id)
+                ->where('completado_em', '<=', now())
+                ->get();
+
+            foreach ($pesquisas as $p) {
+                // Notificar? Por agora apenas completa (completado_em <= now já é o flag de sucesso)
+                // XP por Pesquisa
+                if (\Illuminate\Support\Facades\Schema::hasColumn('jogadores', 'xp')) {
+                    $base->jogador->increment('xp', $p->nivel * 50);
+                }
+                
+                // Manter o registro mas talvez com flag 'terminada'?
+                // Para simplificar, o sistema olha para o nível mais alto terminado.
             }
         });
     }

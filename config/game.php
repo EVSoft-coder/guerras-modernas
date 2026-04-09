@@ -77,6 +77,11 @@ return [
             'cost' => ['suprimentos' => 1500, 'combustivel' => 1200, 'municoes' => 300, 'pessoal' => 15],
             'time_base' => 900,
         ],
+        'centro_pesquisa' => [
+            'name' => 'Centro de Pesquisa & I&D',
+            'cost' => ['suprimentos' => 2000, 'combustivel' => 1000, 'municoes' => 1000, 'pessoal' => 40],
+            'time_base' => 1200,
+        ],
     ],
 
     /*
@@ -135,6 +140,35 @@ return [
             'speed' => 80,
             'capacity' => 0,
             'is_spy' => true,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Research / Technology Tree
+    |--------------------------------------------------------------------------
+    */
+    'research' => [
+        'pontaria' => [
+            'name' => 'Sistemas de Pontaria',
+            'cost' => ['suprimentos' => 1000, 'municoes' => 500, 'pessoal' => 5],
+            'time_base' => 1800,
+            'bonus_per_level' => 0.05, // +5% Ataque
+            'type' => 'attack',
+        ],
+        'blindagem' => [
+            'name' => 'Blindagem Reativa',
+            'cost' => ['suprimentos' => 1000, 'combustivel' => 500, 'pessoal' => 8],
+            'time_base' => 1800,
+            'bonus_per_level' => 0.05, // +5% Defesa
+            'type' => 'defense',
+        ],
+        'logistica' => [
+            'name' => 'Logística Avançada',
+            'cost' => ['suprimentos' => 800, 'combustivel' => 800, 'pessoal' => 10],
+            'time_base' => 1200,
+            'bonus_per_level' => 0.10, // +10% Speed/Capacity
+            'type' => 'utility',
         ],
     ],
 ];

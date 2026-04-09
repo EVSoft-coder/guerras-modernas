@@ -456,6 +456,85 @@
         </div>
 
         <!-- RECRUTAMENTO DE TROPAS -->
+        <div class="card glassmorphism border-white/10 mb-4">
+            <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-white fw-black text-uppercase ls-1">🧪 Centro de Pesquisa & I&D</h5>
+                <span class="badge bg-info/20 text-info border border-info/30">P&D GLOBAL</span>
+            </div>
+            <div class="card-body p-0">
+                @php 
+                    $lab = $base->edificios->where('tipo', 'centro_pesquisa')->first();
+                    $pesquisasEmCurso = \App\Models\Pesquisa::where('jogador_id', Auth::id())->where('completado_em', '>', now())->get();
+                @endphp
+
+                @if(!$lab || $lab->nivel < 1)
+                    <div class="p-5 text-center text-muted italic">
+                        <i class="bi bi-lock-fill display-4 d-block mb-3 opacity-30"></i>
+                        Construa o Centro de Pesquisa (QG Nvl 5) para desbloquear tecnologias avançadas.
+                    </div>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0 align-middle">
+                            <thead class="x-small text-info text-uppercase fw-black ls-1">
+                                <tr>
+                                    <th class="ps-4">Tecnologia</th>
+                                    <th>Nível Atual</th>
+                                    <th>Custo Upgrade</th>
+                                    <th class="text-end pe-4">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-white">
+                                @foreach(config('game.research') as $key => $resConf)
+                                    @php 
+                                        $nivel = Auth::user()->obterNivelTech($key);
+                                        $nivelAlvo = $nivel + 1;
+                                        $emCurso = $pesquisasEmCurso->where('tipo', $key)->first();
+                                    @endphp
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-black fs-5">{{ $resConf['name'] }}</div>
+                                            <div class="x-small text-muted italic">{{ $resConf['bonus_per_level'] * 100 }}% de bónus por nível</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info/10 text-info border border-info/30 fs-6">NÍVEL {{ $nivel }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-2 x-small text-white fw-bold">
+                                                @foreach($resConf['cost'] as $res => $baseAmount)
+                                                    <span class="badge bg-white/5 border border-white/10">
+                                                        {{ number_format(floor($baseAmount * pow($nivelAlvo, 1.8))) }}
+                                                    </span>
+                                                @endforeach
+                                                <span class="badge bg-info/10 text-info border border-info/20">🕒 {{ ($resConf['time_base'] * $nivelAlvo) / config('game.speed.construction', 1) }}s</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            @if($emCurso)
+                                                <div class="badge bg-warning/20 text-warning border border-warning/30 py-2 px-3 animate-pulse">
+                                                    <span class="countdown" data-time="{{ $emCurso->completado_em->timestamp }}">--:--</span>
+                                                </div>
+                                            @else
+                                                <form action="{{ route('base.pesquisar') }}" method="POST" class="ajax-form">
+                                                    @csrf
+                                                    <input type="hidden" name="base_id" value="{{ $base->id }}">
+                                                    <input type="hidden" name="tipo" value="{{ $key }}">
+                                                    <button type="submit" class="btn btn-outline-info rounded-4 px-4 py-2 text-uppercase fs-7 fw-black @if($pesquisasEmCurso->count() > 0) opacity-30 @endif"
+                                                            {{ $pesquisasEmCurso->count() > 0 ? 'disabled' : '' }}>
+                                                        PESQUISAR
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- RECRUTAMENTO DE TROPAS -->
         <div class="card glassmorphism border-white/10">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 text-white fw-black text-uppercase ls-1">🪖 Guarnição Defensiva</h5>

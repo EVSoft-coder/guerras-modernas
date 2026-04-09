@@ -92,6 +92,10 @@ Route::post('/base/trocar', [BaseController::class, 'trocar'])
     ->middleware('auth')
     ->name('base.trocar');
 
+Route::post('/pesquisar', [App\Http\Controllers\PesquisaController::class, 'pesquisar'])
+    ->middleware('auth')
+    ->name('base.pesquisar');
+
 // Admin routes block (manually managed)
 
 Route::get('/relatorio/{id}', [App\Http\Controllers\RelatorioController::class, 'show'])
