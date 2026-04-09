@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Base;
 use App\Models\Ataque;
 use App\Services\GameService;
+use App\Http\Requests\UpgradeRequest;
+use App\Http\Requests\TreinarRequest;
+use App\Http\Requests\AtacarRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,13 +23,8 @@ class BaseController extends Controller
     /**
      * Iniciar um upgrade de edifício.
      */
-    public function upgrade(Request $request)
+    public function upgrade(UpgradeRequest $request)
     {
-        $request->validate([
-            'base_id' => 'required|exists:bases,id',
-            'tipo' => 'required|string'
-        ]);
-
         $base = Base::findOrFail($request->base_id);
         
         // Verificar dono
@@ -56,14 +54,8 @@ class BaseController extends Controller
     /**
      * Iniciar recrutamento de tropas.
      */
-    public function treinar(Request $request)
+    public function treinar(TreinarRequest $request)
     {
-        $request->validate([
-            'base_id' => 'required|exists:bases,id',
-            'unidade' => 'required|string',
-            'quantidade' => 'required|integer|min:1'
-        ]);
-
         $base = Base::findOrFail($request->base_id);
         if ($base->jogador_id !== Auth::id()) abort(403);
 
@@ -93,15 +85,8 @@ class BaseController extends Controller
     /**
      * Lançar um ataque/operação militar.
      */
-    public function atacar(Request $request)
+    public function atacar(AtacarRequest $request)
     {
-        $request->validate([
-            'origem_id' => 'required|exists:bases,id',
-            'destino_id' => 'required|exists:bases,id',
-            'tropas' => 'required|array',
-            'tipo' => 'required|in:saque,conquista,reforco,espionagem'
-        ]);
-
         $origem = Base::findOrFail($request->origem_id);
         if ($origem->jogador_id !== Auth::id()) abort(403);
 

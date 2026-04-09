@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('game:processar-batalhas')->everyMinute();
+Schedule::command('cron:processar')->everyMinute();
