@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('content')
 <div class="row g-4">
     <!-- HUD DE RECURSOS - ALTO CONTRASTE -->
@@ -6,28 +6,28 @@
         <div class="glassmorphism rounded-4 p-4 shadow-lg border border-white/20 animate-glow">
             <div class="row g-4 text-center">
                 <div class="col-6 col-md-3 border-end border-white/10">
-                    <div class="text-info small text-uppercase fw-bold mb-1 ls-1">ðŸ“¦ Suprimentos</div>
+                    <div class="text-info small text-uppercase fw-bold mb-1 ls-1">📦 Suprimentos</div>
                     <div class="res-value text-white d-flex align-items-center justify-content-center mb-0" id="res-suprimentos">
                         {{ number_format(floor($base->recursos->suprimentos ?? 0)) }}
                     </div>
                     <div class="x-small text-info opacity-80 fw-bold mt-1" id="rate-suprimentos">+{{ number_format($taxas['suprimentos'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
-                    <div class="text-warning small text-uppercase fw-bold mb-1 ls-1">â›½ CombustÃ­vel</div>
+                    <div class="text-warning small text-uppercase fw-bold mb-1 ls-1">⛽ Combustível</div>
                     <div class="res-value text-warning d-flex align-items-center justify-content-center mb-0" id="res-combustivel">
                         {{ number_format(floor($base->recursos->combustivel ?? 0)) }}
                     </div>
                     <div class="x-small text-warning opacity-80 fw-bold mt-1" id="rate-combustivel">+{{ number_format($taxas['combustivel'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
-                    <div class="text-danger small text-uppercase fw-bold mb-1 ls-1">ðŸš€ MuniÃ§Ãµes</div>
+                    <div class="text-danger small text-uppercase fw-bold mb-1 ls-1">🚀 Munições</div>
                     <div class="res-value text-danger d-flex align-items-center justify-content-center mb-0" id="res-municoes">
                         {{ number_format(floor($base->recursos->municoes ?? 0)) }}
                     </div>
                     <div class="x-small text-danger opacity-80 fw-bold mt-1" id="rate-municoes">+{{ number_format($taxas['municoes'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="text-success small text-uppercase fw-bold mb-1 ls-1">ðŸ‘¥ Pessoal</div>
+                    <div class="text-success small text-uppercase fw-bold mb-1 ls-1">👥 Pessoal</div>
                     <div class="res-value text-success d-flex align-items-center justify-content-center mb-0" id="res-pessoal">
                         {{ number_format(floor($base->recursos->pessoal ?? 0)) }}
                     </div>
@@ -69,7 +69,7 @@
                                     @endphp
                                     <div class="progress-bar bg-warning animate-stripes" style="width: {{ $pPercent }}%"></div>
                                 </div>
-                                <div class="x-small text-white/70 mt-1">{{ $c->edificio_tipo }} NÃ­vel {{ $c->nivel_destino }}</div>
+                                <div class="x-small text-white/70 mt-1">{{ $c->edificio_tipo }} Nível {{ $c->nivel_destino }}</div>
                             </div>
                         @else
                             <div class="glassmorphism p-3 rounded-4 border-success/40">
@@ -88,7 +88,7 @@
         <!-- BASE SWITCHER & STATUS -->
         <div class="card glassmorphism border-white/10 mb-4 h-auto">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 text-white fw-bold"><i class="bi bi-geo-alt-fill text-primary"></i> TerritÃ³rio Ativo</h6>
+                <h6 class="mb-0 text-white fw-bold"><i class="bi bi-geo-alt-fill text-primary"></i> Território Ativo</h6>
                 @if($bases->count() > 1)
                     <div class="dropdown">
                         <button class="btn btn-xs btn-outline-info dropdown-toggle rounded-pill x-small px-3" type="button" data-bs-toggle="dropdown">
@@ -142,7 +142,7 @@
 
         <div class="card glassmorphism border-info/30 mb-4 h-auto shadow-lg overflow-hidden">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center bg-info/5">
-                <h6 class="mb-0 text-info fw-black x-small text-uppercase ls-1"><i class="bi bi-broadcast me-2"></i> Centro de InteligÃªncia & Radar</h6>
+                <h6 class="mb-0 text-info fw-black x-small text-uppercase ls-1"><i class="bi bi-broadcast me-2"></i> Centro de Inteligência & Radar</h6>
                 <span class="badge bg-{{ $intelLevel >= 10 ? 'success' : 'warning' }}/20 text-{{ $intelLevel >= 10 ? 'success' : 'warning' }} x-small border border-{{ $intelLevel >= 10 ? 'success' : 'warning' }}/30">INTEL LVL {{ $intelLevel }}</span>
             </div>
             
@@ -150,7 +150,7 @@
                 <!-- POPULATION BAR -->
                 <div class="mb-4">
                     <div class="d-flex justify-content-between x-small fw-bold text-white mb-1">
-                        <span>CAPACIDADE DA GUARNIÃ‡ÃƒO</span>
+                        <span>CAPACIDADE DA GUARNIÇÃO</span>
                         <span>{{ number_format($popOcupada) }} / {{ number_format($capTotal) }}</span>
                     </div>
                     <div class="progress bg-white/5" style="height: 6px;">
@@ -267,7 +267,7 @@
                             </select>
                         </div>
                         <div class="col-12 mt-3 text-center">
-                            <button type="submit" class="btn btn-warning w-100 rounded-pill fw-black text-uppercase x-small py-2 shadow-glow-warning">EFETUAR TRANSAÃ‡ÃƒO CLANDESTINA</button>
+                            <button type="submit" class="btn btn-warning w-100 rounded-pill fw-black text-uppercase x-small py-2 shadow-glow-warning">EFETUAR TRANSAÇÃO CLANDESTINA</button>
                         </div>
                     </div>
                 </form>

@@ -97,6 +97,9 @@ class AuthController extends Controller
     // ====================== DASHBOARD ======================
     public function dashboard(Request $request)
     {
+        // Forçar Charset de Conexão
+        \Illuminate\Support\Facades\DB::statement("SET NAMES 'utf8mb4'");
+        
         $jogador = Auth::user();
         if (!$jogador) return redirect('/login');
 

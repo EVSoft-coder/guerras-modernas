@@ -21,6 +21,9 @@ use Illuminate\Support\Facades\Artisan;
 // Forçar UTF-8 e Configurações de Ambiente
 ini_set('default_charset', 'UTF-8');
 mb_internal_encoding('UTF-8');
+if (!headers_sent()) {
+    header('Content-Type: text/html; charset=UTF-8');
+}
 
 // Landing Page e Autenticação
 Route::get('/', function () { return view('welcome'); });
