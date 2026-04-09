@@ -1,58 +1,71 @@
-# 🪖 Guerras Modernas - Strategy Engine
+# 🎖️ Guerras Modernas - Motor de Jogo (v1.0 Alpha)
 
-Um clone moderno e militarizado do clássico *Tribal Wars*, construído com as melhores práticas do ecossistema Laravel.
+**Guerras Modernas** é um clone profissional e modernizado de Tribal Wars, com temática militar contemporânea. Desenvolvido em **Laravel 12 + React + TypeScript**, focado em alta performance, segurança e uma UI/UX de alto contraste inspirada em centros de comando táticos.
 
-## 🚀 Tecnologias
+---
+
+## 🛠️ Stack Tecnológica
 - **Backend:** Laravel 12 (PHP 8.2+)
-- **Frontend:** Blade & Vanilla CSS (Preparado para Inertia.js + React/TypeScript)
-- **Base de Dados:** MySQL / MariaDB
-- **Automação:** Processamento via Cron / Jobs (Produção de recursos e filas de construção)
+- **Frontend:** React + TypeScript via Inertia.js
+- **Assets:** Vite + Vanilla CSS (Custom Design System)
+- **Base de Dados:** MySQL (UTF-8 mb4)
+- **Automação:** Laravel Scheduler (Cron) para produção e combates real-time.
 
-## 🛠️ Instalação Local
+---
 
-1. **Clonar o repositório:**
-   ```bash
-   git clone https://github.com/EVSoft-coder/guerras-modernas.git
-   cd guerras-modernas
-   ```
+## 🚀 Instalação Rápida (Mobilização)
 
-2. **Configurar Ambiente:**
-   ```bash
-   cp .env.example .env
-   # Edite o .env com as suas credenciais de base de dados
-   php artisan key:generate
-   ```
+### 1. Clonar o Repositório
+```bash
+git clone https://github.com/EVSoft-coder/guerras-modernas.git
+cd guerras-modernas
+```
 
-3. **Dependências:**
-   ```bash
-   composer install
-   npm install && npm run dev
-   ```
+### 2. Configurar Ambiente
+```bash
+cp .env.example .env
+# Configure as suas credenciais de base de dados no .env
+```
 
-4. **Base de Dados:**
-   ```bash
-   php artisan migrate --seed
-   ```
+### 3. Instalar Dependências
+```bash
+composer install
+npm install
+```
 
-## 🌐 Deploy em Servidor Shared (Ex: OVH)
+### 4. Preparar Base de Dados
+```bash
+php artisan key:generate
+php artisan migrate --seed
+```
 
-O projeto está otimizado para correr em ambientes de alojamento partilhado. Siga estes passos:
+### 5. Compilar Assets e rodar o Motor
+```bash
+npm run build
+# Opcional para desenvolvimento: npm run dev
+```
 
-1. Carregue os ficheiros para o servidor.
-2. Certifique-se que o diretório `public/` é o **root** do domínio.
-3. Crie o link simbólico para o storage:
-   ```bash
-   php artisan storage:link
-   ```
-4. **Importante:** Configure o **Cron Job** no painel da OVH para correr a cada minuto:
-   ```bash
-   * * * * * cd /caminho/do/projeto && php artisan schedule:run >> /dev/null 2>&1
-   ```
+### 6. Configurar o Cron (Vital para Produção de Recursos)
+Adicione esta entrada no seu Crontab ou painel Plesk/cPanel:
+```bash
+* * * * * cd /caminho-para-o-projeto && php artisan schedule:run >> /dev/null 2>&1
+```
 
-## 🎮 Game Design
-- **Recursos:** Suprimentos, Combustível, Munições e Pessoal.
-- **Unidades:** Infantaria, Blindados, Helicópteros e Agentes Especiais.
-- **Infraestrutura:** Mais de 8 tipos de edifícios com progressão não-linear.
+---
+
+## 🛡️ Missões Concluídas (Roadmap v1.0)
+- [x] **Arquitetura Core:** Implementação do `GameService` atómico para gestão de recursos e filas.
+- [x] **Interface Tática:** Painel de Comando (Dashboard) com tickers real-time e HUD de alta visibilidade.
+- [x] **Segurança Operacional:** Validação rigorosa de ordens via FormRequests e transações BD.
+- [x] **Otimização de Assets:** Integração total com Vite e eliminação de conflitos de JavaScript.
+- [x] **Correção de Encoding:** Purificação total de carateres UTF-8 e uso de Bootstrap Icons para estabilidade.
+
+---
+
+## 🎖️ Contribuição
+Oficiais interessados em contribuir devem seguir os protocolos definidos no [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
 
 ## 📄 Licença
-Propriedade de **EVSoft**. Todos os direitos reservados.
+Propriedade Intelectual da **EVSoft-coder**. Todos os direitos reservados.

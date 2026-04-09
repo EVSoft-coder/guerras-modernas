@@ -273,8 +273,8 @@ class GameService
         $recursos = $base->recursos;
         if (!$recursos) return;
 
-        // NUCLEAR OPTION: Atualização atómica baseada no relógio interno do MySQL
-        // Esto elimina qualquer discrepância entre o relógio do PHP e o relógio da BD
+        // NUCLEAR OPTION: Atualização atômica baseada no relógio interno do MySQL
+        // Isto elimina qualquer discrepância entre o relógio do PHP e o relógio da BD
         try {
             $config = config('game');
             $speed = $config['speed']['resources'] ?? 1;
@@ -319,7 +319,7 @@ class GameService
             $base->refresh();
             $base->load('recursos');
         } catch (\Exception $e) {
-            \Log::error("Falha na Sincronização Atómica Base {$base->id}: " . $e->getMessage());
+            \Log::error("Falha na Sincronização Atômica Base {$base->id}: " . $e->getMessage());
         }
     }
 

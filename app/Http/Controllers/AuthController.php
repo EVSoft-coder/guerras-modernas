@@ -93,7 +93,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('success', 'SessÃ£o terminada.');
+        return redirect('/')->with('success', 'Sessão terminada.');
     }
 
     // ====================== DASHBOARD ======================
@@ -108,7 +108,7 @@ class AuthController extends Controller
         // Buscar todas as bases do jogador
         $bases = $jogador->bases()->with('recursos', 'edificios', 'construcoes', 'treinos')->get();
         
-        // Determinar qual base exibir (via sessÃ£o ou primeira da lista)
+        // Determinar qual base exibir (via sessão ou primeira da lista)
         $selectedBaseId = session('selected_base_id');
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
 
@@ -129,11 +129,11 @@ class AuthController extends Controller
             $gameService = new GameService();
             $gameService->processarFila($base);
             
-            // Recarregar com todas as dependÃªncias finais
+            // Recarregar com todas as dependências finais
             $base->refresh();
             $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
             
-            // Guardar o ID selecionado na sessÃ£o para persistÃªncia
+            // Guardar o ID selecionado na sessão para persistência
             session(['selected_base_id' => $base->id]);
 
             // Obter taxas de produção p/min via Trait
@@ -145,10 +145,10 @@ class AuthController extends Controller
                 $taxasPerSecond[$res] = $minRate / 60;
             }
 
-            // NOVAS VARIÃVEIS PARA O UI MODERNO (FASES 11-14)
+            // NOVAS VARIÁVEIS PARA O UI MODERNO (FASES 11-14)
             $intelLevel = $base->edificios()->where('tipo', 'radar_estrategico')->first()?->nivel ?? 0;
             
-            // CÃ¡lculo de PopulaÃ§Ã£o/GuarniÃ§Ã£o
+            // Cálculo de População/Guarnição
             $nivelRecrutamento = $base->edificios()->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0;
             $capacidadeBase = (100 * ($nivelRecrutamento + 1)) * 1.5;
             $nivelLogistica = $jogador->obterNivelTech('logistica');
@@ -182,7 +182,7 @@ class AuthController extends Controller
             $ataquesEnviados = collect();
         }
 
-        // Buscar Ãºltimos relatÃ³rios envolvidos
+        // Buscar últimos relatórios envolvidos
         $relatorios = \App\Models\Relatorio::where('atacante_id', $jogador->id)
             ->orWhere('defensor_id', $jogador->id)
             ->orderBy('created_at', 'desc')
