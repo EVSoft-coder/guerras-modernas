@@ -9,70 +9,72 @@ use App\Models\Edificio;
 use App\Models\Ataque;
 use App\Services\GameService;
 use App\Services\CombatService;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
     // ====================== VIEWS ======================
     public function showLogin() { return view('auth.login'); }
-    public function showRegister() { return view('auth.login'); } // Usando a mesma view para simplicidade se necessário ou mudar para register
+    public function showRegister() { return view('auth.register'); }
     public function perfil() { return view('dashboard'); } // Perfil por agora redireciona ou mostra dashboard
 
     // ====================== REGISTO ======================
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'username' => 'required|string|max:50|unique:jogadores',
-            'email'    => 'required|email|unique:jogadores',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+        try {
+            return DB::transaction(function () use ($request) {
+                // Criar o jogador
+                $jogador = Jogador::create([
+                    'username' => $request->username,
+                    'email'    => $request->email,
+                    'password' => Hash::make($request->password),
+                    'xp'       => 0,
+                    'nivel'    => 1,
+                    'cargo'    => 'Recruta',
+                ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+                // Criar a primeira base automaticamente
+                $base = Base::create([
+                    'jogador_id'     => $jogador->id,
+                    'nome'           => 'Base Principal',
+                    'coordenada_x'   => rand(100, 900),
+                    'coordenada_y'   => rand(100, 900),
+                    'qg_nivel'       => 1,
+                    'muralha_nivel'  => 1,
+                ]);
+
+                // Criar recursos iniciais
+                Recurso::create([
+                    'base_id'     => $base->id,
+                    'suprimentos' => 1500,
+                    'combustivel' => 1000,
+                    'municoes'    => 800,
+                    'pessoal'     => 600,
+                ]);
+
+                // Criar edifícios básicos (Usando os nomes corretos do config/game.php)
+                // QG e Muralha estão nas colunas da base, mas os outros são registros em edifícios
+                Edificio::create(['base_id' => $base->id, 'tipo' => 'mina_suprimentos', 'nivel' => 1]);
+                Edificio::create(['base_id' => $base->id, 'tipo' => 'quartel', 'nivel' => 1]);
+                Edificio::create(['base_id' => $base->id, 'tipo' => 'posto_recrutamento', 'nivel' => 1]);
+
+                // Fazer login automático
+                Auth::login($jogador);
+
+                return redirect('/dashboard')->with('success', 'Conta de Oficial criada com sucesso! Bem-vindo ao Comando!');
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Falha crítica ao mobilizar conta. Tente novamente.'])->withInput();
         }
-
-        // Criar o jogador
-        $jogador = Jogador::create([
-            'username' => $request->username,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        // Criar a primeira base automaticamente
-        $base = Base::create([
-            'jogador_id'     => $jogador->id,
-            'nome'           => 'Base Principal',
-            'coordenada_x'   => rand(100, 900),   // coordenadas aleatÃ³rias iniciais
-            'coordenada_y'   => rand(100, 900),
-            'qg_nivel'       => 1,
-            'muralha_nivel'  => 1,
-        ]);
-
-        // Criar recursos iniciais
-        Recurso::create([
-            'base_id'     => $base->id,
-            'suprimentos' => 1500,
-            'combustivel' => 1000,
-            'municoes'    => 800,
-            'pessoal'     => 600,
-        ]);
-
-        // Criar edifÃ­cios bÃ¡sicos
-        Edificio::create(['base_id' => $base->id, 'tipo' => 'QG', 'nivel' => 1]);
-        Edificio::create(['base_id' => $base->id, 'tipo' => 'Quartel', 'nivel' => 1]);
-        Edificio::create(['base_id' => $base->id, 'tipo' => 'Muralha', 'nivel' => 1]);
-
-        // Fazer login automÃ¡tico
-        Auth::login($jogador);
-
-        return redirect('/dashboard')->with('success', 'Conta criada com sucesso! Bem-vindo ao Guerras Modernas!');
     }
 
     // ====================== LOGIN ======================
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
 
@@ -81,7 +83,7 @@ class AuthController extends Controller
             return redirect('/dashboard');
         }
 
-        return redirect()->back()->withErrors(['email' => 'Credenciais invÃ¡lidas.']);
+        return redirect()->back()->withErrors(['email' => 'Credenciais de oficial inválidas.']);
     }
 
     // ====================== LOGOUT ======================
@@ -122,9 +124,9 @@ class AuthController extends Controller
                 ]);
             }
 
+            // Atualizar Recursos e Fila (Encapsulado no Trait e Service)
+            $base->updateResources();
             $gameService = new GameService();
-            // Atualizar Recursos e Fila de ConstruÃ§Ã£o/Treino (sempre atualiza ao ver)
-            $gameService->atualizarRecursos($base);
             $gameService->processarFila($base);
             
             // Recarregar com todas as dependÃªncias finais
@@ -134,8 +136,8 @@ class AuthController extends Controller
             // Guardar o ID selecionado na sessÃ£o para persistÃªncia
             session(['selected_base_id' => $base->id]);
 
-            // Obter taxas de produÃ§Ã£o p/min
-            $taxas = $gameService->obterTaxasProducao($base);
+            // Obter taxas de produção p/min via Trait
+            $taxas = $base->getProductionRates();
             
             // Obter taxas p/segundo para o ticker do frontend
             $taxasPerSecond = [];

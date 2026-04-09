@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasResources;
 
 class Base extends Model
 {
-    use HasFactory;
+    use HasFactory, HasResources;
 
     protected $table = 'bases';
 
@@ -26,10 +27,6 @@ class Base extends Model
         return $this->belongsTo(Jogador::class);
     }
 
-    public function recursos()
-    {
-        return $this->hasOne(Recurso::class);
-    }
 
     public function tropas()
     {
