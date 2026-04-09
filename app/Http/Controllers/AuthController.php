@@ -121,9 +121,42 @@ class AuthController extends Controller
             foreach($taxas as $res => $minRate) {
                 $taxasPerSecond[$res] = $minRate / 60;
             }
+
+            // NOVAS VARIÁVEIS PARA O UI MODERNO (FASES 11-14)
+            $intelLevel = $base->edificios()->where('tipo', 'radar_estrategico')->first()?->nivel ?? 0;
+            
+            // Cálculo de População/Guarnição
+            $nivelRecrutamento = $base->edificios()->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0;
+            $capacidadeBase = (100 * ($nivelRecrutamento + 1)) * 1.5;
+            $nivelLogistica = $jogador->obterNivelTech('logistica');
+            $multiplicadorCap = 1 + ($nivelLogistica * 0.10);
+            $capTotal = $capacidadeBase * $multiplicadorCap;
+
+            $popOcupada = 0;
+            foreach ($base->tropas as $t) {
+                $popOcupada += ($t->quantidade * (config("game.units.{$t->unidade}.cost.pessoal") ?? 1));
+            }
+            $popPercent = ($capTotal > 0) ? min(100, ($popOcupada / $capTotal) * 100) : 0;
+
+            // Pesquisas em curso
+            $pesquisasEmCurso = \App\Models\Pesquisa::where('jogador_id', $jogador->id)
+                ->where('completado_em', '>', now())
+                ->get();
+
+            // Ataques
+            $ataquesRecebidos = \App\Models\Ataque::where('destino_base_id', $base->id)->where('processado', false)->get();
+            $ataquesEnviados = \App\Models\Ataque::where('origem_base_id', $base->id)->where('processado', false)->get();
+
         } else {
             $taxas = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 'pessoal' => 0];
             $taxasPerSecond = $taxas;
+            $intelLevel = 0;
+            $popOcupada = 0;
+            $capTotal = 0;
+            $popPercent = 0;
+            $pesquisasEmCurso = collect();
+            $ataquesRecebidos = collect();
+            $ataquesEnviados = collect();
         }
 
         // Buscar últimos relatórios envolvidos
@@ -137,6 +170,11 @@ class AuthController extends Controller
             ->take(10)
             ->get();
 
-        return view('dashboard', compact('jogador', 'base', 'bases', 'relatorios', 'relatoriosGlobal', 'taxas', 'taxasPerSecond'));
+        return view('dashboard', compact(
+            'jogador', 'base', 'bases', 'relatorios', 'relatoriosGlobal', 
+            'taxas', 'taxasPerSecond', 'intelLevel', 'popOcupada', 
+            'capTotal', 'popPercent', 'pesquisasEmCurso', 
+            'ataquesRecebidos', 'ataquesEnviados'
+        ));
     }
 }
