@@ -111,10 +111,16 @@ Route::get('/manual', function() {
     ]);
 })->name('manual');
 Route::get('/mw-admin-trigger-99', function() {
+    $log = "";
     try {
+        // 1. FORÇAR ATUALIZAÇÃO DE CÓDIGO (GIT PULL) - SEM DEPENDÊNCIAS DE DB
+        $gitOutput = [];
+        exec('git pull origin master 2>&1', $gitOutput);
+        $log .= "GIT PULL: " . implode("\n", $gitOutput) . "\n\n";
+
         $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
         
-        // 1. ASSEGURAR TABELAS DE SISTEMA (CACHE/SESSIONS)
+        // 2. ASSEGURAR TABELAS DE SISTEMA (CACHE/SESSIONS)
         $pdo->exec("CREATE TABLE IF NOT EXISTS cache (
             `key` VARCHAR(255) PRIMARY KEY,
             `value` MEDIUMTEXT NOT NULL,
@@ -126,18 +132,11 @@ Route::get('/mw-admin-trigger-99', function() {
             `expiration` INT NOT NULL
         )");
 
-        // 2. FORÇAR ATUALIZAÇÃO DE CÓDIGO (GIT PULL)
-        $gitOutput = [];
-        exec('git pull origin master 2>&1', $gitOutput);
-        $gitLog = implode("\n", $gitOutput);
-
         // 3. LIMPEZA DE CACHE (AGORA SEGURO)
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');
         
         // 4. AUTO-MIGRATION DE TABELAS DE JOGO
-        $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS xp BIGINT DEFAULT 0");
-        $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS nivel INT DEFAULT 1");
-        $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS cargo VARCHAR(255) DEFAULT 'Recruta'");
+        $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS xp BIGINT DEFAULT 0, ADD COLUMN IF NOT EXISTS nivel INT DEFAULT 1, ADD COLUMN IF NOT EXISTS cargo VARCHAR(255) DEFAULT 'Recruta'");
 
         $pdo->exec("CREATE TABLE IF NOT EXISTS pesquisas (
             id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
@@ -158,10 +157,11 @@ Route::get('/mw-admin-trigger-99', function() {
         )");
         
         return "<h3>Tactical Override Success</h3>" . 
-               "<pre>GIT PULL: $gitLog</pre>" . 
+               "<pre>$log</pre>" . 
                "<p>Cache Cleared & DB Structured.</p>";
     } catch (\Exception $e) {
-        return "<h3>Tactical Override Error</h3>" . 
-               "<pre>" . $e->getMessage() . "</pre>";
+        return "<h3>Tactical Override Warning (Code might have pulled)</h3>" . 
+               "<pre>$log</pre>" . 
+               "<p>Error during DB phase: " . $e->getMessage() . "</p>";
     }
 });
