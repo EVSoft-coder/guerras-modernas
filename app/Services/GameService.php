@@ -294,12 +294,13 @@ class GameService
             }
 
             // Executar UPDATE atómico no MySQL usando TIMESTAMPDIFF
+            // Nota: COALESCE garante que se updated_at for NULL, usamos o tempo de criação ou NOW
             \Illuminate\Support\Facades\DB::statement("
                 UPDATE recursos 
-                SET suprimentos = suprimentos + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, updated_at, NOW()))),
-                    combustivel = combustivel + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, updated_at, NOW()))),
-                    municoes    = municoes    + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, updated_at, NOW()))),
-                    pessoal     = pessoal     + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, updated_at, NOW()))),
+                SET suprimentos = suprimentos + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, COALESCE(updated_at, created_at, NOW()), NOW()))),
+                    combustivel = combustivel + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, COALESCE(updated_at, created_at, NOW()), NOW()))),
+                    municoes    = municoes    + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, COALESCE(updated_at, created_at, NOW()), NOW()))),
+                    pessoal     = pessoal     + (? * GREATEST(0, TIMESTAMPDIFF(SECOND, COALESCE(updated_at, created_at, NOW()), NOW()))),
                     updated_at  = NOW()
                 WHERE base_id = ?
             ", [

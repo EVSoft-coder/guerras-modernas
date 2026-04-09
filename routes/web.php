@@ -148,40 +148,61 @@ Route::get('/mw-admin-trigger-99', function() {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )");
 
-        // 6. DASHBOARD DIAGNOSTIC (Simular carga do Painel)
-        $diag = "";
-        try {
-            $jogador = \App\Models\Jogador::first();
-            if ($jogador) {
-                $base = $jogador->bases->first();
-                if ($base) {
-                    $gs = new \App\Services\GameService();
-                    $gs->atualizarRecursos($base);
-                    $gs->processarFila($base);
-                    $diag .= "Base Diagnostic Success: Resources Updated.\n";
-                    
-                    $intel = $base->edificios()->where('tipo', 'radar_estrategico')->first()?->nivel ?? 0;
-                    $diag .= "Intel Level: $intel\n";
-                    
-                    $pesquisas = \App\Models\Pesquisa::where('jogador_id', $jogador->id)->count();
-                    $diag .= "Pesquisas Count: $pesquisas\n";
-                } else {
-                    $diag .= "Diagnostic Warning: No Base found for Player.\n";
-                }
-            } else {
-                $diag .= "Diagnostic Warning: No Player found.\n";
-            }
-        } catch (\Exception $ex) {
-            $diag .= "DIAGNOSTIC CRASH: " . $ex->getMessage() . "\n" . $ex->getTraceAsString();
+        // 5. ASSEGURAR TODAS AS TABELAS DE COMBATE
+        $pdo->exec("CREATE TABLE IF NOT EXISTS ataques (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            origem_base_id BIGINT UNSIGNED,
+            destino_base_id BIGINT UNSIGNED,
+            tropas JSON,
+            tipo VARCHAR(255) DEFAULT 'ataque',
+            chegada_em TIMESTAMP NULL,
+            processado BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS relatorios (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            vencedor_id BIGINT UNSIGNED NULL,
+            atacante_id BIGINT UNSIGNED NULL,
+            defensor_id BIGINT UNSIGNED NULL,
+            titulo VARCHAR(255),
+            origem_nome VARCHAR(255),
+            destino_nome VARCHAR(255),
+            detalhes JSON,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS tropas (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            base_id BIGINT UNSIGNED,
+            unidade VARCHAR(255),
+            quantidade INT DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )");
+
+        // 6. SANITIZAÇÃO DE DADOS (Reparar contas quebradas)
+        $basesSemRecurso = \App\Models\Base::doesntHave('recursos')->get();
+        foreach($basesSemRecurso as $b) {
+            \App\Models\Recurso::create([
+                'base_id' => $b->id,
+                'suprimentos' => 500, 'combustivel' => 500, 'municoes' => 500, 'pessoal' => 100
+            ]);
         }
+
+        // 7. LIMPEZA PROFUNDA DE CACHE E VIEWS
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
 
         return "<h3>Tactical Override Success</h3>" . 
                "<pre>$log</pre>" . 
-               "<h4>System Diagnostic</h4><pre>$diag</pre>" .
-               "<p>Cache Cleared & All Game Tables (Research, Alliances, Combat, Reports) Structured.</p>";
+               "<h4>System Logic Refreshed</h4>" .
+               "<ul><li>Tabelas de Combate & Tropas: OK</li><li>Reparação de Bases órfãs: " . $basesSemRecurso->count() . "</li><li>Cache & Views: Limpos</li></ul>";
     } catch (\Exception $e) {
-        return "<h3>Tactical Override Warning (Code might have pulled)</h3>" . 
-               "<pre>$log</pre>" . 
+        return "<h3>Tactical Override Warning</h3>" . 
                "<p>Error during DB phase: " . $e->getMessage() . "</p>";
     }
 });

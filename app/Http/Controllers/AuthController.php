@@ -103,12 +103,25 @@ class AuthController extends Controller
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
 
         if ($base) {
+            // AUTO-REPAIR: Assegurar que os recursos existem antes de carregar
+            if (!$base->recursos()->exists()) {
+                \App\Models\Recurso::create([
+                    'base_id'     => $base->id,
+                    'suprimentos' => 500,
+                    'combustivel' => 500,
+                    'municoes'    => 500,
+                    'pessoal'     => 100,
+                ]);
+            }
+
             $gameService = new GameService();
             // Atualizar Recursos e Fila de Construção/Treino (sempre atualiza ao ver)
             $gameService->atualizarRecursos($base);
             $gameService->processarFila($base);
+            
+            // Recarregar com todas as dependências finais
             $base->refresh();
-            $base->load(['recursos', 'edificios', 'construcoes', 'treinos']);
+            $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
             
             // Guardar o ID selecionado na sessão para persistência
             session(['selected_base_id' => $base->id]);

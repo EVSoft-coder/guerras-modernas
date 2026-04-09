@@ -7,30 +7,30 @@
                 <div class="col-6 col-md-3 border-end border-white/10">
                     <div class="text-info small text-uppercase fw-bold mb-1 ls-1">📦 Suprimentos</div>
                     <div class="res-value text-white d-flex align-items-center justify-content-center mb-0" id="res-suprimentos">
-                        {{ number_format(floor($base->recursos->suprimentos)) }}
+                        {{ number_format(floor($base->recursos->suprimentos ?? 0)) }}
                     </div>
-                    <div class="x-small text-info opacity-80 fw-bold mt-1" id="rate-suprimentos">+{{ number_format($taxas['suprimentos']) }} p/min</div>
+                    <div class="x-small text-info opacity-80 fw-bold mt-1" id="rate-suprimentos">+{{ number_format($taxas['suprimentos'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
                     <div class="text-warning small text-uppercase fw-bold mb-1 ls-1">⛽ Combustível</div>
                     <div class="res-value text-warning d-flex align-items-center justify-content-center mb-0" id="res-combustivel">
-                        {{ number_format(floor($base->recursos->combustivel)) }}
+                        {{ number_format(floor($base->recursos->combustivel ?? 0)) }}
                     </div>
-                    <div class="x-small text-warning opacity-80 fw-bold mt-1" id="rate-combustivel">+{{ number_format($taxas['combustivel']) }} p/min</div>
+                    <div class="x-small text-warning opacity-80 fw-bold mt-1" id="rate-combustivel">+{{ number_format($taxas['combustivel'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
                     <div class="text-danger small text-uppercase fw-bold mb-1 ls-1">🚀 Munições</div>
                     <div class="res-value text-danger d-flex align-items-center justify-content-center mb-0" id="res-municoes">
-                        {{ number_format(floor($base->recursos->municoes)) }}
+                        {{ number_format(floor($base->recursos->municoes ?? 0)) }}
                     </div>
-                    <div class="x-small text-danger opacity-80 fw-bold mt-1" id="rate-municoes">+{{ number_format($taxas['municoes']) }} p/min</div>
+                    <div class="x-small text-danger opacity-80 fw-bold mt-1" id="rate-municoes">+{{ number_format($taxas['municoes'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="text-success small text-uppercase fw-bold mb-1 ls-1">👥 Pessoal</div>
                     <div class="res-value text-success d-flex align-items-center justify-content-center mb-0" id="res-pessoal">
-                        {{ number_format(floor($base->recursos->pessoal)) }}
+                        {{ number_format(floor($base->recursos->pessoal ?? 0)) }}
                     </div>
-                    <div class="x-small text-success opacity-80 fw-bold mt-1" id="rate-pessoal">+{{ number_format($taxas['pessoal']) }} p/min</div>
+                    <div class="x-small text-success opacity-80 fw-bold mt-1" id="rate-pessoal">+{{ number_format($taxas['pessoal'] ?? 0) }} p/min</div>
                 </div>
             </div>
         </div>
@@ -129,24 +129,7 @@
             </div>
         </div>
 
-        <!-- MOVIMENTOS MILITARES E RADAR -->
-        @php 
-            $ataquesEnviados = \App\Models\Ataque::where('origem_base_id', $base->id)->where('processado', false)->get();
-            $ataquesRecebidos = \App\Models\Ataque::where('destino_base_id', $base->id)->where('processado', false)->get();
-            
-            // CÁLCULO DE POPULAÇÃO PARA O UI
-            $nivelRecrutamento = $base->edificios->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0;
-            $capTotal = (100 * ($nivelRecrutamento + 1)) * 1.5;
-            $popOcupada = 0;
-            foreach ($base->tropas as $t) {
-                $popOcupada += ($t->quantidade * (config("game.units.{$t->unidade}.cost.pessoal") ?? 1));
-            }
-            $popPercent = min(100, ($popOcupada / max(1, $capTotal)) * 100);
-            
-            // INTELIGÊNCIA: Radar é prioritário, QG é backup básico
-            $nivelRadar = $base->edificios->where('tipo', 'radar_estrategico')->first()?->nivel ?? 0;
-            $intelLevel = $nivelRadar > 0 ? ($nivelRadar + 5) : $base->qg_nivel;
-        @endphp
+        <!-- MOVIMENTOS MILITARES E RADAR (Calculado via Controller) -->
 
         <div class="card glassmorphism border-info/30 mb-4 h-auto shadow-lg overflow-hidden">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center bg-info/5">
