@@ -101,15 +101,26 @@ class CombatService
 
                 $resDefensor = $baseDefensora->recursos;
                 $resAtacante = $baseOrigem ? $baseOrigem->recursos : null;
+                
+                $capacidadeRestante = $capacidadeTotal;
+                $recursosPrioridade = ['suprimentos', 'combustivel', 'municoes'];
 
-                foreach (['suprimentos', 'combustivel', 'municoes'] as $res) {
-                    $roubado = min($resDefensor->$res * 0.5, $capacidadeTotal / 3);
-                    $saque[$res] = (int)$roubado;
+                foreach ($recursosPrioridade as $res) {
+                    if ($capacidadeRestante <= 0) break;
+
+                    // Cada unidade pode roubar até 50% dos recursos disponíveis daquela categoria (estilo Tribal)
+                    $disponivelParaSaque = $resDefensor->$res * 0.5;
+                    $quantidadeSaque = min($disponivelParaSaque, $capacidadeRestante);
                     
-                    // Debitamos do perdedor e creditamos ao vencedor (se houver base de origem)
-                    $resDefensor->decrement($res, (int)$roubado);
-                    if ($resAtacante) {
-                        $resAtacante->increment($res, (int)$roubado);
+                    $saque[$res] = (int)$quantidadeSaque;
+                    $capacidadeRestante -= $quantidadeSaque;
+
+                    // Débito e Crédito Atómico
+                    if ($quantidadeSaque > 0) {
+                        $resDefensor->decrement($res, (int)$quantidadeSaque);
+                        if ($resAtacante) {
+                            $resAtacante->increment($res, (int)$quantidadeSaque);
+                        }
                     }
                 }
             }

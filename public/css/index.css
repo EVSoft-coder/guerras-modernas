@@ -205,3 +205,56 @@ body {
 .transition-all {
     transition: all 0.2s ease-in-out;
 }
+
+/* RESPONSIVE DEFENSE: MOBILE OPTIMIZATIONS */
+@media (max-width: 768px) {
+    .village-view {
+        height: 300px;
+    }
+    
+    .village-overlay {
+        padding: 1.5rem 1rem;
+    }
+
+    .display-5 {
+        font-size: 2rem;
+    }
+
+    /* Transformar tabelas em Cards Mobile */
+    .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1rem;
+    }
+
+    .table td {
+        padding: 0.5rem 0;
+        text-align: left !important;
+    }
+
+    .table td:last-child {
+        border-top: 1px solid rgba(255,255,255,0.05);
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+        text-align: center !important;
+    }
+
+    .table td:last-child button, 
+    .table td:last-child .btn {
+        width: 100%;
+    }
+
+    .res-value {
+        font-size: 1.2rem;
+    }
+}

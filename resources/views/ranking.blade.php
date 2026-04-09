@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
 <div class="container py-5">
@@ -7,10 +7,10 @@
             <!-- HEADER RANKING -->
             <div class="mb-5 text-center">
                 <h1 class="display-4 fw-bold text-white mb-2"><i class="bi bi-trophy text-warning"></i> Ranking Mundial</h1>
-                <p class="text-muted text-uppercase small ls-2">Comando Geral de Operações Mundiais</p>
+                <p class="text-muted text-uppercase small ls-2">Comando Geral de OperaÃ§Ãµes Mundiais</p>
             </div>
 
-            <!-- TABELA DE CLASSIFICAÇÃO -->
+            <!-- TABELA DE CLASSIFICAÃ‡ÃƒO -->
             <div class="card bg-dark border-secondary rounded-4 shadow-lg overflow-hidden glassmorphism">
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -28,11 +28,11 @@
                                     <tr class="{{ $j->id === Auth::id() ? 'bg-primary/10 border-start border-primary border-4' : '' }}">
                                         <td class="px-4 py-4">
                                             @if($index == 0)
-                                                <span class="badge bg-warning text-dark rounded-circle p-2 shadow-sm"><i class="bi bi-star-fill"></i> 1º</span>
+                                                <span class="badge bg-warning text-dark rounded-circle p-2 shadow-sm"><i class="bi bi-star-fill"></i> 1Âº</span>
                                             @elseif($index == 1)
-                                                <span class="badge bg-light text-dark rounded-circle p-2 shadow-sm">2º</span>
+                                                <span class="badge bg-light text-dark rounded-circle p-2 shadow-sm">2Âº</span>
                                             @elseif($index == 2)
-                                                <span class="badge bg-orange text-white rounded-circle p-2 shadow-sm" style="background-color: #cd7f32;">3º</span>
+                                                <span class="badge bg-orange text-white rounded-circle p-2 shadow-sm" style="background-color: #cd7f32;">3Âº</span>
                                             @else
                                                 <span class="text-muted fw-bold">#{{ $index + 1 }}</span>
                                             @endif
@@ -73,13 +73,13 @@
                 </div>
             </div>
 
-            <!-- NOTA DE PROGRESSÃO -->
+            <!-- NOTA DE PROGRESSÃƒO -->
             <div class="mt-4 p-4 rounded-4 bg-info/5 border border-info/20">
                 <div class="d-flex align-items-center">
                     <i class="bi bi-info-circle-fill text-info fs-3 me-3"></i>
                     <div>
                         <h6 class="text-info mb-1 fw-bold text-uppercase small">Cálculo de Prestígio</h6>
-                        <p class="text-muted small mb-0">Os pontos são calculados com base em: 1 ponto por cada nível de edifício em todas as tuas bases + bónus de 10 pontos por base controlada.</p>
+                        <p class="text-muted small mb-0">Os pontos sÃ£o calculados com base em: 1 ponto por cada nÃ­vel de edifÃ­cio em todas as tuas bases + bónus de 10 pontos por base controlada.</p>
                     </div>
                 </div>
             </div>
@@ -104,3 +104,4 @@
 }
 </style>
 @endsection
+

@@ -15,6 +15,9 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 const rootElement = document.getElementById('app');
 
 if (rootElement) {
+    // Only initialize theme and Inertia if we are in an Inertia-enabled page
+    initializeTheme();
+    
     createInertiaApp({
         title: (title) => `${title} - ${appName}`,
         resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
@@ -23,10 +26,7 @@ if (rootElement) {
             root.render(<App {...props} />);
         },
         progress: {
-            color: '#4B5563',
+            color: '#0ea5e9',
         },
     });
 }
-
-// This will set light / dark mode on load...
-initializeTheme();

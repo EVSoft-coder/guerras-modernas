@@ -92,6 +92,11 @@ class BaseController extends Controller
 
         $destino = Base::findOrFail($request->destino_id);
         
+        // REGRAS DE ENGAJAMENTO: Proteção de Novatos
+        if ($destino->jogador->sobProtecao()) {
+            return redirect()->back()->withErrors(['error' => 'ALVO PROTEGIDO: O comandante inimigo ainda está em período de alistamento inicial (Proteção de Novato).']);
+        }
+        
         // Lógica de tempo de viagem baseada na distância
         $distancia = sqrt(pow($destino->coordenada_x - $origem->coordenada_x, 2) + pow($destino->coordenada_y - $origem->coordenada_y, 2));
         

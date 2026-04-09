@@ -1,71 +1,74 @@
-# 🎖️ Guerras Modernas - Motor de Jogo (v1.0 Alpha)
+# 🎖️ Guerras Modernas - Military Strategy Operation 🛰️
 
-**Guerras Modernas** é um clone profissional e modernizado de Tribal Wars, com temática militar contemporânea. Desenvolvido em **Laravel 12 + React + TypeScript**, focado em alta performance, segurança e uma UI/UX de alto contraste inspirada em centros de comando táticos.
+![Modern Warfare Banner](https://img.shields.io/badge/Status-OPERATIONAL-success?style=for-the-badge&logo=opsgenie)
+![Version](https://img.shields.io/badge/Version-1.2.0--ALPHA-blue?style=for-the-badge)
+![Tech](https://img.shields.io/badge/Stack-LARAVEL%2012%20%2B%20REACT-red?style=for-the-badge)
 
----
-
-## 🛠️ Stack Tecnológica
-- **Backend:** Laravel 12 (PHP 8.2+)
-- **Frontend:** React + TypeScript via Inertia.js
-- **Assets:** Vite + Vanilla CSS (Custom Design System)
-- **Base de Dados:** MySQL (UTF-8 mb4)
-- **Automação:** Laravel Scheduler (Cron) para produção e combates real-time.
+## 📋 Sumário Executivo
+**Guerras Modernas** é um simulador de estratégia militar persistente (MMOSG) inspirado no clássico Tribal Wars, mas reimaginado para o cenário de conflitos contemporâneos. Comande bases, gerencie recursos industriais, pesquise tecnologias de ponta e lidere exércitos de infantaria e blindados em busca da supremacia global.
 
 ---
 
-## 🚀 Instalação Rápida (Mobilização)
+## 🛠️ Arsenal Tecnológico
+*   **Núcleo Inteligente:** Laravel 12 (PHP 8.2+)
+*   **Interface Tática:** Blade + React/Inertia (v2) + TypeScript
+*   **Estética Dominante:** Glassmorphism Dark UI com animações Micro-Tactical
+*   **Base de Operações:** MySQL / MariaDB
+*   **Processamento de Combate:** Algoritmo atómico com suporte a Saques (Loot) e Capacidade de Carga
 
-### 1. Clonar o Repositório
+---
+
+## 🚀 Protocolo de Instalação (Local)
+
+### 1. Preparação de Terreno
 ```bash
 git clone https://github.com/EVSoft-coder/guerras-modernas.git
 cd guerras-modernas
 ```
 
-### 2. Configurar Ambiente
-```bash
-cp .env.example .env
-# Configure as suas credenciais de base de dados no .env
-```
-
-### 3. Instalar Dependências
+### 2. Comissionamento de Dependências
 ```bash
 composer install
 npm install
 ```
 
-### 4. Preparar Base de Dados
+### 3. Configuração de Inteligência
 ```bash
+cp .env.example .env
 php artisan key:generate
+```
+*Configure as credenciais da sua Base de Dados no ficheiro `.env`.*
+
+### 4. Deploy de Infraestrutura (BD)
+```bash
 php artisan migrate --seed
 ```
 
-### 5. Compilar Assets e rodar o Motor
+### 5. Ativação de Sistemas
 ```bash
-npm run build
-# Opcional para desenvolvimento: npm run dev
-```
-
-### 6. Configurar o Cron (Vital para Produção de Recursos)
-Adicione esta entrada no seu Crontab ou painel Plesk/cPanel:
-```bash
-* * * * * cd /caminho-para-o-projeto && php artisan schedule:run >> /dev/null 2>&1
+php artisan serve
+npm run dev
 ```
 
 ---
 
-## 🛡️ Missões Concluídas (Roadmap v1.0)
-- [x] **Arquitetura Core:** Implementação do `GameService` atómico para gestão de recursos e filas.
-- [x] **Interface Tática:** Painel de Comando (Dashboard) com tickers real-time e HUD de alta visibilidade.
-- [x] **Segurança Operacional:** Validação rigorosa de ordens via FormRequests e transações BD.
-- [x] **Otimização de Assets:** Integração total com Vite e eliminação de conflitos de JavaScript.
-- [x] **Correção de Encoding:** Purificação total de carateres UTF-8 e uso de Bootstrap Icons para estabilidade.
+## 🗺️ Roadmap de Operações
+- [x] **Fase 1: Estabilização** - Purificação UTF-8 e Saneamento de Erros JS.
+- [x] **Fase 2: Core Gameplay** - Produção de recursos, filas de construção e treino de tropas.
+- [x] **Fase 3: Logística Avançada** - Sistema de saques, proteção de novatos e otimização mobile.
+- [ ] **Fase 4: Diplomacia Total** - Alianças avançadas, chat em tempo real e fórum militar.
+- [ ] **Fase 5: Guerra Total** - Sistema de mísseis, aviação avançada e conquista de capitais.
 
 ---
 
-## 🎖️ Contribuição
-Oficiais interessados em contribuir devem seguir os protocolos definidos no [CONTRIBUTING.md](CONTRIBUTING.md).
+## 🛡️ Protocolo de Segurança (Beginner Protection)
+Jogadores recém-alistados gozam de **24 horas de imunidade diplomática**. Durante este período, não podem ser atacados por outros comandantes, garantindo tempo para estabelecer a infraestrutura básica.
 
 ---
 
-## 📄 Licença
-Propriedade Intelectual da **EVSoft-coder**. Todos os direitos reservados.
+## 🎖️ Contribuição e Comando
+Consulte o ficheiro [CONTRIBUTING.md](CONTRIBUTING.md) para entender as regras de engajamento do nosso departamento de I&D.
+
+---
+
+**Comandante:** "A vitória favorece os preparados." 🫡⚔️

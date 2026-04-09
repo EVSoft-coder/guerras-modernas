@@ -12,6 +12,7 @@ return [
         'construction' => 10,  // 10x mais rápido
         'training' => 10,      // 10x mais rápido
         'travel' => 5,         // 5x mais rápido
+        'protection_hours' => 24, // Proteção de novato (24h)
     ],
 
     /*

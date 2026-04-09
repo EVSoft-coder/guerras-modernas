@@ -1,33 +1,30 @@
-# 📂 Guia de Contribuição - Guerras Modernas
+# 🎖️ Regras de Engajamento para I&D (Contributing) 🛰️
 
-Bem-vindo ao quartel-general de desenvolvimento. Este documento estabelece os protocolos para manter o código do projeto "Guerras Modernas" estável, limpo e profissional.
+Oficial, bem-vindo ao departamento de Investigação e Desenvolvimento das **Guerras Modernas**. Para manter a integridade dos nossos sistemas e a superioridade no campo de batalha, deve seguir este protocolo rigoroso.
 
-## 🛠️ Padrões de Código
+## ⚔️ Protocolo de Submissão
+1.  **Reconhecimento:** Verifique se a funcionalidade solicitada já não está a ser desenvolvida por outro oficial no Roadmap.
+2.  **Ramificação (Branch):** Crie uma branch específica para a sua missão: `feat/nome-da-missao` ou `fix/problema-tecnico`.
+3.  **Higiene de Código:** 
+    *   Mantenha o encoding em **UTF-8 sem BOM**.
+    *   Siga as normas PSR-12 para PHP.
+    *   Utilize TypeScript para novas frentes no React.
 
-- **PSR-12:** Todo o código PHP deve seguir rigorosamente as recomendações do PSR-12.
-- **Strict Typing:** Sempre que possível, utilize tipagem estrita nos métodos e propriedades.
-- **Blade & CSS:** Manter a estética "Premium" (Glassmorphism, Dark Mode) em todas as novas interfaces.
-- **Naming:** Nomes de classes e métodos em Inglês (Padrão Laravel), mas campos de base de dados e termos de jogo podem ser em Português conforme o domínio.
+## 🛡️ Padrões de Qualidade Premium
+O projeto Guerras Modernas preza pela estética e fluidez. Qualquer nova interface deve:
+- Seguir o esquema de cores **Dark/Military/Glassmorphism**.
+- Ser totalmente responsiva (**Mobile-First**).
+- Utilizar animações micro-táticas discretas e eficientes.
 
-## 🌿 Fluxo de Trabalho Git
+## 🛠️ Stack de Operações
+- **Backend:** Laravel 12 (com Traits para lógica de jogo atómica).
+- **Frontend:** React + TypeScript + Vite.
+- **Styling:** Vanilla CSS (evite Tailwind utilitário puro em componentes core, preferimos classes semânticas no `index.css`).
 
-1. **Branches:** Criar branches descritivas (ex: `feat/sistema-de-ataques`, `fix/charset-encoding`).
-2. **Commits:** Seguir o padrão de Commits Convencionais:
-   - `feat:` Novas funcionalidades.
-   - `fix:` Correção de bugs.
-   - `docs:` Alterações na documentação.
-   - `style:` Formatação, falta de pontos e vírgulas, etc.
-   - `refactor:` Alteração de código que não corrige um bug nem adiciona uma funcionalidade.
-
-## 🛡️ Segurança e Performance
-
-- **Transações:** Sempre que uma operação envolver múltiplas tabelas (ex: Registo, Combate), utilize `DB::transaction()`.
-- **Validação:** Nunca valide dados diretamente nos controladores. Utilize **Form Requests**.
-- **Indexes:** Adicione índices às tabelas de base de dados para colunas frequentemente filtradas (ex: `coordenadas`, `jogador_id`).
-
-## 💬 Comunicação
-
-Bugs críticos ou dúvidas arquiteturais devem ser reportados diretamente ao Arquiteto Principal.
+## 📡 Comunicação
+Sempre que submeter um Pull Request, certifique-se de:
+- Documentar o impacto na economia do jogo (custos, tempos, taxas).
+- Fornecer evidências visuais (screenshots/recordings) se houver mudanças na UI.
 
 ---
-🫡 *Foco, Disciplina e Código Limpo.*
+**Comando Geral:** "A disciplina é a alma de um exército." 🫡⚔️

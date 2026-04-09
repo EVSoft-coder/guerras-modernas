@@ -58,4 +58,13 @@ class Jogador extends Authenticatable
     {
         return $this->hasMany(PedidoAlianca::class, 'jogador_id');
     }
+
+    /**
+     * Verifica se o jogador ainda está sob proteção de novato.
+     */
+    public function sobProtecao()
+    {
+        $horasProtecao = config('game.speed.protection_hours', 24);
+        return $this->created_at->addHours($horasProtecao)->isFuture();
+    }
 }
