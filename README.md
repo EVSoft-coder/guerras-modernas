@@ -71,4 +71,16 @@ Consulte o ficheiro [CONTRIBUTING.md](CONTRIBUTING.md) para entender as regras d
 
 ---
 
+## 🎖️ Como Testar Hoje (Versão 1.3-ALPHA)
+
+Para verificar o estado atual do comando, siga estes procedimentos:
+
+1.  **Acesso:** Entre em `/dashboard` e verifique a limpeza total do console e do encoding.
+2.  **Economia:** Observe o ticker de recursos em tempo real no HUD superior.
+3.  **Engenharia:** Construa um edifício (ex: Minas) e observe a fila de construção atómica.
+4.  **Logística Mobilizada:** Selecione o **Mapa Tático**, escolha uma base hostil e lance uma ofensiva. Note que o tempo de chegada agora respeita a velocidade da unidade mais lenta do seu batalhão.
+5.  **Reconhecimento:** Utilize o **Simulador Tático** no Dashboard para prever baixas antes de enviar tropas reais.
+
+---
+
 **Comandante:** "A vitória favorece os preparados." 🫡⚔️

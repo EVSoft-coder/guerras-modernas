@@ -97,17 +97,35 @@ class BaseController extends Controller
             return redirect()->back()->withErrors(['error' => 'ALVO PROTEGIDO: O comandante inimigo ainda está em período de alistamento inicial (Proteção de Novato).']);
         }
         
-        // Lógica de tempo de viagem baseada na distância
+        // Lógica de tempo de viagem baseada na distância e na UNIDADE MAIS LENTA
         $distancia = sqrt(pow($destino->coordenada_x - $origem->coordenada_x, 2) + pow($destino->coordenada_y - $origem->coordenada_y, 2));
         
-        $speed = config('game.speed.travel', 1);
+        $unidadesConf = config('game.units');
+        $minSpeed = 999;
+        $tropaEnviada = false;
+
+        foreach ($request->tropas as $unidade => $quantidade) {
+            if ($quantidade > 0) {
+                $tropaEnviada = true;
+                $velUnidade = $unidadesConf[$unidade]['speed'] ?? 10;
+                if ($velUnidade < $minSpeed) {
+                    $minSpeed = $velUnidade;
+                }
+            }
+        }
+
+        if (!$tropaEnviada) {
+            return redirect()->back()->withErrors(['error' => 'MOBILIZAÇÃO INVÁLIDA: Selecione pelo menos uma unidade para a operação.']);
+        }
+
+        $speed = $minSpeed;
         
         // APLICAR TECH: Logística Avançada (+10% velocidade por nível)
         $nivelLogistica = Auth::user()->obterNivelTech('logistica');
         $multiplicadorVel = 1 + ($nivelLogistica * 0.10);
         $speed *= $multiplicadorVel;
 
-        $segundos = ($distancia * 100) / $speed; // Ajuste para Speed Mode
+        $segundos = ($distancia * 100) / max(1, $speed); // Ajuste para Speed Mode
         $chegadaEm = now()->addSeconds($segundos);
 
         try {

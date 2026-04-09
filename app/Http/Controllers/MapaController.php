@@ -21,7 +21,7 @@ class MapaController extends Controller
 
         $raio = 6; // Ver total de 13x13 (raio 6 central)
         
-        $bases = Base::with('jogador.alianca')
+        $bases = Base::with(['jogador.alianca', 'recursos'])
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
             ->get();

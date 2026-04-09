@@ -189,7 +189,8 @@ class AuthController extends Controller
             ->take(8)
             ->get();
 
-        $relatoriosGlobal = \App\Models\Relatorio::orderBy('created_at', 'desc')
+        $relatoriosGlobal = \App\Models\Relatorio::with(['atacante', 'defensor'])
+            ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
 

@@ -53,11 +53,11 @@
                                      data-bs-content="Comandante: {{ $baseAqui->jogador->username }}<br>Nível Base: {{ $baseAqui->qg_nivel }}<br><a href='{{ route('dashboard') }}?target={{ $baseAqui->id }}' class='btn btn-sm btn-danger mt-2 w-100 fw-bold'>ORDENS DE ATAQUE</a>"
                                      data-bs-html="true">
                                     @if ($tipoIcone == 'owner')
-                                        <i class="bi bi-shield-fill text-info"></i>
+                                        <i class="bi bi-hexagon-fill text-info"></i>
                                     @elseif ($tipoIcone == 'ally')
-                                        <i class="bi bi-shield-shaded text-primary"></i>
+                                        <i class="bi bi-hexagon-half text-primary"></i>
                                     @else
-                                        <i class="bi bi-house-door-fill text-danger"></i>
+                                        <i class="bi bi-hexagon text-danger"></i>
                                     @endif
                                 </div>
                             @else

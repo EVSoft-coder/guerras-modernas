@@ -10,8 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.tsx'])
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+<body class="bg-black text-white antialiased">
+    {{-- Fallback para silenciar erro de 'dataset' do Inertia em páginas Blade --}}
+    <div id="app" data-page="{&quot;url&quot;:&quot;/&quot;}" style="display: none;"></div>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark px-3 mt-4">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">Guerras Modernas</a>
             
