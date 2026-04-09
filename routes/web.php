@@ -112,10 +112,29 @@ Route::get('/manual', function() {
 })->name('manual');
 Route::get('/mw-admin-trigger-99', function() {
     try {
-        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
         $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
         
-        // Auto-Migration de Tabelas Críticas
+        // 1. ASSEGURAR TABELAS DE SISTEMA (CACHE/SESSIONS)
+        $pdo->exec("CREATE TABLE IF NOT EXISTS cache (
+            `key` VARCHAR(255) PRIMARY KEY,
+            `value` MEDIUMTEXT NOT NULL,
+            `expiration` INT NOT NULL
+        )");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS cache_locks (
+            `key` VARCHAR(255) PRIMARY KEY,
+            `owner` VARCHAR(255) NOT NULL,
+            `expiration` INT NOT NULL
+        )");
+
+        // 2. FORÇAR ATUALIZAÇÃO DE CÓDIGO (GIT PULL)
+        $gitOutput = [];
+        exec('git pull origin master 2>&1', $gitOutput);
+        $gitLog = implode("\n", $gitOutput);
+
+        // 3. LIMPEZA DE CACHE (AGORA SEGURO)
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        
+        // 4. AUTO-MIGRATION DE TABELAS DE JOGO
         $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS xp BIGINT DEFAULT 0");
         $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS nivel INT DEFAULT 1");
         $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS cargo VARCHAR(255) DEFAULT 'Recruta'");
@@ -138,8 +157,11 @@ Route::get('/mw-admin-trigger-99', function() {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )");
         
-        return "Tactical Override Success: Cache Cleared & DB Structured.";
+        return "<h3>Tactical Override Success</h3>" . 
+               "<pre>GIT PULL: $gitLog</pre>" . 
+               "<p>Cache Cleared & DB Structured.</p>";
     } catch (\Exception $e) {
-        return "Tactical Override Error: " . $e->getMessage();
+        return "<h3>Tactical Override Error</h3>" . 
+               "<pre>" . $e->getMessage() . "</pre>";
     }
 });

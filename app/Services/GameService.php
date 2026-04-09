@@ -33,14 +33,29 @@ class GameService
             throw new \Exception("Já existe uma construção em andamento nesta base.");
         }
 
-        // Traduzir tipo visual para chave de config se necessário
-        $tipoKey = str_replace(' ', '_', strtolower($tipo));
-        if ($tipoKey == 'refinaria') $tipoKey = 'refinaria'; // exemplo
+        // Mapeamento robusto de edifícios (suporta nomes técnicos e amigáveis)
+        $tiposMapeados = [
+            'mina de suprimentos' => 'mina_suprimentos',
+            'refinaria de combustível' => 'refinaria',
+            'fábrica de munições' => 'fabrica_municoes',
+            'posto de recrutamento' => 'posto_recrutamento',
+            'quartel regional' => 'quartel',
+            'aeródromo militar' => 'aerodromo',
+            'radar de longo alcance' => 'radar_estrategico',
+            'centro de pesquisa & i&d' => 'centro_pesquisa'
+        ];
+
+        $tipoKey = str_replace(['_', '-'], ' ', strtolower($tipo));
+        if (isset($tiposMapeados[$tipoKey])) {
+            $tipoKey = $tiposMapeados[$tipoKey];
+        } else {
+            $tipoKey = str_replace(' ', '_', strtolower($tipo));
+        }
         
         $conf = config("game.buildings.{$tipoKey}");
         if (!$conf) throw new \Exception("Edifício desconhecido ($tipoKey).");
 
-        $nivelAtual = $base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0;
+        $nivelAtual = $base->edificios()->where('tipo', $tipoKey)->first()?->nivel ?? 0;
         $nivelAlvo = $nivelAtual + 1;
 
         // Debitar Recursos
@@ -153,21 +168,19 @@ class GameService
             }
         }
 
-        foreach ($conf['cost'] as $res => $baseAmount) {
-            $cost = floor($baseAmount * pow($nivelAlvo, 1.8));
-            $recursos->decrement($res, $cost);
-        }
+        return \Illuminate\Support\Facades\DB::transaction(function() use ($jogador, $tipo, $nivelAlvo, $completadoEm, $recursos, $conf) {
+            foreach ($conf['cost'] as $res => $baseAmount) {
+                $cost = floor($baseAmount * pow($nivelAlvo, 1.8));
+                $recursos->decrement($res, $cost);
+            }
 
-        $speed = config('game.speed.construction', 1); // pesquisas usam speed de construção
-        $segundos = ($conf['time_base'] * $nivelAlvo) / $speed;
-        $completadoEm = now()->addSeconds($segundos);
-
-        return \App\Models\Pesquisa::create([
-            'jogador_id'    => $jogador->id,
-            'tipo'          => $tipo,
-            'nivel'         => $nivelAlvo,
-            'completado_em' => $completadoEm,
-        ]);
+            return \App\Models\Pesquisa::create([
+                'jogador_id'    => $jogador->id,
+                'tipo'          => $tipo,
+                'nivel'         => $nivelAlvo,
+                'completado_em' => $completadoEm,
+            ]);
+        });
     }
 
     /**
