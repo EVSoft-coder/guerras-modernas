@@ -148,17 +148,37 @@ Route::get('/mw-admin-trigger-99', function() {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )");
 
-        $pdo->exec("CREATE TABLE IF NOT EXISTS pedidos_alianca (
-            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            jogador_id BIGINT UNSIGNED,
-            alianca_id BIGINT UNSIGNED,
-            status ENUM('pendente', 'aceite', 'recusado') DEFAULT 'pendente',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )");
-        
+        // 6. DASHBOARD DIAGNOSTIC (Simular carga do Painel)
+        $diag = "";
+        try {
+            $jogador = \App\Models\Jogador::first();
+            if ($jogador) {
+                $base = $jogador->bases->first();
+                if ($base) {
+                    $gs = new \App\Services\GameService();
+                    $gs->atualizarRecursos($base);
+                    $gs->processarFila($base);
+                    $diag .= "Base Diagnostic Success: Resources Updated.\n";
+                    
+                    $intel = $base->edificios()->where('tipo', 'radar_estrategico')->first()?->nivel ?? 0;
+                    $diag .= "Intel Level: $intel\n";
+                    
+                    $pesquisas = \App\Models\Pesquisa::where('jogador_id', $jogador->id)->count();
+                    $diag .= "Pesquisas Count: $pesquisas\n";
+                } else {
+                    $diag .= "Diagnostic Warning: No Base found for Player.\n";
+                }
+            } else {
+                $diag .= "Diagnostic Warning: No Player found.\n";
+            }
+        } catch (\Exception $ex) {
+            $diag .= "DIAGNOSTIC CRASH: " . $ex->getMessage() . "\n" . $ex->getTraceAsString();
+        }
+
         return "<h3>Tactical Override Success</h3>" . 
                "<pre>$log</pre>" . 
-               "<p>Cache Cleared & DB Structured.</p>";
+               "<h4>System Diagnostic</h4><pre>$diag</pre>" .
+               "<p>Cache Cleared & All Game Tables (Research, Alliances, Combat, Reports) Structured.</p>";
     } catch (\Exception $e) {
         return "<h3>Tactical Override Warning (Code might have pulled)</h3>" . 
                "<pre>$log</pre>" . 
