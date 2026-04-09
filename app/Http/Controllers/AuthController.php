@@ -113,8 +113,13 @@ class AuthController extends Controller
             // Guardar o ID selecionado na sessão para persistência
             session(['selected_base_id' => $base->id]);
 
-            // AUTO-UPDATE ESTRUTURAL (Unblocker)
+            // AUTO-UPDATE ESTRUTURAL (Unblocker Nuclear)
             try {
+                // Forçar limpeza de cache se detectar inconsistência ou via trigger manual
+                if (!\Illuminate\Support\Facades\Schema::hasTable('pesquisas') || request()->has('force_clear')) {
+                    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+                }
+
                 if (!\Illuminate\Support\Facades\Schema::hasColumn('jogadores', 'xp')) {
                     \Illuminate\Support\Facades\DB::statement("ALTER TABLE jogadores ADD COLUMN xp BIGINT DEFAULT 0, ADD COLUMN nivel INT DEFAULT 1, ADD COLUMN cargo VARCHAR(255) DEFAULT 'Recruta'");
                 }
@@ -127,8 +132,15 @@ class AuthController extends Controller
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
                 )");
+                \Illuminate\Support\Facades\DB::statement("CREATE TABLE IF NOT EXISTS pedidos_alianca (
+                    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    jogador_id BIGINT UNSIGNED,
+                    alianca_id BIGINT UNSIGNED,
+                    status ENUM('pendente', 'aceite', 'recusado') DEFAULT 'pendente',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )");
             } catch (\Exception $e) {
-                \Log::error("Auto-Update Failed: " . $e->getMessage());
+                \Log::error("Nuclear Unblocker Failed: " . $e->getMessage());
             }
             
             // Obter taxas de produção p/min
