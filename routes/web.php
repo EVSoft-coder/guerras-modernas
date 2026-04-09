@@ -89,10 +89,5 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/mw-console-logs/fetch', [LogController::class, 'fetch'])->name('admin.logs.fetch');
         Route::get('/mw-console-logs/clear', [LogController::class, 'clear'])->name('admin.logs.clear');
         
-        // Gatilho de Emergência
-        Route::get('/mw-admin-trigger-99', function() {
-            // ... (o código do trigger será injetado pelo deploy)
-            return "Ativo";
-        });
     });
 });
