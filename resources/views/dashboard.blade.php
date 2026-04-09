@@ -14,14 +14,14 @@
                     <div class="x-small text-info opacity-80 fw-bold mt-1" id="rate-suprimentos">+{{ number_format($taxas['suprimentos'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
-                    <div class="text-warning small text-uppercase fw-bold mb-1 ls-1"><i class="bi bi-fuel-pump-fill me-1"></i> Combustível</div>
+                    <div class="text-warning small text-uppercase fw-bold mb-1 ls-1"><i class="bi bi-fuel-pump-fill me-1"></i> Combust&iacute;vel</div>
                     <div class="res-value text-warning d-flex align-items-center justify-content-center mb-0" id="res-combustivel">
                         {{ number_format(floor($base->recursos->combustivel ?? 0)) }}
                     </div>
                     <div class="x-small text-warning opacity-80 fw-bold mt-1" id="rate-combustivel">+{{ number_format($taxas['combustivel'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
-                    <div class="text-danger small text-uppercase fw-bold mb-1 ls-1"><i class="bi bi-rocket-takeoff-fill me-1"></i> Munições</div>
+                    <div class="text-danger small text-uppercase fw-bold mb-1 ls-1"><i class="bi bi-rocket-takeoff-fill me-1"></i> Muni&ccedil;&otilde;es</div>
                     <div class="res-value text-danger d-flex align-items-center justify-content-center mb-0" id="res-municoes">
                         {{ number_format(floor($base->recursos->municoes ?? 0)) }}
                     </div>
@@ -75,11 +75,11 @@
                                     @endphp
                                     <div class="progress-bar bg-warning animate-stripes" style="width: {{ $pPercent }}%"></div>
                                 </div>
-                                <div class="x-small text-white/70 mt-1">{{ $c->edificio_tipo }} Nível {{ $c->nivel_destino }}</div>
+                                <div class="x-small text-white/70 mt-1">{{ $c->edificio_tipo }} N&iacute;vel {{ $c->nivel_destino }}</div>
                             </div>
                         @else
                             <div class="glassmorphism p-3 rounded-4 border-success/40">
-                                <div class="text-success x-small fw-bold text-uppercase">Logística</div>
+                                <div class="text-success x-small fw-bold text-uppercase">Log&iacute;stica</div>
                                 <div class="text-white small">Sistemas Operacionais</div>
                             </div>
                         @endif
@@ -93,7 +93,7 @@
     <div class="col-lg-4">
         <div class="card glassmorphism border-white/10 mb-4 h-auto">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 text-white fw-bold"><i class="bi bi-geo-alt-fill text-primary"></i> Território Ativo</h6>
+                <h6 class="mb-0 text-white fw-bold"><i class="bi bi-geo-alt-fill text-primary"></i> Territ&oacute;rio Ativo</h6>
                 @if($jogador->sobProtecao())
                     <span class="badge bg-info/20 text-info border border-info/40 x-small animate-pulse px-3"><i class="bi bi-shield-check me-1"></i> PROTEÇÃO DE NOVATO</span>
                 @endif
@@ -151,7 +151,7 @@
         <div class="card glassmorphism border-info/30 mb-4 h-auto shadow-lg overflow-hidden position-relative">
             <div class="scanner-sweep opacity-20"></div>
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center bg-info/5">
-                <h6 class="mb-0 text-info fw-black x-small text-uppercase ls-1"><i class="bi bi-broadcast me-2"></i> Centro de Inteligência & Radar</h6>
+                <h6 class="mb-0 text-info fw-black x-small text-uppercase ls-1"><i class="bi bi-broadcast me-2"></i> Centro de Intelig&ecirc;ncia & Radar</h6>
                 <span class="badge bg-{{ $intelLevel >= 10 ? 'success' : 'warning' }}/20 text-{{ $intelLevel >= 10 ? 'success' : 'warning' }} x-small border border-{{ $intelLevel >= 10 ? 'success' : 'warning' }}/30">INTEL LVL {{ $intelLevel }}</span>
             </div>
             
@@ -203,7 +203,7 @@
                 @foreach($ataquesEnviados as $atq)
                     <div class="p-3 mb-2 rounded-3 bg-info/10 border border-info/30">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <strong class="text-info small text-uppercase">Missão Expedicionária</strong>
+                            <strong class="text-info small text-uppercase">Miss&atilde;o Expedicionária</strong>
                             <span class="badge bg-info countdown x-small" data-time="{{ $atq->chegada_em->timestamp }}">--:--</span>
                         </div>
                         <div class="x-small text-white/70">Destino: Base Hostil ({{ $atq->tipo }})</div>
@@ -278,16 +278,16 @@
                             <label class="x-small text-muted fw-bold mb-1">DAR (300)</label>
                             <select name="oferece" class="form-select form-select-sm bg-black/40 border-white/10 text-white x-small">
                                 <option value="suprimentos"><i class="bi bi-box-seam"></i> Suprimentos</option>
-                                <option value="combustivel"><i class="bi bi-fuel-pump"></i> Combustível</option>
-                                <option value="municoes"><i class="bi bi-rocket-takeoff"></i> Munições</option>
+                                <option value="combustivel"><i class="bi bi-fuel-pump"></i> Combust&iacute;vel</option>
+                                <option value="municoes"><i class="bi bi-rocket-takeoff"></i> Muni&ccedil;&otilde;es</option>
                             </select>
                         </div>
                         <div class="col-5">
                             <label class="x-small text-muted fw-bold mb-1">RECEBER (100)</label>
                             <select name="recebe" class="form-select form-select-sm bg-black/40 border-white/10 text-info x-small">
-                                <option value="combustivel"><i class="bi bi-fuel-pump"></i> Combustível</option>
+                                <option value="combustivel"><i class="bi bi-fuel-pump"></i> Combust&iacute;vel</option>
                                 <option value="suprimentos"><i class="bi bi-box-seam"></i> Suprimentos</option>
-                                <option value="municoes"><i class="bi bi-rocket-takeoff"></i> Munições</option>
+                                <option value="municoes"><i class="bi bi-rocket-takeoff"></i> Muni&ccedil;&otilde;es</option>
                                 <option value="pessoal"><i class="bi bi-people"></i> Pessoal</option>
                             </select>
                         </div>
@@ -329,7 +329,7 @@
                         </a>
                     @empty
                         <div class="p-5 text-center text-muted small opacity-50 italic">
-                            Aguardando Relatórios de campo...
+                            Aguardando Relat&oacute;rios de campo...
                         </div>
                     @endforelse
                 </div>
@@ -418,7 +418,7 @@
                             <tr>
                                 <th class="ps-4">Designação Tecnológica</th>
                                 <th>Estado</th>
-                                <th>Logística Próx. Nível</th>
+                                <th>Log&iacute;stica Próx. N&iacute;vel</th>
                                 <th class="text-end pe-4">Comando</th>
                             </tr>
                         </thead>
@@ -498,9 +498,9 @@
                             <thead class="x-small text-info text-uppercase fw-black ls-1">
                                 <tr>
                                     <th class="ps-4">Tecnologia</th>
-                                    <th>Nível Atual</th>
+                                    <th>N&iacute;vel Atual</th>
                                     <th>Custo Upgrade</th>
-                                    <th class="text-end pe-4">Ação</th>
+                                    <th class="text-end pe-4">A&ccedil;&atilde;o</th>
                                 </tr>
                             </thead>
                             <tbody class="text-white">
@@ -557,7 +557,7 @@
         <!-- RECRUTAMENTO DE TROPAS -->
         <div class="card glassmorphism border-white/10">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-white fw-black text-uppercase ls-1"><i class="bi bi-shield-shaded"></i> Guarnição Defensiva</h5>
+                <h5 class="mb-0 text-white fw-black text-uppercase ls-1"><i class="bi bi-shield-shaded"></i> Guarni&ccedil;&atilde;o Defensiva</h5>
                 @if($base->treinos->count() > 0)
                     @php $tr = $base->treinos->first(); @endphp
                     <div class="badge bg-success/20 border border-success/40 text-success py-2 px-3 animate-pulse">

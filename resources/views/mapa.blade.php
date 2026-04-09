@@ -4,9 +4,9 @@
 <div class="row g-4 justify-content-center">
     <!-- CONTROLES DO MAPA -->
     <div class="col-12 text-center mb-2">
-        <h3 class="fw-bold"><i class="bi bi-radar"></i> Centro de Comando Tático</h3>
+        <h3 class="fw-bold"><i class="bi bi-radar"></i> Centro de Comando T&aacute;tico</h3>
         <div class="badge bg-dark border border-white/10 p-2 fs-6">
-             Frequência: <span class="text-success blink">ATIVA</span> | Coords: {{ $x }},{{ $y }}
+             Frequ&ecirc;ncia: <span class="text-success blink">ATIVA</span> | Coords: {{ $x }},{{ $y }}
         </div>
     </div>
 
@@ -50,7 +50,7 @@
                                 <div class="base-icon {{ $tipoIcone }}"
                                      data-bs-toggle="popover" 
                                      data-bs-title="{{ $baseAqui->nome }} [{{ $baseAqui->jogador->alianca->tag ?? 'S/A' }}]"
-                                     data-bs-content="Comandante: {{ $baseAqui->jogador->username }}<br>Nível Base: {{ $baseAqui->qg_nivel }}<br><a href='{{ route('dashboard') }}?target={{ $baseAqui->id }}' class='btn btn-sm btn-danger mt-2 w-100 fw-bold'>ORDENS DE ATAQUE</a>"
+                                     data-bs-content="Comandante: {{ $baseAqui->jogador->username }}<br>N&iacute;vel Base: {{ $baseAqui->qg_nivel }}<br><a href='{{ route('dashboard') }}?target={{ $baseAqui->id }}' class='btn btn-sm btn-danger mt-2 w-100 fw-bold'>ORDENS DE ATAQUE</a>"
                                      data-bs-html="true">
                                     @if ($tipoIcone == 'owner')
                                         <i class="bi bi-hexagon-fill text-info"></i>
@@ -88,15 +88,15 @@
                 <h6 class="text-uppercase small text-muted mb-3 italic">Assinaturas de Radar</h6>
                 <div class="d-flex align-items-center mb-3">
                     <div class="tile-sample me-3 rounded-1 shadow-sm" style="width: 20px; height: 20px; background-color: #0ea5e9;"></div>
-                    <span class="small fw-bold">Tua Jurisdição</span>
+                    <span class="small fw-bold">Tua Jurisdi&ccedil;&atilde;o</span>
                 </div>
                 <div class="d-flex align-items-center mb-3">
                     <div class="tile-sample me-3 rounded-1 shadow-sm" style="width: 20px; height: 20px; background-color: #3b82f6;"></div>
-                    <span class="small fw-bold">Aliados / Coligação</span>
+                    <span class="small fw-bold">Aliados / Coliga&ccedil;&atilde;o</span>
                 </div>
                 <div class="d-flex align-items-center mb-4">
                     <div class="tile-sample me-3 rounded-1 shadow-sm" style="width: 20px; height: 20px; background-color: #ef4444;"></div>
-                    <span class="small fw-bold">Forças Hostis</span>
+                    <span class="small fw-bold">For&ccedil;as Hostis</span>
                 </div>
                 
                 <hr class="border-white/5">

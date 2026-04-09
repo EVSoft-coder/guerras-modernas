@@ -33,9 +33,26 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Gatilho de Emergência (Público para Reparação)
+// Gatilho de Emergência (Público para Reparação - NUC CLEAR)
 Route::get('/mw-admin-trigger-99', function() {
-    return "Aguardando V23...";
+    try {
+        Artisan::call('view:clear');
+        Artisan::call('cache:clear');
+        Artisan::call('config:clear');
+        Artisan::call('route:clear');
+        
+        return response()->json([
+            'status' => 'SUCCESS',
+            'mission' => 'SINAL PURO',
+            'message' => 'Cache detonada. Vistas e configurações recarregadas com sucesso no servidor OVH.',
+            'timestamp' => now()->toDateTimeString()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'FAILURE',
+            'error' => $e->getMessage()
+        ], 500);
+    }
 });
 
 // Rotas Protegidas (Requer Login)
