@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    // ====================== VIEWS ======================
+    public function showLogin() { return view('auth.login'); }
+    public function showRegister() { return view('auth.login'); } // Usando a mesma view para simplicidade se necessário ou mudar para register
+    public function perfil() { return view('dashboard'); } // Perfil por agora redireciona ou mostra dashboard
+
     // ====================== REGISTO ======================
     public function register(Request $request)
     {
@@ -40,7 +45,7 @@ class AuthController extends Controller
         $base = Base::create([
             'jogador_id'     => $jogador->id,
             'nome'           => 'Base Principal',
-            'coordenada_x'   => rand(100, 900),   // coordenadas aleatórias iniciais
+            'coordenada_x'   => rand(100, 900),   // coordenadas aleatÃ³rias iniciais
             'coordenada_y'   => rand(100, 900),
             'qg_nivel'       => 1,
             'muralha_nivel'  => 1,
@@ -55,12 +60,12 @@ class AuthController extends Controller
             'pessoal'     => 600,
         ]);
 
-        // Criar edifícios básicos
+        // Criar edifÃ­cios bÃ¡sicos
         Edificio::create(['base_id' => $base->id, 'tipo' => 'QG', 'nivel' => 1]);
         Edificio::create(['base_id' => $base->id, 'tipo' => 'Quartel', 'nivel' => 1]);
         Edificio::create(['base_id' => $base->id, 'tipo' => 'Muralha', 'nivel' => 1]);
 
-        // Fazer login automático
+        // Fazer login automÃ¡tico
         Auth::login($jogador);
 
         return redirect('/dashboard')->with('success', 'Conta criada com sucesso! Bem-vindo ao Guerras Modernas!');
@@ -76,7 +81,7 @@ class AuthController extends Controller
             return redirect('/dashboard');
         }
 
-        return redirect()->back()->withErrors(['email' => 'Credenciais inválidas.']);
+        return redirect()->back()->withErrors(['email' => 'Credenciais invÃ¡lidas.']);
     }
 
     // ====================== LOGOUT ======================
@@ -86,7 +91,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('success', 'Sessão terminada.');
+        return redirect('/')->with('success', 'SessÃ£o terminada.');
     }
 
     // ====================== DASHBOARD ======================
@@ -98,7 +103,7 @@ class AuthController extends Controller
         // Buscar todas as bases do jogador
         $bases = $jogador->bases()->with('recursos', 'edificios', 'construcoes', 'treinos')->get();
         
-        // Determinar qual base exibir (via sessão ou primeira da lista)
+        // Determinar qual base exibir (via sessÃ£o ou primeira da lista)
         $selectedBaseId = session('selected_base_id');
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
 
@@ -115,18 +120,18 @@ class AuthController extends Controller
             }
 
             $gameService = new GameService();
-            // Atualizar Recursos e Fila de Construção/Treino (sempre atualiza ao ver)
+            // Atualizar Recursos e Fila de ConstruÃ§Ã£o/Treino (sempre atualiza ao ver)
             $gameService->atualizarRecursos($base);
             $gameService->processarFila($base);
             
-            // Recarregar com todas as dependências finais
+            // Recarregar com todas as dependÃªncias finais
             $base->refresh();
             $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
             
-            // Guardar o ID selecionado na sessão para persistência
+            // Guardar o ID selecionado na sessÃ£o para persistÃªncia
             session(['selected_base_id' => $base->id]);
 
-            // Obter taxas de produção p/min
+            // Obter taxas de produÃ§Ã£o p/min
             $taxas = $gameService->obterTaxasProducao($base);
             
             // Obter taxas p/segundo para o ticker do frontend
@@ -135,10 +140,10 @@ class AuthController extends Controller
                 $taxasPerSecond[$res] = $minRate / 60;
             }
 
-            // NOVAS VARIÁVEIS PARA O UI MODERNO (FASES 11-14)
+            // NOVAS VARIÃVEIS PARA O UI MODERNO (FASES 11-14)
             $intelLevel = $base->edificios()->where('tipo', 'radar_estrategico')->first()?->nivel ?? 0;
             
-            // Cálculo de População/Guarnição
+            // CÃ¡lculo de PopulaÃ§Ã£o/GuarniÃ§Ã£o
             $nivelRecrutamento = $base->edificios()->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0;
             $capacidadeBase = (100 * ($nivelRecrutamento + 1)) * 1.5;
             $nivelLogistica = $jogador->obterNivelTech('logistica');
@@ -172,7 +177,7 @@ class AuthController extends Controller
             $ataquesEnviados = collect();
         }
 
-        // Buscar últimos relatórios envolvidos
+        // Buscar Ãºltimos relatÃ³rios envolvidos
         $relatorios = \App\Models\Relatorio::where('atacante_id', $jogador->id)
             ->orWhere('defensor_id', $jogador->id)
             ->orderBy('created_at', 'desc')

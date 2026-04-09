@@ -1,71 +1,89 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MapaController;
-use App\Http\Controllers\BaseController;
-use App\Http\Controllers\RankingController;
-use App\Http\Controllers\AliancaController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BaseController;
+use App\Http\Controllers\AliancaController;
+use App\Http\Controllers\RankingController;
+use App\Http\Controllers\MapaController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\LogController;
+use App\Http\Controllers\ManualController;
+use App\Http\Controllers\RelatorioController;
+use Illuminate\Support\Facades\Artisan;
 
-// Rotas padrão
-Route::get('/', function () { return view('welcome'); })->name('home');
-Route::get('/register', function () { return view('auth.register'); })->name('register.form');
-Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::get('/login', function () { return view('auth.login'); })->name('login.form');
+/*
+|--------------------------------------------------------------------------
+| Rotas de Produção - Guerras Modernas 1.0
+|--------------------------------------------------------------------------
+*/
+
+// Forçar UTF-8 e Configurações de Ambiente
+ini_set('default_charset', 'UTF-8');
+mb_internal_encoding('UTF-8');
+
+// Landing Page e Autenticação
+Route::get('/', function () { return view('welcome'); });
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');
+Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/dashboard', [AuthController::class, 'dashboard'])->middleware('auth')->name('dashboard');
-Route::get('/mapa', [MapaController::class, 'index'])->middleware('auth')->name('mapa');
-Route::get('/ranking', [RankingController::class, 'index'])->middleware('auth')->name('ranking');
-Route::get('/alianca', [AliancaController::class, 'index'])->middleware('auth')->name('alianca.index');
-Route::post('/alianca', [AliancaController::class, 'store'])->middleware('auth')->name('alianca.store');
-Route::post('/alianca/pedir', [AliancaController::class, 'pedir'])->middleware('auth')->name('alianca.pedir');
-Route::post('/alianca/decidir/{id}/{decisao}', [AliancaController::class, 'decidir'])->middleware('auth')->name('alianca.decidir');
-Route::post('/alianca/sair', [AliancaController::class, 'sair'])->middleware('auth')->name('alianca.sair');
-Route::post('/alianca/chat', [App\Http\Controllers\ChatController::class, 'enviar'])->middleware('auth')->name('alianca.chat.enviar');
-Route::get('/alianca/chat/buscar', [App\Http\Controllers\ChatController::class, 'buscar'])->middleware('auth')->name('alianca.chat.buscar');
-Route::post('/upgrade', [BaseController::class, 'upgrade'])->middleware('auth')->name('base.upgrade');
-Route::post('/treinar', [BaseController::class, 'treinar'])->middleware('auth')->name('base.treinar');
-Route::post('/atacar', [BaseController::class, 'atacar'])->middleware('auth')->name('base.atacar');
-Route::post('/atacar/cancelar/{id}', [BaseController::class, 'cancelarAtaque'])->middleware('auth')->name('base.atacar.cancelar');
-Route::post('/simular', [BaseController::class, 'simular'])->middleware('auth')->name('base.simular');
-Route::get('/base/switch/{id}', [BaseController::class, 'switchBase'])->middleware('auth')->name('base.switch');
-Route::get('/cron/processar', [BaseController::class, 'manualProcess'])->middleware('auth')->name('cron.processar');
-Route::post('/base/trocar', [BaseController::class, 'trocar'])->middleware('auth')->name('base.trocar');
-Route::post('/pesquisar', [App\Http\Controllers\PesquisaController::class, 'pesquisar'])->middleware('auth')->name('base.pesquisar');
-Route::get('/relatorio/{id}', [App\Http\Controllers\RelatorioController::class, 'show'])->middleware('auth')->name('relatorio.show');
-Route::get('/api/mapa', [MapaController::class, 'apiData'])->middleware('auth');
-Route::get('/manual', function() { return view('manual', ['units' => config('game.units'), 'buildings' => config('game.buildings')]); })->name('manual');
 
-// O SUPER TRIGGER V6 - ATOMIC CHUNK OVERRIDE (Offline Bypass)
-Route::get('/mw-admin-trigger-99', function() {
-    $patchLog = "";
+// Rotas Protegidas (Requer Login)
+Route::middleware(['auth'])->group(function () {
     
-    // AuthController.php (Particionado)
-    $authChunks = ['PD9waHANCg0KbmFtZXNwYWNlIEFwcFxIdHRwXENvbnRyb2xsZXJzOw0KDQp1c2UgQXBwXE1vZGVsc1xKb2dhZG9yOw0KdXNlIEFwcFxNb2RlbHNcQmFzZTsNCndzZSBBcHBcTW9kZWxzXFJlY3Vyc287DQp1c2UgQXBwXE1vZGVsc1xFZGlmaWNpbzsNCnVzZSBBcHBcTW9kZWxzXEF0YXF1ZTsNCnVzZSBBcHBcU2VydmljZXNcR2FtZVNlcnZpY2U7DQp1c2UgQXBwXFNlcnZpY2VzXENvbWJhdFNlcnZpY2U7DQp1c2UgSWxsdW1pbmF0ZVxIdHRwXFJlcXVlc3Q7DQp1c2UgSWxsdW1pbmF0ZVxTdXBwb3J0XEZhY2FkZXNcSGFzaDsNCnVzZSBJbGx1bWluYXRlXFN1cHBvcnRcRmFjYWRlc1xBdXRoOw0KdXNlIElsbHVtaW5hdGVcU3VwcG9ydFxGYWNhZGVzXFZhbGlkYXRvcjsNCg0KY2xhc3MgQXV0aENvbnRyb2xsZXIgZXh0ZW5kcyBDb250cm9sbGVsDQp7DQogICAgLy8gPT09PT09PT09PT09PT09PT09PT09IFJFR0lTVE8gPT09PT09PT09PT09PT09PT09PT09DQogICAgcHVibGljIGZ1bmN0aW9uIHJlZ2lzdGVyKFJlcXVlc3QgJHJlcXVlc3QpDQogICAgew0KICAgICAgICAkdmFsaWRhdG9yID0gVmFsaWRhdG9yOjptYWtlKCRyZXF1ZXN0LT5hbGwoKSwgWw0KICAgICAgICAgICAgJ3VzZXJuYW1lJyA9PiAncmVxdWlyZWR8c3RyaW5nfG1heDo1MHx1bmlxdWU6am9nYWRvcmVzJywNCiAgICAgICAgICAgICdlbWFpbCcgICAgPT4gJ3JlcXVlyWVkfGVtYWlsfHVuaXF1ZTpqb2dhZG9yZXMnLA0KICAgICAgICAgICAgJ3Bhc3N3b3JkJyA9PiAncmVxdWlyZWR8c3RyaW5nfG1pbjo2fGNvbmZpcm1lZCcsDQogICAgICAgIF0pOw0KDQogICAgICAgIGlmICgkdmFsaWRhdG9yLT5mYWlscygpKSB7DQogICAgICAgICAgICByZXR1cm4gcmVkaXJlY3QoKS0+YmFjaygpLT53aXRoRXJyb3JzKCR2YWxpZGF0b3IpLT53aXRoSW5wdXQoKTsNCiAgICAgICAgfQ0KDQogICAgICAgIC8vIENyaWFyIG8gam9nYWRvcg0KICAgICAgICAkam9nYWRvciA9IEpvZ2Fkb3I6OmNyZWF0ZShbDQogICAgICAgICAgICAndXNlcm5hbWUnID0+ICRyZXF1ZXN0LT51c2VybmFtZSwNCiAgICAgICAgICAgICdlbWFpbCcgICAgPT4gJHJlcXVlc3QtPmVtYWlsLA0KICAgICAgICAgICAgJ3Bhc3N3b3JkJyA9PiBIYXNoOjptYWtlKCRyZXF1ZXN0LT5wYXNzd29yZCksDQogICAgICAgIF0pOw0KDQogICAgICAgIC8vIENyaWFyIGEgcHJpbWVpcmEgYmFzZSBhdXRvbWF0aWNhbWVudGUNCiAgICAgICAgJGJhc2UgPSBCYXNlOjpjcmVhdGUoWw0KICAgICAgICAgICAgJ2pvZ2Fkb3JfaWQnICAgICA9PiAkam9nYWRvci0+aWQsDQogICAgICAgICAgICAnbm9tZScgICAgICAgICAgID0+ICdCYXNlIFByaW5jaXBhbCcsDQogICAgICAgICAgICAnY29vcmRlbmFkYV94JyAgID0+IHJhbmQoMTAwLCA5MDApLCAgIC8vIGNvb3JkZW5hZGFzIGFsZWF0w7NyaWFzIGluaWNpYWlzDQogICAgICAgICAgICAnY29vcmRlbmFkYV95JyAgID0+IHJhbmQoMTAwLCA5MDApLA0KICAgICAgICAgICAgJ3FnX25pdmVsJyAgICAgICA9PiAxLA0KICAgICAgICAgICAgJ211cmFsaGFfbmV2ZWwnICA9PiAxLA0KICAgICAgICBdKTsNCiAgICAgICAgDQogICAgICAgIC8vIENyaWFyIHJlY3Vyc29zIGluaWNpYWlzDQogICAgICAgIFJlY3Vyc286OmNyZWF0ZShbDQogICAgICAgICAgICAnYmFzZV9pZCcgICAgID0+ICRiYXNlLT5pZCwNCiAgICAgICAgICAgICdzdXByaW1lbnRvcycgPT4gMTUwMCwNCiAgICAgICAgICAgICdjb21idXN0aXZlbCcgPT4gMTAwMCwNCiAgICAgICAgICAgICdtdW5pY29lcycgICAgPT4gODAwLA0KICAgICAgICAgICAgJ3Blc3NvYWwnICAgICA9PiA2MDAsDQogICAgICAgIF0pOw0KDQogICAgICAgIC8vIENyaWFyIGVkaWbtY2lvcyBiw6FzaWNvcw0KICAgICAgICBFZGlmaWNpbzo6Y3JlYXRlKFsbaseX2aWQiID0+ICRiYXNlLT5pZCwgJ3RpcG8nID0+ICdRRycsICduaXZlbCcgPT4gMV0pOw0KICAgICAgICBFZGlmaWNpbzo6Y3JlYXRlKFsbaseX2aWQiID0+ICRiYXNlLT5pZCwgJ3RpcG8nID0+ICdRdWFydGVsJywgJ25pdmVsJyA9PiAxXSk7DQogICAgICAgIEVkaWZpY2lvOjpjcmVhdGUoWbaseX2aWQiID0+ICRiYXNlLT5pZCwgJ3RpcG8nID0+ICdNdXJhbGhhJywgJ25pdmVsJyA9PiAxXSk7DQoNCiAgICAgICAgLy8gRmF6ZXIgbG9naW4gYXV0b23DoXRpY28NCiAgICAgICAgQXV0aDo6bG9naW4oJGpvZ2Fkb3IpOw0KDQogIC2VsZWN0ZWRfYmFzZV9pZCcgPT4gJGJhc2UtPmlkXSk7CgogICAgICAgICAgICAvLyBPYnRlciB0YXhhcyBkZSBwcm9kdXRow6NvIHAvbWluDQogICAgICAgICAgICAkdGF4YXMgPSAkZ2FtZVNlcnZpY2UtPm9idGVyVGF4YXNQcm9kdWNhbygkYmFzZSk7CiAgICAgICAgICAgIAogICAgICAgICAgICAvLyBPYnRlciB0YXhhcyBwL3NlZ3VuZG8gcGFyYSBvIHRpY2tlciBkbyBmcm9udGVuZAogICAgICAgICAgICAkdGF4YXNQZXJTZWNvbmQgPSBbXTsKICAgICAgICAgICAgZm9yZWFjaCgkdGF4YXMgYXMgJHJlcyA9PiAkbWluUmF0ZSkgewogICAgICAgICAgICAgICAgJHRheGFzUGVyU2Vjb25kWyRyZXNdID0gJG1pblJhdGUgLyA2MDsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gTk9WQVMgVkFSScOBVkVJUyBQQVJBIE8gVUkgTU9ERVJOTyAoRkFTRVMgMTEtMTQpCiAgICAgICAgICAgICRpbnRlbExldmVsID0gJGJhc2UtPmVkaWZpY2lvcygpLT53aGVyZSgndGlwbycsICdyYWRhcl9lc3RyYXRlZ2ljbycpLT5maXJzdCgpPy0+bml2ZWwgPz8gMDsKICAgICAgICAgICAgCiAgICAgICAgICAgIC8vIEPDoWxjdWxvIGRlIFBvcHVsYcOnw6NvL0d1YXJuacOnw6NvCiAgICAgICAgICAgICRuaXZlbFJlY3J1dGFtZW50byA9ICRiYXNlLT5lZGlmaWNpb3MoKS0+d2hlcmUoJ3RpcG8nLCAncG9zdG9fcmVjcnV0YW1lbnRvJyktPmZpcnN0KCk/LT5uaXZlbCA/PyAwOwogICAgICAgICAgICAkY2FwYWNpZGFk', 'ZUJhc2UgPSAoMTAwICogKCRuaXZlbFJlY3J1dGFtZW50byArIDEpKSAqIDEuNTsKICAgICAgICAgICAgJG5pdmVsTG9naXN0aWNhID0gJGpvZ2Fkb3ItPm9idGVyTml2ZWxUZWNoKCdsb2dpc3RpY2EnKTsKICAgICAgICAgICAgJG11bHRpcGxpY2Fkb3JDYXAgPSAxICsgKCRuaXZlbExvZ2lzdGljYSAqIDAuMTApOwogICAgICAgICAgICAkY2FwVG90YWwgPSAkY2FwYWNpZGFkZUJhc2UgKiAkbXVsdGlwbGljYWRvckNhcDsKCiAgICAgICAgICAgICRwb3BPY3VwYWRhID0gMDsKICAgICAgICAgICAgZm9yZWFjaCAoJGJhc2UtPnRyb3BhcyBhcyAkdCkgewogICAgICAgICAgICAgICAgJHBvcE9jdXBhZGEgKz0gKCR0LT5xdWFudGlkYWRlICogKGNvbmZpZygiZ2FtZS51bml0cy57JHQtPnVuaWRhZGV9LmNvc3QucGVzc29hbCIpID8/IDEpKTsKICAgICAgICAgICAgfQogICAgICAgICAgICAkcG9wUGVyY2VudCA9ICgkY2FwVG90YWwgPiAwKSA/IG1pbigxMDAsICgkcG9wT2N1cGFkYSAvICRjYXBUb3RhbCkgKiAxMDApIDogMDsKCiAgICAgICAgICAgIC8vIFBlc3F1aXNhcyBlbSBjdXJzbwogICAgICAgICAgICAkcGVzcXVpc2FzRW1DdXJzbyA9IFxBcHBcTW9kZWxzXFBlc3F1aXNhOjp3aGVyZSgnam9nYWRvcl9pZCcsICRqb2dhZG9yLT5pZCkKICAgICAgICAgICAgICAgIC0+d2hlcmUoJ2NvbXBsZXRhZG9fZW0nLCAnPicsIG5vdygpKQogICAgICAgICAgICAgICAgLT5nZXQoKTsKCiAgICAgICAgICAgIC8vIEF0YXF1ZXMK', 'ICAgICAgICAgICAgJGF0YXF1ZXNSZWNlYmlkb3MgPSBcQXBwXE1vZGVsc1xBdGFxdWU6OndoZXJlKCdkZXN0aW5vX2Jhc2VfaWQnLCAkYmFzZS0+aWQpLT53aGVyZSgncHJvY2Vzc2FkbycsIGZhbHNlKS0+Z2V0KCk7CiAgICAgICAgICAgICRhdGFxdWVzRW52aWFkb3MgPSBcQXBwXE1vZGVsc1xBdGFxdWU6OndoZXJlKCdvcmlnZW1fYmFzZV9pZCcsICRiYXNlLT5pZCktPndoZXJlKCdwcm9jZXNzYWRvJywgZmFsc2UpLT5nZXQoKTsKCiAgICAgICAgfSBlbHNlIHsKICAgICAgICAgICAgJHRheGFzID0gWydzdXByaW1lbnRvcycgPT4gMCwgJ2NvbWJ1c3RpdmVsJyA9PiAwLCAnbXVuaWNvZXMnID0+IDAsICdwZXNzb2FsJyA9PiAwXTsKICAgICAgICAgICAgJHRheGFzUGVyU2Vjb25kID0gJHRheGFzOwogICAgICAgICAgICAkaW50ZWxMZXZlbCA0IDAsDQogICAgICAgICAgICAkcG9wT2N1cGFkYSA9IDAsDQogICAgICAgICAgICAgY2FwVG90YWwgPSAwLA0KICAgICAgICAgICAgJHBvcFBlcmNlbnQgPSAwOw0KICAgICAgICAgICAgJHBlc3F1aXNhcyVtQ3Vyc28gPSBjb2xsZWN0KCk7DQogICAgICAgICAgICAkYXRhcXVlc1JlY2ViaWRvcyA9IGNvbGxlY3QoKTsNCiAgICAgICAgICAgICRhdGFxdWVzRW52aWFkb3MgPSBjb2xsZWN0KCk7DQogICAgICAgIH0NCg0KICAgICAgICAvLyBCdXNjYXIgw7psdGltb3MgcmVsYXTDs3Jpb3MgZW52b2x2aWRvcyNCiAgICAgICAgJHJlbGF0b3Jpb3MgPSBcQXBwXE1vZGVsc1xSZWxhdG9yaW86OndoZXJlKCdhdGFjYW50ZV9pZCcsICRqb2dhZG9yLT5pZCkNCiAgICAgICAgICAgIC0+b3JXaGVyZSgnZGVmZW5zb3JfaWQnLCAkam9nYWRvci0+aWQpDQogICAgICAgICAgICAtPm9yZGVyQnkoJ2NyZWF0ZWRfYWwnLCAnZGVzYycpDQogICAgICAgICAgICAtPnRha2UoOCkNCiAgICAgICAgICAgIC0+Z2V0KCk7DQoNCiAgICAgICAgJHJlbGF0b3Jpb3NHbG9iYWwgPSBcQXBwXE1vZGVsc1xSZWxhdG9yaW86Om9yZGVyQnkoJ2NyZWF0ZWRfYWwnLCAnZGVzYycpDQogICAgICAgICAgICAtPnRha2UoMTApDQogICAgICAgICAgICAtPmdldCgpOw0KDQogICAgICAgIHJldHVybiB2aWV3KCdkYXNoYm9hcmQnLCBjb21wYWN0KA0KICAgICAgICAgICAgJ2pvZ2Fkb3InLCAnYmFzZScsICdiYXNlcycsICdyZWxhdG9yaW9zJywgJ3JlbGF0b3Jpb3NHbG9iYWwnLCANCiAgICAgICAgICAgICd0YXhhcycsICd0YXhhc1BlclNlY29uZCcsICdpbnRlbExldmVsJywgJ3BvcE9jdXBhZGEnLCANCiAgICAgICAgICAgICdjYXBUb3RhbCcsICdwb3BQZXJjZW50JywgJ3Blc3F1aXNhcyVtQ3Vyc28nLCANCiAgICAgICAgICAgICdhdGFxdWVzUmVjZWJpZG9zJywgJ2F0YXF1ZXNFbnZpYWRvcycNCiAgICAgICAgKSk7DQogICAgfQ0KfQ0K'];
+    // Core Game
+    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/mapa', [MapaController::class, 'index'])->name('mapa');
+    Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
+    Route::get('/manual', [ManualController::class, 'index'])->name('manual');
+    Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
     
-    // GameService (Particionado)
-    $gsChunks = ['PD9waHANCg0KbmFtZXNwYWNlIEFwcFxTZXJ2aWNlczsNCg0KdXNlIEFwcFxNb2RlbHNcQmFzZTsNCnVzZSBBcHBcTW9kZWxzXEVkaWZpY2lvOw0KdXNlIEFwcFxNb2RlbHNcUmVjdXJzbzsNCnVzZSBBcHBcTW9kZWxzXENvbnN0cnVjYW87DQp1c2UgQXBwXE1vZGVsc1xUcmVpbm87DQp1c2UgQXBwXE1vZGVsc1xUcm9wYXM7DQp1c2UgSWxsdW1pbmF0ZVxTdWZwb3J0XEZhY2FkZXNcREI7DQoNCmNsYXNzIEdhbWVTZXJ2aWNlDQp7DQogICAgcHVibGljIGZ1bmN0aW9uIGF0dWFsaXphclJlY3Vyc29zKEJhc2UgJGJhc2UpDQogICAgew0KICAgICAgICAvLyBHYXJhbnRpciBxdWUgJHJlY3Vyc29zIGV4aXN0ZW0NCiAgICAgICAgJHJlY3Vyc29zID0gJGJhc2UtPnJlY3Vyc29zOw0KICAgICAgICBpZiAoISRyZWN1cnNvcykgcmV0dXJuOw0KDQogICAgICAgICR0YXhhcyA9ICR0aGlzLT5vYnRlclRheGFzUHJvZHVjYW8oJGJhc2UpOw0KDQogICAgICAgIERCOjp0cmFuc2FjdGlvbihmdW5jdGlvbigpIHVzZSAoJGJhc2UsICR0YXhhcykgew0KICAgICAgICAgICAgREI6OnN0YXRlbWVudCgiDQogICAgICAgICAgICAgICAgVVBEQVRFIHJlY3Vyc29zIA0KICAgICAgICAgICAgICAgIFNFVCBzdXByaW1lbnRvcyA9IHN1cHJpbWVudG9zICsgKD8gKiBHUkVBVEVTVCgwLCBUSU1FU1RBTVBESUZGKFNFQ09ORCwgQ09BTEVTQ0UodXBkYXRlZF9hdCwgY3JlYXRlZF9hdCw内外E9XKCkpLCBOT1coKSkpKSwNCiAgICAgICAgICAgICAgICAgICAgY29tYnVzdGl2ZWwgPSBjb21idXN0aXZlbCArICg/ICogR1JFQVRFU1QoMCwgVElNRVNUQU1QRElGRihTRUNPTkQsIENPQUxFU0NFKHVwZGF0ZWRfYXQsIGNyZWF0ZWRfYXQsIE5PVygpKSw内外E9XKCkpKSksDQogICAgICAgICAgICAgICAgICAgIG11bmljb2VzICAgID0gbXVuaWNvZXMgICAgKyAoPyAqIEdSRUFURVNUKDAsIFRJTUVTVEFNUERJRkYoU0VDT05ELCBDT0FMRVNDRSh1cGRhdGVkX2F0LCBjcmVhdGVkX2F0LCBOT1coKSks内外E9XKCkpKSksDQogICAgICAgICAgICAgICAgICAgIHBlc3NvYWwnICAgICA9IHBlc3NvYWwgICAgICsgKD8gKiBHUkVBVEVTVCgwLCBUSU1FU1RBTVBESUZGKFNFQ09ORCwgQ09BTEVTQ0UodXBkYXRlZF9hdCwgY3JlYXRlZF9hdCw内外E9XKCkpLCBOT1coKSkpKSwNCiAgICAgICAgICAgICAgICAgICAgdXBkYXRlZF9hdCAgPSBOT1coKQ0KICAgICAgICAgICAgICAgIFdIRVJFIGJhc2VfaWQgPSA/DQogICAgICAgICAgICAiLCBbDQogICAgICAgICAgICAgICAgJHRheGFzWydzdXByaW1lbnRvcyddIC8gNjAsDQogICAgICAgICAgICAgICAgJHRheGFzWydjb21idXN0aXZlbCddIC8gNjAsDQogICAgICAgICAgICAgICAgJHRheGFzWydtdW5pY29lcyddIC8gNjAsDQogICAgICAgICAgICAgICAgJHRheGFzWydwZXNzb2FsJ10gLyA2MCwNCiAgICAgICAgICAgICAgICAkYmFzZS0+aWQNCiAgICAgICAgICAgIF0pOw0KICAgICAgICB9KTsNCiAgICB9DQoNCiAgICBwdWJsaWMgZnVuY3Rpb24gb2J0ZXJUYXhhc1Byb2R1Y2FvKEJhc2UgJGJhc2UpDQogICAgew0KICAgICAgICAvLyBCYXNlIGJhc2ljYQ0KICAgICAgICAkdGF4YXMgPSBbJ3N1cHJpbWVudG9zJyA9PiAxNSwgJ2NvbWJ1c3RpdmVsJyA9PiAxMCwgJ211bmljb2VzJyA9PiA1LCAncGVzc29hbCcgPT4gMl07DQoNCiAgICAgICAgLy8gRWZlaXRvcyBkb3MgZWRpZs7jaW9zDQogICAgICAgICRxaXJfdmVudG8gPSAkYmFzZS0+ZWRpZmljaW9zLT53aGVyZSgndGlwbycsICdGYXphbmRhJyktPmZpcnN0KCk/LT5uaXZlbCA/PyAwOw0KICAgICAgICAkdGF4YXNbJ3N1cHJpbWVudG9zJ10gKz0gKCRxaXJfdmVudG8gKiAxMCk7DQoNCiAgICAgICAgJHByb2RfcmVmaW5hcmlhID0gJGJhc2UtPmVkaWZpY2lvcy0+d2hlcmUoJ3RpcG8nLCAnUmVmaW5hcmlhJyktPmZpcnN0KCk/LT5uaXZlbCA/PyAwOw0KICAgICAgICAkdGF4YXNbJ2NvbWJ1c3RpdmVsJ10gKz0gKCRwcm9kX3JlZmluYXJpYSAqIDgpOw0KDQogICAgICAgICRwcm9kX2ZhYnJpY2EgPSAkYmFzZS0+ZWRpZmljaW9zLT53aGVyZSgndGlwbycsICdGYWJyaWNhX011bmljb2VzJyktPmZpcnN0KCk/LT5uaXZlbCA/PyAwOw0KICAgICAgICAkdGF4YXNbJ211bmljb2VzJ10gKz0gKCRwcm9kX3ZhYnJpY2EgKiA1KTsNCg0KICAgICAgICAkcHJvZF9wb3N0byA9ICRiYXNlLT5lZGlmaWNpb3MtPm9oZXJlKCd0aXBvJywgJ1Bvc3RvX1JlY3J1dGFtZW50bycpLT5maXJzdCgpPy0+bml2ZWwgPz8gMDsNCiAgICAgICAgJHRheGFzWydwZXNzb2FsJ10gKz0gKCRwcm9kX3Bvc3RvICogMik7DQoNCiAgICAgICAgcmV0dXJuICR0YXhhczsNCiAgICB9DQoNCiAgICBwdWJsaWMgZnVuY3Rpb24gcHJvY2Vzc2FyRmlsYShCYXNlICRiYXNlKQ0KICAgIHsNCiAgICAgICAgJGNvbnN0cnVjb2VzID0gJGJhc2UtPmNvbnN0cnVjb2VzKCktPndoZXJlKCdjb21wbGV0YWRvX2VtJywgJzw9Jywgbm93KCkpLT5nZXQoKTsNCiAgICAgICAgZm9yZWFjaCAoJGNvbnN0cnVjb2VzIGFzICRjKSB7DQogICAgICAgICAgICBEQjo6dHJhbnNhY3Rpb24oZnVuY3Rpb24oKSB1c2UgKCRiYXNlLCAkYykgew0KICAgICAgICAgICAgICAgICRlZGlmID0gJGJhc2UtPmVkaWZpY2lvcygpLT53aGVyZSgndGlwbycsICRjLT5lZGlmaWNpb190aXBvKS0+Zmlyc3QoKTsNCiAgICAgICAgICAgICAgICBpZiAoISRlZGlmKSB7DQogICAgICAgICAgICAgICAgICAgICRiYXNlLT5lZGlmaWNpb3MoKS0+Y3JlYXRlKFsbaseX3RpcG8nID0+ICRjLT5lZGlmaWNpb190aXBvLCAnbml2ZWwnID0+ICRjLT5uaXZlbF9kZXN0aW5vXSk7DQogICAgICAgICAgICAgICAgfSBlbHNlIHsNCiAgICAgICAgICAgICAgICAgICAgJGVkaWYtPnVwZGF0ZShbJ25pdmVsJyA9PiAkYy0+bml2ZWxfZGVzdGlub10pOw0KICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgICAgICAkYy0+ZGVsZXRlKCk7DQogICAgICAgICAgICB9KTsNCiAgICAgICAgfQ0KICAgIH0NCn0NCg=='];
-    
-    // Dashboard (Particionado)
-    $dashChunks = ['=='];
+    // Gestão de Base
+    Route::prefix('base')->name('base.')->group(function () {
+        Route::get('/switch/{id}', [BaseController::class, 'switchBase'])->name('switch');
+        Route::post('/upgrade', [BaseController::class, 'upgrade'])->name('upgrade');
+        Route::post('/treinar', [BaseController::class, 'treinar'])->name('treinar');
+        Route::post('/atacar', [BaseController::class, 'atacar'])->name('atacar');
+        Route::post('/atacar/cancelar/{id}', [BaseController::class, 'cancelarAtaque'])->name('atacar.cancelar');
+        Route::post('/trocar', [BaseController::class, 'trocar'])->name('trocar');
+        Route::post('/simular', [BaseController::class, 'simular'])->name('simular');
+        Route::post('/pesquisar', [BaseController::class, 'pesquisar'])->name('pesquisar');
+    });
 
-    $filesToPatch = [
-        'app/Http/Controllers/AuthController.php' => base64_decode(implode('', $authChunks)),
-        'app/Services/GameService.php' => base64_decode(implode('', $gsChunks)),
-        'resources/views/dashboard.blade.php' => base64_decode(implode('', $dashChunks)),
-    ];
+    // Diplomacia e Alianças
+    Route::prefix('alianca')->name('alianca.')->group(function () {
+        Route::get('/', [AliancaController::class, 'index'])->name('index');
+        Route::post('/store', [AliancaController::class, 'store'])->name('store');
+        Route::post('/pedir', [AliancaController::class, 'pedir'])->name('pedir');
+        Route::post('/sair', [AliancaController::class, 'sair'])->name('sair');
+        Route::post('/decidir/{id}/{decisao}', [AliancaController::class, 'decidir'])->name('decidir');
+        
+        // Chat de Aliança
+        Route::get('/chat/buscar', [ChatController::class, 'buscar'])->name('chat.buscar');
+        Route::post('/chat/enviar', [ChatController::class, 'enviar'])->name('chat.enviar');
+    });
 
-    foreach ($filesToPatch as $path => $content) {
-        if (file_put_contents(base_path($path), $content)) {
-            $patchLog .= "PATCH SUCCESS: $path (" . strlen($content) . " bytes)\n";
-        } else {
-            $patchLog .= "PATCH FAILED: $path\n";
-        }
-    }
+    // Informação e Inteligência
+    Route::get('/relatorios/{id}', [RelatorioController::class, 'show'])->name('relatorio.show');
+    Route::get('/mensagens', [ChatController::class, 'pessoais'])->name('mensagens.index');
 
-    \Illuminate\Support\Facades\Artisan::call('view:clear');
-    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    // Engine de Jogo
+    Route::get('/cron-run', function() { 
+        Artisan::call('cron:processar'); 
+        return redirect()->back()->with('success', 'Sincronizado!'); 
+    })->name('cron.processar');
 
-    return "<h3>Atomic Chunk Override Success!</h3><pre>$patchLog</pre><p>O Dashboard deve estar operacional agora.</p>";
+    // Administração e Diagnóstico (Apenas Admin)
+    Route::middleware(['can:admin-only'])->group(function () {
+        Route::get('/mw-console-logs', [LogController::class, 'index'])->name('admin.logs');
+        Route::get('/mw-console-logs/fetch', [LogController::class, 'fetch'])->name('admin.logs.fetch');
+        Route::get('/mw-console-logs/clear', [LogController::class, 'clear'])->name('admin.logs.clear');
+        
+        // Gatilho de Emergência
+        Route::get('/mw-admin-trigger-99', function() {
+            return "Script de Emergência Ativo. Use para correções rápidas.";
+        });
+    });
 });

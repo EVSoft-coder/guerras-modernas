@@ -226,6 +226,7 @@ class CombatService
                 'edificios' => $edificiosDetectados,
                 'recursos' => $recursosDetectados
             ]
+        ];
     }
 
     /**

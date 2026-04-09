@@ -1,3 +1,4 @@
+﻿@extends('layouts.app')
 @section('content')
 <div class="row g-4">
     <!-- HUD DE RECURSOS - ALTO CONTRASTE -->
@@ -5,28 +6,28 @@
         <div class="glassmorphism rounded-4 p-4 shadow-lg border border-white/20 animate-glow">
             <div class="row g-4 text-center">
                 <div class="col-6 col-md-3 border-end border-white/10">
-                    <div class="text-info small text-uppercase fw-bold mb-1 ls-1">📦 Suprimentos</div>
+                    <div class="text-info small text-uppercase fw-bold mb-1 ls-1">ðŸ“¦ Suprimentos</div>
                     <div class="res-value text-white d-flex align-items-center justify-content-center mb-0" id="res-suprimentos">
                         {{ number_format(floor($base->recursos->suprimentos ?? 0)) }}
                     </div>
                     <div class="x-small text-info opacity-80 fw-bold mt-1" id="rate-suprimentos">+{{ number_format($taxas['suprimentos'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
-                    <div class="text-warning small text-uppercase fw-bold mb-1 ls-1">⛽ Combustível</div>
+                    <div class="text-warning small text-uppercase fw-bold mb-1 ls-1">â›½ CombustÃ­vel</div>
                     <div class="res-value text-warning d-flex align-items-center justify-content-center mb-0" id="res-combustivel">
                         {{ number_format(floor($base->recursos->combustivel ?? 0)) }}
                     </div>
                     <div class="x-small text-warning opacity-80 fw-bold mt-1" id="rate-combustivel">+{{ number_format($taxas['combustivel'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3 border-end border-white/10">
-                    <div class="text-danger small text-uppercase fw-bold mb-1 ls-1">🚀 Munições</div>
+                    <div class="text-danger small text-uppercase fw-bold mb-1 ls-1">ðŸš€ MuniÃ§Ãµes</div>
                     <div class="res-value text-danger d-flex align-items-center justify-content-center mb-0" id="res-municoes">
                         {{ number_format(floor($base->recursos->municoes ?? 0)) }}
                     </div>
                     <div class="x-small text-danger opacity-80 fw-bold mt-1" id="rate-municoes">+{{ number_format($taxas['municoes'] ?? 0) }} p/min</div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="text-success small text-uppercase fw-bold mb-1 ls-1">👥 Pessoal</div>
+                    <div class="text-success small text-uppercase fw-bold mb-1 ls-1">ðŸ‘¥ Pessoal</div>
                     <div class="res-value text-success d-flex align-items-center justify-content-center mb-0" id="res-pessoal">
                         {{ number_format(floor($base->recursos->pessoal ?? 0)) }}
                     </div>
@@ -46,7 +47,7 @@
                         <span class="badge bg-primary px-3 rounded-pill text-uppercase mb-2">Comando Geral</span>
                         <h2 class="text-white fw-black display-5 mb-0" style="text-shadow: 0 4px 15px rgba(0,0,0,0.8);">{{ $base->nome }}</h2>
                         <p class="text-info fw-bold mb-0">
-                            COORDENADAS TÁTICAS: <span class="badge bg-black/40 border border-info/30 fs-6">({{ $base->coordenada_x }}|{{ $base->coordenada_y }})</span>
+                            COORDENADAS TÃTICAS: <span class="badge bg-black/40 border border-info/30 fs-6">({{ $base->coordenada_x }}|{{ $base->coordenada_y }})</span>
                             @if(strtolower(Auth::user()->username ?? Auth::user()->name) == 'admin' || Auth::id() == 1)
                                 <a href="{{ route('cron.processar') }}" class="btn btn-xs btn-outline-warning rounded-pill x-small ms-3 fw-bold">
                                     <i class="bi bi-gear-fill"></i> SINCRONIZAR GUERRA
@@ -68,11 +69,11 @@
                                     @endphp
                                     <div class="progress-bar bg-warning animate-stripes" style="width: {{ $pPercent }}%"></div>
                                 </div>
-                                <div class="x-small text-white/70 mt-1">{{ $c->edificio_tipo }} Nível {{ $c->nivel_destino }}</div>
+                                <div class="x-small text-white/70 mt-1">{{ $c->edificio_tipo }} NÃ­vel {{ $c->nivel_destino }}</div>
                             </div>
                         @else
                             <div class="glassmorphism p-3 rounded-4 border-success/40">
-                                <div class="text-success x-small fw-bold text-uppercase">Logística</div>
+                                <div class="text-success x-small fw-bold text-uppercase">LogÃ­stica</div>
                                 <div class="text-white small">Sistemas Operacionais</div>
                             </div>
                         @endif
@@ -82,12 +83,12 @@
         </div>
     </div>
 
-    <!-- INFO DA BASE E RELATÓRIOS -->
+    <!-- INFO DA BASE E RELATÃ“RIOS -->
     <div class="col-lg-4">
         <!-- BASE SWITCHER & STATUS -->
         <div class="card glassmorphism border-white/10 mb-4 h-auto">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 text-white fw-bold"><i class="bi bi-geo-alt-fill text-primary"></i> Território Ativo</h6>
+                <h6 class="mb-0 text-white fw-bold"><i class="bi bi-geo-alt-fill text-primary"></i> TerritÃ³rio Ativo</h6>
                 @if($bases->count() > 1)
                     <div class="dropdown">
                         <button class="btn btn-xs btn-outline-info dropdown-toggle rounded-pill x-small px-3" type="button" data-bs-toggle="dropdown">
@@ -118,7 +119,7 @@
                     </div>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between x-small fw-bold text-white mb-1">
-                            <span>NÍVEL DE COMANDO {{ $jogador->nivel }}</span>
+                            <span>NÃVEL DE COMANDO {{ $jogador->nivel }}</span>
                             <span>{{ number_format($jogador->xp) }} XP</span>
                         </div>
                         <div class="progress bg-white/5" style="height: 4px;">
@@ -131,7 +132,7 @@
                     </div>
                 @endif
                 <div class="d-flex justify-content-between">
-                    <span class="text-muted small">Fortificações:</span>
+                    <span class="text-muted small">FortificaÃ§Ãµes:</span>
                     <span class="badge bg-secondary/20 text-white border border-white/30">NIVEL {{ $base->muralha_nivel }}</span>
                 </div>
             </div>
@@ -141,7 +142,7 @@
 
         <div class="card glassmorphism border-info/30 mb-4 h-auto shadow-lg overflow-hidden">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center bg-info/5">
-                <h6 class="mb-0 text-info fw-black x-small text-uppercase ls-1"><i class="bi bi-broadcast me-2"></i> Centro de Inteligência & Radar</h6>
+                <h6 class="mb-0 text-info fw-black x-small text-uppercase ls-1"><i class="bi bi-broadcast me-2"></i> Centro de InteligÃªncia & Radar</h6>
                 <span class="badge bg-{{ $intelLevel >= 10 ? 'success' : 'warning' }}/20 text-{{ $intelLevel >= 10 ? 'success' : 'warning' }} x-small border border-{{ $intelLevel >= 10 ? 'success' : 'warning' }}/30">INTEL LVL {{ $intelLevel }}</span>
             </div>
             
@@ -149,7 +150,7 @@
                 <!-- POPULATION BAR -->
                 <div class="mb-4">
                     <div class="d-flex justify-content-between x-small fw-bold text-white mb-1">
-                        <span>CAPACIDADE DA GUARNIÇÃO</span>
+                        <span>CAPACIDADE DA GUARNIÃ‡ÃƒO</span>
                         <span>{{ number_format($popOcupada) }} / {{ number_format($capTotal) }}</span>
                     </div>
                     <div class="progress bg-white/5" style="height: 6px;">
@@ -187,14 +188,14 @@
                 @empty
                     <div class="p-4 text-center text-muted small py-5 opacity-40">
                        <i class="bi bi-shield-lock display-6 mb-2 d-block"></i>
-                       ESPAÇO AÉREO LIMPO
+                       ESPAÃ‡O AÃ‰REO LIMPO
                     </div>
                 @endforelse
                 
                 @foreach($ataquesEnviados as $atq)
                     <div class="p-3 mb-2 rounded-3 bg-info/10 border border-info/30">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <strong class="text-info small text-uppercase">Missão Expedicionária</strong>
+                            <strong class="text-info small text-uppercase">MissÃ£o ExpedicionÃ¡ria</strong>
                             <span class="badge bg-info countdown x-small" data-time="{{ $atq->chegada_em->timestamp }}">--:--</span>
                         </div>
                         <div class="x-small text-white/70">Destino: Base Hostil ({{ $atq->tipo }})</div>
@@ -229,7 +230,7 @@
                     </div>
                 @empty
                     <div class="p-4 text-center text-muted small py-5">
-                        <p class="mb-0">Aguardando comunicações de satélite...</p>
+                        <p class="mb-0">Aguardando comunicaÃ§Ãµes de satÃ©lite...</p>
                     </div>
                 @endforelse
             </div>
@@ -242,7 +243,7 @@
                 <span class="badge bg-warning/20 text-warning x-small border border-warning/30">TAXA 3:1</span>
             </div>
             <div class="card-body p-4">
-                <p class="x-small text-muted mb-4 italic">Troque os seus excedentes por recursos prioritários instantaneamente. A logística clandestina cobra uma taxa elevada pela rapidez.</p>
+                <p class="x-small text-muted mb-4 italic">Troque os seus excedentes por recursos prioritÃ¡rios instantaneamente. A logÃ­stica clandestina cobra uma taxa elevada pela rapidez.</p>
                 
                 <form action="{{ route('base.trocar') }}" method="POST" class="ajax-form">
                     @csrf
@@ -251,32 +252,32 @@
                         <div class="col-7">
                             <label class="x-small text-muted fw-bold mb-1">DAR (300)</label>
                             <select name="oferece" class="form-select form-select-sm bg-black/40 border-white/10 text-white x-small">
-                                <option value="suprimentos">📦 Suprimentos</option>
-                                <option value="combustivel">⛽ Combustível</option>
-                                <option value="municoes">🚀 Munições</option>
+                                <option value="suprimentos">ðŸ“¦ Suprimentos</option>
+                                <option value="combustivel">â›½ CombustÃ­vel</option>
+                                <option value="municoes">ðŸš€ MuniÃ§Ãµes</option>
                             </select>
                         </div>
                         <div class="col-5">
                             <label class="x-small text-muted fw-bold mb-1">RECEBER (100)</label>
                             <select name="recebe" class="form-select form-select-sm bg-black/40 border-white/10 text-info x-small">
-                                <option value="combustivel">⛽ Combustível</option>
-                                <option value="suprimentos">📦 Suprimentos</option>
-                                <option value="municoes">🚀 Munições</option>
-                                <option value="pessoal">👥 Pessoal</option>
+                                <option value="combustivel">â›½ CombustÃ­vel</option>
+                                <option value="suprimentos">ðŸ“¦ Suprimentos</option>
+                                <option value="municoes">ðŸš€ MuniÃ§Ãµes</option>
+                                <option value="pessoal">ðŸ‘¥ Pessoal</option>
                             </select>
                         </div>
                         <div class="col-12 mt-3 text-center">
-                            <button type="submit" class="btn btn-warning w-100 rounded-pill fw-black text-uppercase x-small py-2 shadow-glow-warning">EFETUAR TRANSAÇÃO CLANDESTINA</button>
+                            <button type="submit" class="btn btn-warning w-100 rounded-pill fw-black text-uppercase x-small py-2 shadow-glow-warning">EFETUAR TRANSAÃ‡ÃƒO CLANDESTINA</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- CENTRO DE OPERAÇÕES: ÚLTIMAS ATIVIDADES -->
+        <!-- CENTRO DE OPERAÃ‡Ã•ES: ÃšLTIMAS ATIVIDADES -->
         <div class="card glassmorphism border-primary/20 mb-4 h-auto shadow-2xl">
             <div class="card-header bg-primary/5 border-bottom border-white/5 py-3 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 text-primary fw-black x-small text-uppercase ls-1"><i class="bi bi-cpu-fill me-2"></i> Log de Actividades Técnicas</h6>
+                <h6 class="mb-0 text-primary fw-black x-small text-uppercase ls-1"><i class="bi bi-cpu-fill me-2"></i> Log de Actividades TÃ©cnicas</h6>
                 <span class="badge bg-primary/20 text-primary x-small border border-primary/30">OPERACIONAL</span>
             </div>
             <div class="card-body p-0">
@@ -302,24 +303,24 @@
                         </a>
                     @empty
                         <div class="p-5 text-center text-muted small opacity-50 italic">
-                            Aguardando relatórios de campo...
+                            Aguardando relatÃ³rios de campo...
                         </div>
                     @endforelse
                 </div>
             </div>
             <div class="card-footer bg-black/20 border-top border-white/5 py-3 text-center">
                 <button class="btn btn-primary rounded-pill fw-black x-small shadow-glow-primary w-100" onclick="abrirSimulador()">
-                    <i class="bi bi-calculator-fill me-2"></i> ACEDER AO SIMULADOR TÁTICO
+                    <i class="bi bi-calculator-fill me-2"></i> ACEDER AO SIMULADOR TÃTICO
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- EDIFÍCIOS E ENGENHARIA -->
+    <!-- EDIFÃCIOS E ENGENHARIA -->
     <div class="col-lg-8">
         <div class="card glassmorphism border-white/10 mb-4">
             <div class="card-header border-white/5 py-3">
-                <h5 class="mb-0 text-white fw-black text-uppercase ls-1">🏗️ Infraestrutura Militar</h5>
+                <h5 class="mb-0 text-white fw-black text-uppercase ls-1">ðŸ—ï¸ Infraestrutura Militar</h5>
             </div>
             <div class="card-body p-0">
                 <!-- MISSION DEPLOYMENT INTERFACE (NEW) -->
@@ -330,7 +331,7 @@
                     @if($targetBase && $targetBase->id !== $base->id)
                         <div class="p-4 bg-primary/10 border-bottom border-primary/30 animate-glow">
                             <h4 class="text-white fw-black text-uppercase border-bottom border-primary/40 pb-2 mb-3">
-                                <i class="bi bi-crosshair2 me-2 text-danger"></i> OPERAÇÃO: ALVO DEFINIDO
+                                <i class="bi bi-crosshair2 me-2 text-danger"></i> OPERAÃ‡ÃƒO: ALVO DEFINIDO
                             </h4>
                             <div class="row align-items-center g-3">
                                 <div class="col-md-4">
@@ -346,7 +347,7 @@
                                         <input type="hidden" name="origem_id" value="{{ $base->id }}">
                                         <input type="hidden" name="destino_id" value="{{ $targetBase->id }}">
                                         
-                                        <!-- TIPO DE MISSÃO -->
+                                        <!-- TIPO DE MISSÃƒO -->
                                         <div class="mb-3">
                                             <div class="btn-group w-100 shadow-lg" role="group">
                                                 <input type="radio" class="btn-check" name="tipo" id="m_saque" value="saque" checked>
@@ -360,7 +361,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- SELEÇÃO DE TROPAS RÁPIDA -->
+                                        <!-- SELEÃ‡ÃƒO DE TROPAS RÃPIDA -->
                                         <div class="row g-2 mb-3">
                                             @foreach($base->tropas as $t)
                                                 @if($t->quantidade > 0)
@@ -377,7 +378,7 @@
 
                                         <div class="d-flex justify-content-between gap-3">
                                             <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary rounded-4 px-4 fw-bold">CANCELAR</a>
-                                            <button type="submit" class="btn btn-danger rounded-4 px-5 fw-black text-uppercase flex-grow-1 shadow-glow-danger">LANÇAR OFENSIVA MILITAR</button>
+                                            <button type="submit" class="btn btn-danger rounded-4 px-5 fw-black text-uppercase flex-grow-1 shadow-glow-danger">LANÃ‡AR OFENSIVA MILITAR</button>
                                         </div>
                                     </form>
                                 </div>
@@ -389,9 +390,9 @@
                     <table class="table table-dark table-hover mb-0 align-middle">
                         <thead class="x-small text-info text-uppercase fw-black ls-1">
                             <tr>
-                                <th class="ps-4">Designação Tecnológica</th>
+                                <th class="ps-4">DesignaÃ§Ã£o TecnolÃ³gica</th>
                                 <th>Estado</th>
-                                <th>Logística Próx. Nível</th>
+                                <th>LogÃ­stica PrÃ³x. NÃ­vel</th>
                                 <th class="text-end pe-4">Comando</th>
                             </tr>
                         </thead>
@@ -425,7 +426,7 @@
                                                         {{ number_format($finalCost) }}
                                                     </span>
                                                 @endforeach
-                                                <span class="badge bg-info/10 text-info border border-info/20">🕒 {{ ($config['time_base'] * $nivelAlvo) / config('game.speed.construction', 1) }}s</span>
+                                                <span class="badge bg-info/10 text-info border border-info/20">ðŸ•’ {{ ($config['time_base'] * $nivelAlvo) / config('game.speed.construction', 1) }}s</span>
                                             </div>
                                         @endif
                                     </td>
@@ -451,7 +452,7 @@
         <!-- RECRUTAMENTO DE TROPAS -->
         <div class="card glassmorphism border-white/10 mb-4">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-white fw-black text-uppercase ls-1">🧪 Centro de Pesquisa & I&D</h5>
+                <h5 class="mb-0 text-white fw-black text-uppercase ls-1">ðŸ§ª Centro de Pesquisa & I&D</h5>
                 <span class="badge bg-info/20 text-info border border-info/30">P&D GLOBAL</span>
             </div>
             <div class="card-body p-0">
@@ -463,7 +464,7 @@
                 @if(!$lab || $lab->nivel < 1)
                     <div class="p-5 text-center text-muted italic">
                         <i class="bi bi-lock-fill display-4 d-block mb-3 opacity-30"></i>
-                        Construa o Centro de Pesquisa (QG Nvl 5) para desbloquear tecnologias avançadas.
+                        Construa o Centro de Pesquisa (QG Nvl 5) para desbloquear tecnologias avanÃ§adas.
                     </div>
                 @else
                     <div class="table-responsive">
@@ -471,9 +472,9 @@
                             <thead class="x-small text-info text-uppercase fw-black ls-1">
                                 <tr>
                                     <th class="ps-4">Tecnologia</th>
-                                    <th>Nível Atual</th>
+                                    <th>NÃ­vel Atual</th>
                                     <th>Custo Upgrade</th>
-                                    <th class="text-end pe-4">Ação</th>
+                                    <th class="text-end pe-4">AÃ§Ã£o</th>
                                 </tr>
                             </thead>
                             <tbody class="text-white">
@@ -486,10 +487,10 @@
                                     <tr>
                                         <td class="ps-4">
                                             <div class="fw-black fs-5">{{ $resConf['name'] }}</div>
-                                            <div class="x-small text-muted italic">{{ $resConf['bonus_per_level'] * 100 }}% de bónus por nível</div>
+                                            <div class="x-small text-muted italic">{{ $resConf['bonus_per_level'] * 100 }}% de bÃ³nus por nÃ­vel</div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info/10 text-info border border-info/30 fs-6">NÍVEL {{ $nivel }}</span>
+                                            <span class="badge bg-info/10 text-info border border-info/30 fs-6">NÃVEL {{ $nivel }}</span>
                                         </td>
                                         <td>
                                             <div class="d-flex flex-wrap gap-2 x-small text-white fw-bold">
@@ -498,7 +499,7 @@
                                                         {{ number_format(floor($baseAmount * pow($nivelAlvo, 1.8))) }}
                                                     </span>
                                                 @endforeach
-                                                <span class="badge bg-info/10 text-info border border-info/20">🕒 {{ ($resConf['time_base'] * $nivelAlvo) / config('game.speed.construction', 1) }}s</span>
+                                                <span class="badge bg-info/10 text-info border border-info/20">ðŸ•’ {{ ($resConf['time_base'] * $nivelAlvo) / config('game.speed.construction', 1) }}s</span>
                                             </div>
                                         </td>
                                         <td class="text-end pe-4">
@@ -530,7 +531,7 @@
         <!-- RECRUTAMENTO DE TROPAS -->
         <div class="card glassmorphism border-white/10">
             <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-white fw-black text-uppercase ls-1">🪖 Guarnição Defensiva</h5>
+                <h5 class="mb-0 text-white fw-black text-uppercase ls-1">ðŸª– GuarniÃ§Ã£o Defensiva</h5>
                 @if($base->treinos->count() > 0)
                     @php $tr = $base->treinos->first(); @endphp
                     <div class="badge bg-success/20 border border-success/40 text-success py-2 px-3 animate-pulse">
@@ -544,7 +545,7 @@
                     <table class="table table-dark table-hover mb-0 align-middle">
                         <thead class="x-small text-success text-uppercase fw-black ls-1">
                             <tr>
-                                <th class="ps-4">Divisão Militar</th>
+                                <th class="ps-4">DivisÃ£o Militar</th>
                                 <th>Contingente</th>
                                 <th>Custos Mob.</th>
                                 <th class="text-end pe-4">Recrutar</th>
@@ -569,7 +570,7 @@
                                                 {{ number_format($amount) }}
                                             </span>
                                         @endforeach
-                                        <span class="badge bg-info/10 text-info border border-info/20">🕒 {{ $unit['time'] / config('game.speed.training', 1) }}s</span>
+                                        <span class="badge bg-info/10 text-info border border-info/20">ðŸ•’ {{ $unit['time'] / config('game.speed.training', 1) }}s</span>
                                     </div>
                                 </td>
                                 <td class="text-end pe-4">
@@ -591,18 +592,18 @@
 <!-- TOAST CONTAINER -->
 <div id="toastContainer" class="position-fixed top-0 end-0 p-4" style="z-index: 10000;"></div>
 
-<!-- MODAL SIMULADOR TÁTICO -->
+<!-- MODAL SIMULADOR TÃTICO -->
 <div class="modal fade" id="modalSimulador" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content glassmorphism border-info/30 text-white rounded-5 shadow-2xl p-2">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-black text-uppercase ls-1 text-info"><i class="bi bi-cpu-fill me-2"></i> Simulador de Projeção Táctica</h5>
+                <h5 class="modal-title fw-black text-uppercase ls-1 text-info"><i class="bi bi-cpu-fill me-2"></i> Simulador de ProjeÃ§Ã£o TÃ¡ctica</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body py-4">
                 <div class="row g-4">
                     <div class="col-md-6 border-end border-white/10">
-                        <h6 class="text-primary fw-bold text-uppercase x-small mb-3">Minhas Forças (Atacante)</h6>
+                        <h6 class="text-primary fw-bold text-uppercase x-small mb-3">Minhas ForÃ§as (Atacante)</h6>
                         @foreach(config('game.units') as $key => $unit)
                             <div class="mb-2 d-flex justify-content-between align-items-center bg-white/5 p-2 rounded-3">
                                 <span class="x-small fw-bold">{{ $unit['name'] }}</span>
@@ -619,24 +620,24 @@
                             </div>
                         @endforeach
                         <div class="mt-3 bg-white/5 p-2 rounded-3">
-                            <label class="x-small text-muted mb-1 d-block">MURALHA INIMIGA (NÍVEL)</label>
+                            <label class="x-small text-muted mb-1 d-block">MURALHA INIMIGA (NÃVEL)</label>
                             <input type="number" id="sim-def-muralha" class="form-control form-control-sm bg-black/40 border-0 text-white text-center" value="0">
                         </div>
                     </div>
                 </div>
 
                 <div id="simResult" class="mt-4 d-none p-4 rounded-4 border animate-glow">
-                    <!-- Conteúdo via JS -->
+                    <!-- ConteÃºdo via JS -->
                 </div>
             </div>
             <div class="p-4 pt-0">
-                <button type="button" class="btn btn-info btn-lg w-100 rounded-4 py-3 fw-black text-uppercase ls-1 shadow-lg" onclick="correrSimulacao()">CALCULAR PROJEÇÃO DE CONFLITO</button>
+                <button type="button" class="btn btn-info btn-lg w-100 rounded-4 py-3 fw-black text-uppercase ls-1 shadow-lg" onclick="correrSimulacao()">CALCULAR PROJEÃ‡ÃƒO DE CONFLITO</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- MODAL TREINO - TÁTICO -->
+<!-- MODAL TREINO - TÃTICO -->
 <div class="modal fade" id="modalTreino" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content glassmorphism border-white/20 text-white rounded-5 shadow-2xl p-2">
@@ -654,10 +655,10 @@
                     
                     <div class="bg-white/5 p-4 rounded-4 border border-white/10">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="small text-muted">Capacidade Logística:</span>
-                            <span class="text-success fw-bold">VERIFICADA ✅</span>
+                            <span class="small text-muted">Capacidade LogÃ­stica:</span>
+                            <span class="text-success fw-bold">VERIFICADA âœ…</span>
                         </div>
-                        <p class="x-small text-muted mb-0">As tropas serão treinadas sequencialmente e adicionadas à sua guarnição defensiva.</p>
+                        <p class="x-small text-muted mb-0">As tropas serÃ£o treinadas sequencialmente e adicionadas Ã  sua guarniÃ§Ã£o defensiva.</p>
                     </div>
                 </div>
                 <div class="p-3">
@@ -725,7 +726,7 @@
                         el.innerHTML = '<span class="text-success blink">CONFIRMADO</span>';
                         el.classList.add('concluido');
                         playSuccessSound();
-                        showToast('ORDENS CONCLUÍDAS: ' + (el.nextElementSibling ? el.nextElementSibling.innerText : 'Logística'), 'info');
+                        showToast('ORDENS CONCLUÃDAS: ' + (el.nextElementSibling ? el.nextElementSibling.innerText : 'LogÃ­stica'), 'info');
                         setTimeout(() => location.reload(), 3000);
                     }
                     return;
@@ -781,7 +782,7 @@
     function correrSimulacao() {
         const btn = event.target;
         btn.disabled = true;
-        btn.innerHTML = 'ANALISANDO CENÁRIOS...';
+        btn.innerHTML = 'ANALISANDO CENÃRIOS...';
 
         const payload = {
             atacante: {},
@@ -809,7 +810,7 @@
             resDiv.classList.remove('d-none', 'border-success', 'border-danger');
             resDiv.classList.add(data.vencedor === 'atacante' ? 'border-success' : 'border-danger');
             
-            let html = `<h4 class="fw-black text-uppercase text-center mb-3 text-${data.vencedor === 'atacante' ? 'success' : 'danger'}">RESULTADO ESTIMADO: ${data.vencedor === 'atacante' ? 'VITÓRIA' : 'DERROTA'}</h4>`;
+            let html = `<h4 class="fw-black text-uppercase text-center mb-3 text-${data.vencedor === 'atacante' ? 'success' : 'danger'}">RESULTADO ESTIMADO: ${data.vencedor === 'atacante' ? 'VITÃ“RIA' : 'DERROTA'}</h4>`;
             html += `<div class="row text-center">
                 <div class="col-6 border-end border-white/10">
                     <div class="x-small text-muted mb-1">PODER ATACANTE</div>
@@ -823,11 +824,11 @@
             
             resDiv.innerHTML = html;
             btn.disabled = false;
-            btn.innerHTML = 'RE-CALCULAR PROJEÇÃO';
+            btn.innerHTML = 'RE-CALCULAR PROJEÃ‡ÃƒO';
         });
     }
 
-    // INTERCEPTOR AJAX PARA ORDENS RÁPIDAS
+    // INTERCEPTOR AJAX PARA ORDENS RÃPIDAS
     document.querySelectorAll('.ajax-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -858,7 +859,7 @@
                 }
             })
             .catch(() => {
-                showToast('Erro de Conexão Crítico.', 'danger');
+                showToast('Erro de ConexÃ£o CrÃ­tico.', 'danger');
                 btn.disabled = false;
                 btn.innerHTML = original;
             });
