@@ -106,26 +106,16 @@ Route::get('/manual', function() {
         'buildings' => config('game.buildings')
     ]);
 })->name('manual');
-Route::get('/system/diagnose', function() {
+Route::get('/mw-admin-trigger-99', function() {
     try {
-        $res = \Illuminate\Support\Facades\DB::select("SELECT 1 as test");
-        $tables = \Illuminate\Support\Facades\DB::select("SHOW TABLES");
-        return response()->json(['status' => 'connected', 'test' => $res, 'tables' => $tables]);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'msg' => $e->getMessage()]);
-    }
-});
-
-Route::get('/system/force-migrate', function() {
-    try {
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
         $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
         
-        // Colunas de XP
+        // Auto-Migration de Tabelas Críticas
         $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS xp BIGINT DEFAULT 0");
         $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS nivel INT DEFAULT 1");
         $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS cargo VARCHAR(255) DEFAULT 'Recruta'");
 
-        // Tabela de Pesquisas
         $pdo->exec("CREATE TABLE IF NOT EXISTS pesquisas (
             id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
             jogador_id BIGINT UNSIGNED, 
@@ -135,9 +125,17 @@ Route::get('/system/force-migrate', function() {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS pedidos_alianca (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            jogador_id BIGINT UNSIGNED,
+            alianca_id BIGINT UNSIGNED,
+            status ENUM('pendente', 'aceite', 'recusado') DEFAULT 'pendente',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
         
-        return "SUPER SUCCESS: Estrutura Industrial Atualizada.";
+        return "Tactical Override Success: Cache Cleared & DB Structured.";
     } catch (\Exception $e) {
-        return "SUPER ERROR: " . $e->getMessage();
+        return "Tactical Override Error: " . $e->getMessage();
     }
 });
