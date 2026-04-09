@@ -1,5 +1,3 @@
-@extends('layouts.app')
-
 @section('content')
 <div class="row g-4">
     <!-- HUD DE RECURSOS - ALTO CONTRASTE -->
@@ -104,6 +102,26 @@
                     <span class="text-muted small">Quartel General:</span>
                     <span class="badge bg-primary/20 text-info border border-info/30">NIVEL {{ $base->qg_nivel }}</span>
                 </div>
+                <!-- XP / NIVEL DE COMANDO (SAFEGUARDED) -->
+                @if(\Illuminate\Support\Facades\Schema::hasColumn('jogadores', 'xp'))
+                    <div class="d-flex justify-content-between mb-3 border-bottom border-white/5 pb-2">
+                        <span class="text-muted small">Patente Atual:</span>
+                        <span class="text-warning fw-black x-small text-uppercase">{{ $jogador->cargo ?? 'Recruta' }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between x-small fw-bold text-white mb-1">
+                            <span>NÍVEL DE COMANDO {{ $jogador->nivel }}</span>
+                            <span>{{ number_format($jogador->xp) }} XP</span>
+                        </div>
+                        <div class="progress bg-white/5" style="height: 4px;">
+                            @php 
+                                $nextXp = ($jogador->nivel ?? 1) * 1000;
+                                $percentXp = min(100, (($jogador->xp ?? 0) / max(1, $nextXp)) * 100);
+                            @endphp
+                            <div class="progress-bar bg-warning shadow-glow-warning" style="width: {{ $percentXp }}%"></div>
+                        </div>
+                    </div>
+                @endif
                 <div class="d-flex justify-content-between">
                     <span class="text-muted small">Fortificações:</span>
                     <span class="badge bg-secondary/20 text-white border border-white/30">NIVEL {{ $base->muralha_nivel }}</span>
@@ -111,40 +129,92 @@
             </div>
         </div>
 
-        <!-- MOVIMENTOS MILITARES -->
+        <!-- MOVIMENTOS MILITARES E RADAR -->
         @php 
             $ataquesEnviados = \App\Models\Ataque::where('origem_base_id', $base->id)->where('processado', false)->get();
             $ataquesRecebidos = \App\Models\Ataque::where('destino_base_id', $base->id)->where('processado', false)->get();
+            
+            // CÁLCULO DE POPULAÇÃO PARA O UI
+            $nivelRecrutamento = $base->edificios->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0;
+            $capTotal = (100 * ($nivelRecrutamento + 1)) * 1.5;
+            $popOcupada = 0;
+            foreach ($base->tropas as $t) {
+                $popOcupada += ($t->quantidade * (config("game.units.{$t->unidade}.cost.pessoal") ?? 1));
+            }
+            $popPercent = min(100, ($popOcupada / max(1, $capTotal)) * 100);
+            
+            // INTELIGÊNCIA: Radar é prioritário, QG é backup básico
+            $nivelRadar = $base->edificios->where('tipo', 'radar_estrategico')->first()?->nivel ?? 0;
+            $intelLevel = $nivelRadar > 0 ? ($nivelRadar + 5) : $base->qg_nivel;
         @endphp
 
-        <div class="card glassmorphism border-danger/30 mb-4 h-auto">
-            <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 text-danger fw-bold"><i class="bi bi-broadcast"></i> Inteligência de Campanha</h6>
-                <span class="badge bg-danger/20 text-danger x-small border border-danger/30">OPERACIONAL</span>
+        <div class="card glassmorphism border-info/30 mb-4 h-auto shadow-lg overflow-hidden">
+            <div class="card-header border-white/5 py-3 d-flex justify-content-between align-items-center bg-info/5">
+                <h6 class="mb-0 text-info fw-black x-small text-uppercase ls-1"><i class="bi bi-broadcast me-2"></i> Centro de Inteligência & Radar</h6>
+                <span class="badge bg-{{ $intelLevel >= 10 ? 'success' : 'warning' }}/20 text-{{ $intelLevel >= 10 ? 'success' : 'warning' }} x-small border border-{{ $intelLevel >= 10 ? 'success' : 'warning' }}/30">INTEL LVL {{ $intelLevel }}</span>
             </div>
-            <div class="card-body p-2">
+            
+            <div class="card-body p-3">
+                <!-- POPULATION BAR -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between x-small fw-bold text-white mb-1">
+                        <span>CAPACIDADE DA GUARNIÇÃO</span>
+                        <span>{{ number_format($popOcupada) }} / {{ number_format($capTotal) }}</span>
+                    </div>
+                    <div class="progress bg-white/5" style="height: 6px;">
+                        <div class="progress-bar bg-info" style="width: {{ $popPercent }}%"></div>
+                    </div>
+                </div>
+
+                <div class="separator-text x-small text-muted mb-3"> ALERTAS DE PROXIMIDADE </div>
+
                 @forelse($ataquesRecebidos as $atq)
-                    <div class="p-3 mb-2 rounded-3 bg-danger/20 border border-danger/40 animate-pulse">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-danger small">HOSTIL DETECTADO!</strong>
-                            <span class="badge bg-danger countdown x-small" data-time="{{ $atq->chegada_em->timestamp }}">--:--</span>
+                    <div class="p-3 mb-2 rounded-4 bg-danger/15 border border-danger/30 animate-pulse-slow">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong class="text-danger small fw-black">OPERACIONAL HOSTIL DETECTADO!</strong>
+                            <span class="badge bg-danger countdown x-small font-monospace" data-time="{{ $atq->chegada_em->timestamp }}">--:--</span>
                         </div>
-                        <div class="x-small text-white mt-1">Impacto iminente em {{ $atq->chegada_em->format('H:i:s') }}</div>
+                        
+                        <div class="x-small text-white/90">
+                            @if($intelLevel >= 5)
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> TIPO: <span class="text-danger fw-bold text-uppercase">{{ $atq->tipo }}</span>
+                            @else
+                                <i class="bi bi-question-diamond me-1"></i> TIPO: [DADOS ENCRIPTADOS]
+                            @endif
+                        </div>
+                        
+                        @if($intelLevel >= 10)
+                            <div class="x-small text-white/80 mt-1">
+                                <i class="bi bi-geo-alt-fill me-1"></i> ORIGEM: <span class="text-info">({{ $atq->origem->coordenada_x }}|{{ $atq->origem->coordenada_y }})</span>
+                            </div>
+                        @endif
+
+                        <div class="mt-2 text-end opacity-50 x-small italic text-white/50">
+                            IMPACTO EM: {{ $atq->chegada_em->format('H:i:s') }}
+                        </div>
                     </div>
                 @empty
-                    <div class="p-4 text-center text-muted small py-5">
-                       <i class="bi bi-shield-check display-6 mb-2 d-block opacity-20"></i>
-                       Espaço Aéreo Seguro.
+                    <div class="p-4 text-center text-muted small py-5 opacity-40">
+                       <i class="bi bi-shield-lock display-6 mb-2 d-block"></i>
+                       ESPAÇO AÉREO LIMPO
                     </div>
                 @endforelse
                 
                 @foreach($ataquesEnviados as $atq)
                     <div class="p-3 mb-2 rounded-3 bg-info/10 border border-info/30">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-info small">MISSÃO EXPEDICIONÁRIA</strong>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong class="text-info small text-uppercase">Missão Expedicionária</strong>
                             <span class="badge bg-info countdown x-small" data-time="{{ $atq->chegada_em->timestamp }}">--:--</span>
                         </div>
-                        <div class="x-small text-white/70 mt-1">Destino: Base Hostil ({{ $atq->tipo }})</div>
+                        <div class="x-small text-white/70">Destino: Base Hostil ({{ $atq->tipo }})</div>
+                        <div class="text-end mt-2">
+                            <form action="{{ route('base.atacar.cancelar', $atq->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-xs btn-outline-danger py-0 x-small rounded-pill px-2">
+                                    <i class="bi bi-x-circle me-1"></i> ABORTAR
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -174,35 +244,80 @@
             </div>
         </div>
 
-        <!-- ÚLTIMAS OPERAÇÕES (RELATÓRIOS PESSOAIS) -->
-        <div class="card glassmorphism border-white/10 mb-4 h-auto">
-            <div class="card-header border-white/5 py-3">
-                <h6 class="mb-0 text-white fw-bold x-small text-uppercase ls-1"><i class="bi bi-journal-text text-warning"></i> Histórico de Operações</h6>
+        <!-- MERCADO NEGRO (TRADE) -->
+        <div class="card glassmorphism border-warning/20 mb-4 h-auto shadow-lg overflow-hidden">
+            <div class="card-header bg-warning/5 border-bottom border-white/5 py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 text-warning fw-black x-small text-uppercase ls-1"><i class="bi bi-currency-exchange me-2"></i> Mercado Negro Industrial</h6>
+                <span class="badge bg-warning/20 text-warning x-small border border-warning/30">TAXA 3:1</span>
+            </div>
+            <div class="card-body p-4">
+                <p class="x-small text-muted mb-4 italic">Troque os seus excedentes por recursos prioritários instantaneamente. A logística clandestina cobra uma taxa elevada pela rapidez.</p>
+                
+                <form action="{{ route('base.trocar') }}" method="POST" class="ajax-form">
+                    @csrf
+                    <input type="hidden" name="base_id" value="{{ $base->id }}">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-7">
+                            <label class="x-small text-muted fw-bold mb-1">DAR (300)</label>
+                            <select name="oferece" class="form-select form-select-sm bg-black/40 border-white/10 text-white x-small">
+                                <option value="suprimentos">📦 Suprimentos</option>
+                                <option value="combustivel">⛽ Combustível</option>
+                                <option value="municoes">🚀 Munições</option>
+                            </select>
+                        </div>
+                        <div class="col-5">
+                            <label class="x-small text-muted fw-bold mb-1">RECEBER (100)</label>
+                            <select name="recebe" class="form-select form-select-sm bg-black/40 border-white/10 text-info x-small">
+                                <option value="combustivel">⛽ Combustível</option>
+                                <option value="suprimentos">📦 Suprimentos</option>
+                                <option value="municoes">🚀 Munições</option>
+                                <option value="pessoal">👥 Pessoal</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mt-3 text-center">
+                            <button type="submit" class="btn btn-warning w-100 rounded-pill fw-black text-uppercase x-small py-2 shadow-glow-warning">EFETUAR TRANSAÇÃO CLANDESTINA</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- CENTRO DE OPERAÇÕES: ÚLTIMAS ATIVIDADES -->
+        <div class="card glassmorphism border-primary/20 mb-4 h-auto shadow-2xl">
+            <div class="card-header bg-primary/5 border-bottom border-white/5 py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 text-primary fw-black x-small text-uppercase ls-1"><i class="bi bi-cpu-fill me-2"></i> Log de Actividades Técnicas</h6>
+                <span class="badge bg-primary/20 text-primary x-small border border-primary/30">OPERACIONAL</span>
             </div>
             <div class="card-body p-0">
-                <div class="list-group list-group-flush">
+                <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
                     @forelse($relatorios as $rel)
-                        <a href="{{ route('relatorio.show', $rel->id) }}" class="list-group-item list-group-item-action bg-transparent border-white/5 py-3 transition-all bg-hover-white/5">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-bold text-white x-small">{{ $rel->titulo }}</div>
-                                    <div class="text-muted" style="font-size: 0.6rem;">{{ $rel->created_at->format('d/m/Y H:i') }} | Op. #{{ $rel->id }}</div>
+                        <a href="{{ route('relatorio.show', $rel->id) }}" class="list-group-item list-group-item-action bg-transparent border-white/5 py-3 transition-all hover-brightness">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-pill bg-{{ $rel->vencedor_id == Auth::id() ? 'success' : 'danger' }}/20 p-2 me-3 border border-{{ $rel->vencedor_id == Auth::id() ? 'success' : 'danger' }}/30">
+                                        <i class="bi bi-{{ $rel->vencedor_id == Auth::id() ? 'shield-fill-check' : 'shield-fill-exclamation' }} text-{{ $rel->vencedor_id == Auth::id() ? 'success' : 'danger' }}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-white x-small">{{ $rel->titulo }}</div>
+                                        <div class="text-muted" style="font-size: 0.6rem;">
+                                            <i class="bi bi-clock me-1"></i> {{ $rel->created_at->diffForHumans() }}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="text-end">
-                                    @if($rel->vencedor_id == Auth::id())
-                                        <span class="badge bg-success/10 text-success border border-success/20 x-small px-2">VITÓRIA</span>
-                                    @else
-                                        <span class="badge bg-danger/10 text-danger border border-danger/20 x-small px-2">DERROTA</span>
-                                    @endif
+                                    <i class="bi bi-chevron-right text-muted small"></i>
                                 </div>
                             </div>
                         </a>
                     @empty
-                        <div class="p-4 text-center text-muted py-5" style="font-size: 0.65rem;">
-                            SEM OPERAÇÕES REGISTADAS
+                        <div class="p-5 text-center text-muted small opacity-50 italic">
+                            Aguardando relatórios de campo...
                         </div>
                     @endforelse
                 </div>
+            </div>
+            <div class="card-footer bg-black/20 border-top border-white/5 py-2 text-center">
+                <a href="#" class="text-info x-small fw-bold text-decoration-none hover-underline">VER ARQUIVO COMPLETO</a>
             </div>
         </div>
     </div>
@@ -214,6 +329,69 @@
                 <h5 class="mb-0 text-white fw-black text-uppercase ls-1">🏗️ Infraestrutura Militar</h5>
             </div>
             <div class="card-body p-0">
+                <!-- MISSION DEPLOYMENT INTERFACE (NEW) -->
+                @if(request()->has('target'))
+                    @php 
+                        $targetBase = \App\Models\Base::find(request('target')); 
+                    @endphp
+                    @if($targetBase && $targetBase->id !== $base->id)
+                        <div class="p-4 bg-primary/10 border-bottom border-primary/30 animate-glow">
+                            <h4 class="text-white fw-black text-uppercase border-bottom border-primary/40 pb-2 mb-3">
+                                <i class="bi bi-crosshair2 me-2 text-danger"></i> OPERAÇÃO: ALVO DEFINIDO
+                            </h4>
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-4">
+                                    <div class="glassmorphism p-3 rounded-4 border border-info/30 h-100">
+                                        <div class="text-info x-small fw-bold text-uppercase mb-1">Coordenadas de Impacto</div>
+                                        <div class="fs-4 fw-black text-white">({{ $targetBase->coordenada_x }}|{{ $targetBase->coordenada_y }})</div>
+                                        <div class="text-muted small">Alvo: {{ $targetBase->nome }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <form action="{{ route('base.atacar') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="origem_id" value="{{ $base->id }}">
+                                        <input type="hidden" name="destino_id" value="{{ $targetBase->id }}">
+                                        
+                                        <!-- TIPO DE MISSÃO -->
+                                        <div class="mb-3">
+                                            <div class="btn-group w-100 shadow-lg" role="group">
+                                                <input type="radio" class="btn-check" name="tipo" id="m_saque" value="saque" checked>
+                                                <label class="btn btn-outline-info rounded-start-4 fw-bold py-2" for="m_saque">SAQUE</label>
+
+                                                <input type="radio" class="btn-check" name="tipo" id="m_espionagem" value="espionagem">
+                                                <label class="btn btn-outline-info fw-bold py-2" for="m_espionagem">ESPIONAGEM</label>
+
+                                                <input type="radio" class="btn-check" name="tipo" id="m_conquista" value="conquista">
+                                                <label class="btn btn-outline-info rounded-end-4 fw-bold py-2" for="m_conquista">CONQUISTA</label>
+                                            </div>
+                                        </div>
+
+                                        <!-- SELEÇÃO DE TROPAS RÁPIDA -->
+                                        <div class="row g-2 mb-3">
+                                            @foreach($base->tropas as $t)
+                                                @if($t->quantidade > 0)
+                                                    <div class="col-6 col-sm-4 col-md-3">
+                                                        <div class="bg-black/30 p-2 rounded-3 border border-white/10 text-center">
+                                                            <div class="x-small text-muted fw-bold text-uppercase mb-1" style="font-size: 0.6rem;">{{ $t->unidade }}</div>
+                                                            <input type="number" name="tropas[{{ $t->unidade }}]" class="form-control form-control-sm bg-transparent border-0 text-white text-center fw-black p-0" placeholder="0" max="{{ $t->quantidade }}" min="0">
+                                                            <div class="x-small text-info mt-1" style="font-size: 0.55rem;">MAX: {{ $t->quantidade }}</div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+
+                                        <div class="d-flex justify-content-between gap-3">
+                                            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary rounded-4 px-4 fw-bold">CANCELAR</a>
+                                            <button type="submit" class="btn btn-danger rounded-4 px-5 fw-black text-uppercase flex-grow-1 shadow-glow-danger">LANÇAR OFENSIVA MILITAR</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endif
                 <div class="table-responsive">
                     <table class="table table-dark table-hover mb-0 align-middle">
                         <thead class="x-small text-info text-uppercase fw-black ls-1">
@@ -226,7 +404,7 @@
                         </thead>
                         <tbody class="text-white">
                             @php 
-                                $tiposDisponiveis = ['mina_suprimentos', 'refinaria', 'fabrica_municoes', 'posto_recrutamento', 'quartel', 'aerodromo']; 
+                                $tiposDisponiveis = ['mina_suprimentos', 'refinaria', 'fabrica_municoes', 'posto_recrutamento', 'quartel', 'aerodromo', 'radar_estrategico']; 
                                 $scaling = config('game.scaling', 1.5);
                                 $bConf = config('game.buildings');
                             @endphp

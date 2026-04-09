@@ -111,6 +111,20 @@ class CombatService
             }
         }
 
+        // Dados detalhados para o relatório (BAIXAS PRECISSAS)
+        $detalhes = [
+            'tipo' => $tipo,
+            'vitoria' => $vencedor == 'atacante',
+            'conquista' => ($tipo === 'conquista' && $vencedor === 'atacante'),
+            'saque' => $saque,
+            'perdas_atacante' => $perdasAtacante,
+            'perdas_defensor' => $perdasDefensor,
+            'tropas_atacante_antes' => $unidadesAtacantes,
+            'tropas_defensor_antes' => $unidadesDefensoras->pluck('quantidade', 'unidade')->toArray(),
+            'tropas_atacante_depois' => collect($unidadesAtacantes)->map(fn($q, $u) => $q - ($perdasAtacante[$u] ?? 0))->toArray(),
+            'tropas_defensor_depois' => $unidadesDefensoras->pluck('quantidade', 'unidade')->map(fn($q, $u) => $q - ($perdasDefensor[$u] ?? 0))->toArray(),
+        ];
+
         // 5. Criar Relatório
         Relatorio::create([
             'vencedor_id' => $vencedor == 'atacante' ? $atacanteId : $baseDefensora->jogador_id,
@@ -119,14 +133,18 @@ class CombatService
             'destino_nome' => $baseDefensora->nome,
             'atacante_id' => $atacanteId,
             'defensor_id' => $baseDefensora->jogador_id,
-            'detalhes' => [
-                'perdas_atacante' => $perdasAtacante,
-                'perdas_defensor' => $perdasDefensor,
-                'saque' => $saque,
-                'vitoria' => $vencedor == 'atacante',
-                'conquista' => ($tipo === 'conquista' && $vencedor === 'atacante')
-            ]
+            'detalhes' => $detalhes
         ]);
+
+        // 6. Ganhos de Experiência (Comando)
+        $xpGanha = 50; // Base por combate
+        if (\Illuminate\Support\Facades\Schema::hasColumn('jogadores', 'xp')) {
+            if ($vencedor == 'atacante') {
+                $baseOrigem->jogador->increment('xp', $xpGanha + 25); // Bónus de ofensiva
+            } else {
+                $baseDefensora->jogador->increment('xp', $xpGanha);
+            }
+        }
 
         return [
             'vencedor' => $vencedor,

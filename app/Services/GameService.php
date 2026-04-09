@@ -79,15 +79,29 @@ class GameService
         if (!$unitConf) throw new \Exception("Unidade desconhecida.");
 
         $recursos = $base->recursos;
+        
+        // CÁLCULO DE CAPACIDADE DE PESSOAL (POPULAÇÃO)
+        $nivelRecrutamento = $base->edificios()->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0;
+        $capacidadeTotal = (100 * ($nivelRecrutamento + 1)) * 1.5; // Ex: Lvl 0 = 150, Lvl 1 = 300, etc.
+        
+        $pessoalOcupado = 0;
+        $tropasAtuais = $base->tropas;
+        foreach ($tropasAtuais as $t) {
+            $pessoalOcupado += ($t->quantidade * (config("game.units.{$t->unidade}.cost.pessoal") ?? 1));
+        }
+        
+        $pessoalNovo = $quantidade * ($unitConf['cost']['pessoal'] ?? 1);
+        
+        if (($pessoalOcupado + $pessoalNovo) > $capacidadeTotal) {
+            throw new \Exception("Capacidade de aquartelamento insuficiente. Melhore o Posto de Recrutamento.");
+        }
+
         foreach ($unitConf['cost'] as $res => $amount) {
             $total = $amount * $quantidade;
             if ($recursos->$res < $total) {
                 throw new \Exception("Recursos insuficientes.");
             }
-        }
-
-        foreach ($unitConf['cost'] as $res => $amount) {
-            $recursos->decrement($res, $amount * $quantidade);
+            $recursos->decrement($res, $total);
         }
 
         $speed = config('game.speed.training', 1);
@@ -125,6 +139,11 @@ class GameService
                     ]);
                 }
 
+                // GANHA XP: Nível * 10
+                if (\Illuminate\Support\Facades\Schema::hasColumn('jogadores', 'xp')) {
+                    $base->jogador->increment('xp', $fila->nivel_destino * 10);
+                }
+
                 $fila->delete();
             }
 
@@ -144,6 +163,13 @@ class GameService
                         'unidade' => $treino->unidade,
                         'quantidade' => $treino->quantidade,
                     ]);
+                }
+
+                // GANHA XP baseado no tempo de treino
+                if (\Illuminate\Support\Facades\Schema::hasColumn('jogadores', 'xp')) {
+                    $unitConf = config("game.units.{$treino->unidade}");
+                    $xpGanho = (int)(($unitConf['time'] * $treino->quantidade) / 60);
+                    $base->jogador->increment('xp', max(1, $xpGanho));
                 }
 
                 $treino->delete();

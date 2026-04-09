@@ -69,7 +69,14 @@
                                     <tbody>
                                         @forelse($relatorio->detalhes['tropas'] as $unid => $qtd)
                                             <tr>
-                                                <td class="px-4 py-3 text-white fw-bold small">{{ $unid }}</td>
+                                                <td class="px-4 py-3 text-white fw-bold small">
+                                                    @if($unid == 'infantaria') <i class="bi bi-person-fill text-info me-2"></i> @endif
+                                                    @if($unid == 'blindado_apc') <i class="bi bi-truck text-info me-2"></i> @endif
+                                                    @if($unid == 'tanque_combate') <i class="bi bi-shield-shaded text-info me-2"></i> @endif
+                                                    @if($unid == 'helicoptero_ataque') <i class="bi bi-fan text-info me-2"></i> @endif
+                                                    @if($unid == 'agente_espiao') <i class="bi bi-eye text-info me-2"></i> @endif
+                                                    {{ str_replace('_', ' ', $unid) }}
+                                                </td>
                                                 <td class="px-4 py-3 text-end text-info fw-black small">{{ number_format($qtd) }}</td>
                                             </tr>
                                         @empty

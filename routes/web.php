@@ -77,6 +77,10 @@ Route::post('/atacar', [BaseController::class, 'atacar'])
     ->middleware('auth')
     ->name('base.atacar');
 
+Route::post('/atacar/cancelar/{id}', [BaseController::class, 'cancelarAtaque'])
+    ->middleware('auth')
+    ->name('base.atacar.cancelar');
+
 Route::get('/base/switch/{id}', [BaseController::class, 'switchBase'])
     ->middleware('auth')
     ->name('base.switch');
@@ -84,6 +88,11 @@ Route::get('/base/switch/{id}', [BaseController::class, 'switchBase'])
 Route::get('/cron/processar', [BaseController::class, 'manualProcess'])
     ->middleware('auth')
     ->name('cron.processar');
+Route::post('/base/trocar', [BaseController::class, 'trocar'])
+    ->middleware('auth')
+    ->name('base.trocar');
+
+// Admin routes block (manually managed)
 
 Route::get('/relatorio/{id}', [App\Http\Controllers\RelatorioController::class, 'show'])
     ->middleware('auth')
@@ -91,18 +100,44 @@ Route::get('/relatorio/{id}', [App\Http\Controllers\RelatorioController::class, 
 
 Route::get('/api/mapa', [MapaController::class, 'apiData'])
     ->middleware('auth');
-Route::get('/test-db', function() {
-    $base = \App\Models\Base::first();
-    if (!$base) return 'Sem bases.';
-    
-    $res = $base->recursos;
-    $old = $res->suprimentos;
-    
-    \Illuminate\Support\Facades\DB::table('recursos')
-        ->where('id', $res->id)
-        ->increment('suprimentos', 10);
+Route::get('/manual', function() {
+    return view('manual', [
+        'units' => config('game.units'),
+        'buildings' => config('game.buildings')
+    ]);
+})->name('manual');
+Route::get('/system/diagnose', function() {
+    try {
+        $res = \Illuminate\Support\Facades\DB::select("SELECT 1 as test");
+        $tables = \Illuminate\Support\Facades\DB::select("SHOW TABLES");
+        return response()->json(['status' => 'connected', 'test' => $res, 'tables' => $tables]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'msg' => $e->getMessage()]);
+    }
+});
+
+Route::get('/system/force-migrate', function() {
+    try {
+        $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
         
-    $new = \App\Models\Base::first()->recursos->suprimentos;
-    
-    return "Base: {$base->id}, Antigo: $old, Novo: $new";
+        // Colunas de XP
+        $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS xp BIGINT DEFAULT 0");
+        $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS nivel INT DEFAULT 1");
+        $pdo->exec("ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS cargo VARCHAR(255) DEFAULT 'Recruta'");
+
+        // Tabela de Pesquisas
+        $pdo->exec("CREATE TABLE IF NOT EXISTS pesquisas (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+            jogador_id BIGINT UNSIGNED, 
+            tipo VARCHAR(255), 
+            nivel INT DEFAULT 0, 
+            completado_em TIMESTAMP NULL, 
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )");
+        
+        return "SUPER SUCCESS: Estrutura Industrial Atualizada.";
+    } catch (\Exception $e) {
+        return "SUPER ERROR: " . $e->getMessage();
+    }
 });

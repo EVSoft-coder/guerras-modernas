@@ -136,11 +136,70 @@ class BaseController extends Controller
         return redirect()->route('dashboard')->with('success', "Operação lançada! Chegada estimada às {$chegadaEm->format('H:i:s')}");
     }
 
+    public function cancelarAtaque($id)
+    {
+        $atq = Ataque::findOrFail($id);
+        $origem = Base::findOrFail($atq->origem_base_id);
+        
+        if ($origem->jogador_id !== Auth::id()) abort(403);
+        if ($atq->processado) return redirect()->back()->withErrors(['error' => 'Ataque já processado.']);
+
+        // DEVOLVER TROPAS
+        foreach ($atq->tropas as $unidade => $quantidade) {
+            $tropaLocal = $origem->tropas()->firstOrCreate(['unidade' => $unidade]);
+            $tropaLocal->increment('quantidade', $quantidade);
+        }
+
+        $atq->delete();
+
+        return redirect()->back()->with('success', 'Operação abortada. Tropas regressaram à base.');
+    }
+
     public function switchBase($id)
     {
         $base = Base::where('id', $id)->where('jogador_id', Auth::id())->firstOrFail();
         session(['selected_base_id' => $base->id]);
         return redirect()->route('dashboard')->with('success', "Comando transferido para {$base->nome}!");
+    }
+
+    /**
+     * Efetuar troca de recursos no Mercado Negro (Taxa 3:1).
+     */
+    public function trocar(Request $request)
+    {
+        $request->validate([
+            'base_id' => 'required|exists:bases,id',
+            'oferece' => 'required|string',
+            'recebe'  => 'required|string'
+        ]);
+
+        $base = Base::findOrFail($request->base_id);
+        if ($base->jogador_id !== Auth::id()) abort(403);
+
+        if ($request->oferece === $request->recebe) {
+            return response()->json(['success' => false, 'error' => 'Operação redundante detectada.'], 422);
+        }
+
+        $custo = 300;
+        $ganho = 100;
+
+        $recursos = $base->recursos;
+        if ($recursos->{$request->oferece} < $custo) {
+            return response()->json(['success' => false, 'error' => 'Suprimentos insuficientes para esta transação clandestina.'], 422);
+        }
+
+        $recursos->decrement($request->oferece, $custo);
+        $recursos->increment($request->recebe, $ganho);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Transação efetuada com sucesso no Mercado Negro!',
+                'recursos' => $base->recursos
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Troca efetuada com sucesso!');
     }
 
     public function manualProcess()

@@ -112,6 +112,24 @@ class AuthController extends Controller
             
             // Guardar o ID selecionado na sessão para persistência
             session(['selected_base_id' => $base->id]);
+
+            // AUTO-UPDATE ESTRUTURAL (Unblocker)
+            try {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('jogadores', 'xp')) {
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE jogadores ADD COLUMN xp BIGINT DEFAULT 0, ADD COLUMN nivel INT DEFAULT 1, ADD COLUMN cargo VARCHAR(255) DEFAULT 'Recruta'");
+                }
+                \Illuminate\Support\Facades\DB::statement("CREATE TABLE IF NOT EXISTS pesquisas (
+                    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+                    jogador_id BIGINT UNSIGNED, 
+                    tipo VARCHAR(255), 
+                    nivel INT DEFAULT 0, 
+                    completado_em TIMESTAMP NULL, 
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                )");
+            } catch (\Exception $e) {
+                \Log::error("Auto-Update Failed: " . $e->getMessage());
+            }
             
             // Obter taxas de produção p/min
             $taxas = $gameService->obterTaxasProducao($base);

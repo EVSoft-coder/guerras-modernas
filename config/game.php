@@ -72,6 +72,11 @@ return [
             'cost' => ['suprimentos' => 1000, 'combustivel' => 800, 'municoes' => 500, 'pessoal' => 30],
             'time_base' => 600,
         ],
+        'radar_estrategico' => [
+            'name' => 'Radar de Longo Alcance',
+            'cost' => ['suprimentos' => 1500, 'combustivel' => 1200, 'municoes' => 300, 'pessoal' => 15],
+            'time_base' => 900,
+        ],
     ],
 
     /*
