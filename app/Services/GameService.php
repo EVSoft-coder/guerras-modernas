@@ -79,7 +79,7 @@ class GameService
         $completadoEm = now()->addSeconds($segundos);
 
         return $base->construcoes()->create([
-            'edificio_tipo' => $tipo,
+            'edificio_tipo' => $tipoKey,
             'nivel_destino' => $nivelAlvo,
             'completado_em' => $completadoEm,
         ]);
@@ -167,6 +167,10 @@ class GameService
                 throw new \Exception("Recursos insuficientes na base para financiar esta pesquisa.");
             }
         }
+
+        $speed = config('game.speed.construction', 1);
+        $segundos = ($conf['time_base'] * $nivelAlvo) / $speed;
+        $completadoEm = now()->addSeconds($segundos);
 
         return \Illuminate\Support\Facades\DB::transaction(function() use ($jogador, $tipo, $nivelAlvo, $completadoEm, $recursos, $conf) {
             foreach ($conf['cost'] as $res => $baseAmount) {

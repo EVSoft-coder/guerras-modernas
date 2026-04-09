@@ -28,6 +28,7 @@ Route::post('/upgrade', [BaseController::class, 'upgrade'])->middleware('auth')-
 Route::post('/treinar', [BaseController::class, 'treinar'])->middleware('auth')->name('base.treinar');
 Route::post('/atacar', [BaseController::class, 'atacar'])->middleware('auth')->name('base.atacar');
 Route::post('/atacar/cancelar/{id}', [BaseController::class, 'cancelarAtaque'])->middleware('auth')->name('base.atacar.cancelar');
+Route::post('/simular', [BaseController::class, 'simular'])->middleware('auth')->name('base.simular');
 Route::get('/base/switch/{id}', [BaseController::class, 'switchBase'])->middleware('auth')->name('base.switch');
 Route::get('/cron/processar', [BaseController::class, 'manualProcess'])->middleware('auth')->name('cron.processar');
 Route::post('/base/trocar', [BaseController::class, 'trocar'])->middleware('auth')->name('base.trocar');

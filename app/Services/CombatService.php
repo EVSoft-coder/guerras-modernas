@@ -226,6 +226,56 @@ class CombatService
                 'edificios' => $edificiosDetectados,
                 'recursos' => $recursosDetectados
             ]
+    }
+
+    /**
+     * Simula uma batalha sem alterar o estado da base de dados.
+     */
+    public function simular(array $atacanteTropas, array $defensorTropas, $baseDefId = null)
+    {
+        // 1. Calcular Poder Atacante
+        $poderAtacante = 0;
+        foreach ($atacanteTropas as $unidade => $qtd) {
+            $poderAtacante += ($qtd * (config("game.units.{$unidade}.attack") ?? 0));
+        }
+
+        // 2. Calcular Poder Defensor (estimado se não houver base_id)
+        $poderDefensorGeneral = 0;
+        foreach ($defensorTropas as $unidade => $qtd) {
+            $poderDefensorGeneral += ($qtd * (config("game.units.{$unidade}.defense_general") ?? 0));
+        }
+
+        // Bónus de Muralha (estimado nivel 0 se não houver base)
+        $muralhaNivel = 0;
+        if ($baseDefId) {
+            $base = \App\Models\Base::find($baseDefId);
+            $muralhaNivel = $base ? $base->muralha_nivel : 0;
+        }
+        $bonusMuralha = 1 + ($muralhaNivel * 0.05);
+        $poderDefensorTotal = $poderDefensorGeneral * $bonusMuralha;
+
+        $vencedor = 'defensor';
+        $perdasAtq = [];
+        $perdasDef = [];
+
+        if ($poderAtacante > $poderDefensorTotal) {
+            $vencedor = 'atacante';
+            $ratio = $poderAtacante > 0 ? (min(0.9, ($poderDefensorTotal / $poderAtacante) * 0.8)) : 0;
+            foreach ($atacanteTropas as $u => $q) $perdasAtq[$u] = (int)($q * $ratio);
+            foreach ($defensorTropas as $u => $q) $perdasDef[$u] = $q;
+        } else {
+            $vencedor = 'defensor';
+            $ratio = $poderDefensorTotal > 0 ? (min(0.9, ($poderAtacante / $poderDefensorTotal) * 0.8)) : 0;
+            foreach ($atacanteTropas as $u => $q) $perdasAtq[$u] = $q;
+            foreach ($defensorTropas as $u => $q) $perdasDef[$u] = (int)($q * $ratio);
+        }
+
+        return [
+            'vencedor' => $vencedor,
+            'poder_atacante' => (int)$poderAtacante,
+            'poder_defensor' => (int)$poderDefensorTotal,
+            'perdas_atacante' => $perdasAtq,
+            'perdas_defensor' => $perdasDefensor,
         ];
     }
 }

@@ -59,8 +59,16 @@
                             @php $c = $base->construcoes->first(); @endphp
                             <div class="glassmorphism p-3 rounded-4 border-warning/40 animate-pulse">
                                 <div class="text-warning x-small fw-bold text-uppercase mb-1">Engenharia em Curso</div>
-                                <div class="fs-3 fw-black text-white countdown" data-time="{{ $c->completado_em->timestamp }}">--:--</div>
-                                <div class="x-small text-white/70">{{ $c->edificio_tipo }} Nível {{ $c->nivel_destino }}</div>
+                                <div class="fs-3 fw-black text-white countdown mb-1" data-time="{{ $c->completado_em->timestamp }}">--:--</div>
+                                <div class="progress bg-white/10" style="height: 6px;">
+                                    @php 
+                                        $totalSec = max(1, $c->completado_em->timestamp - $c->created_at->timestamp);
+                                        $elapsed = max(0, now()->timestamp - $c->created_at->timestamp);
+                                        $pPercent = min(100, ($elapsed / $totalSec) * 100);
+                                    @endphp
+                                    <div class="progress-bar bg-warning animate-stripes" style="width: {{ $pPercent }}%"></div>
+                                </div>
+                                <div class="x-small text-white/70 mt-1">{{ $c->edificio_tipo }} Nível {{ $c->nivel_destino }}</div>
                             </div>
                         @else
                             <div class="glassmorphism p-3 rounded-4 border-success/40">
@@ -299,8 +307,10 @@
                     @endforelse
                 </div>
             </div>
-            <div class="card-footer bg-black/20 border-top border-white/5 py-2 text-center">
-                <a href="#" class="text-info x-small fw-bold text-decoration-none hover-underline">VER ARQUIVO COMPLETO</a>
+            <div class="card-footer bg-black/20 border-top border-white/5 py-3 text-center">
+                <button class="btn btn-primary rounded-pill fw-black x-small shadow-glow-primary w-100" onclick="abrirSimulador()">
+                    <i class="bi bi-calculator-fill me-2"></i> ACEDER AO SIMULADOR TÁTICO
+                </button>
             </div>
         </div>
     </div>
@@ -581,6 +591,51 @@
 <!-- TOAST CONTAINER -->
 <div id="toastContainer" class="position-fixed top-0 end-0 p-4" style="z-index: 10000;"></div>
 
+<!-- MODAL SIMULADOR TÁTICO -->
+<div class="modal fade" id="modalSimulador" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glassmorphism border-info/30 text-white rounded-5 shadow-2xl p-2">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-black text-uppercase ls-1 text-info"><i class="bi bi-cpu-fill me-2"></i> Simulador de Projeção Táctica</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="row g-4">
+                    <div class="col-md-6 border-end border-white/10">
+                        <h6 class="text-primary fw-bold text-uppercase x-small mb-3">Minhas Forças (Atacante)</h6>
+                        @foreach(config('game.units') as $key => $unit)
+                            <div class="mb-2 d-flex justify-content-between align-items-center bg-white/5 p-2 rounded-3">
+                                <span class="x-small fw-bold">{{ $unit['name'] }}</span>
+                                <input type="number" id="sim-atq-{{ $key }}" class="form-control form-control-sm bg-black/40 border-0 text-white text-center w-25" value="0">
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-danger fw-bold text-uppercase x-small mb-3">Inimigo (Defensor)</h6>
+                        @foreach(config('game.units') as $key => $unit)
+                            <div class="mb-2 d-flex justify-content-between align-items-center bg-white/5 p-2 rounded-3">
+                                <span class="x-small fw-bold">{{ $unit['name'] }}</span>
+                                <input type="number" id="sim-def-{{ $key }}" class="form-control form-control-sm bg-black/40 border-0 text-white text-center w-25" value="0">
+                            </div>
+                        @endforeach
+                        <div class="mt-3 bg-white/5 p-2 rounded-3">
+                            <label class="x-small text-muted mb-1 d-block">MURALHA INIMIGA (NÍVEL)</label>
+                            <input type="number" id="sim-def-muralha" class="form-control form-control-sm bg-black/40 border-0 text-white text-center" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="simResult" class="mt-4 d-none p-4 rounded-4 border animate-glow">
+                    <!-- Conteúdo via JS -->
+                </div>
+            </div>
+            <div class="p-4 pt-0">
+                <button type="button" class="btn btn-info btn-lg w-100 rounded-4 py-3 fw-black text-uppercase ls-1 shadow-lg" onclick="correrSimulacao()">CALCULAR PROJEÇÃO DE CONFLITO</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL TREINO - TÁTICO -->
 <div class="modal fade" id="modalTreino" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -717,6 +772,59 @@
         document.getElementById('res-combustivel').innerText = Math.floor(res.combustivel).toLocaleString();
         document.getElementById('res-municoes').innerText = Math.floor(res.municoes).toLocaleString();
         document.getElementById('res-pessoal').innerText = Math.floor(res.pessoal).toLocaleString();
+    }
+
+    function abrirSimulador() {
+        new bootstrap.Modal(document.getElementById('modalSimulador')).show();
+    }
+
+    function correrSimulacao() {
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = 'ANALISANDO CENÁRIOS...';
+
+        const payload = {
+            atacante: {},
+            defensor: {},
+            base_destino_id: null
+        };
+
+        ['infantaria', 'blindado_apc', 'tanque_combate', 'helicoptero_ataque', 'agente_espiao'].forEach(u => {
+            payload.atacante[u] = parseInt(document.getElementById('sim-atq-' + u).value) || 0;
+            payload.defensor[u] = parseInt(document.getElementById('sim-def-' + u).value) || 0;
+        });
+
+        fetch('{{ route("base.simular") }}', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(data => {
+            const resDiv = document.getElementById('simResult');
+            resDiv.classList.remove('d-none', 'border-success', 'border-danger');
+            resDiv.classList.add(data.vencedor === 'atacante' ? 'border-success' : 'border-danger');
+            
+            let html = `<h4 class="fw-black text-uppercase text-center mb-3 text-${data.vencedor === 'atacante' ? 'success' : 'danger'}">RESULTADO ESTIMADO: ${data.vencedor === 'atacante' ? 'VITÓRIA' : 'DERROTA'}</h4>`;
+            html += `<div class="row text-center">
+                <div class="col-6 border-end border-white/10">
+                    <div class="x-small text-muted mb-1">PODER ATACANTE</div>
+                    <div class="fs-3 fw-black text-info">${data.poder_atacante.toLocaleString()}</div>
+                </div>
+                <div class="col-6">
+                    <div class="x-small text-muted mb-1">PODER DEFENSOR</div>
+                    <div class="fs-3 fw-black text-danger">${data.poder_defensor.toLocaleString()}</div>
+                </div>
+            </div>`;
+            
+            resDiv.innerHTML = html;
+            btn.disabled = false;
+            btn.innerHTML = 'RE-CALCULAR PROJEÇÃO';
+        });
     }
 
     // INTERCEPTOR AJAX PARA ORDENS RÁPIDAS

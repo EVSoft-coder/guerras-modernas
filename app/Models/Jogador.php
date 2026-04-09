@@ -17,6 +17,9 @@ class Jogador extends Authenticatable
         'password',
         'nome',
         'alianca_id',
+        'xp',
+        'nivel',
+        'cargo',
     ];
 
     protected $hidden = [

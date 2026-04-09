@@ -68,7 +68,10 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
 
         try {
-            $fila = $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
+            $fila = \Illuminate\Support\Facades\DB::transaction(function() use ($base, $request) {
+                return $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
+            });
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true, 
@@ -117,29 +120,35 @@ class BaseController extends Controller
         $segundos = ($distancia * 100) / $speed; // Ajuste para Speed Mode
         $chegadaEm = now()->addSeconds($segundos);
 
-        // VALIDAR INVENTÁRIO TÁTICO: Garantir que as tropas existem e retirá-las da base no lançamento
-        foreach ($request->tropas as $unidade => $quantidade) {
-            if ($quantidade <= 0) continue;
-            
-            $tropaLocal = $origem->tropas()->where('unidade', $unidade)->first();
-            if (!$tropaLocal || $tropaLocal->quantidade < $quantidade) {
-                return redirect()->back()->withErrors(['error' => "Tropas insuficientes: {$unidade}"]);
-            }
-            
-            // Retirar do inventário (Estado de Trânsito)
-            $tropaLocal->decrement('quantidade', $quantidade);
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function() use ($origem, $destino, $request, $chegadaEm) {
+                // VALIDAR INVENTÁRIO TÁTICO: Garantir que as tropas existem e retirá-las da base no lançamento
+                foreach ($request->tropas as $unidade => $quantidade) {
+                    if ($quantidade <= 0) continue;
+                    
+                    $tropaLocal = $origem->tropas()->where('unidade', $unidade)->lockForUpdate()->first();
+                    if (!$tropaLocal || $tropaLocal->quantidade < $quantidade) {
+                        throw new \Exception("Tropas insuficientes: {$unidade}");
+                    }
+                    
+                    // Retirar do inventário (Estado de Trânsito)
+                    $tropaLocal->decrement('quantidade', $quantidade);
+                }
+
+                // Criar registro do ataque
+                Ataque::create([
+                    'origem_base_id'  => $origem->id,
+                    'destino_base_id' => $destino->id,
+                    'tropas'          => $request->tropas,
+                    'tipo'            => $request->tipo,
+                    'chegada_em'      => $chegadaEm,
+                ]);
+            });
+
+            return redirect()->route('dashboard')->with('success', "Operação lançada! Chegada estimada às {$chegadaEm->format('H:i:s')}");
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        // Criar registro do ataque
-        Ataque::create([
-            'origem_base_id'  => $origem->id,
-            'destino_base_id' => $destino->id,
-            'tropas'          => $request->tropas,
-            'tipo'            => $request->tipo,
-            'chegada_em'      => $chegadaEm,
-        ]);
-
-        return redirect()->route('dashboard')->with('success', "Operação lançada! Chegada estimada às {$chegadaEm->format('H:i:s')}");
     }
 
     public function cancelarAtaque($id)
@@ -212,5 +221,25 @@ class BaseController extends Controller
     {
         \Illuminate\Support\Facades\Artisan::call('game:processar-batalhas');
         return redirect()->back()->with('success', "Motor de Guerra Processado com Sucesso!");
+    }
+
+    /**
+     * Endpoint AJAX para simulação de batalha.
+     */
+    public function simular(Request $request, \App\Services\CombatService $combatService)
+    {
+        $request->validate([
+            'atacante' => 'required|array',
+            'defensor' => 'required|array',
+            'base_destino_id' => 'nullable|exists:bases,id'
+        ]);
+
+        $resultado = $combatService->simular(
+            $request->atacante,
+            $request->defensor,
+            $request->base_destino_id
+        );
+
+        return response()->json($resultado);
     }
 }
