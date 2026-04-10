@@ -17,6 +17,7 @@ const rootElement = document.getElementById('app');
 if (rootElement) {
     // Only initialize theme and Inertia if we are in an Inertia-enabled page
     initializeTheme();
+    console.log("--- GUERRAS MODERNAS SINAL V3.9.2 ATIVO ---");
     
     createInertiaApp({
         title: (title) => `${title} - ${appName}`,
