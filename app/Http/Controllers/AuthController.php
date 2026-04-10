@@ -194,11 +194,22 @@ class AuthController extends Controller
             ->take(10)
             ->get();
 
-        return view('dashboard', compact(
-            'jogador', 'base', 'bases', 'relatorios', 'relatoriosGlobal', 
-            'taxas', 'taxasPerSecond', 'intelLevel', 'popOcupada', 
-            'capTotal', 'popPercent', 'pesquisasEmCurso', 
-            'ataquesRecebidos', 'ataquesEnviados'
-        ));
+        return \Inertia\Inertia::render('dashboard', [
+            'jogador'           => $jogador,
+            'base'              => $base,
+            'bases'             => $bases,
+            'relatorios'        => $relatorios,
+            'relatoriosGlobal'  => $relatoriosGlobal,
+            'taxas'             => $taxas,
+            'taxasPerSecond'    => $taxasPerSecond,
+            'intelLevel'        => $intelLevel,
+            'popOcupada'        => $popOcupada,
+            'capTotal'          => $capTotal,
+            'popPercent'        => $popPercent,
+            'pesquisasEmCurso'  => $pesquisasEmCurso,
+            'ataquesRecebidos'  => $ataquesRecebidos,
+            'ataquesEnviados'   => $ataquesEnviados,
+            'gameConfig'        => config('game')
+        ]);
     }
 }
