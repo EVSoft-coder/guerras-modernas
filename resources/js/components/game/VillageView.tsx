@@ -75,17 +75,18 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
 
                 {/* Renderizar Edifícios da tabela edificios */}
                 {(base?.edificios ?? []).map((ed) => {
-                    const pos = buildingPositions[ed.tipo];
+                    const tipoLower = ed.tipo?.toLowerCase();
+                    const pos = buildingPositions[tipoLower];
                     if (!pos) return null;
 
                     return (
                         <div key={ed.id} style={{ gridColumn: pos[0], gridRow: pos[1] }}>
                             <BuildingNode 
-                                tipo={ed.tipo}
-                                nome={getBuildingName(ed.tipo)}
+                                tipo={tipoLower}
+                                nome={getBuildingName(tipoLower)}
                                 nivel={ed.nivel}
-                                onClick={() => onBuildingClick({ ...ed, nome: getBuildingName(ed.tipo), base_id: base.id })}
-                                isConstructing={(base?.construcoes ?? []).some(c => c.edificio_tipo === ed.tipo)}
+                                onClick={() => onBuildingClick({ ...ed, tipo: tipoLower, nome: getBuildingName(tipoLower), base_id: base.id })}
+                                isConstructing={(base?.construcoes ?? []).some(c => c.edificio_tipo === tipoLower)}
                             />
                         </div>
                     );

@@ -125,10 +125,11 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
     const [trainQty, setTrainQty] = useState(1);
     const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
 
-    const isMilitary = ['quartel', 'aerodromo'].includes(building.tipo?.toLowerCase());
+    const tipoLower = building.tipo?.toLowerCase();
+    const isMilitary = ['quartel', 'aerodromo'].includes(tipoLower);
     const availableUnits = isMilitary ? Object.entries(gameConfig?.units || {}).filter(([key, unit]: any) => {
-        if (building.tipo === 'quartel') return ['infantaria', 'blindado_apc', 'tanque_combate', 'agente_espiao'].includes(key);
-        if (building.tipo === 'aerodromo') return ['helicoptero_ataque'].includes(key);
+        if (tipoLower === 'quartel') return ['infantaria', 'blindado_apc', 'tanque_combate', 'agente_espiao'].includes(key);
+        if (tipoLower === 'aerodromo') return ['helicoptero_ataque'].includes(key);
         return false;
     }) : [];
 
