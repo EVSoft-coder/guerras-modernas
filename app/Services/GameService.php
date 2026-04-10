@@ -28,10 +28,11 @@ class GameService
      */
     public function iniciarConstrucao(Base $base, $tipo)
     {
-        // Verificar se já existe algo na fila para esta base (ainda não terminado)
-        if ($base->construcoes()->where('completado_em', '>', now())->exists()) {
-            throw new \Exception("Já existe uma construção em andamento nesta base.");
-        }
+        // Determinar o momento de início (Imediato ou após a última construção na fila)
+        $ultimaConstrucao = $base->construcoes()->orderBy('completado_em', 'desc')->first();
+        $startTime = ($ultimaConstrucao && $ultimaConstrucao->completado_em > now()) 
+            ? $ultimaConstrucao->completado_em 
+            : now();
 
         // Mapeamento robusto de edifícios (suporta nomes técnicos e amigáveis)
         $tiposMapeados = [
@@ -58,6 +59,12 @@ class GameService
         $nivelAtual = $base->edificios()->where('tipo', $tipoKey)->first()?->nivel ?? 0;
         $nivelAlvo = $nivelAtual + 1;
 
+        // Determinar o momento de início (Imediato ou após a última construção na fila)
+        $ultimaConstrucao = $base->construcoes()->orderBy('completado_em', 'desc')->first();
+        $startTime = ($ultimaConstrucao && $ultimaConstrucao->completado_em > now()) 
+            ? $ultimaConstrucao->completado_em 
+            : now();
+
         // Debitar Recursos
         $recursos = $base->recursos;
         $scaling = config('game.scaling', 1.5);
@@ -76,7 +83,7 @@ class GameService
 
         $speed = config('game.speed.construction', 1);
         $segundos = ($conf['time_base'] * $nivelAlvo) / $speed;
-        $completadoEm = now()->addSeconds($segundos);
+        $completadoEm = $startTime->copy()->addSeconds($segundos);
 
         return $base->construcoes()->create([
             'edificio_tipo' => $tipoKey,
@@ -124,9 +131,15 @@ class GameService
             $recursos->decrement($res, $total);
         }
 
+        // Determinar o momento de início (Imediato ou após o último treino na fila)
+        $ultimoTreino = $base->treinos()->orderBy('completado_em', 'desc')->first();
+        $startTime = ($ultimoTreino && $ultimoTreino->completado_em > now()) 
+            ? $ultimoTreino->completado_em 
+            : now();
+
         $speed = config('game.speed.training', 1);
         $segundos = ($unitConf['time'] * $quantidade) / $speed;
-        $completadoEm = now()->addSeconds($segundos);
+        $completadoEm = $startTime->addSeconds($segundos);
 
         return $base->treinos()->create([
             'unidade' => $unidade,

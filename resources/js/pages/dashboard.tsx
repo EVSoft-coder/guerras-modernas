@@ -6,7 +6,9 @@ import { ResourceBar } from '@/components/game/ResourceBar';
 import { VillageView } from '@/components/game/VillageView';
 import { BuildingModal } from '@/components/game/BuildingModal';
 import { GarrisonPanel } from '@/components/game/GarrisonPanel';
-import { ConstructionQueue } from '@/components/game/ConstructionQueue';
+import { GarrisonPanel } from '@/components/game/GarrisonPanel';
+import { ProductionQueue } from '@/components/game/ProductionQueue';
+import { useToasts } from '@/components/game/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Target, Zap, ShieldAlert } from 'lucide-react';
 
@@ -24,8 +26,10 @@ export default function Dashboard({
     // DIAGNÓSTICO DE CAMPO - VISÍVEL NO CONSOLE DO COMANDANTE
     console.log("DADOS_DASHBOARD:", { base, jogador, taxasPerSecond });
 
+    const { addToast } = useToasts();
     const [selectedBuilding, setSelectedBuilding] = useState<any>(null);
     const [isUpgrading, setIsUpgrading] = useState(false);
+    const [isTraining, setIsTraining] = useState(false);
 
     // GATE DE SEGURANÇA: Se a base falhar, impedimos o colapso do React
     if (!base) {
@@ -48,14 +52,34 @@ export default function Dashboard({
 
     const handleUpgrade = (tipo: string) => {
         setIsUpgrading(true);
-        router.post('/base/upgrade', { edificio: tipo }, {
+        router.post('/base/upgrade', { base_id: base.id, tipo: tipo }, {
             onSuccess: () => {
+                addToast(`ORDEM DE ENGENHARIA CONFIRMADA: Upgrade de ${tipo.replace(/_/g, ' ')} iniciado.`, 'success');
                 setSelectedBuilding(null);
                 setIsUpgrading(false);
             },
-            onError: (errors) => {
-                console.error("FALHA NA TRANSMISSÃO:", errors);
+            onError: (errors: any) => {
+                addToast(`FALHA NA TRANSMISSÃO: ${errors.error || 'Erro estrutural detetado.'}`, 'error');
                 setIsUpgrading(false);
+            }
+        });
+    };
+
+    const handleTrain = (unidade: string, quantidade: number) => {
+        setIsTraining(true);
+        router.post('/base/treinar', { 
+            base_id: base.id, 
+            unidade, 
+            quantidade 
+        }, {
+            onSuccess: () => {
+                addToast(`MOBILIZAÇÃO INICIADA: Recrutamento de ${quantidade}x ${unidade.replace(/_/g, ' ')} em curso.`, 'military');
+                setIsTraining(false);
+                setSelectedBuilding(null);
+            },
+            onError: (errors: any) => {
+                addToast(`FALHA NO RECRUTAMENTO: ${errors.error || 'Candidatos insuficientes.'}`, 'error');
+                setIsTraining(false);
             }
         });
     };
@@ -97,8 +121,11 @@ export default function Dashboard({
 
                     {/* COLUNA DIREITA - INTELIGÊNCIA & FILAS (4 COLUNAS) */}
                     <div className="lg:col-span-4 flex flex-col gap-6">
-                        {/* FILA DE CONSTRUÇÃO TÁTICA */}
-                        <ConstructionQueue construcoes={base.construcoes} />
+                        {/* FILA DE PRODUÇÃO TÁTICA (CONSTRUÇÃO E TREINO) */}
+                        <ProductionQueue 
+                            construcoes={base.construcoes || []} 
+                            treinos={base.treinos || []} 
+                        />
 
                         {/* PAINEL DE TROPAS (GUARNIÇÃO) */}
                         <GarrisonPanel tropas={base?.tropas ?? []} gameConfig={gameConfig} />
@@ -124,7 +151,9 @@ export default function Dashboard({
                     building={selectedBuilding}
                     gameConfig={gameConfig}
                     onUpgrade={handleUpgrade}
+                    onTrain={handleTrain}
                     isUpgrading={isUpgrading}
+                    isTraining={isTraining}
                 />
             </div>
         </AppLayout>

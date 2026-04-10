@@ -12,7 +12,9 @@ interface BuildingModalProps {
     building: any;
     gameConfig: any;
     onUpgrade: (tipo: string) => void;
+    onTrain: (unidade: string, quantidade: number) => void;
     isUpgrading: boolean;
+    isTraining: boolean;
 }
 
 export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, building, gameConfig, onUpgrade, isUpgrading }) => {
@@ -113,6 +115,60 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
         const cost = calculateBuildingCost(amount, nextLevel, gameConfig?.scaling || 1.5);
         return (building.base?.recursos?.[type] || 0) >= cost;
     }) : true;
+
+    // Lógica de Recrutamento
+    const [trainQty, setTrainQty] = useState(1);
+    const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
+
+    const isMilitary = ['quartel', 'aerodromo'].includes(building.tipo);
+    const availableUnits = isMilitary ? Object.entries(gameConfig?.units || {}).filter(([key, unit]: any) => {
+        if (building.tipo === 'quartel') return ['infantaria', 'blindado_apc', 'tanque_combate', 'agente_espiao'].includes(key);
+        if (building.tipo === 'aerodromo') return ['helicoptero_ataque'].includes(key);
+        return false;
+    }) : [];
+
+    // Escolher a primeira unidade por defeito quando o modal abre num edifício militar
+    useEffect(() => {
+        if (isMilitary && availableUnits.length > 0 && !selectedUnit) {
+            setSelectedUnit(availableUnits[0][0]);
+        }
+    }, [building.tipo, isMilitary, availableUnits]);
+
+    const renderUnitCard = ([key, unit]: [string, any]) => {
+        const isSelected = selectedUnit === key;
+        const canAffordUnit = Object.entries(unit.cost || {}).every(([res, amt]: any) => 
+            (building.base?.recursos?.[res] || 0) >= (amt * trainQty)
+        );
+
+        return (
+            <div 
+                key={key}
+                onClick={() => setSelectedUnit(key)}
+                className={`p-3 rounded-xl border transition-all cursor-pointer group ${
+                    isSelected ? 'bg-sky-500/10 border-sky-500' : 'bg-black/20 border-white/5 hover:border-white/20'
+                }`}
+            >
+                <div className="flex justify-between items-start mb-2">
+                    <span className="text-[10px] font-black uppercase text-white truncate w-24">{unit.name}</span>
+                    <Badge className="bg-neutral-800 text-neutral-400 text-[8px]">{unit.time}s</Badge>
+                </div>
+                <div className="grid grid-cols-3 gap-1 text-[8px] uppercase font-bold text-neutral-500">
+                    <div className="flex flex-col">
+                        <span>ATK</span>
+                        <span className="text-white">{unit.attack}</span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span>DEF</span>
+                        <span className="text-white">{unit.defense_general}</span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span>CAP</span>
+                        <span className="text-white">{unit.capacity || 0}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -237,19 +293,59 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
                                         </div>
                                     )}
 
-                                    {/* Logística de Recursos */}
+                                    {/* Logística de Recursos / Recrutamento */}
                                     <div className="space-y-3 md:space-y-4">
-                                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                                            <h4 className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
-                                                <Hammer size={10} md:size={12} className="text-orange-500" /> Logística de Campanha
-                                            </h4>
-                                            <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black text-orange-500 uppercase font-mono">
-                                                <Clock size={10} md:size={12} /> {timeFormatted}
+                                        {isMilitary ? (
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                                                    <h4 className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
+                                                        <Shield size={10} md:size={12} className="text-sky-500" /> Mobilização de Tropas
+                                                    </h4>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {availableUnits.map(renderUnitCard)}
+                                                </div>
+                                                
+                                                {selectedUnit && (
+                                                    <div className="bg-black/40 p-4 rounded-xl space-y-3 border border-white/5">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-[10px] uppercase font-black text-neutral-400">Quantidade</span>
+                                                            <div className="flex items-center gap-3">
+                                                                <button onClick={() => setTrainQty(Math.max(1, trainQty - 10))} className="text-neutral-500 hover:text-white">-10</button>
+                                                                <input 
+                                                                    type="number" 
+                                                                    value={trainQty} 
+                                                                    onChange={(e) => setTrainQty(Math.max(1, parseInt(e.target.value) || 1))}
+                                                                    className="w-16 bg-black border border-white/10 rounded px-2 py-1 text-center font-mono text-xs text-sky-400 font-bold"
+                                                                />
+                                                                <button onClick={() => setTrainQty(trainQty + 10)} className="text-neutral-500 hover:text-white">+10</button>
+                                                            </div>
+                                                        </div>
+                                                        <Button 
+                                                            onClick={() => selectedUnit && onTrain(selectedUnit, trainQty)}
+                                                            disabled={isTraining}
+                                                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] py-4 rounded-lg shadow-lg"
+                                                        >
+                                                            {isTraining ? 'RECRUTANDO...' : 'INICIAR RECRUTAMENTO'}
+                                                        </Button>
+                                                    </div>
+                                                )}
                                             </div>
-                                        </div>
-                                        <div className="grid grid-cols-1 gap-2 md:gap-3">
-                                            {config.cost ? Object.entries(config.cost).map(([type, amount]: any) => renderCost(type, amount)) : null}
-                                        </div>
+                                        ) : (
+                                            <>
+                                                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                                                    <h4 className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
+                                                        <Hammer size={10} md:size={12} className="text-orange-500" /> Logística de Campanha
+                                                    </h4>
+                                                    <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black text-orange-500 uppercase font-mono">
+                                                        <Clock size={10} md:size={12} /> {timeFormatted}
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-1 gap-2 md:gap-3">
+                                                    {config.cost ? Object.entries(config.cost).map(([type, amount]: any) => renderCost(type, amount)) : null}
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 

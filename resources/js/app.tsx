@@ -3,6 +3,7 @@ import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
+import { ToastProvider } from '@/components/game/ToastProvider';
 import { route as routeFn } from 'ziggy-js';
 import { initializeTheme } from './hooks/use-appearance';
 
@@ -42,7 +43,11 @@ if (rootElement) {
         },
         setup({ el, App, props }) {
             const root = createRoot(el);
-            root.render(<App {...props} />);
+            root.render(
+            <ToastProvider>
+                <App {...props} />
+            </ToastProvider>
+        );
         },
         progress: {
             color: '#0ea5e9',
