@@ -5,6 +5,7 @@ import { Head, router } from '@inertiajs/react';
 import { ResourceBar } from '@/components/game/ResourceBar';
 import { VillageView } from '@/components/game/VillageView';
 import { BuildingModal } from '@/components/game/BuildingModal';
+import { GarrisonPanel } from '@/components/game/GarrisonPanel';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Target, Activity, Zap, ShieldAlert } from 'lucide-react';
 
@@ -95,6 +96,9 @@ export default function Dashboard({
                                 <div className="text-center py-4 text-neutral-600 text-[10px] uppercase font-bold italic">Nenhuma construção ativa</div>
                             )}
                         </OrderPanel>
+
+                        {/* PAINEL DE TROPAS (GUARNIÇÃO) */}
+                        <GarrisonPanel tropas={base.tropas} gameConfig={gameConfig} />
 
                         {/* FEED GLOBAL */}
                         <OrderPanel title="Inteligência Global" icon={<Target className="text-orange-500" size={18} />}>

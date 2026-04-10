@@ -8,6 +8,15 @@ interface VillageViewProps {
 }
 
 export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick }) => {
+    // Determinar o Fundo Evolutivo baseado no QG
+    const getBaseBackground = (qgLvl: number) => {
+        if (qgLvl >= 13) return '/images/base_fase_c.png';
+        if (qgLvl >= 6) return '/images/base_fase_b.png';
+        return '/images/base_fase_a.png';
+    };
+
+    const currentBg = getBaseBackground(base.qg_nivel);
+
     // Mapeamento de posições fixas táticas para os tipos de edifícios
     // Coordenadas [col, row] em uma grid 12x12
     const buildingPositions: Record<string, [number, number]> = {
@@ -20,7 +29,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
         'aerodromo': [9, 8],
         'radar_estrategico': [5, 1],
         'centro_pesquisa': [3, 1],
-        'muralha': [1, 1], // Muralha será tratada especialmente ou como um nó de controle
+        'muralha': [1, 1],
     };
 
     const getBuildingName = (tipo: string) => {
@@ -40,8 +49,12 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
     };
 
     return (
-        <div className="relative w-full aspect-square md:aspect-video bg-neutral-900/50 rounded-2xl border border-white/10 overflow-hidden shadow-inner">
-            {/* Grid Tática de Fundo */}
+        <div 
+            className="relative w-full aspect-square md:aspect-video rounded-2xl border border-white/10 overflow-hidden shadow-inner bg-cover bg-center transition-all duration-1000"
+            style={{ backgroundImage: `url(${currentBg})` }}
+        >
+            {/* Overlay de Scanline e Sombra tática */}
+            <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
             <div className="absolute inset-0 opacity-10 pointer-events-none" 
                  style={{ 
                     backgroundImage: 'radial-gradient(circle, #0ea5e9 1px, transparent 1px)', 
