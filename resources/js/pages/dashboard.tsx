@@ -28,7 +28,7 @@ export default function Dashboard({
 
     const handleUpgrade = (tipo: string) => {
         setIsUpgrading(true);
-        router.post('/construir', { edificio: tipo }, {
+        router.post('/base/upgrade', { edificio: tipo }, {
             onSuccess: () => {
                 setSelectedBuilding(null);
                 setIsUpgrading(false);
