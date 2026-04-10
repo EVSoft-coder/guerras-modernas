@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRight, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getEvolutionLevelAsset } from '@/lib/game-utils';
+import { getEvolutionLevelAsset, calculateBuildingCost, calculateConstructionTime, calculateResourceProduction } from '@/lib/game-utils';
 
 interface BuildingModalProps {
     isOpen: boolean;
@@ -41,9 +41,13 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
         setUsePlaceholder(false);
     }, [building.tipo, building.nivel]);
 
-    const renderCost = (resourceType: string, amount: number) => {
-        if (!amount) return null;
-        const total = amount * nextLevel;
+    const renderCost = (resourceType: string, baseAmount: number) => {
+        if (!baseAmount) return null;
+        
+        const scaling = gameConfig?.scaling || 1.5;
+        const totalCost = calculateBuildingCost(baseAmount, nextLevel, scaling);
+        const playerAmount = building.base?.recursos?.[resourceType] || 0;
+        const hasEnough = playerAmount >= totalCost;
         
         const resourceIcons: Record<string, string> = {
             'suprimentos': '📦',
@@ -51,22 +55,64 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
             'municoes': '🚀',
             'pessoal': '👤'
         };
+        const resourceColors: Record<string, string> = {
+            'suprimentos': 'text-sky-400',
+            'combustivel': 'text-orange-400',
+            'municoes': 'text-red-400',
+            'pessoal': 'text-emerald-400'
+        };
 
         return (
             <motion.div 
                 key={resourceType}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 hover:border-sky-500/30 transition-all group"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className={`flex items-center justify-between bg-black/40 p-3 rounded-xl border ${hasEnough ? 'border-white/5' : 'border-red-500/30'} group`}
             >
                 <div className="flex items-center gap-2">
                     <span className="text-lg group-hover:scale-110 transition-transform">{resourceIcons[resourceType] || '💎'}</span>
-                    <span className="text-[9px] uppercase text-neutral-400 font-black tracking-widest">{resourceType}</span>
+                    <span className="text-[9px] uppercase text-neutral-500 font-black tracking-widest">{resourceType}</span>
                 </div>
-                <span className="text-sm font-mono font-black text-sky-400">{total.toLocaleString()}</span>
+                <div className="text-right">
+                    <div className={`text-sm font-mono font-black ${hasEnough ? resourceColors[resourceType] || 'text-sky-400' : 'text-red-500'}`}>
+                        {totalCost.toLocaleString()}
+                    </div>
+                </div>
             </motion.div>
         );
     };
+
+    // Obter bónus de produção
+    const getProductionBonus = (lvl: number) => {
+        const resKey = {
+            'mina_suprimentos': 'suprimentos',
+            'refinaria': 'combustivel',
+            'fabrica_municoes': 'municoes',
+            'posto_recrutamento': 'pessoal'
+        }[building.tipo as string];
+
+        if (!resKey) return null;
+
+        const baseProd = gameConfig?.production?.[resKey] || 10;
+        const speed = gameConfig?.speed?.resources || 1;
+        const scaling = gameConfig?.scaling || 1.5;
+
+        return calculateResourceProduction(baseProd, lvl, speed, scaling);
+    };
+
+    const currentBonus = getProductionBonus(building.nivel || 0);
+    const nextBonus = getProductionBonus(nextLevel);
+    
+    // Cálculo de tempo real
+    const constSpeed = gameConfig?.speed?.construction || 1;
+    const totalTime = calculateConstructionTime(config.time_base, nextLevel, constSpeed);
+    const timeFormatted = `${Math.floor(totalTime / 60)}m ${Math.floor(totalTime % 60)}s`;
+
+    // Verificar se tem todos os recursos para o upgrade
+    const canAfford = config.cost ? Object.entries(config.cost).every(([type, amount]: any) => {
+        const cost = calculateBuildingCost(amount, nextLevel, gameConfig?.scaling || 1.5);
+        return (building.base?.recursos?.[type] || 0) >= cost;
+    }) : true;
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -162,28 +208,43 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
                                         </p>
                                     </div>
 
-                                    {/* Comparativos */}
-                                    <div className="grid grid-cols-2 gap-3 md:gap-4">
-                                        <div className="bg-white/5 p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/5 space-y-1">
-                                            <span className="text-[8px] md:text-[9px] font-black text-neutral-500 uppercase tracking-widest">Produção</span>
-                                            <div className="text-sm md:text-xl font-mono font-black text-white">+{70 + ((building.nivel || 0) * 10)}%</div>
-                                        </div>
-                                        <div className="bg-sky-600/10 p-3 md:p-4 rounded-xl md:rounded-2xl border border-sky-500/30 space-y-1">
-                                            <span className="text-[8px] md:text-[9px] font-black text-sky-400 uppercase tracking-widest">Upgrade</span>
-                                            <div className="text-sm md:text-xl font-mono font-black text-sky-400 flex items-center gap-1">
-                                                <TrendingUp size={14} md:size={16} /> +10%
+                                    {/* Comparativos de Inteligência */}
+                                    {currentBonus && (
+                                        <div className="grid grid-cols-2 gap-3 md:gap-4">
+                                            <div className="bg-white/5 p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10 space-y-1">
+                                                <span className="text-[8px] md:text-[9px] font-black text-neutral-500 uppercase tracking-widest">Capacidade Atual</span>
+                                                <div className="text-sm md:text-xl font-mono font-black text-white">{currentBonus.toLocaleString()}/h</div>
+                                            </div>
+                                            <div className="bg-sky-600/10 p-3 md:p-4 rounded-xl md:rounded-2xl border border-sky-500/30 space-y-1">
+                                                <span className="text-[8px] md:text-[9px] font-black text-sky-400 uppercase tracking-widest">Nível Seguinte</span>
+                                                <div className="text-sm md:text-xl font-mono font-black text-sky-400 flex items-center gap-1">
+                                                    <TrendingUp size={14} md:size={16} /> {nextBonus?.toLocaleString()}/h
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    )}
+
+                                    {/* Para edifícios não produtores (Quartel, etc) mostrar um bónus tático genérico */}
+                                    {!currentBonus && (
+                                        <div className="grid grid-cols-1 gap-3 md:gap-4">
+                                            <div className="bg-orange-600/10 p-4 rounded-2xl border border-orange-500/20 flex items-center justify-between">
+                                                <div>
+                                                    <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest block">Potencial Estratégico</span>
+                                                    <span className="text-xs text-neutral-400">Desbloqueia novas tecnologias e unidades de elite.</span>
+                                                </div>
+                                                <Zap className="text-orange-500" size={24} />
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* Logística de Recursos */}
                                     <div className="space-y-3 md:space-y-4">
                                         <div className="flex items-center justify-between border-b border-white/10 pb-2">
                                             <h4 className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
-                                                <Hammer size={10} md:size={12} className="text-orange-500" /> Requisição
+                                                <Hammer size={10} md:size={12} className="text-orange-500" /> Logística de Campanha
                                             </h4>
                                             <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black text-orange-500 uppercase font-mono">
-                                                <Clock size={10} md:size={12} /> {Math.floor(((config.time_base || 0) * nextLevel) / 60)}m {Math.floor(((config.time_base || 0) * nextLevel) % 60)}s
+                                                <Clock size={10} md:size={12} /> {timeFormatted}
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-1 gap-2 md:gap-3">
@@ -195,13 +256,18 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
                                 <DialogFooter className="mt-6 md:mt-8">
                                     <Button 
                                         onClick={() => onUpgrade(building.tipo)}
-                                        disabled={isUpgrading}
-                                        className="w-full bg-sky-600 hover:bg-sky-500 text-white font-black uppercase tracking-[0.15em] md:tracking-[0.2em] py-6 md:py-8 rounded-xl md:rounded-2xl shadow-[0_0_40px_rgba(14,165,233,0.3)] border-t border-white/20 flex items-center justify-center gap-2 md:gap-3 group transition-all"
+                                        disabled={isUpgrading || !canAfford}
+                                        className={`w-full font-black uppercase tracking-[0.15em] md:tracking-[0.2em] py-6 md:py-8 rounded-xl md:rounded-2xl flex items-center justify-center gap-2 md:gap-3 group transition-all shadow-2xl ${
+                                            canAfford 
+                                                ? 'bg-sky-600 hover:bg-sky-500 text-white border-t border-white/20 shadow-sky-900/40' 
+                                                : 'bg-neutral-800 text-neutral-500 cursor-not-allowed border-none'
+                                        }`}
                                     >
                                         <span className="text-base md:text-xl group-hover:translate-x-1 transition-transform">
-                                            {isUpgrading ? 'AUTORIZANDO...' : 'MELHORAR ESTRUTURA'}
+                                            {isUpgrading ? 'AUTORIZANDO...' : (canAfford ? 'MELHORAR ESTRUTURA' : 'RECURSOS INSUFICIENTES')}
                                         </span>
-                                        {!isUpgrading && <ChevronRight className="group-hover:translate-x-2 transition-transform" size={16} md:size={20} />}
+                                        {!isUpgrading && canAfford && <ChevronRight className="group-hover:translate-x-2 transition-transform" size={16} md:size={20} />}
+                                        {!canAfford && !isUpgrading && <AlertTriangle size={16} />}
                                     </Button>
                                 </DialogFooter>
                             </div>
