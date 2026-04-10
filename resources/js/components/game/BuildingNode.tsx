@@ -9,17 +9,17 @@ interface BuildingNodeProps {
     onClick: () => void;
 }
 
-export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, isConstructing, onClick }) => {
-    // Escala Evolutiva de 6 Níveis (com fallbacks inteligentes)
-    const getLevelImage = (lvl: number) => {
-        if (lvl >= 6) return 6;
-        if (lvl >= 5) return 5;
-        if (lvl >= 4) return 4;
-        if (lvl >= 3) return 3;
-        if (lvl >= 2) return 2;
-        return 1;
-    };
+// Escala Evolutiva de 6 Níveis (Escopo de Módulo)
+const getLevelImage = (lvl: number) => {
+    if (lvl >= 6) return 6;
+    if (lvl >= 5) return 5;
+    if (lvl >= 4) return 4;
+    if (lvl >= 3) return 3;
+    if (lvl >= 2) return 2;
+    return 1;
+};
 
+export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, isConstructing, onClick }) => {
     const [currentTryLevel, setCurrentTryLevel] = useState(getLevelImage(nivel));
     const [usePlaceholder, setUsePlaceholder] = useState(false);
     
