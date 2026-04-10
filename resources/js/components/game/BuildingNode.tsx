@@ -47,15 +47,14 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                         src={imgUrl} 
                         className="w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-[0_0_10px_rgba(14,165,233,0.3)] group-hover:drop-shadow-[0_0_20px_rgba(14,165,233,0.6)] transition-all duration-300" 
                         alt={nome}
-                        onError={(e) => {
+                        onError={() => {
                             if (usePlaceholder) return;
                             
-                            // Busca em Cascata: Tenta o nível anterior
+                            // Fallback Simples e Robusto para evitar loops
                             if (currentTryLevel > 1) {
-                                setCurrentTryLevel(prev => prev - 1);
+                                setCurrentTryLevel(1); // Salta direto para o Lvl 1 se o intermédio falhar
                             } else {
-                                // Se até o Lvl 1 falhar, ativa o Blueprint
-                                setUsePlaceholder(true);
+                                setUsePlaceholder(true); // Se o Lvl 1 falhar, ativamos o Blueprint
                             }
                         }}
                     />
@@ -69,10 +68,10 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                 {/* Sombra de Projeção na Grelha */}
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 md:w-10 h-1.5 md:h-2 bg-black/40 blur-md rounded-full z-0"></div>
 
-                {/* Rótulo Tático Premium Adaptativo - Ancoragem Rígida */}
-                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full flex justify-center z-20">
-                    <div className="bg-black/90 backdrop-blur-md px-1.5 md:px-3 py-0.5 md:py-1 rounded-full border border-white/20 group-hover:border-orange-500 group-hover:bg-orange-950/40 transition-all duration-300 max-w-[50px] md:max-w-none overflow-hidden shadow-2xl">
-                        <span className="text-[6px] md:text-[10px] uppercase font-black text-white group-hover:text-orange-400 tracking-tighter md:tracking-widest text-center leading-tight break-words block">
+                {/* Rótulo Tático Premium Adaptativo - Restauração Phoenix */}
+                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-max z-20">
+                    <div className="bg-black/95 backdrop-blur-md px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-white/20 group-hover:border-orange-500 group-hover:bg-orange-950/40 transition-all duration-300 shadow-2xl">
+                        <span className="text-[8px] md:text-[10px] uppercase font-black text-white group-hover:text-orange-400 tracking-tighter md:tracking-widest text-center block whitespace-nowrap">
                             {nome}
                         </span>
                     </div>

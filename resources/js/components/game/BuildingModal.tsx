@@ -113,8 +113,10 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
                                         alt="Preview"
                                         onError={() => {
                                             if (usePlaceholder) return;
+                                            
+                                            // Fallback Seguro
                                             if (currentTryLevel > 1) {
-                                                setCurrentTryLevel(prev => prev - 1);
+                                                setCurrentTryLevel(1);
                                             } else {
                                                 setUsePlaceholder(true);
                                             }
