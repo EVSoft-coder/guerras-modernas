@@ -68,7 +68,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
                         tipo="qg"
                         nome={getBuildingName('qg')}
                         nivel={base?.qg_nivel}
-                        onClick={() => onBuildingClick({ tipo: 'qg', nivel: base?.qg_nivel, nome: getBuildingName('qg') })}
+                        onClick={() => onBuildingClick({ tipo: 'qg', nivel: base?.qg_nivel, nome: getBuildingName('qg'), base_id: base.id })}
                         isConstructing={(base?.construcoes ?? []).some(c => c.edificio_tipo === 'qg')}
                     />
                 </div>
@@ -84,7 +84,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
                                 tipo={ed.tipo}
                                 nome={getBuildingName(ed.tipo)}
                                 nivel={ed.nivel}
-                                onClick={() => onBuildingClick({ ...ed, nome: getBuildingName(ed.tipo) })}
+                                onClick={() => onBuildingClick({ ...ed, nome: getBuildingName(ed.tipo), base_id: base.id })}
                                 isConstructing={(base?.construcoes ?? []).some(c => c.edificio_tipo === ed.tipo)}
                             />
                         </div>
@@ -97,7 +97,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
                         tipo="muralha"
                         nome={getBuildingName('muralha')}
                         nivel={base?.muralha_nivel}
-                        onClick={() => onBuildingClick({ tipo: 'muralha', nivel: base?.muralha_nivel, nome: getBuildingName('muralha') })}
+                        onClick={() => onBuildingClick({ tipo: 'muralha', nivel: base?.muralha_nivel, nome: getBuildingName('muralha'), base_id: base.id })}
                         isConstructing={(base?.construcoes ?? []).some(c => c.edificio_tipo === 'muralha')}
                     />
                 </div>

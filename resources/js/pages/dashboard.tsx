@@ -25,6 +25,8 @@ export default function Dashboard({
 }: DashboardProps) {
     // DIAGNÓSTICO DE CAMPO - VISÍVEL NO CONSOLE DO COMANDANTE
     console.log("DADOS_DASHBOARD:", { base, jogador, taxasPerSecond });
+    if (base?.construcoes) console.log("FILA_CONSTRUCAO:", base.construcoes);
+    if (base?.treinos) console.log("FILA_TREINO:", base.treinos);
 
     const { addToast } = useToasts();
     const [selectedBuilding, setSelectedBuilding] = useState<any>(null);

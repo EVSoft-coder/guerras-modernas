@@ -39,6 +39,11 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
 
     // Reset de estado quando o edifício muda
     useEffect(() => {
+        if (building) {
+            console.log("TACTICAL_MODAL_SCAN:", building);
+            setTrainQty(1);
+            setSelectedUnit(null);
+        }
         setCurrentTryLevel(getEvolutionLevelAsset(building.nivel || 0));
         setUsePlaceholder(false);
     }, [building.tipo, building.nivel]);
@@ -120,7 +125,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
     const [trainQty, setTrainQty] = useState(1);
     const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
 
-    const isMilitary = ['quartel', 'aerodromo'].includes(building.tipo);
+    const isMilitary = ['quartel', 'aerodromo'].includes(building.tipo?.toLowerCase());
     const availableUnits = isMilitary ? Object.entries(gameConfig?.units || {}).filter(([key, unit]: any) => {
         if (building.tipo === 'quartel') return ['infantaria', 'blindado_apc', 'tanque_combate', 'agente_espiao'].includes(key);
         if (building.tipo === 'aerodromo') return ['helicoptero_ataque'].includes(key);
