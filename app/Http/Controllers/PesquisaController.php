@@ -29,20 +29,8 @@ class PesquisaController extends Controller
 
         try {
             $pesquisa = $this->gameService->iniciarPesquisa($base, $request->tipo);
-            
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => "I&D Iniciado: {$request->tipo}!",
-                    'recursos' => $base->recursos,
-                    'item' => $pesquisa
-                ]);
-            }
-            return redirect()->back()->with('success', "I&D Iniciado para {$request->tipo}!");
+            return redirect()->back()->with('success', "PROTOCOLO DE I&D: Projeto {$request->tipo} iniciado com sucesso.");
         } catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json(['success' => false, 'error' => $e->getMessage()], 422);
-            }
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Base;
 use App\Models\Ataque;
 use App\Services\GameService;
-use App\Http\Requests\UpgradeRequest;
+use App\Http\Requests\BuildingUpgradeRequest;
 use App\Http\Requests\TreinarRequest;
 use App\Http\Requests\AtacarRequest;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class BaseController extends Controller
     /**
      * Iniciar um upgrade de edifício.
      */
-    public function upgrade(UpgradeRequest $request)
+    public function upgrade(BuildingUpgradeRequest $request)
     {
         $base = Base::findOrFail($request->base_id);
         
@@ -32,21 +32,8 @@ class BaseController extends Controller
 
         try {
             $fila = $this->gameService->iniciarConstrucao($base, $request->tipo);
-            
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true, 
-                    'message' => "Upgrade iniciado para {$request->tipo}!",
-                    'recursos' => $base->recursos,
-                    'tipo' => 'construcao',
-                    'item' => $fila
-                ]);
-            }
-            return redirect()->back()->with('success', "Upgrade iniciado para {$request->tipo}!");
+            return redirect()->back()->with('success', "ORDEM DE ENGENHARIA: Upgrade de {$request->tipo} iniciado com sucesso.");
         } catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json(['success' => false, 'error' => $e->getMessage()], 422);
-            }
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
@@ -60,24 +47,12 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
 
         try {
-            $fila = \Illuminate\Support\Facades\DB::transaction(function() use ($base, $request) {
+            \Illuminate\Support\Facades\DB::transaction(function() use ($base, $request) {
                 return $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
             });
 
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true, 
-                    'message' => "Treino de {$request->quantidade}x {$request->unidade} iniciado!",
-                    'recursos' => $base->recursos,
-                    'tipo' => 'treino',
-                    'item' => $fila
-                ]);
-            }
-            return redirect()->back()->with('success', "Treino de {$request->quantidade}x {$request->unidade} iniciado!");
+            return redirect()->back()->with('success', "ORDEM DE RECRUTAMENTO: {$request->quantidade}x {$request->unidade} em alistamento.");
         } catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json(['success' => false, 'error' => $e->getMessage()], 422);
-            }
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
@@ -214,15 +189,7 @@ class BaseController extends Controller
         $recursos->decrement($request->oferece, $custo);
         $recursos->increment($request->recebe, $ganho);
 
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Transação efetuada com sucesso no Mercado Negro!',
-                'recursos' => $base->recursos
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'Troca efetuada com sucesso!');
+        return redirect()->back()->with('success', 'TRANSAÇÃO NO MERCADO NEGRO: Recursos trocados com sucesso.');
     }
 
     public function manualProcess()

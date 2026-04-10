@@ -43,6 +43,16 @@ return [
     |--------------------------------------------------------------------------
     */
     'buildings' => [
+        'qg' => [
+            'name' => 'Centro de Comando (QG)',
+            'cost' => ['suprimentos' => 500, 'combustivel' => 200, 'pessoal' => 20],
+            'time_base' => 120,
+        ],
+        'muralha' => [
+            'name' => 'Perímetro Defensivo (Muralha)',
+            'cost' => ['suprimentos' => 400, 'municoes' => 200, 'pessoal' => 5],
+            'time_base' => 180,
+        ],
         'mina_suprimentos' => [
             'name' => 'Mina de Suprimentos',
             'cost' => ['suprimentos' => 200, 'combustivel' => 50, 'pessoal' => 10],

@@ -6,7 +6,6 @@ import { ResourceBar } from '@/components/game/ResourceBar';
 import { VillageView } from '@/components/game/VillageView';
 import { BuildingModal } from '@/components/game/BuildingModal';
 import { GarrisonPanel } from '@/components/game/GarrisonPanel';
-import { GarrisonPanel } from '@/components/game/GarrisonPanel';
 import { ProductionQueue } from '@/components/game/ProductionQueue';
 import { useToasts } from '@/components/game/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';

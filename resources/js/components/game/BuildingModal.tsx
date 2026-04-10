@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRight, X } from 'lucide-react';
+import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRight, X, Loader2, Target as Sword } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getEvolutionLevelAsset, calculateBuildingCost, calculateConstructionTime, calculateResourceProduction } from '@/lib/game-utils';
 
@@ -17,7 +17,10 @@ interface BuildingModalProps {
     isTraining: boolean;
 }
 
-export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, building, gameConfig, onUpgrade, isUpgrading }) => {
+export const BuildingModal: React.FC<BuildingModalProps> = ({ 
+    isOpen, onClose, building, gameConfig, 
+    onUpgrade, onTrain, isUpgrading, isTraining 
+}) => {
     if (!building) return null;
 
     const buildingsConfig = gameConfig?.buildings || {};
@@ -330,9 +333,10 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
                                                         <Button 
                                                             onClick={() => selectedUnit && onTrain(selectedUnit, trainQty)}
                                                             disabled={isTraining}
-                                                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] py-4 rounded-lg shadow-lg"
+                                                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] py-4 rounded-lg shadow-lg flex items-center justify-center gap-2"
                                                         >
-                                                            {isTraining ? 'RECRUTANDO...' : 'INICIAR RECRUTAMENTO'}
+                                                            {isTraining ? <Loader2 size={14} className="animate-spin" /> : <Sword size={14} />}
+                                                            {isTraining ? 'A RECRUTAR...' : 'INICIAR RECRUTAMENTO'}
                                                         </Button>
                                                     </div>
                                                 )}
@@ -365,7 +369,8 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
                                                 : 'bg-neutral-800 text-neutral-500 cursor-not-allowed border-none'
                                         }`}
                                     >
-                                        <span className="text-base md:text-xl group-hover:translate-x-1 transition-transform">
+                                        <span className="text-base md:text-xl group-hover:translate-x-1 transition-transform flex items-center gap-2">
+                                            {isUpgrading && <Loader2 size={20} className="animate-spin" />}
                                             {isUpgrading ? 'AUTORIZANDO...' : (canAfford ? 'MELHORAR ESTRUTURA' : 'RECURSOS INSUFICIENTES')}
                                         </span>
                                         {!isUpgrading && canAfford && <ChevronRight className="group-hover:translate-x-2 transition-transform" size={16} md:size={20} />}

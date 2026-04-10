@@ -34,29 +34,33 @@ class GameService
             ? $ultimaConstrucao->completado_em 
             : now();
 
-        // Mapeamento robusto de edifícios (suporta nomes técnicos e amigáveis)
-        $tiposMapeados = [
-            'mina de suprimentos' => 'mina_suprimentos',
-            'refinaria de combustível' => 'refinaria',
-            'fábrica de munições' => 'fabrica_municoes',
-            'posto de recrutamento' => 'posto_recrutamento',
-            'quartel regional' => 'quartel',
-            'aeródromo militar' => 'aerodromo',
-            'radar de longo alcance' => 'radar_estrategico',
-            'centro de pesquisa & i&d' => 'centro_pesquisa'
+        // Mapeamento técnico e limpeza de strings
+        $tipoKey = str_replace([' ', '-', '.'], '_', strtolower(trim($tipo)));
+        
+        // Mapeamentos retro-compatíveis e amigáveis
+        $aliasMapeados = [
+            'centro_de_comando' => 'qg',
+            'perimetro_defensivo' => 'muralha',
+            'base_aerea' => 'aerodromo',
+            'heliponto' => 'aerodromo'
         ];
 
-        $tipoKey = str_replace(['_', '-'], ' ', strtolower($tipo));
-        if (isset($tiposMapeados[$tipoKey])) {
-            $tipoKey = $tiposMapeados[$tipoKey];
-        } else {
-            $tipoKey = str_replace(' ', '_', strtolower($tipo));
+        if (isset($aliasMapeados[$tipoKey])) {
+            $tipoKey = $aliasMapeados[$tipoKey];
         }
         
         $conf = config("game.buildings.{$tipoKey}");
-        if (!$conf) throw new \Exception("Edifício desconhecido ($tipoKey).");
+        if (!$conf) throw new \Exception("SETOR INVÁLIDO: Edifício desconhecido ($tipoKey).");
 
-        $nivelAtual = $base->edificios()->where('tipo', $tipoKey)->first()?->nivel ?? 0;
+        // Obter nível atual (Suporta colunas da Base ou Tabela Edificios)
+        if ($tipoKey === 'qg') {
+            $nivelAtual = $base->qg_nivel;
+        } elseif ($tipoKey === 'muralha') {
+            $nivelAtual = $base->muralha_nivel;
+        } else {
+            $nivelAtual = $base->edificios()->where('tipo', $tipoKey)->first()?->nivel ?? 0;
+        }
+        
         $nivelAlvo = $nivelAtual + 1;
 
         // Determinar o momento de início (Imediato ou após a última construção na fila)
@@ -213,15 +217,22 @@ class GameService
                 ->get();
 
             foreach ($construcoes as $fila) {
-                $edificio = $base->edificios()->where('tipo', $fila->edificio_tipo)->lockForUpdate()->first();
+                $tipo = $fila->edificio_tipo;
                 
-                if ($edificio) {
-                    $edificio->update(['nivel' => $fila->nivel_destino]);
+                if ($tipo === 'qg') {
+                    $base->update(['qg_nivel' => $fila->nivel_destino]);
+                } elseif ($tipo === 'muralha') {
+                    $base->update(['muralha_nivel' => $fila->nivel_destino]);
                 } else {
-                    $base->edificios()->create([
-                        'tipo' => $fila->edificio_tipo,
-                        'nivel' => $fila->nivel_destino,
-                    ]);
+                    $edificio = $base->edificios()->where('tipo', $tipo)->lockForUpdate()->first();
+                    if ($edificio) {
+                        $edificio->update(['nivel' => $fila->nivel_destino]);
+                    } else {
+                        $base->edificios()->create([
+                            'tipo' => $tipo,
+                            'nivel' => $fila->nivel_destino,
+                        ]);
+                    }
                 }
 
                 // GANHA XP: Nível * 10
