@@ -116,12 +116,12 @@ export default function Dashboard({
                         </OrderPanel>
 
                         {/* PAINEL DE TROPAS (GUARNIÇÃO) */}
-                        <GarrisonPanel tropas={base.tropas} gameConfig={gameConfig} />
+                        <GarrisonPanel tropas={base?.tropas ?? []} gameConfig={gameConfig} />
 
                         {/* FEED GLOBAL */}
                         <OrderPanel title="Inteligência Global" icon={<Target className="text-orange-500" size={18} />}>
                             <div className="space-y-3">
-                                {relatoriosGlobal.map((r, i) => (
+                                {(relatoriosGlobal ?? []).map((r, i) => (
                                     <div key={i} className="text-[10px] border-l-2 border-orange-500/30 pl-3 py-1">
                                         <div className="text-neutral-400 font-bold uppercase">{r.created_at}</div>
                                         <div className="text-white">Op: <span className="text-orange-400">{r.atacante?.username}</span> contra <span className="text-neutral-400">{r.defensor?.username}</span></div>

@@ -67,14 +67,14 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
                     <BuildingNode 
                         tipo="qg"
                         nome={getBuildingName('qg')}
-                        nivel={base.qg_nivel}
-                        onClick={() => onBuildingClick({ tipo: 'qg', nivel: base.qg_nivel, nome: getBuildingName('qg') })}
-                        isConstructing={base.construcoes.some(c => c.edificio_tipo === 'qg')}
+                        nivel={base?.qg_nivel}
+                        onClick={() => onBuildingClick({ tipo: 'qg', nivel: base?.qg_nivel, nome: getBuildingName('qg') })}
+                        isConstructing={(base?.construcoes ?? []).some(c => c.edificio_tipo === 'qg')}
                     />
                 </div>
 
                 {/* Renderizar Edifícios da tabela edificios */}
-                {base.edificios.map((ed) => {
+                {(base?.edificios ?? []).map((ed) => {
                     const pos = buildingPositions[ed.tipo];
                     if (!pos) return null;
 
@@ -85,7 +85,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
                                 nome={getBuildingName(ed.tipo)}
                                 nivel={ed.nivel}
                                 onClick={() => onBuildingClick({ ...ed, nome: getBuildingName(ed.tipo) })}
-                                isConstructing={base.construcoes.some(c => c.edificio_tipo === ed.tipo)}
+                                isConstructing={(base?.construcoes ?? []).some(c => c.edificio_tipo === ed.tipo)}
                             />
                         </div>
                     );
@@ -96,9 +96,9 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
                     <BuildingNode 
                         tipo="muralha"
                         nome={getBuildingName('muralha')}
-                        nivel={base.muralha_nivel}
-                        onClick={() => onBuildingClick({ tipo: 'muralha', nivel: base.muralha_nivel, nome: getBuildingName('muralha') })}
-                        isConstructing={base.construcoes.some(c => c.edificio_tipo === 'muralha')}
+                        nivel={base?.muralha_nivel}
+                        onClick={() => onBuildingClick({ tipo: 'muralha', nivel: base?.muralha_nivel, nome: getBuildingName('muralha') })}
+                        isConstructing={(base?.construcoes ?? []).some(c => c.edificio_tipo === 'muralha')}
                     />
                 </div>
             </div>

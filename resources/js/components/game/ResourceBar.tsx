@@ -10,10 +10,10 @@ interface ResourceBarProps {
 
 export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSecond }) => {
     const [current, setCurrent] = useState({
-        suprimentos: recursos.suprimentos,
-        combustivel: recursos.combustivel,
-        municoes: recursos.municoes,
-        pessoal: recursos.pessoal
+        suprimentos: recursos?.suprimentos ?? 0,
+        combustivel: recursos?.combustivel ?? 0,
+        municoes: recursos?.municoes ?? 0,
+        pessoal: recursos?.pessoal ?? 0
     });
 
     useEffect(() => {

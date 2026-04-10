@@ -33,7 +33,7 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas, gameConfig
             </CardHeader>
             <CardContent className="py-4 px-3">
                 <div className="space-y-3">
-                    {tropas.length > 0 ? (
+                    {(tropas?.length ?? 0) > 0 ? (
                         tropas.map((t, idx) => (
                             <motion.div 
                                 initial={{ x: -20, opacity: 0 }}
