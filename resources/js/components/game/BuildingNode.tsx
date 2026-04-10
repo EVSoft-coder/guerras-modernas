@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { getLevelImage } from '@/lib/game-utils';
+import { getEvolutionLevelAsset } from '@/lib/game-utils';
 
 interface BuildingNodeProps {
     tipo: string;
@@ -11,7 +11,7 @@ interface BuildingNodeProps {
 }
 
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, isConstructing, onClick }) => {
-    const [currentTryLevel, setCurrentTryLevel] = useState(getLevelImage(nivel));
+    const [currentTryLevel, setCurrentTryLevel] = useState(getEvolutionLevelAsset(nivel));
     const [usePlaceholder, setUsePlaceholder] = useState(false);
     
     // Caminho da imagem de resiliência absoluta
@@ -50,8 +50,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                         }}
                     />
                     
-                    {/* Badge de Nível Tactical */}
-                    <div className="absolute -top-1 -right-1 bg-neutral-900 border border-sky-500/50 text-sky-400 text-[6px] md:text-[8px] font-black px-1 md:px-1.5 py-0.5 rounded shadow-lg backdrop-blur-md group-hover:border-sky-400 group-hover:text-white transition-colors z-10">
+                    {/* Badge de Nível Tactical - POSICIONAMENTO INFERIOR V50 */}
+                    <div className="absolute -bottom-3 -right-1 bg-neutral-900 border border-sky-500/50 text-sky-400 text-[6px] md:text-[8px] font-black px-1 md:px-1.5 py-0.5 rounded shadow-lg backdrop-blur-md group-hover:border-sky-400 group-hover:text-white transition-colors z-10">
                         LVL {nivel}
                     </div>
                 </motion.div>
@@ -59,8 +59,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                 {/* Sombra de Projeção na Grelha */}
                 <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 md:w-10 h-1 md:h-2 bg-black/40 blur-md rounded-full z-0"></div>
 
-                {/* Rótulo Tático Premium Adaptativo - Restauração Phoenix */}
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-max z-30">
+                {/* Rótulo Tático Premium Adaptativo - POSICIONAMENTO SUPERIOR V50 */}
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-max z-30 pointer-events-none">
                     <div className="bg-black/95 backdrop-blur-md px-1.5 md:px-3 py-0.5 md:py-1 rounded-full border border-white/20 group-hover:border-orange-500 group-hover:bg-orange-950/40 transition-all duration-300 shadow-2xl">
                         <span className="text-[6px] md:text-[10px] uppercase font-black text-white group-hover:text-orange-400 tracking-tighter md:tracking-widest text-center block whitespace-nowrap">
                             {nome}

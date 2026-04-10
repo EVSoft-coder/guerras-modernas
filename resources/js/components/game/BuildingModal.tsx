@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRight, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getLevelImage } from '@/lib/game-utils';
+import { getEvolutionLevelAsset } from '@/lib/game-utils';
 
 interface BuildingModalProps {
     isOpen: boolean;
@@ -28,7 +28,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
 
     const nextLevel = (building.nivel || 0) + 1;
     
-    const [currentTryLevel, setCurrentTryLevel] = useState(getLevelImage(building.nivel || 0));
+    const [currentTryLevel, setCurrentTryLevel] = useState(getEvolutionLevelAsset(building.nivel || 0));
     const [usePlaceholder, setUsePlaceholder] = useState(false);
     
     // Caminho da imagem de resiliência absoluta
@@ -37,7 +37,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
 
     // Reset de estado quando o edifício muda
     useEffect(() => {
-        setCurrentTryLevel(getLevelImage(building.nivel || 0));
+        setCurrentTryLevel(getEvolutionLevelAsset(building.nivel || 0));
         setUsePlaceholder(false);
     }, [building.tipo, building.nivel]);
 
