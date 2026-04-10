@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRight, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getLevelImage } from '@/lib/game-utils';
 
 interface BuildingModalProps {
     isOpen: boolean;
@@ -13,16 +14,6 @@ interface BuildingModalProps {
     onUpgrade: (tipo: string) => void;
     isUpgrading: boolean;
 }
-
-// Auxiliar para determinar a imagem baseada no nível (Escopo de Módulo)
-const getLevelImage = (lvl: number) => {
-    if (lvl >= 6) return 6;
-    if (lvl >= 5) return 5;
-    if (lvl >= 4) return 4;
-    if (lvl >= 3) return 3;
-    if (lvl >= 2) return 2;
-    return 1;
-};
 
 export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, building, gameConfig, onUpgrade, isUpgrading }) => {
     if (!building) return null;

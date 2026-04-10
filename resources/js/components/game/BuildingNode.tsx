@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { getLevelImage } from '@/lib/game-utils';
 
 interface BuildingNodeProps {
     tipo: string;
@@ -8,16 +9,6 @@ interface BuildingNodeProps {
     isConstructing?: boolean;
     onClick: () => void;
 }
-
-// Escala Evolutiva de 6 Níveis (Escopo de Módulo)
-const getLevelImage = (lvl: number) => {
-    if (lvl >= 6) return 6;
-    if (lvl >= 5) return 5;
-    if (lvl >= 4) return 4;
-    if (lvl >= 3) return 3;
-    if (lvl >= 2) return 2;
-    return 1;
-};
 
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, isConstructing, onClick }) => {
     const [currentTryLevel, setCurrentTryLevel] = useState(getLevelImage(nivel));
@@ -45,7 +36,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                 >
                     <img 
                         src={imgUrl} 
-                        className="w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-[0_0_10px_rgba(14,165,233,0.3)] group-hover:drop-shadow-[0_0_20px_rgba(14,165,233,0.6)] transition-all duration-300" 
+                        className="w-14 h-14 md:w-32 md:h-32 object-contain drop-shadow-[0_0_10px_rgba(14,165,233,0.3)] group-hover:drop-shadow-[0_0_20px_rgba(14,165,233,0.6)] transition-all duration-300" 
                         alt={nome}
                         onError={() => {
                             if (usePlaceholder) return;
@@ -60,18 +51,18 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                     />
                     
                     {/* Badge de Nível Tactical */}
-                    <div className="absolute -top-1 -right-1 bg-neutral-900 border border-sky-500/50 text-sky-400 text-[6px] md:text-[8px] font-black px-1 md:px-1.5 py-0.5 rounded shadow-lg backdrop-blur-md group-hover:border-sky-400 group-hover:text-white transition-colors">
+                    <div className="absolute -top-1 -right-1 bg-neutral-900 border border-sky-500/50 text-sky-400 text-[6px] md:text-[8px] font-black px-1 md:px-1.5 py-0.5 rounded shadow-lg backdrop-blur-md group-hover:border-sky-400 group-hover:text-white transition-colors z-10">
                         LVL {nivel}
                     </div>
                 </motion.div>
 
                 {/* Sombra de Projeção na Grelha */}
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 md:w-10 h-1.5 md:h-2 bg-black/40 blur-md rounded-full z-0"></div>
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 md:w-10 h-1 md:h-2 bg-black/40 blur-md rounded-full z-0"></div>
 
                 {/* Rótulo Tático Premium Adaptativo - Restauração Phoenix */}
-                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-max z-20">
-                    <div className="bg-black/95 backdrop-blur-md px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-white/20 group-hover:border-orange-500 group-hover:bg-orange-950/40 transition-all duration-300 shadow-2xl">
-                        <span className="text-[8px] md:text-[10px] uppercase font-black text-white group-hover:text-orange-400 tracking-tighter md:tracking-widest text-center block whitespace-nowrap">
+                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-max z-30">
+                    <div className="bg-black/95 backdrop-blur-md px-1.5 md:px-3 py-0.5 md:py-1 rounded-full border border-white/20 group-hover:border-orange-500 group-hover:bg-orange-950/40 transition-all duration-300 shadow-2xl">
+                        <span className="text-[6px] md:text-[10px] uppercase font-black text-white group-hover:text-orange-400 tracking-tighter md:tracking-widest text-center block whitespace-nowrap">
                             {nome}
                         </span>
                     </div>
