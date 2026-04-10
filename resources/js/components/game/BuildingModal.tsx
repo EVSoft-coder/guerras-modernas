@@ -26,16 +26,18 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
 
     const nextLevel = (building.nivel || 0) + 1;
     
-    const getBuildingImage = (tipo: string, nivel: number) => {
-        const evolutionLevels = [6, 5, 4, 3, 2, 1];
-        const folder = tipo || 'qg';
-        for (const lvl of evolutionLevels) {
-            if (nivel >= lvl) return `/images/edificios/${folder}/lvl_${lvl}.png`;
-        }
-        return `/images/edificios/${folder}/lvl_1.png`;
-    };
+    const [currentTryLevel, setCurrentTryLevel] = React.useState(getLevelImage(building.nivel || 0));
+    const [usePlaceholder, setUsePlaceholder] = React.useState(false);
+    
+    // Caminho da imagem de resiliência absoluta
+    const blueprintUrl = "/images/building_blueprint_placeholder.png";
+    const currentImage = usePlaceholder ? blueprintUrl : `/images/edificios/${building.tipo}/lvl_${currentTryLevel}.png`;
 
-    const currentImage = getBuildingImage(building.tipo, building.nivel);
+    // Reset de estado quando o edifício muda
+    React.useEffect(() => {
+        setCurrentTryLevel(getLevelImage(building.nivel || 0));
+        setUsePlaceholder(false);
+    }, [building.tipo, building.nivel]);
 
     const renderCost = (resourceType: string, amount: number) => {
         if (!amount) return null;
@@ -68,7 +70,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="w-[95vw] max-w-2xl bg-neutral-950/95 border-white/10 text-white overflow-hidden backdrop-blur-2xl p-0 rounded-2xl md:rounded-3xl shadow-[0_0_80px_rgba(0,0,0,1)] max-h-[95vh] flex flex-col">
                 <DialogDescription className="sr-only">
-                    Relatório técnico e opções de upgrade para o edifício {building?.nome}.
+                    Interface tática para gestão do edifício {building?.nome}. Permite análise de custos, bónus de produção e autorização de melhorias estruturais.
                 </DialogDescription>
                 <AnimatePresence mode="wait">
                     {!building.tipo ? (
@@ -109,9 +111,13 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
                                         src={currentImage} 
                                         className="w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(14,165,233,0.5)]" 
                                         alt="Preview"
-                                        onError={(e) => {
-                                            const target = e.target as HTMLImageElement;
-                                            if (!target.src.includes('lvl_1.png')) target.src = `/images/edificios/${building.tipo}/lvl_1.png`;
+                                        onError={() => {
+                                            if (usePlaceholder) return;
+                                            if (currentTryLevel > 1) {
+                                                setCurrentTryLevel(prev => prev - 1);
+                                            } else {
+                                                setUsePlaceholder(true);
+                                            }
                                         }}
                                     />
                                 </motion.div>

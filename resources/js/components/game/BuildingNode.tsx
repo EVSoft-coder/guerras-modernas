@@ -20,9 +20,12 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
         return 1;
     };
 
-    const imgLevel = getLevelImage(nivel);
-    const [imgExt, setImgExt] = React.useState('webp');
-    const imgUrl = `/images/edificios/${tipo}/lvl_${imgLevel}.${imgExt}`;
+    const [currentTryLevel, setCurrentTryLevel] = React.useState(getLevelImage(nivel));
+    const [usePlaceholder, setUsePlaceholder] = React.useState(false);
+    
+    // Caminho da imagem de resiliência absoluta
+    const blueprintUrl = "/images/building_blueprint_placeholder.png";
+    const imgUrl = usePlaceholder ? blueprintUrl : `/images/edificios/${tipo}/lvl_${currentTryLevel}.png`;
 
     return (
         <motion.div 
@@ -45,13 +48,14 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                         className="w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-[0_0_10px_rgba(14,165,233,0.3)] group-hover:drop-shadow-[0_0_20px_rgba(14,165,233,0.6)] transition-all duration-300" 
                         alt={nome}
                         onError={(e) => {
-                            if (imgExt === 'webp') {
-                                setImgExt('png');
-                                return;
-                            }
-                            const target = e.target as HTMLImageElement;
-                            if (!target.src.includes('lvl_1.png')) {
-                                target.src = `/images/edificios/${tipo}/lvl_1.png`;
+                            if (usePlaceholder) return;
+                            
+                            // Busca em Cascata: Tenta o nível anterior
+                            if (currentTryLevel > 1) {
+                                setCurrentTryLevel(prev => prev - 1);
+                            } else {
+                                // Se até o Lvl 1 falhar, ativa o Blueprint
+                                setUsePlaceholder(true);
                             }
                         }}
                     />
@@ -63,9 +67,16 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                 </motion.div>
 
                 {/* Sombra de Projeção na Grelha */}
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 md:w-10 h-1.5 md:h-2 bg-black/40 blur-md rounded-full -z-0"></div>
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 md:w-10 h-1.5 md:h-2 bg-black/40 blur-md rounded-full z-0"></div>
 
-                {/* Radar de Construção */}
+                {/* Rótulo Tático Premium Adaptativo - Ancoragem Rígida */}
+                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full flex justify-center z-20">
+                    <div className="bg-black/90 backdrop-blur-md px-1.5 md:px-3 py-0.5 md:py-1 rounded-full border border-white/20 group-hover:border-orange-500 group-hover:bg-orange-950/40 transition-all duration-300 max-w-[50px] md:max-w-none overflow-hidden shadow-2xl">
+                        <span className="text-[6px] md:text-[10px] uppercase font-black text-white group-hover:text-orange-400 tracking-tighter md:tracking-widest text-center leading-tight break-words block">
+                            {nome}
+                        </span>
+                    </div>
+                </div>
                 {isConstructing && (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-8 h-8 md:w-12 md:h-12 border-2 md:border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
@@ -73,12 +84,6 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                 )}
             </div>
 
-            {/* Rótulo Tático Premium Adaptativo */}
-            <div className="mt-1 md:mt-2 bg-black/80 backdrop-blur-md px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-white/20 group-hover:border-orange-500 group-hover:bg-orange-950/40 transition-all duration-300 max-w-[80px] md:max-w-none">
-                <span className="text-[7px] md:text-[10px] uppercase font-black text-white group-hover:text-orange-400 tracking-widest text-center leading-tight">
-                    {nome}
-                </span>
-            </div>
         </motion.div>
     );
 };
