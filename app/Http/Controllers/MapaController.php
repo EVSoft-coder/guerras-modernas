@@ -26,7 +26,7 @@ class MapaController extends Controller
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
             ->get();
 
-        return view('mapa', compact('bases', 'x', 'y', 'raio'));
+        return \Inertia\Inertia::render('mapa', compact('bases', 'x', 'y', 'raio'));
     }
 
     /**

@@ -6,8 +6,9 @@ import { ResourceBar } from '@/components/game/ResourceBar';
 import { VillageView } from '@/components/game/VillageView';
 import { BuildingModal } from '@/components/game/BuildingModal';
 import { GarrisonPanel } from '@/components/game/GarrisonPanel';
+import { ConstructionQueue } from '@/components/game/ConstructionQueue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Target, Activity, Zap, ShieldAlert } from 'lucide-react';
+import { Target, Zap, ShieldAlert } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -96,24 +97,8 @@ export default function Dashboard({
 
                     {/* COLUNA DIREITA - INTELIGÊNCIA & FILAS (4 COLUNAS) */}
                     <div className="lg:col-span-4 flex flex-col gap-6">
-                        {/* FILA DE CONSTRUÇÃO */}
-                        <OrderPanel title="Construções em Curso" icon={<Activity className="text-sky-500" size={18} />}>
-                            {base.construcoes.length > 0 ? (
-                                base.construcoes.map(c => (
-                                    <div key={c.id} className="bg-white/5 p-3 rounded-lg border border-white/5 mb-2">
-                                        <div className="flex justify-between text-xs font-bold uppercase mb-1">
-                                            <span>{c.edificio_tipo} (Nível {c.nivel_destino})</span>
-                                            <span className="text-sky-400">ATIVO</span>
-                                        </div>
-                                        <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden">
-                                            <div className="bg-sky-500 h-full animate-progress-stripes" style={{ width: '60%' }}></div>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-4 text-neutral-600 text-[10px] uppercase font-bold italic">Nenhuma construção ativa</div>
-                            )}
-                        </OrderPanel>
+                        {/* FILA DE CONSTRUÇÃO TÁTICA */}
+                        <ConstructionQueue construcoes={base.construcoes} />
 
                         {/* PAINEL DE TROPAS (GUARNIÇÃO) */}
                         <GarrisonPanel tropas={base?.tropas ?? []} gameConfig={gameConfig} />

@@ -71,9 +71,14 @@ const ResourceItem = ({ icon, label, value, rate, color, isStatic = false }: any
                 {icon}
                 <span className="text-[10px] uppercase font-black tracking-[0.2em] text-neutral-500 group-hover:text-neutral-300 transition-colors">{label}</span>
             </div>
-            <div className={`text-2xl font-black font-mono tracking-tighter ${color} z-10`}>
+            <motion.div 
+                key={value}
+                initial={{ scale: 1.1, opacity: 0.8 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className={`text-2xl font-black font-mono tracking-tighter ${color} z-10`}
+            >
                 <AnimatedNumber value={value} />
-            </div>
+            </motion.div>
             {!isStatic && (
                 <div className="text-[10px] font-black text-neutral-600 group-hover:text-neutral-400 transition-colors z-10 flex items-center gap-1">
                     <span className="animate-pulse">▲</span> {Math.floor(rate).toLocaleString()} /h

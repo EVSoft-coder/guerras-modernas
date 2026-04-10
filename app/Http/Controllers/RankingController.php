@@ -28,6 +28,6 @@ class RankingController extends Controller
             ->sortByDesc('pontos')
             ->values();
 
-        return view('ranking', compact('jogadores'));
+        return \Inertia\Inertia::render('ranking', compact('jogadores'));
     }
 }

@@ -11,6 +11,6 @@ class ManualController extends Controller
         $units = config('game.units');
         $buildings = config('game.buildings');
         
-        return view('manual', compact('units', 'buildings'));
+        return \Inertia\Inertia::render('manual', compact('units', 'buildings'));
     }
 }

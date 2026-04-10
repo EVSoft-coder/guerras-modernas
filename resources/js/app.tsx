@@ -21,7 +21,13 @@ if (rootElement) {
     
     createInertiaApp({
         title: (title) => `${title} - ${appName}`,
-        resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
+        resolve: (name) => {
+            if (!name) {
+                console.error("ERRO_TECNICO: Componente Inertia indefinido detetado. A restaurar sinal...");
+                return resolvePageComponent(`./pages/dashboard.tsx`, import.meta.glob('./pages/**/*.tsx'));
+            }
+            return resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx'));
+        },
         setup({ el, App, props }) {
             const root = createRoot(el);
             root.render(<App {...props} />);

@@ -25,13 +25,11 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
 
     return (
         <motion.div 
-            whileHover={{ 
-                scale: 1.1,
-                filter: "drop-shadow(0 0 15px rgba(249, 115, 22, 0.6))" 
-            }}
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClick}
-            className="relative cursor-pointer group flex flex-col items-center z-10"
+            className={`relative cursor-pointer group flex flex-col items-center z-10 p-2 rounded-xl transition-all duration-500 select-none
+                bg-black/20 border border-white/5 hover:bg-white/5 hover:border-white/20 shadow-2xl hover:shadow-[0_0_30px_rgba(14,165,233,0.3)]`}
         >
             {/* Imagem do Edifício com Brilho Tático */}
             <div className="relative">
@@ -43,19 +41,23 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
                         drop-shadow-[0_0_10px_rgba(14,165,233,0.3)]
                         group-hover:drop-shadow-[0_0_20px_rgba(249,115,22,0.8)]`}
                     onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/images/edificios/qg/lvl_1.png';
+                        const target = e.target as HTMLImageElement;
+                        if (!target.src.includes('lvl_1.png')) {
+                            console.warn(`ATIVO_MISSING: Falha ao carregar nível ${imgLevel} para ${tipo}. Recuando para nível base.`);
+                            target.src = `/images/edificios/${tipo}/lvl_1.png`;
+                        }
                     }}
                 />
                 
                 {/* Badge de Nível Militar */}
-                <div className="absolute -top-2 -right-2 bg-orange-600 text-white text-[11px] font-black px-2 py-0.5 rounded border-b-2 border-orange-800 shadow-2xl transform rotate-3">
+                <div className="absolute -top-2 -right-2 bg-orange-600 text-white text-[11px] font-black px-2 py-0.5 rounded border-b-2 border-orange-800 shadow-2xl transform rotate-3 transition-transform group-hover:scale-110 group-hover:rotate-0">
                     LVL {nivel}
                 </div>
 
                 {/* Radar de Construção */}
                 {isConstructing && (
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
                 )}
             </div>
