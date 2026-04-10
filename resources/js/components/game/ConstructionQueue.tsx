@@ -26,7 +26,7 @@ export const ConstructionQueue: React.FC<ConstructionQueueProps> = ({ construcoe
             </CardHeader>
             <CardContent className="py-4 space-y-4">
                 <AnimatePresence mode="popLayout">
-                    {construcoes.length > 0 ? (
+                    {(construcoes?.length ?? 0) > 0 ? (
                         construcoes.map((c) => (
                             <QueueItem key={c.id} construcao={c} />
                         ))
@@ -54,9 +54,11 @@ const QueueItem = ({ construcao }: { construcao: Construcao }) => {
 
     useEffect(() => {
         const calculateProgress = () => {
-            const start = new Date(construcao.created_at).getTime();
-            const end = new Date(construcao.concluido_em).getTime();
+            const start = new Date(construcao?.created_at).getTime();
+            const end = new Date(construcao?.concluido_em).getTime();
             const now = new Date().getTime();
+
+            if (!start || !end) return;
 
             const total = end - start;
             const elapsed = now - start;
@@ -90,9 +92,9 @@ const QueueItem = ({ construcao }: { construcao: Construcao }) => {
             <div className="flex justify-between items-end mb-1.5">
                 <div className="flex flex-col">
                     <span className="text-[10px] font-black uppercase text-white tracking-tighter">
-                        {construcao.edificio_tipo.replace('_', ' ')}
+                        {construcao?.edificio_tipo?.replace?.('_', ' ') ?? 'Estrutura'}
                     </span>
-                    <span className="text-[8px] text-sky-500 font-bold uppercase">Upgrade para Nível {construcao.nivel_destino}</span>
+                    <span className="text-[8px] text-sky-500 font-bold uppercase">Upgrade para Nível {construcao?.nivel_destino ?? '?'}</span>
                 </div>
                 <div className="flex flex-col items-end">
                     <span className="text-[9px] font-mono font-bold text-orange-500 flex items-center gap-1">

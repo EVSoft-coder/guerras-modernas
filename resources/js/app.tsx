@@ -26,7 +26,10 @@ if (rootElement) {
             const path = `./pages/${name}.tsx`;
             
             if (!name || name === 'undefined') {
-                console.warn(`[REDE_DE_SEGURANCA] Componente inválido (${name}). Redirecionando para Dashboard.`);
+                // Silenciamos o aviso se for um estado de carga inicial vazio
+                if (name === 'undefined') {
+                    console.warn(`[REDE_DE_SEGURANCA] Intercepção de rota 'undefined'. Redirecionando para Dashboard.`);
+                }
                 return resolvePageComponent(`./pages/dashboard.tsx`, pages);
             }
 

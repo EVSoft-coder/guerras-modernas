@@ -19,9 +19,9 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrent(prev => ({
-                suprimentos: prev.suprimentos + (taxasPerSecond.suprimentos || 0),
-                combustivel: prev.combustivel + (taxasPerSecond.combustivel || 0),
-                municoes: prev.municoes + (taxasPerSecond.municoes || 0),
+                suprimentos: prev.suprimentos + (taxasPerSecond?.suprimentos ?? 0),
+                combustivel: prev.combustivel + (taxasPerSecond?.combustivel ?? 0),
+                municoes: prev.municoes + (taxasPerSecond?.municoes ?? 0),
                 pessoal: prev.pessoal
             }));
         }, 1000);
@@ -35,21 +35,21 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 icon={<Box className="text-sky-400 group-hover:rotate-12 transition-transform" size={22} />} 
                 label="Suprimentos" 
                 value={current.suprimentos} 
-                rate={taxasPerSecond.suprimentos * 60}
+                rate={(taxasPerSecond?.suprimentos ?? 0) * 60}
                 color="text-sky-400"
             />
             <ResourceItem 
                 icon={<Fuel className="text-orange-400 group-hover:rotate-12 transition-transform" size={22} />} 
                 label="Combustível" 
                 value={current.combustivel} 
-                rate={taxasPerSecond.combustivel * 60}
+                rate={(taxasPerSecond?.combustivel ?? 0) * 60}
                 color="text-orange-400"
             />
             <ResourceItem 
                 icon={<Rocket className="text-red-400 group-hover:rotate-12 transition-transform" size={22} />} 
                 label="Munições" 
                 value={current.municoes} 
-                rate={taxasPerSecond.municoes * 60}
+                rate={(taxasPerSecond?.municoes ?? 0) * 60}
                 color="text-red-400"
             />
             <ResourceItem 

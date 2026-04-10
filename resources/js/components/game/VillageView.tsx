@@ -105,7 +105,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
 
             {/* Bússola Tática / HUD sobreposto ao mapa */}
             <div className="absolute bottom-4 right-4 text-[10px] font-mono text-sky-500/50 bg-black/40 px-2 py-1 rounded border border-white/5 pointer-events-none">
-                GRID_SECTOR_ALPHA_01 // LAT: {base.coordenada_x} LON: {base.coordenada_y}
+                GRID_SECTOR_ALPHA_01 // LAT: {base?.coordenada_x ?? 0} LON: {base?.coordenada_y ?? 0}
             </div>
         </div>
     );

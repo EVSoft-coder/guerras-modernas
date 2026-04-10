@@ -84,7 +84,7 @@ export default function Dashboard({
                         <VillageView base={base} onBuildingClick={handleBuildingClick} />
                         
                         {/* ALERTAS DE COMBATE */}
-                        {ataquesRecebidos.length > 0 && (
+                        {(ataquesRecebidos?.length ?? 0) > 0 && (
                             <div className="bg-red-950/20 border border-red-500/30 p-4 rounded-xl flex items-center gap-4 animate-bounce">
                                 <ShieldAlert className="text-red-500" size={32} />
                                 <div>
