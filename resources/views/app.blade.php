@@ -1,33 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guerras Modernas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">Guerras Modernas</a>
-            @if (Auth::check())
-                <div class="navbar-nav ms-auto">
-                    <span class="nav-link">Olá, {{ Auth::user()->username }}</span>
-                    <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
-                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="nav-link btn btn-link">Sair</button>
-                    </form>
-                </div>
-            @else
-                <div class="navbar-nav ms-auto">
-                    <a class="nav-link" href="{{ route('login.form') }}">Login</a>
-                    <a class="nav-link" href="{{ route('register.form') }}">Registar</a>
-                </div>
-            @endif
-        </div>
-    </nav>
-
-    @yield('content')
-</body>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Guerras Modernas</title>
+        
+        <!-- Fonts & Style Fallbacks -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+        
+        @viteReactRefresh
+        @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
+        @inertiaHead
+    </head>
+    <body class="bg-black text-white antialiased">
+        @inertia
+    </body>
 </html>

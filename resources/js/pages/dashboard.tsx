@@ -20,8 +20,26 @@ export default function Dashboard({
     jogador, base, taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal 
 }: DashboardProps) {
+    // DIAGNÓSTICO DE CAMPO - VISÍVEL NO CONSOLE DO COMANDANTE
+    console.log("DADOS_DASHBOARD:", { base, jogador, taxasPerSecond });
+
     const [selectedBuilding, setSelectedBuilding] = useState<any>(null);
     const [isUpgrading, setIsUpgrading] = useState(false);
+
+    // GATE DE SEGURANÇA: Se a base falhar, impedimos o colapso do React
+    if (!base) {
+        return (
+            <AppLayout breadcrumbs={breadcrumbs}>
+                <div className="flex flex-1 items-center justify-center bg-black min-h-screen">
+                    <div className="text-center p-8 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-md">
+                        <Zap className="mx-auto text-orange-500 animate-pulse mb-4" size={48} />
+                        <h2 className="text-xl font-black uppercase tracking-widest text-white">Sinal Interrompido</h2>
+                        <p className="text-neutral-500 text-xs mt-2 uppercase">A estabelecer ligação com o satélite militar...</p>
+                    </div>
+                </div>
+            </AppLayout>
+        );
+    }
 
     const handleBuildingClick = (building: any) => {
         setSelectedBuilding(building);
