@@ -2,7 +2,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BuildingModalProps {
@@ -15,10 +15,8 @@ interface BuildingModalProps {
 }
 
 export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, building, gameConfig, onUpgrade, isUpgrading }) => {
-    // GATE DE SEGURANÇA: Se não houver edifício selecionado, abortamos silenciosamente
     if (!building) return null;
 
-    // PROTEÇÃO DE DADOS: Garantir que gameConfig.buildings existe antes de aceder
     const buildingsConfig = gameConfig?.buildings || {};
     const config = buildingsConfig[building.tipo] || { 
         name: building.nome || 'Estrutura Desconhecida', 
@@ -29,7 +27,6 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
 
     const nextLevel = (building.nivel || 0) + 1;
     
-    // Motor de Ativos Evolutivo (Null-Safe)
     const getBuildingImage = (tipo: string, nivel: number) => {
         const evolutionLevels = [6, 5, 4, 3, 2, 1];
         const folder = tipo || 'qg';
@@ -53,130 +50,141 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
         };
 
         return (
-            <div key={resourceType} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 hover:border-sky-500/30 transition-colors">
+            <motion.div 
+                key={resourceType}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 hover:border-sky-500/30 transition-all group"
+            >
                 <div className="flex items-center gap-2">
-                    <span className="text-lg">{resourceIcons[resourceType] || '💎'}</span>
-                    <span className="text-[10px] uppercase text-neutral-400 font-black tracking-widest">{resourceType}</span>
+                    <span className="text-lg group-hover:scale-110 transition-transform">{resourceIcons[resourceType] || '💎'}</span>
+                    <span className="text-[9px] uppercase text-neutral-400 font-black tracking-widest">{resourceType}</span>
                 </div>
                 <span className="text-sm font-mono font-black text-sky-400">{total.toLocaleString()}</span>
-            </div>
+            </motion.div>
         );
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-md bg-neutral-950/95 border-white/10 text-white overflow-hidden backdrop-blur-2xl p-0 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,1)]">
+            <DialogContent className="sm:max-w-2xl bg-neutral-950/95 border-white/10 text-white overflow-hidden backdrop-blur-2xl p-0 rounded-3xl shadow-[0_0_80px_rgba(0,0,0,1)]">
                 <AnimatePresence mode="wait">
-                    {/* Caso os dados básicos falhem, mostramos um aviso tático em vez de um ecrã preto */}
                     {!building.tipo ? (
                         <div className="p-12 text-center space-y-4">
                             <AlertTriangle className="mx-auto text-orange-500 animate-pulse" size={48} />
                             <h3 className="text-xl font-black uppercase tracking-tighter">Erro de Telemetria</h3>
-                            <p className="text-neutral-500 text-xs uppercase">Assinatura do edifício não reconhecida no radar.</p>
-                            <Button onClick={onClose} variant="outline" className="mt-4">Fechar Dossiê</Button>
+                            <p className="text-neutral-500 text-[10px] uppercase">Assinatura do edifício não reconhecida.</p>
+                            <Button onClick={onClose} variant="outline" className="mt-4">Fechar</Button>
                         </div>
                     ) : (
                         <motion.div 
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="flex flex-col"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="flex flex-col md:flex-row h-full max-h-[90vh]"
                         >
-                            {/* Cabeçalho do Dossiê */}
-                            <div className="relative h-56 w-full bg-black/40 flex items-center justify-center overflow-hidden border-b border-white/10 group">
-                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 to-transparent z-10"></div>
+                            {/* Lado Esquerdo: Visual & Status */}
+                            <div className="md:w-1/2 relative bg-gradient-to-br from-neutral-900 to-black p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/10">
+                                <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
                                 
-                                <motion.img 
-                                    initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
-                                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                                    key={currentImage}
-                                    src={currentImage} 
-                                    className="w-48 h-48 object-contain z-0 filter drop-shadow-[0_0_30px_rgba(14,165,233,0.4)] group-hover:drop-shadow-[0_0_40px_rgba(249,115,22,0.5)] transition-all duration-700" 
-                                    alt="Dossie Preview"
-                                    onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        if (!target.src.includes('lvl_1.png')) {
-                                            target.src = `/images/edificios/${building.tipo}/lvl_1.png`;
-                                        }
-                                    }}
-                                />
-                                
-                                <div className="absolute top-4 left-4 z-20">
-                                    <Badge className="bg-sky-500/20 text-sky-400 border-sky-500/30 font-black px-3 py-1 rounded-full text-[10px] tracking-widest uppercase flex items-center gap-2">
-                                        <span className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></span>
-                                        SETOR: {building.tipo.toUpperCase()}
-                                    </Badge>
+                                <Badge className="absolute top-6 left-6 bg-sky-500/10 text-sky-400 border-sky-500/20 font-black px-4 py-1.5 rounded-full text-[10px] tracking-widest uppercase flex items-center gap-2 shadow-2xl">
+                                    <span className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></span>
+                                    STATUS: OPERACIONAL
+                                </Badge>
+
+                                <motion.div
+                                    initial={{ rotate: -5, scale: 0.8, opacity: 0 }}
+                                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                                    className="relative"
+                                >
+                                    <div className="absolute inset-0 bg-sky-500/20 blur-[60px] rounded-full animate-pulse group-hover:bg-orange-500/20 transition-colors"></div>
+                                    <img 
+                                        src={currentImage} 
+                                        className="w-64 h-64 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(14,165,233,0.5)]" 
+                                        alt="Preview"
+                                        onError={(e) => {
+                                            const target = e.target as HTMLImageElement;
+                                            if (!target.src.includes('lvl_1.png')) target.src = `/images/edificios/${building.tipo}/lvl_1.png`;
+                                        }}
+                                    />
+                                </motion.div>
+
+                                <div className="mt-8 w-full space-y-4 z-10">
+                                    <div className="text-center">
+                                        <h2 className="text-sm font-black text-neutral-500 uppercase tracking-[0.3em]">Nível Estrutural</h2>
+                                        <div className="text-6xl font-black text-white italic drop-shadow-lg">{building.nivel || 0}</div>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-2 justify-center">
+                                        {[1,2,3,4,5,6].map(lvl => (
+                                            <div key={lvl} className={`h-1.5 w-6 rounded-full transition-all duration-500 ${lvl <= building.nivel ? 'bg-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.5)]' : 'bg-white/10'}`}></div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div className="p-6 space-y-6">
-                                <DialogHeader>
-                                    <div className="flex justify-between items-start">
-                                        <div className="space-y-1">
-                                            <DialogTitle className="text-3xl font-black uppercase tracking-tighter text-white">
-                                                {config.name}
-                                            </DialogTitle>
-                                            <div className="flex items-center gap-2 text-neutral-500 text-[10px] font-black uppercase tracking-widest">
-                                                <span className="text-sky-500">INTEGRIDADE ESTRUTURAL: 100%</span>
-                                                <span className="h-1 w-1 bg-neutral-700 rounded-full"></span>
-                                                <span>NÍVEL {building.nivel || 0}</span>
-                                            </div>
-                                        </div>
+                            {/* Lado Direito: Inteligência & Logística */}
+                            <div className="md:w-1/2 p-8 flex flex-col bg-neutral-900/50">
+                                <DialogHeader className="mb-6">
+                                    <div className="space-y-1">
+                                        <DialogTitle className="text-4xl font-black uppercase tracking-tighter text-white leading-none">
+                                            {config.name}
+                                        </DialogTitle>
+                                        <p className="text-[10px] text-sky-500 font-bold uppercase tracking-widest flex items-center gap-2">
+                                            <Shield size={10} /> Setor de {building.tipo.replace('_', ' ').toUpperCase()}
+                                        </p>
                                     </div>
                                 </DialogHeader>
 
-                                {/* Descrição Tática */}
-                                <div className="bg-white/5 p-4 rounded-2xl border-l-2 border-sky-500 flex gap-3 italic">
-                                    <Info className="text-sky-500 shrink-0" size={16} />
-                                    <p className="text-[11px] text-neutral-400 leading-relaxed">
-                                        {config.description}
-                                    </p>
-                                </div>
+                                {/* Dossiê Tático */}
+                                <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                                    <div className="bg-black/40 p-5 rounded-2xl border-l-4 border-sky-600 flex gap-4 shadow-xl">
+                                        <Info className="text-sky-500 shrink-0" size={20} />
+                                        <p className="text-xs text-neutral-300 leading-relaxed italic">
+                                            {config.description}
+                                        </p>
+                                    </div>
 
-                                {/* Especificações / Comparação */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-black/40 p-4 rounded-2xl border border-white/5 flex flex-col items-center">
-                                        <h4 className="text-[9px] font-black text-neutral-500 uppercase mb-2 tracking-widest">Produção Atual</h4>
-                                        <div className="text-xl font-mono font-black text-white flex items-center gap-2">
-                                            <Zap className="text-sky-500" size={16} />
-                                            {70 + ((building.nivel || 0) * 10)}%
+                                    {/* Comparativos */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-1">
+                                            <span className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">Produção</span>
+                                            <div className="text-xl font-mono font-black text-white">+{70 + ((building.nivel || 0) * 10)}%</div>
+                                        </div>
+                                        <div className="bg-sky-600/10 p-4 rounded-2xl border border-sky-500/30 space-y-1">
+                                            <span className="text-[9px] font-black text-sky-400 uppercase tracking-widest">Upgrade</span>
+                                            <div className="text-xl font-mono font-black text-sky-400 flex items-center gap-1">
+                                                <TrendingUp size={16} /> +10%
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="bg-orange-600/10 p-4 rounded-2xl border border-orange-500/30 flex flex-col items-center group hover:bg-orange-600/20 transition-colors">
-                                        <h4 className="text-[9px] font-black text-orange-500 uppercase mb-2 tracking-widest">Próximo Nível</h4>
-                                        <div className="text-xl font-mono font-black text-orange-500 flex items-center gap-2">
-                                            <TrendingUp size={16} />
-                                            +10%
+
+                                    {/* Logística de Recursos */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                                            <h4 className="text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
+                                                <Hammer size={12} className="text-orange-500" /> Requisição de Materiais
+                                            </h4>
+                                            <div className="flex items-center gap-2 text-[10px] font-black text-orange-500 uppercase font-mono">
+                                                <Clock size={12} /> {Math.floor(((config.time_base || 0) * nextLevel) / 60)}m {Math.floor(((config.time_base || 0) * nextLevel) % 60)}s
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            {config.cost ? Object.entries(config.cost).map(([type, amount]: any) => renderCost(type, amount)) : null}
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Custos de Logística */}
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
-                                            <Hammer size={12} className="text-orange-500" /> Logística de Upgrade
-                                        </h4>
-                                        <div className="flex items-center gap-2 text-[10px] font-black text-orange-500 uppercase font-mono">
-                                            <Clock size={12} /> {Math.floor(((config.time_base || 0) * nextLevel) / 60)}m {Math.floor(((config.time_base || 0) * nextLevel) % 60)}s
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {config.cost ? Object.entries(config.cost).map(([type, amount]: any) => renderCost(type, amount)) : null}
-                                    </div>
-                                </div>
-
-                                <DialogFooter>
+                                <DialogFooter className="mt-8">
                                     <Button 
                                         onClick={() => onUpgrade(building.tipo)}
                                         disabled={isUpgrading}
-                                        className="w-full bg-sky-600 hover:bg-sky-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-2xl shadow-[0_0_30px_rgba(14,165,233,0.3)] border-t border-white/20 flex flex-col gap-0.5 group"
+                                        className="w-full bg-sky-600 hover:bg-sky-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-2xl shadow-[0_0_40px_rgba(14,165,233,0.3)] border-t border-white/20 flex items-center justify-center gap-3 group transition-all"
                                     >
-                                        <span className="text-lg group-hover:scale-105 transition-transform">
-                                            {isUpgrading ? 'A TRANSMITIR ORDENS...' : 'AUTORIZAR EVOLUÇÃO'}
+                                        <span className="text-xl group-hover:translate-x-1 transition-transform">
+                                            {isUpgrading ? 'AUTORIZANDO...' : 'MELHORAR ESTRUTURA'}
                                         </span>
-                                        {!isUpgrading && <span className="text-[8px] opacity-70">NÍVEL {nextLevel} CONFIRMADO PELO COMANDO</span>}
+                                        {!isUpgrading && <ChevronRight className="group-hover:translate-x-2 transition-transform" />}
                                     </Button>
                                 </DialogFooter>
                             </div>

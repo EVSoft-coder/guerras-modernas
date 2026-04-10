@@ -22,11 +22,20 @@ if (rootElement) {
     createInertiaApp({
         title: (title) => `${title} - ${appName}`,
         resolve: (name) => {
-            if (!name) {
-                console.error("ERRO_TECNICO: Componente Inertia indefinido detetado. A restaurar sinal...");
-                return resolvePageComponent(`./pages/dashboard.tsx`, import.meta.glob('./pages/**/*.tsx'));
+            const pages = import.meta.glob('./pages/**/*.tsx');
+            const path = `./pages/${name}.tsx`;
+            
+            if (!name || name === 'undefined') {
+                console.warn(`[REDE_DE_SEGURANCA] Componente inválido (${name}). Redirecionando para Dashboard.`);
+                return resolvePageComponent(`./pages/dashboard.tsx`, pages);
             }
-            return resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx'));
+
+            if (!pages[path]) {
+                console.error(`[INTERCEPTOR] Componente não encontrado: ${path}. Ativando protocolo de contingência.`);
+                return resolvePageComponent(`./pages/dashboard.tsx`, pages);
+            }
+
+            return resolvePageComponent(path, pages);
         },
         setup({ el, App, props }) {
             const root = createRoot(el);

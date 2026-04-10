@@ -33,26 +33,32 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
         >
             {/* Imagem do Edifício com Brilho Tático */}
             <div className="relative">
-                <img 
-                    src={imgUrl} 
-                    alt={nome}
-                    className={`w-32 h-32 object-contain transition-all duration-700 
-                        ${isConstructing ? 'opacity-40 grayscale animate-pulse' : 'opacity-100'} 
-                        drop-shadow-[0_0_10px_rgba(14,165,233,0.3)]
-                        group-hover:drop-shadow-[0_0_20px_rgba(249,115,22,0.8)]`}
-                    onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        if (!target.src.includes('lvl_1.png')) {
-                            console.warn(`ATIVO_MISSING: Falha ao carregar nível ${imgLevel} para ${tipo}. Recuando para nível base.`);
-                            target.src = `/images/edificios/${tipo}/lvl_1.png`;
-                        }
-                    }}
-                />
-                
-                {/* Badge de Nível Militar */}
-                <div className="absolute -top-2 -right-2 bg-orange-600 text-white text-[11px] font-black px-2 py-0.5 rounded border-b-2 border-orange-800 shadow-2xl transform rotate-3 transition-transform group-hover:scale-110 group-hover:rotate-0">
-                    LVL {nivel}
-                </div>
+                {/* Elemento de Hover Militar (Glow) */}
+                <motion.div 
+                    whileHover={{ scale: 1.05, filter: "brightness(1.2)" }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="relative z-10"
+                >
+                    <img 
+                        src={imgUrl} 
+                        className="w-32 h-32 object-contain drop-shadow-[0_0_10px_rgba(14,165,233,0.3)] group-hover:drop-shadow-[0_0_20px_rgba(14,165,233,0.6)] transition-all duration-300" 
+                        alt={nome}
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (!target.src.includes('lvl_1.png')) {
+                                target.src = `/images/edificios/${tipo}/lvl_1.png`;
+                            }
+                        }}
+                    />
+                    
+                    {/* Badge de Nível Tactical */}
+                    <div className="absolute -top-1 -right-1 bg-neutral-900 border border-sky-500/50 text-sky-400 text-[8px] font-black px-1.5 py-0.5 rounded shadow-lg backdrop-blur-md group-hover:border-sky-400 group-hover:text-white transition-colors">
+                        LVL {nivel}
+                    </div>
+                </motion.div>
+
+                {/* Sombra de Projeção na Grelha */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-2 bg-black/40 blur-md rounded-full -z-0"></div>
 
                 {/* Radar de Construção */}
                 {isConstructing && (

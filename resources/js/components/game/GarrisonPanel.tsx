@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Shield, Sword, Navigation, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Shield, Sword, Navigation, Users, ChevronRight } from 'lucide-react';
 
 interface Troop {
     id: number;
