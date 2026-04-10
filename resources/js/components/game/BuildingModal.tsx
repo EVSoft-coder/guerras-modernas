@@ -27,6 +27,16 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
 
     const nextLevel = (building.nivel || 0) + 1;
     
+    // Auxiliar para determinar a imagem baseada no nível
+    const getLevelImage = (lvl: number) => {
+        if (lvl >= 6) return 6;
+        if (lvl >= 5) return 5;
+        if (lvl >= 4) return 4;
+        if (lvl >= 3) return 3;
+        if (lvl >= 2) return 2;
+        return 1;
+    };
+
     const [currentTryLevel, setCurrentTryLevel] = useState(getLevelImage(building.nivel || 0));
     const [usePlaceholder, setUsePlaceholder] = useState(false);
     
