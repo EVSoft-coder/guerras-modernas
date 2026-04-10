@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,15 +27,15 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({ isOpen, onClose, b
 
     const nextLevel = (building.nivel || 0) + 1;
     
-    const [currentTryLevel, setCurrentTryLevel] = React.useState(getLevelImage(building.nivel || 0));
-    const [usePlaceholder, setUsePlaceholder] = React.useState(false);
+    const [currentTryLevel, setCurrentTryLevel] = useState(getLevelImage(building.nivel || 0));
+    const [usePlaceholder, setUsePlaceholder] = useState(false);
     
     // Caminho da imagem de resiliência absoluta
     const blueprintUrl = "/images/building_blueprint_placeholder.png";
     const currentImage = usePlaceholder ? blueprintUrl : `/images/edificios/${building.tipo}/lvl_${currentTryLevel}.png`;
 
     // Reset de estado quando o edifício muda
-    React.useEffect(() => {
+    useEffect(() => {
         setCurrentTryLevel(getLevelImage(building.nivel || 0));
         setUsePlaceholder(false);
     }, [building.tipo, building.nivel]);

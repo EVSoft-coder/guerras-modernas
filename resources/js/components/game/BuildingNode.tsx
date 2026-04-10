@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface BuildingNodeProps {
@@ -20,8 +20,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
         return 1;
     };
 
-    const [currentTryLevel, setCurrentTryLevel] = React.useState(getLevelImage(nivel));
-    const [usePlaceholder, setUsePlaceholder] = React.useState(false);
+    const [currentTryLevel, setCurrentTryLevel] = useState(getLevelImage(nivel));
+    const [usePlaceholder, setUsePlaceholder] = useState(false);
     
     // Caminho da imagem de resiliência absoluta
     const blueprintUrl = "/images/building_blueprint_placeholder.png";
