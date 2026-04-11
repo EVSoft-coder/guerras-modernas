@@ -1,49 +1,37 @@
 /**
  * src/game/systems/AISystem.ts
- * Automação e Pensamento Tático de Unidades.
+ * Decisão Autónoma (Domínio de Intenção).
  */
 import { entityManager } from '../../core/EntityManager';
+import { TargetComponent } from '../components/BaseComponents';
 import { GameSystem } from '../systemsRegistry';
  
 export class AISystem implements GameSystem {
-    /**
-     * Ciclo de vida: Inicialização de lógica cognitiva.
-     */
     public init(): void {
-        console.log('[SYSTEM] AISystem - Tactical Processors ACTIVE.');
+        console.log('[SYSTEM] AISystem - Decision Engine ACTIVE.');
     }
  
-    /**
-     * Ciclo de vida: Tomada de decisão em frações de segundo.
-     */
     public update(deltaTime: number): void {
-        // 1. Obter todas as entidades autónomas (AI + Velocity + Position)
-        const drones = entityManager.getEntitiesWith(['AI', 'Velocity', 'Position']);
-        
-        // 2. Obter potenciais alvos (Health + Position)
+        const drones = entityManager.getEntitiesWith(['AI', 'Position']);
         const targets = entityManager.getEntitiesWith(['Health', 'Position']);
  
         for (const droneId of drones) {
-            // SOBERANIA DE COMANDO: Se a unidade tiver uma ordem ativa (Target), a IA ignora
-            const targetComp = entityManager.getComponent<any>(droneId, 'Target');
-            if (targetComp) continue;
+            // SOBERANIA DE COMANDO: Se já houver um alvo (ordem do jogador), a IA espera.
+            if (entityManager.getComponent<any>(droneId, 'Target')) continue;
  
             const aiComp = entityManager.getComponent<any>(droneId, 'AI');
-            const velComp = entityManager.getComponent<any>(droneId, 'Velocity');
             const posComp = entityManager.getComponent<any>(droneId, 'Position');
  
             if (aiComp.behavior === 'AGGRESSIVE') {
-                this.pursueTarget(droneId, posComp, velComp, targets);
-            } else if (aiComp.behavior === 'PATROL') {
-                this.patrolZone(droneId, posComp, velComp);
+                this.pursueTarget(droneId, posComp, targets);
             }
         }
     }
  
     /**
-     * Comportamento: Perseguir o alvo mais próximo e ajustar vetor de velocidade.
+     * Define a intenção de movimento (Target), não a velocidade direta.
      */
-    private pursueTarget(droneId: number, pos: any, vel: any, targets: number[]): void {
+    private pursueTarget(droneId: number, pos: any, targets: number[]): void {
         let nearestDist = Infinity;
         let targetPos: any = null;
  
@@ -59,30 +47,14 @@ export class AISystem implements GameSystem {
             }
         }
  
-        if (targetPos) {
-            // Ajustar o vetor de velocidade em direção ao alvo (Unidirecional tática)
-            const dx = targetPos.x - pos.x;
-            const dy = targetPos.y - pos.y;
-            const mag = Math.sqrt(dx * dx + dy * dy);
-            
-            if (mag > 0) {
-                const speed = 40; // Pixels por segundo (Unidade base)
-                vel.vx = (dx / mag) * speed;
-                vel.vy = (dy / mag) * speed;
-            }
-        }
-    }
- 
-    private patrolZone(droneId: number, pos: any, vel: any): void {
-        // Lógica de ziguezague tático simples
-        if (Math.random() < 0.05) {
-            vel.vx = (Math.random() - 0.5) * 60;
-            vel.vy = (Math.random() - 0.5) * 60;
+        if (targetPos && nearestDist > 20) {
+            // IA escreve apenas no seu domínio: Intenção de Alvo
+            entityManager.addComponent(droneId, new TargetComponent(targetPos.x, targetPos.y));
         }
     }
  
     public destroy(): void {
-        console.log('[SYSTEM] AISystem - Processors SUSPENDED.');
+        console.log('[SYSTEM] AISystem - Decision Engine SUSPENDED.');
     }
 }
  

@@ -1,58 +1,52 @@
 /**
- * MovementSystem.ts
- * Processamento de Manobras de Campo.
+ * src/game/systems/MovementSystem.ts
+ * Domínio de Navegação e Física.
  */
 import { entityManager } from '../../core/EntityManager';
 import { GameSystem } from '../systemsRegistry';
  
 export class MovementSystem implements GameSystem {
     public init(): void {
-        console.log('[SYSTEM] MovementSystem - Engines online.');
+        console.log('[SYSTEM] MovementSystem - Navigation Online.');
     }
  
     public update(deltaTime: number): void {
+        // Unidades com capacidade de movimento
         const entities = entityManager.getEntitiesWith(['Position', 'Velocity']);
         
-        let processedCount = 0;
- 
         for (const entityId of entities) {
             const pos = entityManager.getComponent<any>(entityId, 'Position');
             const vel = entityManager.getComponent<any>(entityId, 'Velocity');
             const target = entityManager.getComponent<any>(entityId, 'Target');
  
-            // 1. Processar Navegação de Alvo se existir
+            // 1. Resolver Navegação (Target -> Velocity)
             if (target) {
                 const dx = target.x - pos.x;
                 const dy = target.y - pos.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
  
-                if (distance > 5) { // Threshold de chegada
-                    const speed = 100; // Velocidade de marcha
+                if (distance > 5) {
+                    const speed = 100;
                     vel.vx = (dx / distance) * speed;
                     vel.vy = (dy / distance) * speed;
                 } else {
-                    // Alvo atingido: Parar e remover alvo
+                    // Alvo alcançado: Estabilizar
                     vel.vx = 0;
                     vel.vy = 0;
                     entityManager.removeComponent(entityId, 'Target');
                 }
             }
  
-            // 2. Aplicar Manobra Física
-            if (pos && vel) {
+            // 2. Aplicar Física (Velocity -> Position)
+            if (vel.vx !== 0 || vel.vy !== 0) {
                 pos.x += vel.vx * deltaTime;
                 pos.y += vel.vy * deltaTime;
-                processedCount++;
             }
-        }
- 
-        if (processedCount > 0) {
-            // console.log(`[SYSTEM] MovementSystem processed ${processedCount} entities.`);
         }
     }
  
     public destroy(): void {
-        console.log('[SYSTEM] MovementSystem - Engines offline.');
+        console.log('[SYSTEM] MovementSystem - Navigation Offline.');
     }
 }
  
