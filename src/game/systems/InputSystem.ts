@@ -1,55 +1,51 @@
 /**
  * src/game/systems/InputSystem.ts
- * Sensores de Entrada com Sinalização Normalizada.
+ * Tradução de Sensores em Intenções Tácticas (PLAYER events).
  */
-import { eventBus, Events } from '../../core/EventBus';
+import { eventBus } from '../../core/EventBus';
 import { GameSystem } from '../systemsRegistry';
  
 export class InputSystem implements GameSystem {
-    private keysPressed: Set<string> = new Set();
+    private keyMap: Record<string, string> = {
+        'KeyW': 'UP',
+        'KeyS': 'DOWN',
+        'KeyA': 'LEFT',
+        'KeyD': 'RIGHT',
+        'ArrowUp': 'UP',
+        'ArrowDown': 'DOWN',
+        'ArrowLeft': 'LEFT',
+        'ArrowRight': 'RIGHT'
+    };
  
     public init(): void {
-        console.log('[SYSTEM] InputSystem - Online.');
+        console.log('[SYSTEM] InputSystem - Peripheral Uplink ACTIVE.');
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
-        window.addEventListener('keyup', this.handleKeyUp.bind(this));
     }
  
     public preUpdate(deltaTime: number): void {}
  
     public update(deltaTime: number): void {
-        // Telemetria básica
+        // Lógica de pooling se necessário futuramente
     }
  
     public postUpdate(deltaTime: number): void {}
  
     public destroy(): void {
         window.removeEventListener('keydown', this.handleKeyDown);
-        window.removeEventListener('keyup', this.handleKeyUp);
-        console.log('[SYSTEM] InputSystem - Offline.');
+        console.log('[SYSTEM] InputSystem - Peripheral Downlink Offline.');
     }
  
     private handleKeyDown(e: KeyboardEvent): void {
-        if (!this.keysPressed.has(e.code)) {
-            this.keysPressed.add(e.code);
+        const direction = this.keyMap[e.code];
+        
+        if (direction) {
+            // Emissão de Intenção Táctica Normalizada
             eventBus.emit({
-                type: Events.INPUT_KEY_DOWN,
+                type: 'PLAYER:MOVE',
                 timestamp: Date.now(),
-                data: { key: e.code }
+                data: { direction }
             });
         }
-    }
- 
-    private handleKeyUp(e: KeyboardEvent): void {
-        this.keysPressed.delete(e.code);
-        eventBus.emit({
-            type: Events.INPUT_KEY_UP,
-            timestamp: Date.now(),
-            data: { key: e.code }
-        });
-    }
- 
-    public isKeyPressed(code: string): boolean {
-        return this.keysPressed.has(code);
     }
 }
  
