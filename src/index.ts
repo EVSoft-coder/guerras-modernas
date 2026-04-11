@@ -18,6 +18,7 @@ import {
 import { PlayerComponent } from './game/components/PlayerComponent';
 import { ResourceComponent } from './game/components/ResourceComponent';
 import { VillageComponent } from './game/components/VillageComponent';
+import { BuildingComponent } from './game/components/BuildingComponent';
 import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
  
@@ -32,18 +33,25 @@ for (const system of systemsRegistry) {
 }
 uiManager.initialize();
  
-// 3. MOBILIZAÇÃO JOGADOR (UNIDADE ALFA)
+// 3. MOBILIZAÇÃO JOGADOR (UNIDADE ALFA + VILA)
 const playerUnit = entityManager.createEntity();
 entityManager.addComponent(playerUnit, new PlayerComponent());
 entityManager.addComponent(playerUnit, new ResourceComponent(1000, 1000, 1000));
-entityManager.addComponent(playerUnit, new VillageComponent('Vila Alfa', []));
+entityManager.addComponent(playerUnit, new VillageComponent('Vila Alfa'));
 entityManager.addComponent(playerUnit, new Position(100, 200));
 entityManager.addComponent(playerUnit, new Velocity(0, 0));
 entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
 entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1)); 
 entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
  
-console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with APC armor.`);
+// 3.1. INFRAESTRUTURA DA VILA (Edifícios como Entidades)
+const qg = entityManager.createEntity();
+entityManager.addComponent(qg, new BuildingComponent('Quartel General', 1, playerUnit));
+
+const mina = entityManager.createEntity();
+entityManager.addComponent(mina, new BuildingComponent('Mina de Ferro', 1, playerUnit));
+ 
+console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Village infrastructure.`);
  
 // 3.1. MOBILIZAÇÃO TESTE (UNIDADE ALPHA-ZERO)
 const testUnit = entityManager.createEntity();
