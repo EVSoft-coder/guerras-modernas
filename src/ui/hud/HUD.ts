@@ -51,8 +51,19 @@ export class HUD {
         document.body.appendChild(hud);
 
         // Bind Buttons
-        document.getElementById('nav-village')?.addEventListener('click', () => this.changeMode('VILLAGE'));
-        document.getElementById('nav-map')?.addEventListener('click', () => this.changeMode('WORLD_MAP'));
+        document.getElementById('nav-village')?.addEventListener('click', () => {
+            console.log("CLICK BASE");
+            this.changeMode('VILLAGE');
+        });
+
+        document.getElementById('nav-map')?.addEventListener('click', () => {
+            console.log("CLICK MAPA");
+            eventBus.emit({
+                type: Events.GAME_CHANGE_MODE,
+                timestamp: Date.now(),
+                data: { mode: "WORLD_MAP" }
+            });
+        });
     }
 
     private changeMode(mode: string): void {
