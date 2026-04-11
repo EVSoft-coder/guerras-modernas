@@ -20,8 +20,7 @@ class BuildingUpgradeRequest extends FormRequest
             'tipo'    => [
                 'required',
                 'string',
-                // Aceita tanto o valor direto do Enum como mapeamentos comuns
-                // A normalização final é feita no GameService
+                Rule::in(BuildingType::values()),
             ],
         ];
     }

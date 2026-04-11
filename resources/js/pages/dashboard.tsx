@@ -60,7 +60,8 @@ export default function Dashboard({
                 setIsUpgrading(false);
             },
             onError: (errors: any) => {
-                addToast(`FALHA NA TRANSMISSÃO: ${errors.error || 'Erro estrutural detetado.'}`, 'error');
+                const errorMsg = Object.values(errors).flat().join(' | ');
+                addToast(`FALHA NA TRANSMISSÃO: ${errorMsg || 'Erro estrutural detetado.'}`, 'error');
                 setIsUpgrading(false);
             }
         });
@@ -79,7 +80,8 @@ export default function Dashboard({
                 setSelectedBuilding(null);
             },
             onError: (errors: any) => {
-                addToast(`FALHA NO RECRUTAMENTO: ${errors.error || 'Candidatos insuficientes.'}`, 'error');
+                const errorMsg = Object.values(errors).flat().join(' | ');
+                addToast(`FALHA NO RECRUTAMENTO: ${errorMsg || 'Candidatos insuficientes.'}`, 'error');
                 setIsTraining(false);
             }
         });
