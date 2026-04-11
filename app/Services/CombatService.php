@@ -7,9 +7,13 @@ use App\Models\Ataque;
 use App\Models\Relatorio;
 use App\Domain\Combat\CombatRules;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CombatService
 {
+    /**
+     * Inicia uma missão militar, subtraindo tropas da origem e criando o registo de marcha.
+     */
     public function iniciarAtaque(Base $origem, ?Base $destino, array $tropas, $tipo = 'ataque', $coords = null)
     {
         if ($destino) {
@@ -19,7 +23,7 @@ class CombatService
             $dx = $coords['x'] - $origem->coordenada_x;
             $dy = $coords['y'] - $origem->coordenada_y;
         } else {
-            throw new \Exception("Nenhum alvo identificado.");
+            throw new \Exception("Nenhum alvo identificado para a missão.");
         }
 
         $distancia = sqrt($dx*$dx + $dy*$dy);
@@ -29,91 +33,140 @@ class CombatService
             foreach ($tropas as $unidade => $qtd) {
                 if ($qtd <= 0) continue;
                 $tropa = $origem->tropas()->where('unidade', $unidade)->first();
-                if (!$tropa || $tropa->quantidade < $qtd) throw new \Exception("Assinaturas de tropas inválidas.");
+                if (!$tropa || $tropa->quantidade < $qtd) {
+                    throw new \Exception("Assinaturas de tropas inválidas para {$unidade}.");
+                }
                 $tropa->decrement('quantidade', $qtd);
             }
 
             return Ataque::create([
                 'origem_base_id' => $origem->id,
                 'destino_base_id' => $destino ? $destino->id : null,
-                'destino_x' => $coords ? $coords['x'] : null,
-                'destino_y' => $coords ? $coords['y'] : null,
+                'destino_x' => $coords ? $coords['x'] : ($destino ? $destino->coordenada_x : null),
+                'destino_y' => $coords ? $coords['y'] : ($destino ? $destino->coordenada_y : null),
                 'tropas' => $tropas,
                 'tipo' => $tipo,
                 'chegada_em' => now()->addSeconds($tempo),
+                'processado' => false
             ]);
         });
     }
 
+    /**
+     * Resolve o embate militar no destino.
+     */
     public function resolverCombate(Ataque $ataque)
     {
         DB::transaction(function() use ($ataque) {
-            $destino = $ataque->destino;
             $origem = $ataque->origem;
+            
+            // Se não tem destino fixo, tentar localizar base pelas coordenadas
+            $destino = $ataque->destino;
+            if (!$destino && $ataque->destino_x !== null) {
+                $destino = Base::where('coordenada_x', $ataque->destino_x)
+                              ->where('coordenada_y', $ataque->destino_y)
+                              ->first();
+            }
+
             $unidadesConfig = config('game.units');
             
+            // Caso de Sector Vazio (sem base)
             if (!$destino) {
                 Relatorio::create([
                     'atacante_id' => $origem->jogador_id,
                     'defensor_id' => null,
                     'vitoria' => true,
-                    'dados' => ['saque' => [], 'perdas_atacante' => [], 'message' => 'Sector vazio.']
+                    'dados' => [
+                        'message' => "Sector [{$ataque->destino_x}:{$ataque->destino_y}] desabitado. Sem resistência encontrada.",
+                        'perdas_atacante' => [],
+                        'saque' => []
+                    ]
                 ]);
                 $this->iniciarRetorno($ataque, $ataque->tropas, []);
                 return;
             }
 
+            // Cálculo de Forças
             $forcaAtk = 0;
-            foreach ($ataque->tropas as $u => $q) $forcaAtk += $q * ($unidadesConfig[$u]['attack'] ?? 0);
+            $capacidadeSaqueTotal = 0;
+            foreach ($ataque->tropas as $u => $q) {
+                $forcaAtk += $q * ($unidadesConfig[$u]['attack'] ?? 0);
+                $capacidadeSaqueTotal += $q * ($unidadesConfig[$u]['capacity'] ?? 0);
+            }
             
-            $forcaDef = $destino->muralha_nivel * 100;
-            foreach ($destino->tropas as $t) $forcaDef += $t->quantidade * ($unidadesConfig[$t->unidade]['defense_general'] ?? 0);
+            $forcaDef = $destino->muralha_nivel * 50; // Bónus de muralha
+            foreach ($destino->tropas as $t) {
+                $forcaDef += $t->quantidade * ($unidadesConfig[$t->unidade]['defense_general'] ?? 0);
+            }
 
+            // Resolução de Batalha
             $resultado = CombatRules::resolveBattle($forcaAtk, $forcaDef);
             $vitoria = $resultado['vitoriaAtacante'];
             $atrito = $resultado['atrito'];
 
+            // Aplicar Perdas
             $tropasRestantes = [];
+            $perdasAtacanteTotal = [];
             foreach ($ataque->tropas as $u => $q) {
-                $perdas = floor($q * ($vitoria ? ($atrito * 0.8) : 1.0));
+                $perdas = floor($q * ($vitoria ? ($atrito * 0.7) : 1.0));
                 $tropasRestantes[$u] = max(0, $q - $perdas);
+                $perdasAtacanteTotal[$u] = $perdas;
             }
 
+            $perdasDefensorTotal = [];
             foreach ($destino->tropas as $t) {
-                $perdas = floor($t->quantidade * ($vitoria ? 1.0 : ($atrito * 0.8)));
+                $perdas = floor($t->quantidade * ($vitoria ? 1.0 : ($atrito * 0.7)));
                 $t->decrement('quantidade', $perdas);
+                $perdasDefensorTotal[$t->unidade] = $perdas;
             }
 
+            // Lógica de Saque Automático
             $saque = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0];
             if ($vitoria) {
-                foreach($saque as $res => $v) {
-                    $qtd = floor($destino->recursos->$res * 0.3);
-                    $saque[$res] = $qtd;
-                    $destino->recursos->decrement($res, $qtd);
+                $recursosBase = $destino->recursos;
+                $totalDisponivel = $recursosBase->suprimentos + $recursosBase->combustivel + $recursosBase->municoes;
+                
+                if ($totalDisponivel > 0) {
+                    $ratioSaque = min(1, $capacidadeSaqueTotal / $totalDisponivel);
+                    foreach(['suprimentos', 'combustivel', 'municoes'] as $res) {
+                        $fatorIndividual = ($recursosBase->$res / max(1, $totalDisponivel));
+                        $qtdSaque = floor($capacidadeSaqueTotal * $fatorIndividual);
+                        $finalQtd = (int) min($recursosBase->$res, $qtdSaque);
+                        
+                        $saque[$res] = $finalQtd;
+                        $recursosBase->decrement($res, $finalQtd);
+                    }
                 }
             }
 
+            // Gerar Relatório Tático
             Relatorio::create([
                 'atacante_id' => $origem->jogador_id,
                 'defensor_id' => $destino->jogador_id,
                 'vitoria' => $vitoria,
-                'dados' => ['saque' => $saque, 'perdas_atacante' => $tropasRestantes]
+                'dados' => [
+                    'tropa_ataque' => $ataque->tropas,
+                    'tropa_defesa' => $destino->tropas->pluck('quantidade', 'unidade')->toArray(),
+                    'perdas_atacante' => $perdasAtacanteTotal,
+                    'perdas_defensor' => $perdasDefensorTotal,
+                    'saque' => $saque,
+                    'coords' => "{$ataque->destino_x}:{$ataque->destino_y}"
+                ]
             ]);
 
             $this->iniciarRetorno($ataque, $tropasRestantes, $saque);
         });
     }
 
+    /**
+     * Inicia a marcha de regresso após a resolução.
+     */
     private function iniciarRetorno(Ataque $ataque, array $tropas, array $saque)
     {
         $origem = $ataque->origem;
-        if ($ataque->destino) {
-            $dx = $ataque->destino->coordenada_x - $origem->coordenada_x;
-            $dy = $ataque->destino->coordenada_y - $origem->coordenada_y;
-        } else {
-            $dx = $ataque->destino_x - $origem->coordenada_x;
-            $dy = $ataque->destino_y - $origem->coordenada_y;
-        }
+        $dx = $ataque->destino_x - $origem->coordenada_x;
+        $dy = $ataque->destino_y - $origem->coordenada_y;
+        
         $distancia = sqrt($dx*$dx + $dy*$dy);
         $tempo = CombatRules::calculateTravelTime($distancia, $tropas);
 
@@ -126,16 +179,26 @@ class CombatService
         ]);
     }
 
+    /**
+     * Finaliza o regresso, devolvendo tropas e recursos à base de origem.
+     */
     public function finalizarRetorno(Ataque $ataque)
     {
         DB::transaction(function() use ($ataque) {
             $origem = $ataque->origem;
+            if (!$origem) {
+                $ataque->delete();
+                return;
+            }
+
             foreach ($ataque->tropas as $u => $q) {
                 if ($q <= 0) continue;
                 $origem->tropas()->firstOrCreate(['unidade' => $u], ['quantidade' => 0])->increment('quantidade', $q);
             }
+
             if ($ataque->saque) {
                 foreach ($ataque->saque as $res => $qtd) {
+                    if ($qtd <= 0) continue;
                     $origem->recursos->increment($res, $qtd);
                 }
             }
@@ -143,6 +206,4 @@ class CombatService
         });
     }
 }
-鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓 [failed_replace_file_content_reminder]
-As a reminder, the last replace_file_content tool call failed because TargetContent was not found in the file.
-</failed_replace_file_content_reminder>
+鼓鼓 [failed_replace_file_content_reminder]

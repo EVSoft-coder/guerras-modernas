@@ -10,13 +10,13 @@ interface RankingProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Classificação Mundial', href: '/ranking' },
+    { title: 'ClassificaÃ§Ã£o Mundial', href: '/ranking' },
 ];
 
 export default function Ranking({ jogadores }: RankingProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Classificação Mundial - Elite Militar" />
+            <Head title="ClassificaÃ§Ã£o Mundial - Elite Militar" />
             
             <div className="flex flex-1 flex-col gap-8 p-6 bg-neutral-950 text-white min-h-screen">
                 <div className="flex flex-col gap-2">
@@ -24,7 +24,7 @@ export default function Ranking({ jogadores }: RankingProps) {
                         <Trophy className="text-orange-500" size={32} />
                         Elite Militar
                     </h1>
-                    <p className="text-neutral-500 text-sm uppercase font-bold tracking-widest">Hierarquia de Poder e Influência Global</p>
+                    <p className="text-neutral-500 text-sm uppercase font-bold tracking-widest">Hierarquia de Poder e InfluÃªncia Global</p>
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
@@ -32,9 +32,9 @@ export default function Ranking({ jogadores }: RankingProps) {
                         <thead>
                             <tr className="bg-white/5 border-b border-white/10 text-[10px] uppercase font-black tracking-widest text-neutral-500">
                                 <th className="p-4 w-16 text-center">Pos</th>
-                                <th className="p-4">Oficial / Coligação</th>
+                                <th className="p-4">Oficial / ColigaÃ§Ã£o</th>
                                 <th className="p-4 text-center">Bases</th>
-                                <th className="p-4 text-right">Pontuação Total</th>
+                                <th className="p-4 text-right">PontuaÃ§Ã£o Total</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
@@ -57,7 +57,7 @@ export default function Ranking({ jogadores }: RankingProps) {
                                             </span>
                                             <span className="text-[10px] text-neutral-500 flex items-center gap-1">
                                                 <Users size={10} />
-                                                {j.alianca?.nome || 'Sem Coligação'}
+                                                {j.alianca?.nome || 'Sem ColigaÃ§Ã£o'}
                                             </span>
                                         </div>
                                     </td>

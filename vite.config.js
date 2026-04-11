@@ -6,6 +6,12 @@ import {
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+    resolve: {
+        alias: {
+            '@': '/resources/js',
+            '@src': '/src',
+        },
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],

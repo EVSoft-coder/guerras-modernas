@@ -1,12 +1,12 @@
 /**
  * src/game/systems/BuildQueueSystem.ts
- * Gestão de Prioridades e Cronogramas de Construção e Upgrade.
+ * GestÃ£o de Prioridades e Cronogramas de ConstruÃ§Ã£o e Upgrade.
  */
 import { eventBus, EventPayload, Events } from '../../core/EventBus';
 import { entityManager } from '../../core/EntityManager';
 import { BuildingComponent } from '../components/BuildingComponent';
 import { ResourceComponent } from '../components/ResourceComponent';
-import { GameSystem } from '../systemsRegistry';
+import { GameSystem } from './types';
 
 export interface BuildItem {
     type: 'NEW' | 'UPGRADE';
@@ -25,7 +25,7 @@ export class BuildQueueSystem implements GameSystem {
     public init(): void {
         console.log('[SYSTEM] BuildQueueSystem - Logistics Core ONLINE.');
         
-        // Subscrever a requisições de upgrade
+        // Subscrever a requisiÃ§Ãµes de upgrade
         eventBus.subscribe(Events.BUILDING_UPGRADE_REQUEST, (payload: EventPayload) => {
             this.handleUpgradeRequest(payload);
         });
@@ -47,7 +47,7 @@ export class BuildQueueSystem implements GameSystem {
             return;
         }
 
-        // Custo Simples: 150 de cada recurso por nível atual
+        // Custo Simples: 150 de cada recurso por nÃ­vel atual
         const cost = building.level * 150;
         const hasEnough = resources.wood >= cost && resources.stone >= cost && resources.iron >= cost;
 
@@ -58,7 +58,7 @@ export class BuildQueueSystem implements GameSystem {
             resources.iron -= cost;
 
             // Enfileirar upgrade
-            const upgradeTime = building.level * 5; // 5 segundos por nível
+            const upgradeTime = building.level * 5; // 5 segundos por nÃ­vel
             buildQueue.queue.push({
                 type: 'UPGRADE',
                 buildingType: building.buildingType,
@@ -69,7 +69,7 @@ export class BuildQueueSystem implements GameSystem {
 
             console.log(`[BUILD_SYSTEM] Upgrade of ${building.name} (LVL ${building.level} -> ${building.level + 1}) initiated for Player ${ownerId}.`);
             
-            // Emitir evento de início opcionalmente
+            // Emitir evento de inÃ­cio opcionalmente
             eventBus.emit({
                 type: Events.BUILDING_REQUEST,
                 entityId: ownerId,

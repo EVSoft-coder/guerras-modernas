@@ -1,6 +1,6 @@
 /**
  * src/game/config/buildingCosts.ts
- * Tabela de Custos de Construção e Upgrade.
+ * Tabela de Custos de ConstruÃ§Ã£o e Upgrade.
  */
 
 export interface Cost {

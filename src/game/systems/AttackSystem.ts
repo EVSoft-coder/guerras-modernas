@@ -1,17 +1,17 @@
 /**
  * src/game/systems/AttackSystem.ts
- * Gestão de Ciclo de Guerra: Marcha, Combate e Saque.
+ * GestÃ£o de Ciclo de Guerra: Marcha, Combate e Saque.
  */
 import { entityManager } from '../../core/EntityManager';
 import { eventBus, Events } from '../../core/EventBus';
-import { GameSystem } from '../systemsRegistry';
+import { GameSystem } from './types';
 import { AttackMarchComponent, MarchState } from '../components/AttackMarchComponent';
 
 export class AttackSystem implements GameSystem {
     public init(): void {
         console.log('[SYSTEM] AttackSystem - Frontline Deployment Operational.');
         
-        // Subscrever à pulsação do tempo para processar marchas
+        // Subscrever Ã  pulsaÃ§Ã£o do tempo para processar marchas
         eventBus.subscribe('GAME:TICK', () => {
             this.processMarches();
         });
@@ -59,7 +59,7 @@ export class AttackSystem implements GameSystem {
         if (targetId !== null) {
             const targetRes = entityManager.getComponent<any>(targetId, 'Resource');
             
-            // Vitória Automática (Fase 4 - Resolução Simples)
+            // VitÃ³ria AutomÃ¡tica (Fase 4 - ResoluÃ§Ã£o Simples)
             // Saque de 50% dos recursos
             march.loot.wood = Math.floor(targetRes.wood * 0.5);
             march.loot.stone = Math.floor(targetRes.stone * 0.5);
@@ -88,7 +88,7 @@ export class AttackSystem implements GameSystem {
 
         // Iniciar Retorno
         march.state = 'RETURNING';
-        march.remainingTime = march.totalTime; // Mesma duração para voltar
+        march.remainingTime = march.totalTime; // Mesma duraÃ§Ã£o para voltar
     }
 
     private concludeMarch(id: number, march: AttackMarchComponent): void {
@@ -107,7 +107,7 @@ export class AttackSystem implements GameSystem {
             data: { originId: march.originId, finalLoot: march.loot }
         });
 
-        // Autodestruição da entidade de marcha (missão cumprida)
+        // AutodestruiÃ§Ã£o da entidade de marcha (missÃ£o cumprida)
         entityManager.destroyEntity(id);
     }
 

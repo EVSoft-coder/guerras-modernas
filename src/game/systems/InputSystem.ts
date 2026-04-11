@@ -1,8 +1,7 @@
-import { System } from '../../core/EntityManager';
-import { EventBus, Events } from '../../core/EventBus';
-import { Log } from '../../core/Logger';
+import { GameSystem } from './types';
+import { eventBus, Events } from '../../core/EventBus';
 
-export class InputSystem implements System {
+export class InputSystem implements GameSystem {
     private keys: { [key: string]: boolean } = {
         up: false,
         down: false,
@@ -11,9 +10,27 @@ export class InputSystem implements System {
     };
 
     init(): void {
-        Log.info('[SYSTEM] InputSystem - Continuous Sensors ONLINE.');
-        window.addEventListener('keydown', (e) => this.updateKeyState(e.code, true));
-        window.addEventListener('keyup', (e) => this.updateKeyState(e.code, false));
+        console.log('[SYSTEM] InputSystem - Continuous Sensors ONLINE.');
+        window.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        window.addEventListener('keyup', (e) => this.handleKeyUp(e));
+    }
+
+    private handleKeyDown(e: KeyboardEvent): void {
+        this.updateKeyState(e.code, true);
+        eventBus.emit({
+            type: Events.INPUT_KEY_DOWN,
+            timestamp: Date.now(),
+            data: { code: e.code }
+        });
+    }
+
+    private handleKeyUp(e: KeyboardEvent): void {
+        this.updateKeyState(e.code, false);
+        eventBus.emit({
+            type: Events.INPUT_KEY_UP,
+            timestamp: Date.now(),
+            data: { code: e.code }
+        });
     }
 
     private updateKeyState(code: string, isDown: boolean): void {
@@ -40,7 +57,8 @@ export class InputSystem implements System {
     preUpdate(dt: number): void {}
 
     update(dt: number): void {
-        EventBus.emit({
+        // Broadcast do estado contínuo para sistemas de movimento
+        eventBus.emit({
             type: 'PLAYER:INPUT_STATE',
             timestamp: Date.now(),
             data: { ...this.keys }
@@ -50,6 +68,8 @@ export class InputSystem implements System {
     postUpdate(dt: number): void {}
 
     destroy(): void {
-        Log.info('[SYSTEM] InputSystem - Continuous Sensors OFFLINE.');
+        console.log('[SYSTEM] InputSystem - Continuous Sensors OFFLINE.');
     }
 }
+
+export const inputSystem = new InputSystem();

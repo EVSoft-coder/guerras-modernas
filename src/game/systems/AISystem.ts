@@ -1,10 +1,10 @@
 /**
  * src/game/systems/AISystem.ts
- * Decisão Autónoma (Domínio de Intenção).
+ * DecisÃ£o AutÃ³noma (DomÃ­nio de IntenÃ§Ã£o).
  */
 import { entityManager } from '../../core/EntityManager';
 import { TargetComponent } from '../components/BaseComponents';
-import { GameSystem } from '../systemsRegistry';
+import { GameSystem } from './types';
  
 export class AISystem implements GameSystem {
     public init(): void {

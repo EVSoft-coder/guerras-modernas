@@ -1,6 +1,6 @@
 /**
  * src/game/components/AttackMarchComponent.ts
- * Contentor de Dados para Operações de Assalto Trans-Sectoriais.
+ * Contentor de Dados para OperaÃ§Ãµes de Assalto Trans-Sectoriais.
  */
 import { Component } from '../../core/EntityManager';
 

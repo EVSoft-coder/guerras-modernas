@@ -19,17 +19,17 @@ class UIManager {
         villageView.initialize();
         worldMapView.initialize();
  
-        // Subscrever à mudança de estado tático (Vila / Mapa)
+        // Subscrever Ã  mudanÃ§a de estado tÃ¡tico (Vila / Mapa)
         eventBus.subscribe(Events.GAMEMODE_CHANGED, (p: EventPayload) => {
             this.handleModeChange(p.data.mode as GameMode);
         });
 
-        // Subscrever à mudança de estado operacional (Menu / Pause / Jogo)
+        // Subscrever Ã  mudanÃ§a de estado operacional (Menu / Pause / Jogo)
         eventBus.subscribe(Events.GAME_STATE_CHANGED, (p: EventPayload) => {
             const newState = p.data.newState as GameState;
             this.handleStateChange(newState);
 
-            // Renderização Condicional baseada no Modo de Jogo
+            // RenderizaÃ§Ã£o Condicional baseada no Modo de Jogo
             if (newState === GameState.PLAYING) {
                 this.handleModeChange(stateManager.getMode());
             } else {

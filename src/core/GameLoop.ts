@@ -1,94 +1,75 @@
-import { stateManager } from './StateManager';
+/**
+ * GameLoop.ts
+ * Marcapasso nuclear do motor ECS.
+ */
 import { systemsRegistry } from '../game/systems/systemsRegistry';
 import { Logger } from './Logger';
-import { gameStateService } from '../services/GameStateService';
  
 class GameLoop {
-    private gameRunning: boolean = false;
     private lastTime: number = 0;
-    private initialized: boolean = false;
-    private animationFrameId: number | null = null; // Ciclo Assíncrono (Browser-safe)
+    private running: boolean = false;
+    private frameId: number | null = null;
  
-    public init(): void {
-        if (this.initialized) return;
+    /**
+     * Inicia a sequência de ignição do motor.
+     */
+    public start(): void {
+        if (this.running) return;
+        this.running = true;
         
-        console.log("GAMELOOP INIT");
+        Logger.info('[ENGINE] GameLoop starting sequence...');
         
-        Logger.info('Starting Tactical Initialization...');
-        for (const system of systemsRegistry) {
-            system.init();
-        }
-        this.initialized = true;
+        // Inicialização de todos os sistemas registados
+        systemsRegistry.forEach(system => {
+            try {
+                system.init();
+            } catch (e) {
+                console.error(`[CRITICAL_FAILURE] System init error:`, system, e);
+            }
+        });
+ 
         this.lastTime = performance.now();
-        Logger.info('Initialization Complete.');
+        this.frameId = requestAnimationFrame(this.loop.bind(this));
     }
  
-    public run(): void {
-        if (!this.initialized) this.init();
-        if (this.gameRunning) return;
-        this.gameRunning = true;
-        Logger.info('Mission Active. Pipeline: PRE -> UPDATE -> POST');
-        this.animationFrameId = requestAnimationFrame(this.loop.bind(this));
-    }
- 
-    public shutdown(): void {
-        this.gameRunning = false;
-        if (this.animationFrameId !== null) cancelAnimationFrame(this.animationFrameId);
-        for (const system of systemsRegistry) {
-            system.destroy();
-        }
-        Logger.info('System Shutdown. All stations offline.');
-    }
- 
+    /**
+     * Ciclo principal de atualização (Tick).
+     */
     private loop(currentTime: number): void {
-        if (!this.gameRunning) return;
-        console.log("GAMELOOP RUNNING");
+        if (!this.running) return;
  
         const deltaTime = (currentTime - this.lastTime) / 1000;
         this.lastTime = currentTime;
-        const dt = Math.min(deltaTime, 0.1);
  
-        /**
-         * FASE I: PRE_UPDATE (Preparação Global)
-         */
-        for (const system of systemsRegistry) {
-            console.log("Running system (PRE):", system.constructor.name);
-            system.preUpdate(dt);
+        // Orquestração de fases táticas
+        try {
+            // 1. Fase de Preparação (Input, Sensing)
+            systemsRegistry.forEach(s => s.preUpdate(deltaTime));
+            
+            // 2. Fase de Lógica (AI, Física, Combate)
+            systemsRegistry.forEach(s => s.update(deltaTime));
+            
+            // 3. Fase de Finalização (Render, Sync)
+            systemsRegistry.forEach(s => s.postUpdate(deltaTime));
+        } catch (e) {
+            console.error('[GAMELOOP_EXCEPTION] State integrity compromised:', e);
         }
  
-        /**
-         * FASE II: UPDATE (Pipeline Táctico Rígido)
-         */
-         
-        // 1. [INPUT]
-        console.log("Running system (UPDATE):", systemsRegistry[0].constructor.name);
-        systemsRegistry[0].update(dt);
+        this.frameId = requestAnimationFrame(this.loop.bind(this));
+    }
  
-        // 2. [SYSTEMS] (Lógica Intermédia)
-        for (let i = 1; i < systemsRegistry.length - 1; i++) {
-            console.log("Running system (UPDATE):", systemsRegistry[i].constructor.name);
-            systemsRegistry[i].update(dt);
+    /**
+     * Paragem de emergência do motor.
+     */
+    public stop(): void {
+        this.running = false;
+        if (this.frameId !== null) {
+            cancelAnimationFrame(this.frameId);
         }
- 
-        // 3. [STATE MANAGER]
-        stateManager.update(dt);
- 
-        // 4. [RENDER]
-        console.log("Running system (UPDATE):", systemsRegistry[systemsRegistry.length - 1].constructor.name);
-        systemsRegistry[systemsRegistry.length - 1].update(dt);
- 
-        /**
-         * FASE III: POST_UPDATE (Consolidação Global)
-         */
-        for (const system of systemsRegistry) {
-            console.log("Running system (POST):", system.constructor.name);
-            system.postUpdate(dt);
-        }
- 
-        // 4. SNAPSHOT DE ESTADO (Exposição para UI)
-        gameStateService.snap();
- 
-        this.animationFrameId = requestAnimationFrame(this.loop.bind(this));
+        
+        // Destruição controlada dos sistemas
+        systemsRegistry.forEach(system => system.destroy());
+        Logger.info('[ENGINE] GameLoop halted.');
     }
 }
  

@@ -85,6 +85,7 @@ class AuthController extends Controller
             'base' => $base,
             'bases' => $bases,
             'taxas' => $taxas ?? [],
+            'taxasPerSecond' => $taxas ?? [],
             'relatorios' => \App\Models\Relatorio::where('atacante_id', $jogador->id)
                 ->orWhere('defensor_id', $jogador->id)
                 ->latest()->take(10)->get(),

@@ -10,8 +10,9 @@ import { useToasts } from '@/components/game/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Target, Zap } from 'lucide-react';
 import { ArmyMovementPanel } from '@/components/game/ArmyMovementPanel';
-import { gameStateService } from '../../../src/services/GameStateService';
-import { eventBus, Events } from '../../../src/core/EventBus';
+import { gameStateService } from '@src/services/GameStateService';
+import { eventBus, Events } from '@src/core/EventBus';
+import { WorldMapView } from '@/components/game/WorldMapView';
 
 export function VillageDashboard({ 
     jogador, base, taxasPerSecond, gameConfig, 
@@ -21,8 +22,10 @@ export function VillageDashboard({
     const [selectedBuilding, setSelectedBuilding] = useState<any>(null);
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [isTraining, setIsTraining] = useState(false);
+    const [gameMode, setGameMode] = useState<'VILLAGE' | 'WORLD_MAP'>('VILLAGE');
 
     useEffect(() => {
+        if (!base) return;
         if (ataquesEnviados) gameStateService.syncAttacks(ataquesEnviados);
         if (ataquesRecebidos) gameStateService.syncAttacks(ataquesRecebidos);
 
@@ -48,10 +51,16 @@ export function VillageDashboard({
             }
         }, 15000);
 
+        const unsubMode = eventBus.subscribe(Events.GAME_CHANGE_MODE, (ev) => {
+            console.log("MODE CHANGE RECEIVED:", ev.data.mode);
+            setGameMode(ev.data.mode);
+        });
+
         return () => {
             clearInterval(interval);
             unsubArrived();
             unsubReturned();
+            unsubMode();
         };
     }, [base, ataquesEnviados, ataquesRecebidos]);
 
@@ -94,24 +103,29 @@ export function VillageDashboard({
     return (
         <div className="flex h-full flex-1 flex-col gap-6 p-4 bg-neutral-950 text-white min-h-screen">
             <Head title="Centro de Comando Tático" />
-            <ResourceBar recursos={base.recursos} taxasPerSecond={taxasPerSecond || []} />
+            <ResourceBar recursos={base?.recursos ?? {}} taxasPerSecond={taxasPerSecond ?? {}} />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
                 <div className="lg:col-span-8 flex flex-col gap-4">
                     <div className="flex justify-between items-center px-2">
                          <h2 className="text-xl font-black uppercase tracking-tighter text-white flex items-center gap-2">
                             <Zap className="text-orange-500 animate-pulse" size={24} />
-                            Setor Operacional: {base.nome}
+                            Setor Operacional: {base?.nome ?? 'Setor Desconhecido'}
                          </h2>
-                         <div className="text-[10px] text-neutral-500 font-mono">UID: {base.id}</div>
+                         <div className="text-[10px] text-neutral-500 font-mono">UID: {base?.id ?? 'N/A'}</div>
                     </div>
                     
-                    <ArmyMovementPanel ataquesEnviados={ataquesEnviados || []} ataquesRecebidos={ataquesRecebidos || []} />
-                    <VillageView base={base} onBuildingClick={handleBuildingClick} />
+                    <ArmyMovementPanel ataquesEnviados={ataquesEnviados ?? []} ataquesRecebidos={ataquesRecebidos ?? []} gameConfig={gameConfig} />
+                    
+                    {gameMode === 'WORLD_MAP' ? (
+                        <WorldMapView playerBase={base} troops={base?.tropas ?? []} gameConfig={gameConfig} />
+                    ) : (
+                        <VillageView base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} />
+                    )}
                 </div>
 
                 <div className="lg:col-span-4 flex flex-col gap-6">
-                    <ProductionQueue construcoes={base.construcoes || []} treinos={base.treinos || []} />
+                    <ProductionQueue construcoes={base.construcoes || []} treinos={base.treinos || []} gameConfig={gameConfig} />
                     <GarrisonPanel tropas={base?.tropas ?? []} gameConfig={gameConfig} />
                     
                     <Card className="bg-black/30 border-white/10 backdrop-blur-sm">

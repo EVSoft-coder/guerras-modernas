@@ -1,11 +1,11 @@
 /**
  * src/game/systems/OrderSystem.ts
- * Centro de Comando com Sinalização Normalizada.
+ * Centro de Comando com SinalizaÃ§Ã£o Normalizada.
  */
 import { entityManager } from '../../core/EntityManager';
 import { eventBus, Events } from '../../core/EventBus';
 import { TargetComponent, SelectionComponent } from '../components/BaseComponents';
-import { GameSystem } from '../systemsRegistry';
+import { GameSystem } from './types';
  
 export class OrderSystem implements GameSystem {
     public init(): void {
@@ -17,7 +17,7 @@ export class OrderSystem implements GameSystem {
     public preUpdate(deltaTime: number): void {}
  
     public update(deltaTime: number): void {
-        // Lógica de pulso (opcional)
+        // LÃ³gica de pulso (opcional)
     }
  
     private handleMouseClick(e: MouseEvent): void {

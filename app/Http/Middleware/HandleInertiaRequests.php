@@ -47,6 +47,9 @@ class HandleInertiaRequests extends Middleware
                     'name' => $request->user()->name ?? $request->user()->username ?? $request->user()->nome ?? '',
                 ]) : null,
             ],
+            'base' => null,
+            'jogador' => null,
+            'taxasPerSecond' => [],
         ]);
     }
 }

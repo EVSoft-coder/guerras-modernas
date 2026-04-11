@@ -4,7 +4,7 @@ import { eventBus, Events } from '../../core/EventBus';
 
 /**
  * src/ui/village/VillageView.ts
- * Visualização espacial interativa com suporte para ordens de upgrade.
+ * VisualizaÃ§Ã£o espacial interativa com suporte para ordens de upgrade.
  */
 export class VillageView {
     private container: HTMLElement | null = null;
@@ -54,7 +54,7 @@ export class VillageView {
                 return; // Evita selecionar novamente
             }
 
-            // Seleção de Edifício
+            // SeleÃ§Ã£o de EdifÃ­cio
             const buildingBox = target.closest('[data-entity-id]');
             if (buildingBox) {
                 const id = parseInt(buildingBox.getAttribute('data-entity-id') || '0');

@@ -1,9 +1,9 @@
 /**
  * src/game/systems/RenderSystem.ts
- * Motor de Renderização Digital (Canvas 2D).
+ * Motor de RenderizaÃ§Ã£o Digital (Canvas 2D).
  */
 import { entityManager } from '../../core/EntityManager';
-import { GameSystem } from '../systemsRegistry';
+import { GameSystem } from './types';
  
 export class RenderSystem implements GameSystem {
     private canvas: HTMLCanvasElement | null = null;
@@ -59,7 +59,7 @@ export class RenderSystem implements GameSystem {
         this.ctx.fillStyle = isPlayer ? '#0ea5e9' : (isAI ? '#ef4444' : '#ffffff');
         this.ctx.fillRect(pos.x - size / 2, pos.y - size / 2, size, size);
  
-        // 2. BORDA DE SELECÇÃO
+        // 2. BORDA DE SELECÃ‡ÃƒO
         if (isSelected) {
             this.ctx.strokeStyle = '#00ff00';
             this.ctx.lineWidth = 2;

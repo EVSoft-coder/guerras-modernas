@@ -1,7 +1,7 @@
 console.log("APP START");
 /**
  * src/index.ts
- * Ponto de entrada e Simulação de Engajamento COM IMAGENS.
+ * Ponto de entrada e SimulaÃ§Ã£o de Engajamento COM IMAGENS.
  */
 import { gameLoop } from './core/GameLoop';
 import { inputSystem } from './game/systems/InputSystem';
@@ -24,17 +24,17 @@ import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
  
 console.log("BEFORE GAMELOOP");
-// 1. INICIALIZAÇÃO CORE (Preparação de Monitores)
+// 1. INICIALIZAÃ‡ÃƒO CORE (PreparaÃ§Ã£o de Monitores)
 gameLoop.init();
  
-// 2. INICIALIZAÇÃO DE SUBSISTEMAS OPERATIVOS
+// 2. INICIALIZAÃ‡ÃƒO DE SUBSISTEMAS OPERATIVOS
 console.log('[BOOT] Initializing Modern Wars Engine with VISUALS...');
 for (const system of systemsRegistry) {
     system.init();
 }
 uiManager.initialize();
  
-// 3. MOBILIZAÇÃO JOGADOR (UNIDADE ALFA + VILA)
+// 3. MOBILIZAÃ‡ÃƒO JOGADOR (UNIDADE ALFA + VILA)
 const playerUnit = entityManager.createEntity();
 entityManager.addComponent(playerUnit, new PlayerComponent());
 entityManager.addComponent(playerUnit, new ResourceComponent(5000, 5000, 5000));
@@ -46,7 +46,7 @@ entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
 entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1)); 
 entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
  
-// 3.1. INFRAESTRUTURA DA VILA (Edifícios como Entidades com Posição)
+// 3.1. INFRAESTRUTURA DA VILA (EdifÃ­cios como Entidades com PosiÃ§Ã£o)
 const qg = entityManager.createEntity();
 entityManager.addComponent(qg, new BuildingComponent('Quartel General', 'HQ', 1, { x: 0, y: 0 }, playerUnit));
 
@@ -55,7 +55,7 @@ entityManager.addComponent(mina, new BuildingComponent('Mina de Ferro', 'MINE', 
  
 console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Spatial Village infrastructure.`);
  
-// 3.1. MOBILIZAÇÃO TESTE (UNIDADE ALPHA-ZERO)
+// 3.1. MOBILIZAÃ‡ÃƒO TESTE (UNIDADE ALPHA-ZERO)
 const testUnit = entityManager.createEntity();
 entityManager.addComponent(testUnit, new PlayerComponent());
 entityManager.addComponent(testUnit, new Position(0, 0));
@@ -63,7 +63,7 @@ entityManager.addComponent(testUnit, new Velocity(0, 0));
 entityManager.addComponent(testUnit, new SpriteComponent('/images/unidades/agente_espiao.png')); 
 console.log(`[BOOT] Test Unit Alpha-Zero (ID: ${testUnit}) deployed at ORIGIN.`);
  
-// 4. MOBILIZAÇÃO IA INIMIGA (UNIDADE OMEGA)
+// 4. MOBILIZAÃ‡ÃƒO IA INIMIGA (UNIDADE OMEGA)
 const enemyUnit = entityManager.createEntity();
 entityManager.addComponent(enemyUnit, new Position(500, 200));
 entityManager.addComponent(enemyUnit, new Velocity(0, 0));
@@ -74,7 +74,7 @@ entityManager.addComponent(enemyUnit, new SpriteComponent('/images/unidades/tanq
  
 console.log(`[BOOT] Enemy Unit Omega (ID: ${enemyUnit}) detected with Main Battle Tank.`);
  
-// 5. AUTORIZAÇÃO DE COMBATE
+// 5. AUTORIZAÃ‡ÃƒO DE COMBATE
 stateManager.forceState(GameState.PLAYING);
 gameLoop.run();
  

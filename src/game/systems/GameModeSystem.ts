@@ -1,9 +1,9 @@
 /**
  * src/game/systems/GameModeSystem.ts
- * Gestor de Perspetiva Estratégica (Vila vs Mapa Mundo).
+ * Gestor de Perspetiva EstratÃ©gica (Vila vs Mapa Mundo).
  */
 import { eventBus, Events, EventPayload } from '../../core/EventBus';
-import { GameSystem } from '../systemsRegistry';
+import { GameSystem } from './types';
 
 export type GameMode = "VILLAGE" | "WORLD_MAP";
 
@@ -32,7 +32,7 @@ export class GameModeSystem implements GameSystem {
         console.log(`[GAMEMODE_SYSTEM] Perspective shift: ${this.currentMode} -> ${newMode}`);
         this.currentMode = newMode;
 
-        // Notificar outros sistemas se necessário (sem tocar na UI diretamente)
+        // Notificar outros sistemas se necessÃ¡rio (sem tocar na UI diretamente)
         eventBus.emit({
             type: Events.GAMEMODE_CHANGED,
             timestamp: Date.now(),

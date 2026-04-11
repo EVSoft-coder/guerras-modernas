@@ -14,19 +14,7 @@ import { combatSystem } from './CombatSystem';
 import { attackSystem } from './AttackSystem';
 import { renderSystem } from './RenderSystem';
 
-/**
- * Interface operativa com estratificação de fases.
- */
-export interface GameSystem {
-    init(): void;
-    
-    // Fases de Execução
-    preUpdate(deltaTime: number): void;
-    update(deltaTime: number): void;
-    postUpdate(deltaTime: number): void;
-    
-    destroy(): void;
-}
+import { GameSystem } from './types';
 
 /**
  * LISTA EXPLÍCITA E ORDENADA DE SISTEMAS.

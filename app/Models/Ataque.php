@@ -11,7 +11,10 @@ class Ataque extends Model
     protected $fillable = [
         'origem_base_id',
         'destino_base_id',
+        'destino_x',
+        'destino_y',
         'tropas',
+        'saque',
         'tipo',
         'chegada_em',
         'processado',
@@ -19,7 +22,9 @@ class Ataque extends Model
 
     protected $casts = [
         'tropas' => 'array',
+        'saque' => 'array',
         'chegada_em' => 'datetime',
+        'processado' => 'boolean',
     ];
 
     public function origem()

@@ -1,16 +1,16 @@
 /**
  * src/game/systems/MovementSystem.ts
- * Executor Cinematográfico com Resposta a Comandos (Doutrina Literal).
+ * Executor CinematogrÃ¡fico com Resposta a Comandos (Doutrina Literal).
  */
 import { entityManager } from '../../core/EntityManager';
 import { eventBus, EventPayload } from '../../core/EventBus';
-import { GameSystem } from '../systemsRegistry';
+import { GameSystem } from './types';
  
 export class MovementSystem implements GameSystem {
     public init(): void {
         console.log('[SYSTEM] MovementSystem - Cinematic Processor ONLINE.');
         
-        // Subscrever ao estado contínuo de input
+        // Subscrever ao estado contÃ­nuo de input
         eventBus.subscribe('PLAYER:INPUT_STATE', (payload: EventPayload) => {
             this.handleInputState(payload.data);
         });
@@ -23,7 +23,7 @@ export class MovementSystem implements GameSystem {
             const vel = entityManager.getComponent<any>(id, 'Velocity');
             if (!vel) continue;
  
-            // Reset de velocidade para cálculo fresco
+            // Reset de velocidade para cÃ¡lculo fresco
             vel.dx = 0;
             vel.dy = 0;
  
@@ -32,7 +32,7 @@ export class MovementSystem implements GameSystem {
             if (state.left)  vel.dx -= 1;
             if (state.right) vel.dx += 1;
  
-            // Normalização: Evitar que diagonal seja mais rápida (sqrt(2))
+            // NormalizaÃ§Ã£o: Evitar que diagonal seja mais rÃ¡pida (sqrt(2))
             const length = Math.sqrt(vel.dx * vel.dx + vel.dy * vel.dy);
             if (length > 0) {
                 vel.dx /= length;
@@ -54,7 +54,7 @@ export class MovementSystem implements GameSystem {
                 pos.x += vel.dx * deltaTime;
                 pos.y += vel.dy * deltaTime;
                 
-                // Telemetria de Posição (Alpha-Zero & Outros)
+                // Telemetria de PosiÃ§Ã£o (Alpha-Zero & Outros)
                 console.log(`[TELEMETRY] Entity ${entityId} at (${Math.round(pos.x)}, ${Math.round(pos.y)})`);
             }
         }

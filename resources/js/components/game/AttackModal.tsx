@@ -11,12 +11,13 @@ interface AttackModalProps {
     origemBase: any;
     destinoBase: any;
     tropasDisponiveis: any[];
-    onEnviar: (params: { destino_id: number; tropas: Record<string, number>; tipo: string }) => void;
+    onEnviar: (params: { destino_id: number | null; destino_x?: number; destino_y?: number; tropas: Record<string, number>; tipo: string }) => void;
     isSending: boolean;
+    gameConfig: any;
 }
 
 export const AttackModal: React.FC<AttackModalProps> = ({ 
-    isOpen, onClose, origemBase, destinoBase, tropasDisponiveis, onEnviar, isSending 
+    isOpen, onClose, origemBase, destinoBase, tropasDisponiveis, onEnviar, isSending, gameConfig 
 }) => {
     const [selectedTropas, setSelectedTropas] = useState<Record<string, number>>({});
     const [missionType, setMissionType] = useState<string>('ataque');
@@ -39,7 +40,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
 
     const hasTropasSelected = Object.values(selectedTropas).some(v => v > 0);
 
-    // Cálculos Táticos
+    // Cálculos Tácticos
     const stats = useMemo(() => {
         if (!destinoBase || !origemBase) return null;
         
@@ -54,7 +55,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
         
         Object.entries(selectedTropas).forEach(([unidade, qtd]) => {
             if (qtd > 0) {
-                const config = (window as any).gameConfig?.units?.[unidade] || {};
+                const config = gameConfig?.units?.[unidade] || {};
                 if (config.speed < minSpeed) minSpeed = config.speed;
                 totalAttack += qtd * (config.attack || 0);
                 totalCapacity += qtd * (config.capacity || 0);
@@ -64,7 +65,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
         if (minSpeed === 999) minSpeed = 10;
 
         // Formula igual ao GameService
-        const speedTravel = (window as any).gameConfig?.speed?.travel || 5;
+        const speedTravel = gameConfig?.speed?.travel || 1;
         const segundos = Math.max(30, (distancia * 100) / (minSpeed * speedTravel));
 
         return {
@@ -83,7 +84,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="bg-neutral-950 border-white/10 text-white max-w-2xl overflow-hidden p-0">
+            <DialogContent className="bg-neutral-950 border-white/10 text-white max-w-2xl overflow-hidden p-0 rounded-3xl">
                 <div className="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent pointer-events-none" />
                 
                 <DialogHeader className="p-6 border-b border-white/5 relative z-10">
@@ -94,14 +95,14 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                         <div>
                             <DialogTitle className="text-xl font-black uppercase tracking-tighter">Preparar Ofensiva Militar</DialogTitle>
                             <DialogDescription className="text-neutral-500 text-[10px] uppercase font-bold">
-                                Alvo: <span className="text-white">{destinoBase?.nome}</span> [{destinoBase?.coordenada_x}:{destinoBase?.coordenada_y}]
+                                Alvo: <span className="text-white">{destinoBase?.nome || 'Coordenadas Remotas'}</span> [{destinoBase?.coordenada_x}:{destinoBase?.coordenada_y}]
                             </DialogDescription>
                         </div>
                     </div>
                 </DialogHeader>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                    {/* SELEÇÃO DE TROPAS */}
+                    {/* SELECÇÃO DE TROPAS */}
                     <div className="p-6 border-r border-white/5 space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar bg-white/[0.02]">
                         <h4 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                             <Sword size={12} /> Unidades de Combate
@@ -118,7 +119,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                         <span className="text-[10px] font-bold uppercase tracking-wide text-neutral-300">
                                             {tropa.unidade.replace(/_/g, ' ')}
                                         </span>
-                                        <Badge variant="outline" className="text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400">
+                                        <Badge variant="outline" className="text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400 font-mono">
                                             {selectedTropas[tropa.unidade] || 0} / {tropa.quantidade}
                                         </Badge>
                                     </div>
@@ -136,7 +137,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                         )}
                     </div>
 
-                    {/* SUMÁRIO TÁTICO E TIPO DE MISSÃO */}
+                    {/* SUMÁRIO TÁCTICO E TIPO DE MISSÃO */}
                     <div className="p-6 bg-black/40 flex flex-col justify-between">
                         <div className="space-y-6">
                             <div>
@@ -202,13 +203,19 @@ export const AttackModal: React.FC<AttackModalProps> = ({
 
                         <div className="pt-6">
                             <Button 
-                                className={`w-full py-6 font-black uppercase tracking-[0.2em] text-xs transition-all duration-300 ${
+                                className={`w-full py-6 font-black uppercase tracking-[0.2em] text-xs transition-all duration-300 rounded-2xl ${
                                     hasTropasSelected 
                                     ? 'bg-red-600 hover:bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.3)]' 
                                     : 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
                                 }`}
                                 disabled={!hasTropasSelected || isSending}
-                                onClick={() => onEnviar({ destino_id: destinoBase.id, tropas: selectedTropas, tipo: missionType })}
+                                onClick={() => onEnviar({ 
+                                    destino_id: destinoBase?.id || null, 
+                                    destino_x: destinoBase?.coordenada_x, 
+                                    destino_y: destinoBase?.coordenada_y, 
+                                    tropas: selectedTropas, 
+                                    tipo: missionType 
+                                })}
                             >
                                 {isSending ? (
                                     <Loader2 size={16} className="animate-spin" />
@@ -223,3 +230,4 @@ export const AttackModal: React.FC<AttackModalProps> = ({
         </Dialog>
     );
 };
+鼓鼓 [failed_replace_file_content_reminder]

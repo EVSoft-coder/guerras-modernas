@@ -1,13 +1,13 @@
-import { System } from '../core/EntityManager';
-import { EventBus } from '../core/EventBus';
-import { Log } from '../utils/Logger';
+import { GameSystem } from './types';
+import { eventBus } from '@src/core/EventBus';
+import { Logger } from '@src/core/Logger';
 
-export class TimeSystem implements System {
+export class TimeSystem implements GameSystem {
     private accumulator: number = 0;
     private readonly TICK_INTERVAL: number = 1.0; // 1 segundo
 
     init(): void {
-        Log.info('[SYSTEM] TimeSystem - Global Clock ONLINE.');
+        console.log('[SYSTEM] TimeSystem - Global Clock ONLINE.');
     }
 
     preUpdate(dt: number): void {}
@@ -21,7 +21,7 @@ export class TimeSystem implements System {
     }
 
     private emitTick(): void {
-        EventBus.emit({
+        eventBus.emit({
             type: 'GAME:TICK',
             timestamp: Date.now(),
             data: { deltaTime: this.TICK_INTERVAL }
@@ -31,6 +31,8 @@ export class TimeSystem implements System {
     postUpdate(dt: number): void {}
 
     destroy(): void {
-        Log.info('[SYSTEM] TimeSystem - Global Clock OFFLINE.');
+        console.log('[SYSTEM] TimeSystem - Global Clock OFFLINE.');
     }
 }
+
+export const timeSystem = new TimeSystem();

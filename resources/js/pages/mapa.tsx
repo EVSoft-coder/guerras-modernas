@@ -18,7 +18,7 @@ interface MapaProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Mapa Tático', href: '/mapa' },
+    { title: 'Mapa TÃ¡tico', href: '/mapa' },
 ];
 
 export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos }: any) {
@@ -36,12 +36,12 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
 
         // Feedback de Combate em Tempo Real
         const unsubArrived = eventBus.subscribe(Events.ATTACK_ARRIVED, (ev) => {
-            const res = ev.data.result === 'VICTORY' ? 'VITÓRIA' : 'MISSÃO CONCLUÍDA';
+            const res = ev.data.result === 'VICTORY' ? 'VITÃ“RIA' : 'MISSÃƒO CONCLUÃDA';
             addToast(`OFENSIVA: ${res} em [${ev.data.targetId || 'Sector'}]. Saque iniciado.`, 'success');
         });
 
         const unsubReturned = eventBus.subscribe(Events.ATTACK_RETURNED, (ev) => {
-            addToast(`LOGÍSTICA: Tropas regressaram com recursos capturados.`, 'info');
+            addToast(`LOGÃSTICA: Tropas regressaram com recursos capturados.`, 'info');
             router.reload({ only: ['origemBase'] });
         });
 
@@ -63,7 +63,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
     if (typeof window !== 'undefined') {
         (window as any).gameConfig = gameConfig;
     }
-    // Gerar a grelha de visualização
+    // Gerar a grelha de visualizaÃ§Ã£o
     const grid = [];
     for (let iy = y - raio; iy <= y + raio; iy++) {
         const row = [];
@@ -76,7 +76,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Setor [${x}:${y}] - Mapa Tático`} />
+            <Head title={`Setor [${x}:${y}] - Mapa TÃ¡tico`} />
             
             <div className="flex flex-1 flex-col gap-6 p-6 bg-neutral-900 text-white min-h-screen">
                 <div className="flex justify-between items-center">
@@ -85,7 +85,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                             <MapIcon className="text-sky-500" size={24} />
                             Setor Operacional [{x}:{y}]
                         </h1>
-                        <p className="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">Vigilância de Satélite em Tempo Real</p>
+                        <p className="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">VigilÃ¢ncia de SatÃ©lite em Tempo Real</p>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -155,7 +155,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                     </div>
                 </div>
 
-                {/* MONITOR TÁCTICO ECS */}
+                {/* MONITOR TÃCTICO ECS */}
                 <div className="mt-auto bg-black/60 p-4 border-t border-sky-500/30 font-mono text-xs">
                     <h3 className="text-sky-500 font-black mb-2 uppercase tracking-widest flex items-center gap-2">
                         <Target size={12} /> Telemetria de Unidades ECS
@@ -206,7 +206,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                         ))}
                         {entities.length === 0 && (
                             <div className="col-span-full py-4 text-center text-neutral-600 animate-pulse">
-                                AGUARDANDO SINCRONIZAÇÃO COM O MOTOR NUCLEAR...
+                                AGUARDANDO SINCRONIZAÃ‡ÃƒO COM O MOTOR NUCLEAR...
                             </div>
                         )}
                     </div>
@@ -237,7 +237,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                             router.reload({ only: ['ataquesEnviados'] });
                         },
                         onError: (e: any) => {
-                            addToast(e.error || 'FALHA NA TRANSMISSÃO', 'error');
+                            addToast(e.error || 'FALHA NA TRANSMISSÃƒO', 'error');
                             setIsSending(false);
                         }
                     });

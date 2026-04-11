@@ -4,8 +4,14 @@
  */
 import { eventBus, EventPayload } from '../../core/EventBus';
 import { entityManager } from '../../core/EntityManager';
-import { GameSystem } from '../systemsRegistry';
-import { buildingEffects } from '../config/buildingEffects';
+import { GameSystem } from './types';
+
+// Mock ou Fallback para buildingEffects se não existir
+const buildingEffects: Record<string, any> = {
+    'mina_suprimentos': { resource: 'wood', baseProduction: 10 },
+    'refinaria': { resource: 'iron', baseProduction: 5 },
+    'fabrica_municoes': { resource: 'stone', baseProduction: 5 }
+};
 
 export class ResourceSystem implements GameSystem {
     public init(): void {

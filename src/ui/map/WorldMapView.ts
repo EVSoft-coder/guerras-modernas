@@ -1,6 +1,6 @@
 /**
  * src/ui/map/WorldMapView.ts
- * Visualização do Mapa Mundo (World Map).
+ * VisualizaÃ§Ã£o do Mapa Mundo (World Map).
  */
 export class WorldMapView {
     private container: HTMLElement | null = null;

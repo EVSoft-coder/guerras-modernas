@@ -22,7 +22,7 @@ const footerNavItems: NavItem[] = [
         icon: Folder,
     },
     {
-        title: 'Infopédia Militar',
+        title: 'InfopÃ©dia Militar',
         url: '/manual',
         icon: BookOpen,
     },

@@ -16,7 +16,7 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 const rootElement = document.getElementById('app');
 
 if (rootElement) {
-    // Ignição do Motor Nuclear (ECS Core)
+    // IgniÃ§Ã£o do Motor Nuclear (ECS Core)
     import('../../src/index');
 
     // Only initialize theme and Inertia if we are in an Inertia-enabled page
@@ -32,13 +32,13 @@ if (rootElement) {
             if (!name || name === 'undefined') {
                 // Silenciamos o aviso se for um estado de carga inicial vazio
                 if (name === 'undefined') {
-                    console.warn(`[REDE_DE_SEGURANCA] Intercepção de rota 'undefined'. Redirecionando para Dashboard.`);
+                    console.warn(`[REDE_DE_SEGURANCA] IntercepÃ§Ã£o de rota 'undefined'. Redirecionando para Dashboard.`);
                 }
                 return resolvePageComponent(`./pages/dashboard.tsx`, pages);
             }
 
             if (!pages[path]) {
-                console.error(`[INTERCEPTOR] Componente não encontrado: ${path}. Ativando protocolo de contingência.`);
+                console.error(`[INTERCEPTOR] Componente nÃ£o encontrado: ${path}. Ativando protocolo de contingÃªncia.`);
                 return resolvePageComponent(`./pages/dashboard.tsx`, pages);
             }
 

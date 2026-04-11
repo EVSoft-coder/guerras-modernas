@@ -1,71 +1,55 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { motion } from 'framer-motion';
-import { Shield, Sword, Navigation, Users, ChevronRight } from 'lucide-react';
-
-interface Troop {
-    id: number;
-    unidade: string;
-    quantidade: number;
-}
+import { Users, Shield, Target } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface GarrisonPanelProps {
-    tropas: Troop[];
+    tropas: any[];
     gameConfig: any;
 }
 
-export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas, gameConfig }) => {
-    const unitIcons: Record<string, React.ReactNode> = {
-        'infantaria': <Users className="text-emerald-500" size={16} />,
-        'blindado_apc': <Navigation className="text-blue-500" size={16} />,
-        'tanque_combate': <Shield className="text-orange-500" size={16} />,
-        'helicoptero_ataque': <Sword className="text-red-500" size={16} />,
-        'agente_espiao': <Users className="text-purple-500" size={16} />,
-    };
+export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameConfig }) => {
+    const unitsConfig = gameConfig?.units || {};
 
     return (
         <Card className="bg-black/30 border-white/10 backdrop-blur-sm overflow-hidden">
             <CardHeader className="py-3 bg-white/5 border-b border-white/5">
                 <CardTitle className="text-xs uppercase font-black tracking-widest text-neutral-400 flex items-center gap-2">
-                    <Shield className="text-emerald-500" size={18} />
-                    Guarnição Ativa
+                    <Users className="text-emerald-500" size={18} /> Guarnição Ativa
                 </CardTitle>
             </CardHeader>
-            <CardContent className="py-4 px-3">
-                <div className="space-y-3">
-                    {(tropas?.length ?? 0) > 0 ? (
-                        tropas.map((t, idx) => (
-                            <motion.div 
-                                initial={{ x: -20, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                transition={{ delay: idx * 0.1 }}
-                                key={t.id} 
-                                className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5 hover:bg-white/10 transition-colors cursor-default group"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-black/40 rounded border border-white/10 group-hover:border-emerald-500/50 transition-colors">
-                                        {unitIcons[t.unidade] || <Users size={16} />}
-                                    </div>
+            <CardContent className="py-4">
+                <div className="grid grid-cols-2 gap-3">
+                    {(tropas || []).map((t, i) => {
+                        const config = unitsConfig[t.tipo] || { name: t.tipo };
+                        return (
+                            <div key={i} className="bg-white/5 p-3 rounded-xl border border-white/5 group hover:border-emerald-500/30 transition-all">
+                                <div className="flex justify-between items-start mb-2">
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-black uppercase text-white tracking-widest leading-none">
-                                            {gameConfig.units[t.unidade]?.name || t.unidade}
+                                        <span className="text-[10px] font-black uppercase text-white truncate w-24">
+                                            {config.name}
                                         </span>
-                                        <span className="text-[8px] font-bold text-neutral-500 uppercase mt-1 tracking-tighter">
-                                            Prontidão de Combate: 100%
+                                        <span className="text-[8px] text-neutral-500 font-bold uppercase tracking-widest">
+                                            Mobilizado
                                         </span>
                                     </div>
+                                    <Badge className="bg-emerald-500/20 text-emerald-400 text-[10px] font-mono border-emerald-500/20">
+                                        {t.quantidade}
+                                    </Badge>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-lg font-black text-emerald-400 font-mono leading-none">
-                                        {t.quantidade.toLocaleString()}
-                                    </div>
-                                    <div className="text-[8px] font-bold text-neutral-600 uppercase">UNIDADES</div>
+                                <div className="flex items-center gap-2 text-[8px] font-black uppercase text-neutral-600">
+                                    <Shield size={10} className="text-emerald-600" /> 
+                                    <span>Prontidão de Combate: 100%</span>
                                 </div>
-                            </motion.div>
-                        ))
-                    ) : (
-                        <div className="text-center py-6 border-2 border-dashed border-white/5 rounded-xl">
-                            <p className="text-[10px] uppercase font-black text-neutral-700 italic">Sem contingente mobilizado</p>
+                            </div>
+                        );
+                    })}
+                    {(!tropas || tropas.length === 0) && (
+                        <div className="col-span-2 py-6 text-center border-2 border-dashed border-white/5 rounded-2xl">
+                            <Target className="mx-auto text-neutral-800 mb-2" size={24} />
+                            <span className="text-[9px] uppercase font-black text-neutral-700 tracking-widest">
+                                Sem Unidades Mobilizadas
+                            </span>
                         </div>
                     )}
                 </div>

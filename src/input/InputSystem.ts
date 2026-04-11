@@ -1,6 +1,6 @@
 /**
  * src/input/InputSystem.ts
- * Captura de entradas e emissão de eventos táticos.
+ * Captura de entradas e emissÃ£o de eventos tÃ¡ticos.
  */
 import { eventBus } from '../core/EventBus';
  
@@ -27,7 +27,7 @@ class InputSystem {
     }
  
     /**
-     * Verifica se uma tecla específica está pressionada.
+     * Verifica se uma tecla especÃ­fica estÃ¡ pressionada.
      */
     public isKeyPressed(code: string): boolean {
         return this.keysPressed.has(code);

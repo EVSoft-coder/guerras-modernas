@@ -1,6 +1,6 @@
 /**
  * src/game/entities/EntityManager.ts
- * Gestão de Registos de Entidades e Componentes.
+ * GestÃ£o de Registos de Entidades e Componentes.
  */
 import { PositionComponent, VelocityComponent, HealthComponent } from '../components/BaseComponents';
  
@@ -10,7 +10,7 @@ class EntityManager {
     private nextId: Entity = 1;
     private entities: Set<Entity> = new Set();
  
-    // Repositórios de componentes (Silos de dados por tipo)
+    // RepositÃ³rios de componentes (Silos de dados por tipo)
     public positions: Map<Entity, PositionComponent> = new Map();
     public velocities: Map<Entity, VelocityComponent> = new Map();
     public healths: Map<Entity, HealthComponent> = new Map();

@@ -1,6 +1,6 @@
 /**
  * src/game/config/buildingEffects.ts
- * Configuração de efeitos e produção por tipo de edifício.
+ * ConfiguraÃ§Ã£o de efeitos e produÃ§Ã£o por tipo de edifÃ­cio.
  */
 
 export interface BuildingEffect {

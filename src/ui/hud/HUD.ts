@@ -1,6 +1,6 @@
 /**
  * src/ui/hud/HUD.ts
- * Telemetria Visual e Navegação Estratégica.
+ * Telemetria Visual e NavegaÃ§Ã£o EstratÃ©gica.
  */
 import { eventBus, Events, EventPayload } from '../../core/EventBus';
 import { GameMode } from '../../core/StateManager';

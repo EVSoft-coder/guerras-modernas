@@ -1,6 +1,6 @@
 /**
  * src/game/components/BaseComponents.ts
- * Assinatura de Componentes (Fase 6 - ORDENS E SELECÇÃO).
+ * Assinatura de Componentes (Fase 6 - ORDENS E SELECÃ‡ÃƒO).
  */
 import { Component } from '../../core/EntityManager';
  

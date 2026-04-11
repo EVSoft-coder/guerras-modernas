@@ -1,79 +1,51 @@
 /**
- * src/core/StateManager.ts
- * Gestor de Estado com Sinalização Normalizada.
+ * StateManager.ts
+ * Gestor tático de alta autoridade para estados globais (FSM).
  */
-import { eventBus, Events, EventPayload } from './EventBus';
+import { eventBus } from './EventBus';
  
-export enum GameState {
-    MENU = 'MENU',
-    PLAYING = 'PLAYING',
-    PAUSED = 'PAUSED',
-    GAME_OVER = 'GAME_OVER'
-}
- 
-export enum GameMode {
-    VILLAGE = 'VILLAGE',
-    WORLD_MAP = 'WORLD_MAP'
-}
+export type GameMode = 'VILLAGE' | 'WORLD_MAP' | 'COMBAT' | 'LOADING';
  
 class StateManager {
-    private _currentState: GameState = GameState.MENU;
-    private _currentMode: GameMode = GameMode.VILLAGE;
+    private currentMode: GameMode = 'VILLAGE';
+    private isPaused: boolean = false;
  
-    constructor() {
-        this.initializeListeners();
+    /**
+     * Define o modo de jogo atual e emite sinalização de transição.
+     */
+    public setMode(mode: GameMode): void {
+        if (this.currentMode === mode) return;
+        
+        const oldMode = this.currentMode;
+        this.currentMode = mode;
+        
+        console.log(`[STATE_TRANSITION] ${oldMode} -> ${mode}`);
+ 
+        eventBus.emit({
+            type: 'GAMEMODE:CHANGED',
+            timestamp: Date.now(),
+            data: { mode, previous: oldMode }
+        });
     }
  
     public getMode(): GameMode {
-        return this._currentMode;
+        return this.currentMode;
     }
  
-    private initializeListeners(): void {
-        // Escuta mudanças de modo tático
-        eventBus.subscribe(Events.GAMEMODE_CHANGED, (p: EventPayload) => {
-            this._currentMode = p.data.mode as GameMode;
-            console.log(`[STATE_MGR] Mode synced: ${this._currentMode}`);
-        });
-
-        // Escuta pedidos táticos normalizados
-        eventBus.subscribe(Events.GAME_REQUEST_PAUSE, () => {
-            this.internalTransition(GameState.PAUSED);
-        });
- 
-        eventBus.subscribe(Events.GAME_REQUEST_RESUME, () => {
-            if (this._currentState === GameState.PAUSED) {
-                this.internalTransition(GameState.PLAYING);
-            }
-        });
-    }
- 
-    private internalTransition(newState: GameState): void {
-        if (this._currentState === newState) return;
- 
-        const oldState = this._currentState;
-        this._currentState = newState;
-        
-        console.log(`[STATE_MGR] Authorized: ${oldState} -> ${newState}`);
-        
-        const payload: EventPayload = {
-            type: Events.GAME_STATE_CHANGED,
+    /**
+     * Controlo de fluxo temporal (Pause/Resume).
+     */
+    public setPaused(paused: boolean): void {
+        this.isPaused = paused;
+        eventBus.emit({
+            type: paused ? 'GAME:REQUEST_PAUSE' : 'GAME:REQUEST_RESUME',
             timestamp: Date.now(),
-            data: { oldState, newState }
-        };
- 
-        eventBus.emit(payload);
+            data: { isPaused: paused }
+        });
     }
  
-    public getState(): GameState {
-        return this._currentState;
-    }
- 
-    public forceState(newState: GameState): void {
-        this.internalTransition(newState);
-    }
- 
-    public update(deltaTime: number): void {
-        // Pulso de validação se necessário
+    public getPaused(): boolean {
+        return this.isPaused;
     }
 }
  

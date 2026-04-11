@@ -1,10 +1,10 @@
 /**
  * src/game/systems/CombatSystem.ts
- * Resolução de Balística com Sinalização Normalizada.
+ * ResoluÃ§Ã£o de BalÃ­stica com SinalizaÃ§Ã£o Normalizada.
  */
 import { entityManager } from '../../core/EntityManager';
 import { eventBus, Events } from '../../core/EventBus';
-import { GameSystem } from '../systemsRegistry';
+import { GameSystem } from './types';
  
 export class CombatSystem implements GameSystem {
     public init(): void {

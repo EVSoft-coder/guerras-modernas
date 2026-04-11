@@ -16,10 +16,12 @@ class EntityManager {
     /**
      * Gera um novo ID de entidade único.
      */
-    public createEntity(): EntityId {
-        const id = this.nextId++;
-        this.entities.set(id, new Map());
-        return id;
+    public createEntity(id?: EntityId): EntityId {
+        const entityId = id ?? this.nextId++;
+        if (!this.entities.has(entityId)) {
+            this.entities.set(entityId, new Map());
+        }
+        return entityId;
     }
  
     /**

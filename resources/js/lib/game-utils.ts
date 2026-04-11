@@ -1,9 +1,9 @@
 /**
- * Utilitários Táticos de Jogo (Refactored to match Domain Layer)
+ * UtilitÃ¡rios TÃ¡ticos de Jogo (Refactored to match Domain Layer)
  */
  
 /**
- * Determina o nível visual de um edifício baseado no seu progresso.
+ * Determina o nÃ­vel visual de um edifÃ­cio baseado no seu progresso.
  */
 export const getEvolutionLevelAsset = (lvl: number): number => {
     if (lvl >= 6) return 6;
@@ -15,16 +15,16 @@ export const getEvolutionLevelAsset = (lvl: number): number => {
 };
  
 /**
- * Calcula o custo de um edifício para o próximo nível.
- * FÓRMULA DE DOMÍNIO: BaseValue * (1 + (CurrentLevel * Scaling))
+ * Calcula o custo de um edifÃ­cio para o prÃ³ximo nÃ­vel.
+ * FÃ“RMULA DE DOMÃNIO: BaseValue * (1 + (CurrentLevel * Scaling))
  */
 export const calculateBuildingCost = (baseAmount: number, currentLevel: number, scaling: number = 1.5): number => {
     return Math.floor(baseAmount * (1 + (currentLevel * scaling)));
 };
  
 /**
- * Calcula o tempo de construção em segundos.
- * FÓRMULA DE DOMÍNIO: (TimeBase * (1 + (CurrentLevel * 0.5))) / Speed
+ * Calcula o tempo de construÃ§Ã£o em segundos.
+ * FÃ“RMULA DE DOMÃNIO: (TimeBase * (1 + (CurrentLevel * 0.5))) / Speed
  */
 export const calculateConstructionTime = (timeBase: number, currentLevel: number, speed: number = 1): number => {
     const time = (timeBase * (1 + (currentLevel * 0.5))) / speed;
@@ -32,20 +32,20 @@ export const calculateConstructionTime = (timeBase: number, currentLevel: number
 };
  
 /**
- * Calcula a produção por hora de um edifício de recursos.
- * FÓRMULA DE DOMÍNIO: (BaseProd * speed) * (1 + (nivel * scaling))
+ * Calcula a produÃ§Ã£o por hora de um edifÃ­cio de recursos.
+ * FÃ“RMULA DE DOMÃNIO: (BaseProd * speed) * (1 + (nivel * scaling))
  */
 export const calculateResourceProduction = (baseProd: number, level: number, speed: number = 1, scaling: number = 1.5): number => {
     return Math.floor((baseProd * speed) * (1 + (level * scaling)));
 };
 /**
- * Limpa e converte valores de recursos para números puros para comparação.
- * Útil quando o backend envia valores formatados (string).
+ * Limpa e converte valores de recursos para nÃºmeros puros para comparaÃ§Ã£o.
+ * Ãštil quando o backend envia valores formatados (string).
  */
 export const parseResourceValue = (val: any): number => {
     if (typeof val === 'number') return val;
     if (typeof val === 'string') {
-        // Remove separadores de milhar (pontos ou vírgulas)
+        // Remove separadores de milhar (pontos ou vÃ­rgulas)
         return parseFloat(val.replace(/[^\d.-]/g, '')) || 0;
     }
     return 0;
