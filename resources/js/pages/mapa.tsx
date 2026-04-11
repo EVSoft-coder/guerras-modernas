@@ -7,6 +7,7 @@ import { AttackModal } from '@/components/game/AttackModal';
 import { router } from '@inertiajs/react';
 import { useToasts } from '@/components/game/ToastProvider';
 import { gameStateService } from '../../../src/services/GameStateService';
+import { eventBus, Events } from '../../../src/core/EventBus';
 
 interface MapaProps {
     bases: any[];
@@ -150,6 +151,19 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any)
                                         <span className="text-sky-400">I: {ent.resources.iron}</span>
                                     </div>
                                 )}
+                                <button 
+                                    onClick={() => {
+                                        eventBus.emit({
+                                            type: Events.BUILDING_REQUEST,
+                                            entityId: ent.id,
+                                            timestamp: Date.now(),
+                                            data: { buildingType: 'MINE' }
+                                        });
+                                    }}
+                                    className="mt-2 w-full py-1 bg-sky-600/40 hover:bg-sky-500 text-[8px] font-black uppercase rounded transition-colors border border-sky-400/30"
+                                >
+                                    Construir MINE
+                                </button>
                             </div>
                         ))}
                         {entities.length === 0 && (
