@@ -10,25 +10,27 @@ export class MovementSystem implements GameSystem {
     public init(): void {
         console.log('[SYSTEM] MovementSystem - Cinematic Processor ONLINE.');
         
-        eventBus.subscribe('PLAYER:MOVE', (payload: EventPayload) => {
-            this.handlePlayerMove(payload.data.direction);
+        // Subscrever ao estado contínuo de input
+        eventBus.subscribe('PLAYER:INPUT_STATE', (payload: EventPayload) => {
+            this.handleInputState(payload.data);
         });
     }
  
-    private handlePlayerMove(direction: string): void {
+    private handleInputState(state: any): void {
         const entities = entityManager.getEntitiesWith(['Position', 'Velocity', 'Player']);
         
         for (const id of entities) {
             const vel = entityManager.getComponent<any>(id, 'Velocity');
             if (!vel) continue;
  
-            // Atribuição Literal conforme exemplo do Comandante
-            switch (direction) {
-                case 'UP':    vel.dy = -1; vel.dx = 0; break;
-                case 'DOWN':  vel.dy = 1;  vel.dx = 0; break;
-                case 'LEFT':  vel.dx = -1; vel.dy = 0; break;
-                case 'RIGHT': vel.dx = 1;  vel.dy = 0; break;
-            }
+            // Reset de velocidade para cálculo fresco
+            vel.dx = 0;
+            vel.dy = 0;
+ 
+            if (state.up)    vel.dy -= 1;
+            if (state.down)  vel.dy += 1;
+            if (state.left)  vel.dx -= 1;
+            if (state.right) vel.dx += 1;
         }
     }
  
