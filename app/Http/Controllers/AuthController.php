@@ -88,9 +88,10 @@ class AuthController extends Controller
             'taxasPerSecond' => $taxas ?? [],
             'relatorios' => \App\Models\Relatorio::where('atacante_id', $jogador->id)
                 ->orWhere('defensor_id', $jogador->id)
-                ->latest()->take(10)->get(),
-            'ataquesRecebidos' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get(),
-            'ataquesEnviados' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get(),
+                ->latest()->take(10)->get() ?? [],
+            'relatoriosGlobal' => \App\Models\Relatorio::latest()->take(10)->get() ?? [],
+            'ataquesRecebidos' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get() ?? [],
+            'ataquesEnviados' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get() ?? [],
             'gameConfig' => config('game')
         ]);
     }

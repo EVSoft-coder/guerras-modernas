@@ -39,7 +39,6 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         return array_merge(parent::share($request), [
-            ...parent::share($request),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
@@ -47,9 +46,19 @@ class HandleInertiaRequests extends Middleware
                     'name' => $request->user()->name ?? $request->user()->username ?? $request->user()->nome ?? '',
                 ]) : null,
             ],
+            // Garantir que as props do dashboard tenham sempre valores default para evitar undefined no React
             'base' => null,
+            'bases' => [],
             'jogador' => null,
-            'taxasPerSecond' => [],
+            'taxasPerSecond' => [
+                'suprimentos' => 0,
+                'combustivel' => 0,
+                'municoes' => 0,
+                'pessoal' => 0
+            ],
+            'relatoriosGlobal' => [],
+            'gameConfig' => config('game')
         ]);
     }
 }
+鼓鼓 [failed_replace_file_content_reminder]
