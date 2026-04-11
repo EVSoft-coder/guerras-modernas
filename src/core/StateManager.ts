@@ -1,6 +1,6 @@
 /**
  * StateManager.ts
- * Bunker de Autoridade de Estado Global.
+ * Gestor Supremo de Estado com Privacidade Absoluta.
  */
 import { eventBus, Events } from './EventBus';
  
@@ -12,28 +12,36 @@ export enum GameState {
 }
  
 class StateManager {
-    private currentState: GameState = GameState.MENU;
+    private _currentState: GameState = GameState.MENU;
  
     constructor() {
         this.initializeListeners();
     }
  
     private initializeListeners(): void {
-        // Escuta pedidos de mudança de estado via EventBus
-        eventBus.subscribe(Events.REQUEST_PAUSE, () => this.changeState(GameState.PAUSED));
-        eventBus.subscribe(Events.REQUEST_RESUME, () => this.changeState(GameState.PLAYING));
+        // Pedidos de rádio (Doutrina 1.1)
+        eventBus.subscribe(Events.REQUEST_PAUSE, () => {
+            this.internalTransition(GameState.PAUSED);
+        });
+ 
+        eventBus.subscribe(Events.REQUEST_RESUME, () => {
+            if (this._currentState === GameState.PAUSED) {
+                this.internalTransition(GameState.PLAYING);
+            }
+        });
     }
  
     /**
-     * Altera o estado global. Único ponto de modificação autorizado.
+     * ÚNICO PONTO DE TRANSIÇÃO (INTERNO).
+     * Rigorosamente privado para impedir manipulação externa ilícita.
      */
-    private changeState(newState: GameState): void {
-        if (this.currentState === newState) return;
+    private internalTransition(newState: GameState): void {
+        if (this._currentState === newState) return;
  
-        const oldState = this.currentState;
-        this.currentState = newState;
+        const oldState = this._currentState;
+        this._currentState = newState;
         
-        console.log(`[STATE_BUNKER] Transition Authorized: ${oldState} -> ${newState}`);
+        console.log(`[STATE_SECURITY] Authorized Transition: ${oldState} -> ${newState}`);
         
         eventBus.emit({
             type: Events.STATE_CHANGED,
@@ -42,15 +50,15 @@ class StateManager {
         });
     }
  
+    /**
+     * Acesso externo apenas de LEITURA.
+     */
     public getState(): GameState {
-        return this.currentState;
+        return this._currentState;
     }
  
-    /**
-     * Interface externa pública (controlada) para forçar estados se necessário por lógica core.
-     */
-    public forceState(newState: GameState): void {
-        this.changeState(newState);
+    public update(deltaTime: number): void {
+        // Reservado para lógica de pulso de estado
     }
 }
  

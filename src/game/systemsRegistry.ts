@@ -1,9 +1,7 @@
 /**
  * systemsRegistry.ts
- * Registo mestre e ordem de batalha (ordem de execução dos systems).
+ * Registo Estático e Ordenado de Sistemas (Ordem de Batalha).
  */
- 
-// Importação dos systems (placeholder para os existentes)
 import { movementSystem } from './systems/MovementSystem';
 // import { combatSystem } from './systems/CombatExpansion';
  
@@ -12,10 +10,10 @@ export interface GameSystem {
 }
  
 /**
- * LISTA EXPLÍCITA E ORDENADA DE SISTEMAS.
- * A ordem aqui define a precedência lógica (ex: mover antes de calcular dano).
+ * LISTA ESTÁTICA EXPLICITA.
+ * A ordem aqui define a precedência lógica invariável.
  */
-export const systemsRegistry: GameSystem[] = [
+export const systemsRegistry: ReadonlyArray<GameSystem> = [
     movementSystem,
-    // combatSystem, // Descomentar quando integrado
+    // combatSystem, // Implementar em fase de expansão
 ];

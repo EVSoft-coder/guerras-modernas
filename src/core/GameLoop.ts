@@ -1,6 +1,6 @@
 /**
  * GameLoop.ts
- * Ciclo principal com pipeline estrita e deltaTime de alta precisão.
+ * Ciclo principal com Ciclo de Vida Completo e Pipeline Rígida.
  */
 import { stateManager, GameState } from './StateManager';
 import { systemsRegistry } from '../game/systemsRegistry';
@@ -8,65 +8,83 @@ import { systemsRegistry } from '../game/systemsRegistry';
 class GameLoop {
     private gameRunning: boolean = false;
     private lastTime: number = 0;
+    private initialized: boolean = false;
  
     /**
-     * Inicia o ciclo de operações táticas.
+     * INIT: Preparação de sensores e sistemas core.
      */
-    public start(): void {
-        if (this.gameRunning) return;
-        this.gameRunning = true;
+    public init(): void {
+        console.log('[GAMELOOP] Initializing tactical engine...');
+        this.initialized = true;
         this.lastTime = performance.now();
-        requestAnimationFrame(this.loop.bind(this));
     }
  
-    public stop(): void {
+    /**
+     * RUN: Inicia a execução do loop contínuo.
+     */
+    public run(): void {
+        if (!this.initialized) {
+            throw new Error('[GAMELOOP_ERROR] Engine must be initialized before running.');
+        }
+        if (this.gameRunning) return;
+        
+        this.gameRunning = true;
+        requestAnimationFrame(this.loop.bind(this));
+        console.log('[GAMELOOP] Operations started.');
+    }
+ 
+    /**
+     * SHUTDOWN: Cessação imediata de todas as operações.
+     */
+    public shutdown(): void {
         this.gameRunning = false;
+        console.log('[GAMELOOP] Sustaining shutdown. All operations ceased.');
     }
  
     private loop(currentTime: number): void {
         if (!this.gameRunning) return;
  
-        // Cálculo de Corretor de Tempo (DeltaTime em segundos)
+        // Cálculo de DeltaTime de alta precisão
         const deltaTime = (currentTime - this.lastTime) / 1000;
         this.lastTime = currentTime;
         
-        // Limitar deltaTime para evitar saltos em caso de lag (clamping)
+        // Clamping para manter estabilidade em caso de lag
         const cappedDelta = Math.min(deltaTime, 0.1);
  
         /**
-         * PIPELINE OPERATIVA (ORDEM OBRIGATÓRIA)
+         * PIPELINE RIGID OPERATIONAL ORDER (IMMUTABLE)
          */
          
-        // 1. INPUT (Captura de sinais)
+        // 1. INPUT (Reconhecimento de sinais)
         this.processInput();
  
-        // 2. SYSTEMS (Lógica de Jogo via Registry)
+        // 2. SYSTEMS (Processamento da Ordem de Batalha)
         if (stateManager.getState() === GameState.PLAYING) {
             this.updateSystems(cappedDelta);
         }
  
-        // 3. STATE MANAGER (Validação e transição contínua)
+        // 3. STATE MANAGER (Validação contínua de estado)
         stateManager.update(cappedDelta);
  
-        // 4. RENDER (Projeção Visual)
+        // 4. RENDER (Atualização dos visores)
         this.render();
  
         requestAnimationFrame(this.loop.bind(this));
     }
  
     private processInput(): void {
-        // Delegado via EventBus (InputSystem sinaliza mudanças)
+        // Capturado via EventBus por sistemas de input isolados
     }
  
     private updateSystems(deltaTime: number): void {
-        // Executa systems na ordem exata definida no Registry
+        // Executa a lista ESTÁTICA do systemsRegistry
         for (const system of systemsRegistry) {
             system.update(deltaTime);
         }
     }
  
     private render(): void {
-        // Atualização dos visores UI (Reativo ao estado atual)
+        // Renderização delegada a sistemas UI reactivos
     }
 }
  
