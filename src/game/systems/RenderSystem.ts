@@ -18,7 +18,6 @@ export class RenderSystem implements GameSystem {
     public preUpdate(deltaTime: number): void {}
  
     public update(deltaTime: number): void {
-        document.body.innerHTML = "<h1>RENDER OK</h1>";
         if (!this.ctx || !this.canvas) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         const entities = entityManager.getEntitiesWith(['Position', 'Sprite']);
