@@ -11,6 +11,8 @@ class GameLoop {
     public init(): void {
         if (this.initialized) return;
         
+        console.log("GAMELOOP INIT");
+        
         Logger.info('Starting Tactical Initialization...');
         for (const system of systemsRegistry) {
             system.init();
@@ -39,6 +41,7 @@ class GameLoop {
  
     private loop(currentTime: number): void {
         if (!this.gameRunning) return;
+        console.log("GAMELOOP RUNNING");
  
         const deltaTime = (currentTime - this.lastTime) / 1000;
         this.lastTime = currentTime;

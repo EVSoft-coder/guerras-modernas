@@ -1,3 +1,4 @@
+console.log("APP START");
 /**
  * src/index.ts
  * Ponto de entrada e Simulação de Engajamento COM IMAGENS.
@@ -17,6 +18,7 @@ import {
 import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
  
+console.log("BEFORE GAMELOOP");
 // 1. INICIALIZAÇÃO CORE (Preparação de Monitores)
 gameLoop.init();
  
