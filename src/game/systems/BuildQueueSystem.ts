@@ -5,6 +5,7 @@
 import { eventBus, EventPayload, Events } from '../../core/EventBus';
 import { entityManager } from '../../core/EntityManager';
 import { GameSystem } from '../systemsRegistry';
+import { buildingCosts } from '../config/buildingCosts';
 
 export interface BuildItem {
     type: string;
@@ -23,6 +24,70 @@ export class BuildQueueSystem implements GameSystem {
         eventBus.subscribe('GAME:TICK', () => {
             this.updateQueues();
         });
+
+        // Subscrever a requisições de construção
+        eventBus.subscribe(Events.BUILDING_REQUEST, (payload: EventPayload) => {
+            this.handleBuildRequest(payload);
+        });
+    }
+
+    private handleBuildRequest(payload: EventPayload): void {
+        const { entityId, data } = payload;
+        const { buildingType } = data;
+
+        if (entityId === undefined || !buildingType) return;
+
+        const costs = buildingCosts[buildingType];
+        if (!costs) {
+            console.warn(`[BUILD] Unknown building type: ${buildingType}`);
+            return;
+        }
+
+        const resources = entityManager.getComponent<any>(entityId, 'Resource');
+        if (!resources) {
+            eventBus.emit({
+                type: Events.BUILDING_FAILED,
+                entityId,
+                timestamp: Date.now(),
+                data: { reason: 'NO_RESOURCES_ENTITY', buildingType }
+            });
+            return;
+        }
+
+        // Validação de recursos
+        const hasEnough = 
+            resources.wood >= costs.wood && 
+            resources.stone >= costs.stone && 
+            resources.iron >= costs.iron;
+
+        if (hasEnough) {
+            // Consumo imediato
+            resources.wood -= costs.wood;
+            resources.stone -= costs.stone;
+            resources.iron -= costs.iron;
+
+            // Inserção na fila
+            const buildQueue = entityManager.getComponent<BuildQueueComponent>(entityId, 'BuildQueue');
+            if (buildQueue) {
+                // Tempo base de construção (pode ser expandido no config no futuro)
+                const buildTime = 10; 
+                buildQueue.queue.push({ type: buildingType, remainingTime: buildTime });
+                
+                console.log(`[BUILD] Construction started for ${buildingType} on Entity ${entityId}`);
+            }
+        } else {
+            eventBus.emit({
+                type: Events.BUILDING_FAILED,
+                entityId,
+                timestamp: Date.now(),
+                data: { 
+                    reason: 'INSUFFICIENT_RESOURCES', 
+                    buildingType,
+                    required: costs,
+                    current: { wood: resources.wood, stone: resources.stone, iron: resources.iron }
+                }
+            });
+        }
     }
 
     private updateQueues(): void {
