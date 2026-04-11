@@ -6,6 +6,7 @@ import { Radio, Crosshair, Map as MapIcon, ChevronLeft, ChevronRight, ChevronUp,
 import { AttackModal } from '@/components/game/AttackModal';
 import { router } from '@inertiajs/react';
 import { useToasts } from '@/components/game/ToastProvider';
+import { gameStateService } from '../../../src/services/GameStateService';
 
 interface MapaProps {
     bases: any[];
@@ -25,6 +26,17 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any)
     const [isSending, setIsSending] = React.useState(false);
     const [jumpX, setJumpX] = React.useState(x);
     const [jumpY, setJumpY] = React.useState(y);
+    const [entities, setEntities] = React.useState(gameStateService.getGameState());
+
+    React.useEffect(() => {
+        let frameId: number;
+        const sync = () => {
+            setEntities([...gameStateService.getGameState()]);
+            frameId = requestAnimationFrame(sync);
+        };
+        frameId = requestAnimationFrame(sync);
+        return () => cancelAnimationFrame(frameId);
+    }, []);
 
     // Inject config for the modal's internal stats engine
     if (typeof window !== 'undefined') {
@@ -115,6 +127,29 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any)
                                 ))}
                             </div>
                         ))}
+                    </div>
+                </div>
+
+                {/* MONITOR TÁCTICO ECS */}
+                <div className="mt-auto bg-black/60 p-4 border-t border-sky-500/30 font-mono text-xs">
+                    <h3 className="text-sky-500 font-black mb-2 uppercase tracking-widest flex items-center gap-2">
+                        <Target size={12} /> Telemetria de Unidades ECS
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {entities.map(ent => (
+                            <div key={ent.id} className="bg-white/5 p-2 rounded border border-white/5 hover:border-sky-500/50 transition-colors">
+                                <span className="text-sky-400 font-bold">ENT_{ent.id}</span>
+                                <div className="text-[10px] text-neutral-400">
+                                    X: <span className="text-white">{Math.round(ent.x)}</span> | 
+                                    Y: <span className="text-white">{Math.round(ent.y)}</span>
+                                </div>
+                            </div>
+                        ))}
+                        {entities.length === 0 && (
+                            <div className="col-span-full py-4 text-center text-neutral-600 animate-pulse">
+                                AGUARDANDO SINCRONIZAÇÃO COM O MOTOR NUCLEAR...
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

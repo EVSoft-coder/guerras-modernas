@@ -16,6 +16,9 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 const rootElement = document.getElementById('app');
 
 if (rootElement) {
+    // Ignição do Motor Nuclear (ECS Core)
+    import('../../src/index');
+
     // Only initialize theme and Inertia if we are in an Inertia-enabled page
     initializeTheme();
     console.log("--- GUERRAS MODERNAS SINAL V3.9.2 ATIVO ---");
