@@ -4,6 +4,7 @@
  */
 import { inputSystem } from './InputSystem';
 import { timeSystem } from './TimeSystem';
+import { resourceSystem } from './ResourceSystem';
 import { orderSystem } from './OrderSystem';
 import { aiSystem } from './AISystem';
 import { movementSystem } from './MovementSystem';
@@ -30,6 +31,7 @@ export interface GameSystem {
 export const systemsRegistry: ReadonlyArray<GameSystem> = [
     inputSystem,
     timeSystem,
+    resourceSystem,
     orderSystem,
     aiSystem,
     movementSystem,
