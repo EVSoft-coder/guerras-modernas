@@ -42,6 +42,7 @@ if (rootElement) {
             return resolvePageComponent(path, pages);
         },
         setup({ el, App, props }) {
+            console.log("UI MOUNTED");
             const root = createRoot(el);
             root.render(
             <ToastProvider>
