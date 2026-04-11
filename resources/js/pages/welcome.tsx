@@ -1,8 +1,21 @@
+import { useEffect } from 'react';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 
 export default function Welcome() {
     const auth = usePage<SharedData>().props?.auth ?? null;
+
+    useEffect(() => {
+        // Segurança: Impedir que layers do motor ECS bloqueiem a página inicial
+        const gameLayers = ['GAME_SCREEN', 'MAIN_MENU', 'PAUSE_SCREEN', 'village-view-container', 'tactical-hud', 'world-map-view'];
+        gameLayers.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = 'none';
+                el.style.pointerEvents = 'none';
+            }
+        });
+    }, []);
 
     return (
         <>

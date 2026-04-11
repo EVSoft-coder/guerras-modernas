@@ -156,3 +156,19 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* GAME LAYERS SAFETY */
+#GAME_SCREEN, #MAIN_MENU, #PAUSE_SCREEN, #village-view-container, #tactical-hud, #world-map-view {
+    pointer-events: none;
+    z-index: 400;
+}
+
+#GAME_SCREEN[style*="display: flex"], 
+#MAIN_MENU[style*="display: flex"], 
+#PAUSE_SCREEN[style*="display: flex"] {
+    /* Só permite cliques se estiver visível E não for o GAME_SCREEN (que é fundo) */
+}
+
+#MAIN_MENU, #PAUSE_SCREEN {
+    pointer-events: auto !important; /* Menus precisam de clique */
+}

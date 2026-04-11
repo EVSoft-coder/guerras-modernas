@@ -71,11 +71,15 @@ class UIManager {
     private handleStateChange(newState: GameState): void {
         this.screens.forEach(screen => {
             screen.style.display = 'none';
+            screen.style.pointerEvents = 'none';
         });
  
         const activeScreen = this.screens.get(newState);
         if (activeScreen) {
             activeScreen.style.display = 'flex';
+            // Se for o jogo principal, podemos querer clicar através dele para o React em certas áreas,
+            // mas para menus e pause, precisamos de interação total.
+            activeScreen.style.pointerEvents = (newState === GameState.PLAYING) ? 'none' : 'auto';
         }
     }
  
@@ -115,10 +119,11 @@ class UIManager {
         el.style.flexDirection = 'column';
         el.style.alignItems = 'center';
         el.style.justifyContent = 'center';
-        el.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        el.style.backgroundColor = 'transparent'; // Fundo transparente por padrão
         el.style.color = '#fff';
         el.style.fontFamily = 'monospace';
-        el.style.zIndex = '500';
+        el.style.zIndex = '400'; // Reduzido ligeiramente para evitar sobrepor overlays críticos
+        el.style.pointerEvents = 'none'; // CRÍTICO: Não bloquear cliques por padrão
         
         this.screens.set(state, el);
         return el;

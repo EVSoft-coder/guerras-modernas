@@ -14,13 +14,7 @@ declare global {
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-const rootElement = document.getElementById('app');
-
 if (rootElement) {
-    // IgniÃ§Ã£o do Motor Nuclear (ECS Core)
-    import('../../src/index');
-
-    // Only initialize theme and Inertia if we are in an Inertia-enabled page
     initializeTheme();
     console.log("--- GUERRAS MODERNAS SINAL V3.9.2 ATIVO ---");
     
@@ -31,15 +25,14 @@ if (rootElement) {
             const path = `./pages/${name}.tsx`;
             
             if (!name || name === 'undefined') {
-                // Silenciamos o aviso se for um estado de carga inicial vazio
                 if (name === 'undefined') {
-                    console.warn(`[REDE_DE_SEGURANCA] IntercepÃ§Ã£o de rota 'undefined'. Redirecionando para Dashboard.`);
+                    console.warn(`[REDE_DE_SEGURANCA] Intercepção de rota 'undefined'. Redirecionando para Dashboard.`);
                 }
                 return resolvePageComponent(`./pages/dashboard.tsx`, pages);
             }
 
             if (!pages[path]) {
-                console.error(`[INTERCEPTOR] Componente nÃ£o encontrado: ${path}. Ativando protocolo de contingÃªncia.`);
+                console.error(`[INTERCEPTOR] Componente não encontrado: ${path}. Ativando protocolo de contingência.`);
                 return resolvePageComponent(`./pages/dashboard.tsx`, pages);
             }
 
@@ -47,15 +40,38 @@ if (rootElement) {
         },
         setup({ el, App, props }) {
             console.log("UI MOUNTED");
+
+            // MOTOR ECS: Só carrega se estiver autenticado no Dashboard
+            const isAuth = (props.initialPage.props as any).auth?.user;
+            const isDashboard = props.initialPage.component.toLowerCase().includes('dashboard');
+
+            if (isAuth && isDashboard) {
+                console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
+                import('../../src/index');
+            } else {
+                // Segurança: Garantir que overlays legados ou injetados por engano não bloqueiam a UI fora do dashboard
+                const blockingElements = ['GAME_SCREEN', 'MAIN_MENU', 'PAUSE_SCREEN', 'village-view-container', 'tactical-hud', 'world-map-view'];
+                blockingElements.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.style.display = 'none';
+                        el.style.pointerEvents = 'none';
+                        el.style.visibility = 'hidden';
+                        el.style.zIndex = '-1'; // Enviar para trás de tudo
+                    }
+                });
+            }
+            
             const root = createRoot(el);
             root.render(
-            <ToastProvider>
-                <App {...props} />
-            </ToastProvider>
-        );
+                <ToastProvider>
+                    <App {...props} />
+                </ToastProvider>
+            );
         },
         progress: {
             color: '#0ea5e9',
         },
     });
 }
+
