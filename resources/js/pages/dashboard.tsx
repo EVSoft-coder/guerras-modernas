@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, DashboardProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -9,7 +9,8 @@ import { GarrisonPanel } from '@/components/game/GarrisonPanel';
 import { ProductionQueue } from '@/components/game/ProductionQueue';
 import { useToasts } from '@/components/game/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Target, Zap, ShieldAlert } from 'lucide-react';
+import { Target, Zap, ShieldAlert, Crosshair } from 'lucide-react';
+import { ArmyMovementPanel } from '@/components/game/ArmyMovementPanel';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -31,6 +32,22 @@ export default function Dashboard({
     const [selectedBuilding, setSelectedBuilding] = useState<any>(null);
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [isTraining, setIsTraining] = useState(false);
+ 
+    // AUTO-REFRESH TÁTICO: Sincroniza o dashboard se houver ações pendentes
+    useEffect(() => {
+        const hasActiveActions = 
+            (base?.construcoes?.length ?? 0) > 0 || 
+            (base?.treinos?.length ?? 0) > 0 || 
+            (ataquesEnviados?.length ?? 0) > 0 || 
+            (ataquesRecebidos?.length ?? 0) > 0;
+
+        if (hasActiveActions) {
+            const interval = setInterval(() => {
+                router.reload({ only: ['base', 'ataquesEnviados', 'ataquesRecebidos', 'relatoriosGlobal'] });
+            }, 30000); // 30 segundos
+            return () => clearInterval(interval);
+        }
+    }, [base, ataquesEnviados, ataquesRecebidos]);
 
     // GATE DE SEGURANÇA: Se a base falhar, impedimos o colapso do React
     if (!base) {
@@ -108,18 +125,12 @@ export default function Dashboard({
                              </div>
                         </div>
                         
+                        <ArmyMovementPanel 
+                            ataquesEnviados={ataquesEnviados || []} 
+                            ataquesRecebidos={ataquesRecebidos || []} 
+                        />
+
                         <VillageView base={base} onBuildingClick={handleBuildingClick} />
-                        
-                        {/* ALERTAS DE COMBATE */}
-                        {(ataquesRecebidos?.length ?? 0) > 0 && (
-                            <div className="bg-red-950/20 border border-red-500/30 p-4 rounded-xl flex items-center gap-4 animate-bounce">
-                                <ShieldAlert className="text-red-500" size={32} />
-                                <div>
-                                    <h4 className="text-red-500 font-black uppercase text-sm">AMEAÇA DETETADA</h4>
-                                    <p className="text-red-200/60 text-xs">Múltiplas assinaturas hostis a caminho da base. Ativar defesas!</p>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     {/* COLUNA DIREITA - INTELIGÊNCIA & FILAS (4 COLUNAS) */}

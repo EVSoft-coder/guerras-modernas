@@ -70,11 +70,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/switch/{id}', [BaseController::class, 'switchBase'])->name('switch');
         Route::post('/upgrade', [BaseController::class, 'upgrade'])->name('upgrade');
         Route::post('/treinar', [BaseController::class, 'treinar'])->name('treinar');
-        Route::post('/atacar', [BaseController::class, 'atacar'])->name('atacar');
+        Route::post('/atacar', [App\Http\Controllers\AtaqueController::class, 'enviar'])->name('atacar');
         Route::post('/atacar/cancelar/{id}', [BaseController::class, 'cancelarAtaque'])->name('atacar.cancelar');
         Route::post('/trocar', [BaseController::class, 'trocar'])->name('trocar');
         Route::post('/simular', [BaseController::class, 'simular'])->name('simular');
-        Route::post('/pesquisar', [BaseController::class, 'pesquisar'])->name('pesquisar');
+        Route::post('/pesquisar', [App\Http\Controllers\PesquisaController::class, 'pesquisar'])->name('pesquisar');
     });
 
     // Diplomacia e Alianças

@@ -40,7 +40,9 @@ class GameService
         // Mapeamentos retro-compatíveis e amigáveis
         $aliasMapeados = [
             'centro_de_comando' => 'qg',
+            'centro_comando' => 'qg',
             'perimetro_defensivo' => 'muralha',
+            'arsenal' => 'fabrica_municoes',
             'base_aerea' => 'aerodromo',
             'heliponto' => 'aerodromo'
         ];
@@ -373,6 +375,180 @@ class GameService
             $taxas[$res] = floor($porHora / 60);
         }
 
-        return $taxas;
+    /**
+     * Calcula o tempo de viagem entre duas coordenadas.
+     */
+    public function calcularTempoViagem($origemX, $origemY, $destinoX, $destinoY, $tropas)
+    {
+        $distancia = sqrt(pow($destinoX - $origemX, 2) + pow($destinoY - $origemY, 2));
+        
+        // Encontrar a velocidade da unidade mais lenta no grupo
+        $menorVelocidade = 999;
+        foreach ($tropas as $unidade => $quantidade) {
+            if ($quantidade > 0) {
+                $vel = config("game.units.{$unidade}.speed", 10);
+                if ($vel < $menorVelocidade) $menorVelocidade = $vel;
+            }
+        }
+
+        $speedMod = config('game.speed.travel', 1);
+        // Tempo em segundos = (Distancia / Velocidade) * 3600 / speedMod
+        // Ajustamos para ser jogável: Distancia * 60 / (Velocidade * speedMod)
+        $segundos = ($distancia * 100) / ($menorVelocidade * $speedMod);
+        
+        return max(30, (int)$segundos); // Mínimo 30 segundos de viagem
+    }
+
+    /**
+     * Inicia uma missão militar.
+     */
+    public function iniciarAtaque(Base $origem, Base $destino, array $tropasEnviadas, $tipo = 'ataque')
+    {
+        if ($origem->id === $destino->id) throw new \Exception("Auto-ataque não permitido.");
+        
+        // Validar e destacar tropas da base
+        foreach ($tropasEnviadas as $unidade => $quantidade) {
+            if ($quantidade <= 0) continue;
+            
+            $tropaLocal = $origem->tropas()->where('unidade', $unidade)->first();
+            if (!$tropaLocal || $tropaLocal->quantidade < $quantidade) {
+                throw new \Exception("Tropas insuficientes para mobilização: {$unidade}.");
+            }
+            
+            $tropaLocal->decrement('quantidade', $quantidade);
+        }
+
+        $segundos = $this->calcularTempoViagem(
+            $origem->coordenada_x, $origem->coordenada_y,
+            $destino->coordenada_x, $destino->coordenada_y,
+            $tropasEnviadas
+        );
+
+        return $origem->treinos()->getConnection()->transaction(function() use ($origem, $destino, $tropasEnviadas, $tipo, $segundos) {
+            return \App\Models\Ataque::create([
+                'origem_base_id' => $origem->id,
+                'destino_base_id' => $destino->id,
+                'tropas' => $tropasEnviadas,
+                'tipo' => $tipo,
+                'chegada_em' => now()->addSeconds($segundos),
+                'processado' => false
+            ]);
+        });
+    }
+
+    /**
+     * Motor de Combate: Resolve ataques que chegaram ao destino.
+     */
+    public function processarAtaques(Base $base)
+    {
+        // 1. Procurar ataques que CHEGAM a esta base (Invasões)
+        // 2. Procurar ataques que PARTIRAM desta base e já chegaram (Nossas Incursões)
+        $ataques = \App\Models\Ataque::where(function($query) use ($base) {
+                $query->where('destino_base_id', $base->id)
+                      ->orWhere('origem_base_id', $base->id);
+            })
+            ->where('processado', false)
+            ->where('chegada_em', '<=', now())
+            ->get();
+
+        foreach ($ataques as $ataque) {
+            $this->resolverCombate($ataque);
+        }
+    }
+
+    public function resolverCombate(\App\Models\Ataque $ataque)
+    {
+        \Illuminate\Support\Facades\DB::transaction(function() use ($ataque) {
+            $origem = $ataque->origem;
+            $destino = $ataque->destino;
+            $unidadesConfig = config('game.units');
+            
+            // 1. Calcular Força de Ataque
+            $forcaAtaque = 0;
+            foreach ($ataque->tropas as $u => $q) {
+                $forcaAtaque += $q * ($unidadesConfig[$u]['attack'] ?? 0);
+            }
+
+            // 2. Calcular Força de Defesa (Tropas + Muralha)
+            $forcaDefesa = 0;
+            $defensorTropas = $destino->tropas;
+            foreach ($defensorTropas as $t) {
+                $forcaDefesa += $t->quantidade * ($unidadesConfig[$t->unidade]['defense_general'] ?? 0);
+            }
+            
+            // Bónus de Muralha: level * 100
+            $bonusMuralha = $destino->muralha_nivel * 100;
+            $defesaTotal = $forcaDefesa + $bonusMuralha;
+
+            // 3. Resultado do Combate
+            $vitoriaAtacante = $forcaAtaque > $defesaTotal;
+            $ratio = $vitoriaAtacante ? ($defesaTotal / max(1, $forcaAtaque)) : ($forcaAtaque / max(1, $defesaTotal));
+            $ratio = min(1, $ratio * 1.2); // Factor de atrito 20% extra
+
+            // 4. Aplicar Perdas Atacante
+            $tropasAtacanteRestantes = [];
+            foreach ($ataque->tropas as $u => $q) {
+                $perdas = floor($q * ($vitoriaAtacante ? ($ratio * 0.8) : 1.0));
+                $tropasAtacanteRestantes[$u] = max(0, $q - $perdas);
+            }
+
+            // 5. Aplicar Perdas Defensor
+            foreach ($defensorTropas as $t) {
+                $perdas = floor($t->quantidade * ($vitoriaAtacante ? 1.0 : ($ratio * 0.8)));
+                $t->decrement('quantidade', $perdas);
+            }
+
+            // 6. Saque (Apenas se vitoria)
+            $saque = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0];
+            if ($vitoriaAtacante) {
+                $capacidadeCarga = 0;
+                foreach ($tropasAtacanteRestantes as $u => $q) {
+                    $capacidadeCarga += $q * ($unidadesConfig[$u]['capacity'] ?? 0);
+                }
+
+                $recursosDestino = $destino->recursos;
+                $totalDisponivel = $recursosDestino->suprimentos + $recursosDestino->combustivel + $recursosDestino->municoes;
+                
+                if ($totalDisponivel > 0) {
+                    $factorSaque = min(1, $capacidadeCarga / $totalDisponivel);
+                    foreach (['suprimentos', 'combustivel', 'municoes'] as $res) {
+                        $quant = floor($recursosDestino->$res * $factorSaque);
+                        $saque[$res] = $quant;
+                        $recursosDestino->decrement($res, $quant);
+                    }
+                }
+            }
+
+            // 7. Gerar Relatório
+            $relatorio = \App\Models\Relatorio::create([
+                'atacante_id' => $origem->jogador_id,
+                'defensor_id' => $destino->jogador_id,
+                'origem_base_id' => $origem->id,
+                'destino_base_id' => $destino->id,
+                'vitoria' => $vitoriaAtacante,
+                'dados' => [
+                    'tropas_atacante' => $ataque->tropas,
+                    'tropas_atacante_perdas' => array_map(function($q, $r) { return $q - $r; }, $ataque->tropas, $tropasAtacanteRestantes),
+                    'tropas_defensor_antes' => $defensorTropas->pluck('quantidade', 'unidade')->toArray(),
+                    'saque' => $saque,
+                    'forca_ataque' => $forcaAtaque,
+                    'forca_defesa' => $defesaTotal
+                ]
+            ]);
+
+            // 8. Retorno das tropas (ou depósito na base se retornar)
+            foreach ($tropasAtacanteRestantes as $u => $q) {
+                if ($q <= 0) continue;
+                $tropaOrigem = $origem->tropas()->firstOrCreate(['unidade' => $u], ['quantidade' => 0]);
+                $tropaOrigem->increment('quantidade', $q);
+            }
+            
+            // Adicionar saque à base de origem
+            foreach ($saque as $res => $quant) {
+                $origem->recursos->increment($res, $quant);
+            }
+
+            $ataque->update(['processado' => true]);
+        });
     }
 }

@@ -2,7 +2,10 @@ import React from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
-import { Radio, Crosshair, Map as MapIcon, ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
+import { Radio, Crosshair, Map as MapIcon, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Search, Target } from 'lucide-react';
+import { AttackModal } from '@/components/game/AttackModal';
+import { router } from '@inertiajs/react';
+import { useToasts } from '@/components/game/ToastProvider';
 
 interface MapaProps {
     bases: any[];
@@ -16,7 +19,17 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Mapa Tático', href: '/mapa' },
 ];
 
-export default function Mapa({ bases, x, y, raio }: MapaProps) {
+export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any) {
+    const { addToast } = useToasts();
+    const [selectedTarget, setSelectedTarget] = React.useState<any>(null);
+    const [isSending, setIsSending] = React.useState(false);
+    const [jumpX, setJumpX] = React.useState(x);
+    const [jumpY, setJumpY] = React.useState(y);
+
+    // Inject config for the modal's internal stats engine
+    if (typeof window !== 'undefined') {
+        (window as any).gameConfig = gameConfig;
+    }
     // Gerar a grelha de visualização
     const grid = [];
     for (let iy = y - raio; iy <= y + raio; iy++) {
@@ -42,11 +55,35 @@ export default function Mapa({ bases, x, y, raio }: MapaProps) {
                         <p className="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">Vigilância de Satélite em Tempo Real</p>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-black/40 p-2 rounded-lg border border-white/5">
-                        <Link href={`/mapa?x=${x}&y=${y-5}`} className="p-2 hover:bg-white/10 rounded transition-colors"><ChevronUp size={16} /></Link>
-                        <Link href={`/mapa?x=${x}&y=${y+5}`} className="p-2 hover:bg-white/10 rounded transition-colors"><ChevronDown size={16} /></Link>
-                        <Link href={`/mapa?x=${x-5}&y=${y}`} className="p-2 hover:bg-white/10 rounded transition-colors"><ChevronLeft size={16} /></Link>
-                        <Link href={`/mapa?x=${x+5}&y=${y}`} className="p-2 hover:bg-white/10 rounded transition-colors"><ChevronRight size={16} /></Link>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1 bg-black/40 p-1 rounded-lg border border-white/5">
+                            <input 
+                                type="number" 
+                                value={jumpX} 
+                                onChange={(e) => setJumpX(parseInt(e.target.value))}
+                                className="w-12 bg-transparent text-center text-xs font-bold border-none focus:ring-0" 
+                            />
+                            <span className="text-neutral-600">:</span>
+                            <input 
+                                type="number" 
+                                value={jumpY} 
+                                onChange={(e) => setJumpY(parseInt(e.target.value))}
+                                className="w-12 bg-transparent text-center text-xs font-bold border-none focus:ring-0" 
+                            />
+                            <button 
+                                onClick={() => router.get(`/mapa?x=${jumpX}&y=${jumpY}`)}
+                                className="p-2 hover:bg-sky-500/20 text-sky-500 rounded transition-colors"
+                            >
+                                <Search size={14} />
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-2 bg-black/40 p-2 rounded-lg border border-white/5">
+                            <Link href={`/mapa?x=${x}&y=${y-5}`} className="p-2 hover:bg-white/10 rounded transition-colors"><ChevronUp size={16} /></Link>
+                            <Link href={`/mapa?x=${x}&y=${y+5}`} className="p-2 hover:bg-white/10 rounded transition-colors"><ChevronDown size={16} /></Link>
+                            <Link href={`/mapa?x=${x-5}&y=${y}`} className="p-2 hover:bg-white/10 rounded transition-colors"><ChevronLeft size={16} /></Link>
+                            <Link href={`/mapa?x=${x+5}&y=${y}`} className="p-2 hover:bg-white/10 rounded transition-colors"><ChevronRight size={16} /></Link>
+                        </div>
                     </div>
                 </div>
 
@@ -57,8 +94,9 @@ export default function Mapa({ bases, x, y, raio }: MapaProps) {
                                 {row.map((cell, cellIndex) => (
                                     <div 
                                         key={`${cell.x}-${cell.y}`}
-                                        className={`w-12 h-12 md:w-16 md:h-16 border rounded flex flex-col items-center justify-center relative transition-all duration-300 group
-                                            ${cell.base ? 'bg-sky-500/20 border-sky-500/40 hover:bg-sky-500/40' : 'bg-white/5 border-white/5 hover:border-white/20'}
+                                        onClick={() => cell.base && cell.base.jogador_id !== origemBase?.jogador_id && setSelectedTarget(cell.base)}
+                                        className={`w-12 h-12 md:w-16 md:h-16 border rounded flex flex-col items-center justify-center relative transition-all duration-300 group cursor-pointer
+                                            ${cell.base ? (cell.base.jogador_id === origemBase?.jogador_id ? 'bg-green-500/20 border-green-500/40 hover:bg-green-500/40' : 'bg-red-500/10 border-red-500/40 hover:bg-red-500/30 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]') : 'bg-white/5 border-white/5 hover:border-white/20'}
                                             ${cell.x === x && cell.y === y ? 'border-orange-500/60 ring-1 ring-orange-500/40' : ''}
                                         `}
                                     >
@@ -80,6 +118,30 @@ export default function Mapa({ bases, x, y, raio }: MapaProps) {
                     </div>
                 </div>
             </div>
+
+            <AttackModal 
+                isOpen={!!selectedTarget}
+                onClose={() => setSelectedTarget(null)}
+                origemBase={origemBase}
+                destinoBase={selectedTarget}
+                tropasDisponiveis={origemBase?.tropas || []}
+                isSending={isSending}
+                onEnviar={(params) => {
+                    setIsSending(true);
+                    router.post('/base/atacar', params, {
+                        onSuccess: () => {
+                            addToast('ORDEM DE MARCHA CONFIRMADA!', 'success');
+                            setSelectedTarget(null);
+                            setIsSending(false);
+                            router.visit('/dashboard');
+                        },
+                        onError: (e: any) => {
+                            addToast(e.error || 'FALHA NA TRANSMISSÃO', 'error');
+                            setIsSending(false);
+                        }
+                    });
+                }}
+            />
         </AppLayout>
     );
 }

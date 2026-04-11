@@ -26,7 +26,17 @@ class MapaController extends Controller
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
             ->get();
 
-        return \Inertia\Inertia::render('mapa', compact('bases', 'x', 'y', 'raio'));
+        $selectedBaseId = session('selected_base_id');
+        $origemBase = Base::with('tropas')->find($selectedBaseId) ?? Base::where('jogador_id', \Illuminate\Support\Facades\Auth::id())->with('tropas')->first();
+
+        return \Inertia\Inertia::render('mapa', [
+            'bases' => $bases,
+            'x' => $x,
+            'y' => $y,
+            'raio' => $raio,
+            'origemBase' => $origemBase,
+            'gameConfig' => config('game')
+        ]);
     }
 
     /**

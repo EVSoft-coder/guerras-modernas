@@ -128,6 +128,7 @@ class AuthController extends Controller
             $base->updateResources();
             $gameService = new GameService();
             $gameService->processarFila($base);
+            $gameService->processarAtaques($base);
             
             // Recarregar com todas as dependências finais
             $base->refresh();
