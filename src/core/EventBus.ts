@@ -1,7 +1,5 @@
-/**
- * src/core/EventBus.ts
- * Barramento de eventos normalizado (Doutrina v1.2).
- */
+import { Logger } from './Logger';
+ 
 export interface EventPayload {
     type: string;        // Formato: NAMESPACE:ACTION
     entityId?: number;
@@ -32,6 +30,9 @@ class EventBus {
     public emit(payload: EventPayload): void {
         const type = payload.type.toUpperCase();
         
+        // Registo Táctico
+        Logger.event(type, payload);
+ 
         // Validação estrita em runtime (MEA Protocol)
         if (!type || !payload.timestamp || !payload.data) {
             console.error('[EVENT_BUS_FAILURE] Invalid payload rejected.', payload);
