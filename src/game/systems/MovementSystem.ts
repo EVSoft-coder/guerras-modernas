@@ -31,6 +31,13 @@ export class MovementSystem implements GameSystem {
             if (state.down)  vel.dy += 1;
             if (state.left)  vel.dx -= 1;
             if (state.right) vel.dx += 1;
+ 
+            // Normalização: Evitar que diagonal seja mais rápida (sqrt(2))
+            const length = Math.sqrt(vel.dx * vel.dx + vel.dy * vel.dy);
+            if (length > 0) {
+                vel.dx /= length;
+                vel.dy /= length;
+            }
         }
     }
  
