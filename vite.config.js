@@ -18,4 +18,14 @@ export default defineConfig({
     esbuild: {
         jsx: 'automatic',
     },
+    build: {
+        rollupOptions: {
+            external: ['framer-motion'],
+            output: {
+                globals: {
+                    'framer-motion': 'FramerMotion'
+                }
+            }
+        }
+    }
 });
