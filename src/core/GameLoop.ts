@@ -1,83 +1,99 @@
 /**
- * GameLoop.ts
- * Ciclo principal com Pipeline Táctico em 4 Fases.
+ * GameLoop.ts - Doutrina de Estabilização v1.0.
+ * Ciclo principal com Pipeline Táctico Rígido.
  */
-import { stateManager, GameState } from './StateManager';
-import { systemsRegistry, GameSystem } from '../game/systems/systemsRegistry';
+import { stateManager } from './StateManager';
+import { systemsRegistry } from '../game/systems/systemsRegistry';
  
 class GameLoop {
     private gameRunning: boolean = false;
     private lastTime: number = 0;
     private initialized: boolean = false;
+    private animationFrameId: number | null = null;
  
     /**
-     * INIT: Inicialização de todos os subsistemas da ordem de batalha.
+     * INIT: Inicialização sequencial de todos os subsistemas.
      */
     public init(): void {
+        if (this.initialized) return;
+ 
         console.log('[GAMELOOP] Starting Tactical Initialization...');
+        
         for (const system of systemsRegistry) {
             system.init();
         }
+ 
         this.initialized = true;
         this.lastTime = performance.now();
+        console.log('[GAMELOOP] Initialization Complete.');
     }
  
     /**
-     * RUN: Ativação do motor rítmico.
+     * RUN: Início da simulação tática.
      */
     public run(): void {
         if (!this.initialized) {
-            throw new Error('[GAMELOOP_CRITICAL] Engine must be initialized first.');
+            this.init();
         }
         if (this.gameRunning) return;
-        
+ 
         this.gameRunning = true;
-        console.log('[GAMELOOP] Operations Active. Pipeline sequence:');
-        console.log('1. [INPUT] -> 2. [LOGIC SYSTEMS] -> 3. [STATE] -> 4. [RENDER]');
+        console.log('[GAMELOOP] Mission Active. Pipeline: Input -> Systems -> State -> Render');
         
-        requestAnimationFrame(this.loop.bind(this));
+        this.animationFrameId = requestAnimationFrame(this.loop.bind(this));
     }
  
     /**
-     * SHUTDOWN: Cessação e destruição de subsistemas.
+     * SHUTDOWN: Cessação imediata de todas as operações.
      */
     public shutdown(): void {
         this.gameRunning = false;
+        
+        if (this.animationFrameId !== null) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+ 
         for (const system of systemsRegistry) {
             system.destroy();
         }
-        console.log('[GAMELOOP] Total Shutdown. All stations offline.');
+ 
+        console.log('[GAMELOOP] System Shutdown. All stations offline.');
     }
  
+    /**
+     * LOOP: Ciclo rítmico determinístico.
+     */
     private loop(currentTime: number): void {
         if (!this.gameRunning) return;
  
-        // DeltaTime de alta precisão (seconds)
+        // 1. CÁLCULO EXPLÍCITO DE DELTATIME
         const deltaTime = (currentTime - this.lastTime) / 1000;
         this.lastTime = currentTime;
+        
+        // Proteção contra saltos gigantes de frame (ex: mudança de tab)
         const cappedDelta = Math.min(deltaTime, 0.1);
  
         /**
-         * PIPELINE RIGIDO (Fase 3 - Doutrina 1.1)
+         * 2. PIPELINE FIXO E IMUTÁVEL
          */
          
-        // 1. [INPUT] - Geralmente o primeiro da lista
+        // FASE A: [INPUT] (Sempre o primeiro elemento do registry)
         systemsRegistry[0].update(cappedDelta);
  
-        // 2. [SYSTEMS] - Lógica intermédia
+        // FASE B: [SYSTEMS] (Lógica tática intermédia)
         for (let i = 1; i < systemsRegistry.length - 1; i++) {
             systemsRegistry[i].update(cappedDelta);
         }
  
-        // 3. [STATE MANAGER] - Validação e transições
+        // FASE C: [STATE MANAGER] (Validação e consolidação de estado interno)
         stateManager.update(cappedDelta);
  
-        // 4. [RENDER] - Último sistema da lista (Projeção)
-        if (systemsRegistry.length > 1) {
-            systemsRegistry[systemsRegistry.length - 1].update(cappedDelta);
-        }
+        // FASE D: [RENDER] (Sempre o último elemento do registry)
+        systemsRegistry[systemsRegistry.length - 1].update(cappedDelta);
  
-        requestAnimationFrame(this.loop.bind(this));
+        // Agendar próximo ciclo
+        this.animationFrameId = requestAnimationFrame(this.loop.bind(this));
     }
 }
  
