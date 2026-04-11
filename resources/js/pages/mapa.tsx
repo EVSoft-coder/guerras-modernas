@@ -143,6 +143,13 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any)
                                     X: <span className="text-white">{Math.round(ent.x)}</span> | 
                                     Y: <span className="text-white">{Math.round(ent.y)}</span>
                                 </div>
+                                {ent.resources && (
+                                    <div className="flex gap-2 mt-1 text-[8px] font-bold">
+                                        <span className="text-amber-500">W: {ent.resources.wood}</span>
+                                        <span className="text-neutral-400">S: {ent.resources.stone}</span>
+                                        <span className="text-sky-400">I: {ent.resources.iron}</span>
+                                    </div>
+                                )}
                             </div>
                         ))}
                         {entities.length === 0 && (

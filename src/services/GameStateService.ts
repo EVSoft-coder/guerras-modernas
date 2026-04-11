@@ -11,6 +11,7 @@ export interface EntitySnapshot {
     sprite?: string;
     health?: { current: number; max: number };
     isSelected?: boolean;
+    resources?: { wood: number; stone: number; iron: number };
 }
  
 class GameStateService {
@@ -29,6 +30,7 @@ class GameStateService {
             const sprite = entityManager.getComponent<any>(id, 'Sprite');
             const health = entityManager.getComponent<any>(id, 'Health');
             const selection = entityManager.getComponent<any>(id, 'Selection');
+            const res = entityManager.getComponent<any>(id, 'Resource');
  
             newSnapshots.push({
                 id,
@@ -36,7 +38,8 @@ class GameStateService {
                 y: pos.y,
                 sprite: sprite?.imagePath,
                 health: health ? { current: health.value, max: health.max } : undefined,
-                isSelected: !!selection
+                isSelected: !!selection,
+                resources: res ? { wood: res.wood, stone: res.stone, iron: res.iron } : undefined
             });
         }
  
@@ -52,4 +55,3 @@ class GameStateService {
 }
  
 export const gameStateService = new GameStateService();
-鼓
