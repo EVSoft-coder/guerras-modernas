@@ -2,14 +2,46 @@
  * StateManager.ts
  * Gestor tático de alta autoridade para estados globais (FSM).
  */
-import { eventBus } from './EventBus';
+import { eventBus, Events } from './EventBus';
  
-export type GameMode = 'VILLAGE' | 'WORLD_MAP' | 'COMBAT' | 'LOADING';
+export enum GameState {
+    MENU = 'MENU',
+    PLAYING = 'PLAYING',
+    PAUSED = 'PAUSED',
+    GAMEOVER = 'GAMEOVER'
+}
+
+export enum GameMode {
+    VILLAGE = 'VILLAGE',
+    WORLD_MAP = 'WORLD_MAP',
+    COMBAT = 'COMBAT',
+    LOADING = 'LOADING'
+}
  
 class StateManager {
-    private currentMode: GameMode = 'VILLAGE';
+    private currentMode: GameMode = GameMode.VILLAGE;
+    private currentState: GameState = GameState.MENU;
     private isPaused: boolean = false;
  
+    /**
+     * Define o estado operacional (Menu, Jogo, etc).
+     */
+    public setState(state: GameState): void {
+        if (this.currentState === state) return;
+        const oldState = this.currentState;
+        this.currentState = state;
+        
+        eventBus.emit({
+            type: Events.GAME_STATE_CHANGED,
+            timestamp: Date.now(),
+            data: { newState: state, oldState }
+        });
+    }
+
+    public getState(): GameState {
+        return this.currentState;
+    }
+
     /**
      * Define o modo de jogo atual e emite sinalização de transição.
      */
@@ -22,7 +54,7 @@ class StateManager {
         console.log(`[STATE_TRANSITION] ${oldMode} -> ${mode}`);
  
         eventBus.emit({
-            type: 'GAMEMODE:CHANGED',
+            type: Events.GAMEMODE_CHANGED,
             timestamp: Date.now(),
             data: { mode, previous: oldMode }
         });
@@ -38,7 +70,7 @@ class StateManager {
     public setPaused(paused: boolean): void {
         this.isPaused = paused;
         eventBus.emit({
-            type: paused ? 'GAME:REQUEST_PAUSE' : 'GAME:REQUEST_RESUME',
+            type: paused ? Events.GAME_REQUEST_PAUSE : Events.GAME_REQUEST_RESUME,
             timestamp: Date.now(),
             data: { isPaused: paused }
         });

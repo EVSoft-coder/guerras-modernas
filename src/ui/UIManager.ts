@@ -3,7 +3,6 @@
  * Gestor de Interfaces Sincronizado com Doutrina v1.2.
  */
 import { eventBus, Events, EventPayload } from '../core/EventBus';
-import { GameState } from '../core/StateManager';
 import { hud } from './hud/HUD';
 import { villageView } from './village/VillageView';
 import { worldMapView } from './map/WorldMapView';
@@ -19,17 +18,17 @@ class UIManager {
         villageView.initialize();
         worldMapView.initialize();
  
-        // Subscrever Ã  mudanÃ§a de estado tÃ¡tico (Vila / Mapa)
+        // Subscrever à mudança de estado tático (Vila / Mapa)
         eventBus.subscribe(Events.GAMEMODE_CHANGED, (p: EventPayload) => {
             this.handleModeChange(p.data.mode as GameMode);
         });
 
-        // Subscrever Ã  mudanÃ§a de estado operacional (Menu / Pause / Jogo)
+        // Subscrever à mudança de estado operacional (Menu / Pause / Jogo)
         eventBus.subscribe(Events.GAME_STATE_CHANGED, (p: EventPayload) => {
             const newState = p.data.newState as GameState;
             this.handleStateChange(newState);
 
-            // RenderizaÃ§Ã£o Condicional baseada no Modo de Jogo
+            // Renderização Condicional baseada no Modo de Jogo
             if (newState === GameState.PLAYING) {
                 this.handleModeChange(stateManager.getMode());
             } else {
