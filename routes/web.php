@@ -33,18 +33,24 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Gatilho de Emergência (Público para Reparação - NUC CLEAR)
+// Gatilho de Emergência (Público para Reparação - NUC CLEAR & DEPLOY)
 Route::get('/mw-admin-trigger-99', function() {
     try {
+        $output = [];
+        // Tentar git pull para atualizar o código
+        exec('git pull origin master 2>&1', $output);
+        
         Artisan::call('view:clear');
         Artisan::call('cache:clear');
         Artisan::call('config:clear');
         Artisan::call('route:clear');
+        Artisan::call('migrate --force');
         
         return response()->json([
             'status' => 'SUCCESS',
             'mission' => 'SINAL PURO',
-            'message' => 'Cache detonada. Vistas e configurações recarregadas com sucesso no servidor OVH.',
+            'git_output' => $output,
+            'message' => 'Código sincronizado, migrações executadas e cache detonada no servidor OVH.',
             'timestamp' => now()->toDateTimeString()
         ]);
     } catch (\Exception $e) {
