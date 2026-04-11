@@ -3,6 +3,7 @@
  * systemsRegistry.ts - Doutrina de Execução Determinística v1.1 (Phases).
  */
 import { inputSystem } from './InputSystem';
+import { timeSystem } from './TimeSystem';
 import { orderSystem } from './OrderSystem';
 import { aiSystem } from './AISystem';
 import { movementSystem } from './MovementSystem';
@@ -28,6 +29,7 @@ export interface GameSystem {
  */
 export const systemsRegistry: ReadonlyArray<GameSystem> = [
     inputSystem,
+    timeSystem,
     orderSystem,
     aiSystem,
     movementSystem,
