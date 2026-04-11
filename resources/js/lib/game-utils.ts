@@ -38,3 +38,15 @@ export const calculateConstructionTime = (timeBase: number, currentLevel: number
 export const calculateResourceProduction = (baseProd: number, level: number, speed: number = 1, scaling: number = 1.5): number => {
     return Math.floor((baseProd * speed) * (1 + (level * scaling)));
 };
+/**
+ * Limpa e converte valores de recursos para números puros para comparação.
+ * Útil quando o backend envia valores formatados (string).
+ */
+export const parseResourceValue = (val: any): number => {
+    if (typeof val === 'number') return val;
+    if (typeof val === 'string') {
+        // Remove separadores de milhar (pontos ou vírgulas)
+        return parseFloat(val.replace(/[^\d.-]/g, '')) || 0;
+    }
+    return 0;
+};

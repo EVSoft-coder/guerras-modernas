@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRight, X, Loader2, Target as Sword } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getEvolutionLevelAsset, calculateBuildingCost, calculateConstructionTime, calculateResourceProduction } from '@/lib/game-utils';
+import { getEvolutionLevelAsset, calculateBuildingCost, calculateConstructionTime, calculateResourceProduction, parseResourceValue } from '@/lib/game-utils';
 
 interface BuildingModalProps {
     isOpen: boolean;
@@ -56,7 +56,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         
         const scaling = gameConfig?.scaling || 1.5;
         const totalCost = calculateBuildingCost(baseAmount, building.nivel || 0, scaling);
-        const playerAmount = building.base?.recursos?.[resourceType] || 0;
+        const playerAmount = parseResourceValue(building.base?.recursos?.[resourceType] || 0);
         const hasEnough = playerAmount >= totalCost;
         
         const resourceIcons: Record<string, string> = {
@@ -121,7 +121,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     // Verificar se tem todos os recursos para o upgrade
     const canAfford = config.cost ? Object.entries(config.cost).every(([type, amount]: any) => {
         const cost = calculateBuildingCost(amount, building.nivel || 0, gameConfig?.scaling || 1.5);
-        return (building.base?.recursos?.[type] || 0) >= cost;
+        return parseResourceValue(building.base?.recursos?.[type] || 0) >= cost;
     }) : true;
 
     // Lógica de Recrutamento
@@ -146,7 +146,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     const renderUnitCard = ([key, unit]: [string, any]) => {
         const isSelected = selectedUnit === key;
         const canAffordUnit = Object.entries(unit.cost || {}).every(([res, amt]: any) => 
-            (building.base?.recursos?.[res] || 0) >= (amt * trainQty)
+            parseResourceValue(building.base?.recursos?.[res] || 0) >= (amt * trainQty)
         );
 
         return (
