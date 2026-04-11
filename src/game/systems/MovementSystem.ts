@@ -1,44 +1,32 @@
 /**
  * src/game/systems/MovementSystem.ts
- * Domínio de Navegação e Física.
+ * Executor Cinematográfico (Domínio da Física).
  */
 import { entityManager } from '../../core/EntityManager';
 import { GameSystem } from '../systemsRegistry';
  
 export class MovementSystem implements GameSystem {
     public init(): void {
-        console.log('[SYSTEM] MovementSystem - Navigation Online.');
+        console.log('[SYSTEM] MovementSystem - Cinematic Processor ONLINE.');
     }
  
     public preUpdate(deltaTime: number): void {}
  
+    /**
+     * Aplica translação física: Position += Velocity * deltaTime
+     */
     public update(deltaTime: number): void {
+        // Obter entidades com competência de movimento (Position + Velocity)
         const entities = entityManager.getEntitiesWith(['Position', 'Velocity']);
-        
+ 
         for (const entityId of entities) {
             const pos = entityManager.getComponent<any>(entityId, 'Position');
             const vel = entityManager.getComponent<any>(entityId, 'Velocity');
-            const target = entityManager.getComponent<any>(entityId, 'Target');
  
-            if (target) {
-                const dx = target.x - pos.x;
-                const dy = target.y - pos.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
- 
-                if (distance > 5) {
-                    const speed = 100;
-                    vel.vx = (dx / distance) * speed;
-                    vel.vy = (dy / distance) * speed;
-                } else {
-                    vel.vx = 0;
-                    vel.vy = 0;
-                    entityManager.removeComponent(entityId, 'Target');
-                }
-            }
- 
-            if (vel.vx !== 0 || vel.vy !== 0) {
-                pos.x += vel.vx * deltaTime;
-                pos.y += vel.vy * deltaTime;
+            // Execução Cinematográfica Linear
+            if (pos && vel) {
+                pos.x += vel.dx * deltaTime;
+                pos.y += vel.dy * deltaTime;
             }
         }
     }
@@ -46,7 +34,7 @@ export class MovementSystem implements GameSystem {
     public postUpdate(deltaTime: number): void {}
  
     public destroy(): void {
-        console.log('[SYSTEM] MovementSystem - Navigation Offline.');
+        console.log('[SYSTEM] MovementSystem - Cinematic Processor OFFLINE.');
     }
 }
  
