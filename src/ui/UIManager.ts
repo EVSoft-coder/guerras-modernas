@@ -7,7 +7,7 @@ import { GameState } from '../core/StateManager';
 import { hud } from './hud/HUD';
 import { villageView } from './village/VillageView';
 import { worldMapView } from './map/WorldMapView';
-import { GameMode } from '../core/StateManager';
+import { stateManager, GameState, GameMode } from '../core/StateManager';
  
 class UIManager {
     private screens: Map<GameState, HTMLElement> = new Map();
@@ -24,12 +24,17 @@ class UIManager {
             this.handleModeChange(p.data.mode as GameMode);
         });
 
-        // Subscrever à mudança de estado normalizada
+        // Subscrever à mudança de estado operacional (Menu / Pause / Jogo)
         eventBus.subscribe(Events.GAME_STATE_CHANGED, (p: EventPayload) => {
-            this.handleStateChange(p.data.newState);
-            // Se entramos em PLAYING, garantimos que a vista inicial está correta
-            if (p.data.newState === GameState.PLAYING) {
-                villageView.show();
+            const newState = p.data.newState as GameState;
+            this.handleStateChange(newState);
+
+            // Renderização Condicional baseada no Modo de Jogo
+            if (newState === GameState.PLAYING) {
+                this.handleModeChange(stateManager.getMode());
+            } else {
+                villageView.hide();
+                worldMapView.hide();
             }
         });
  
