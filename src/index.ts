@@ -72,7 +72,7 @@ entityManager.addComponent(enemyUnit, new SpriteComponent('/images/unidades/tanq
 console.log(`[BOOT] Enemy Unit Omega (ID: ${enemyUnit}) detected with Main Battle Tank.`);
  
 // 5. AUTORIZAÃ‡ÃƒO DE COMBATE
-stateManager.forceState(GameState.PLAYING);
+stateManager.setState(GameState.PLAYING);
 
  
 console.log('--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---');
