@@ -1,12 +1,12 @@
 /**
- * EventBus.ts
- * Barramento de eventos táticos com disciplina estrita de payload.
+ * src/core/EventBus.ts
+ * Barramento de eventos normalizado (Doutrina v1.2).
  */
 export interface EventPayload {
-    type: string;
+    type: string;        // Formato: NAMESPACE:ACTION
     entityId?: number;
     timestamp: number;
-    data: any;
+    data: Record<string, any>;
 }
  
 export type TacticalHandler = (payload: EventPayload) => void;
@@ -15,7 +15,7 @@ class EventBus {
     private handlers: Map<string, TacticalHandler[]> = new Map();
  
     /**
-     * Subscreve um manipulador. O eventType é normalizado para UPPER_CASE.
+     * Subscreve um manipulador. O eventType deve ser NAMESPACE:ACTION.
      */
     public subscribe(eventType: string, handler: TacticalHandler): void {
         const type = eventType.toUpperCase();
@@ -26,18 +26,19 @@ class EventBus {
     }
  
     /**
-     * Emite um evento através de um payload COMPLETO.
-     * Única via de sinalização autorizada.
+     * Emite um evento através de um payload COMPLETO e normalizado.
+     * Única via de sinalização autorizada nesta doutrina.
      */
     public emit(payload: EventPayload): void {
-        // Validação Estrita em Runtime
-        if (!payload || !payload.type || typeof payload.timestamp !== 'number' || payload.data === undefined) {
-            throw new Error(`[EVENT_BUS_FAILURE] Illicit signal detected. Payload must contain {type, timestamp, data}. Received: ${JSON.stringify(payload)}`);
+        const type = payload.type.toUpperCase();
+        
+        // Validação estrita em runtime (MEA Protocol)
+        if (!type || !payload.timestamp || !payload.data) {
+            console.error('[EVENT_BUS_FAILURE] Invalid payload rejected.', payload);
+            return;
         }
  
-        const type = payload.type.toUpperCase();
         const callbacks = this.handlers.get(type);
-        
         if (callbacks) {
             callbacks.forEach(cb => cb(payload));
         }
@@ -46,11 +47,25 @@ class EventBus {
  
 export const eventBus = new EventBus();
  
-// Doutrina de Eventos Pré-definidos
+/**
+ * Dicionário Normalizado de Eventos (NAMESPACE:ACTION)
+ */
 export const Events = {
-    UNIT_MOVED: 'UNIT_MOVED',
-    UNIT_DAMAGED: 'UNIT_DAMAGED',
-    STATE_CHANGED: 'STATE_CHANGED',
-    REQUEST_PAUSE: 'REQUEST_PAUSE',
-    REQUEST_RESUME: 'REQUEST_RESUME'
+    // Sistema
+    GAME_STATE_CHANGED: 'GAME:STATE_CHANGED',
+    GAME_REQUEST_PAUSE: 'GAME:REQUEST_PAUSE',
+    GAME_REQUEST_RESUME: 'GAME:REQUEST_RESUME',
+    
+    // Controlo Humano
+    PLAYER_UNIT_SELECTED: 'PLAYER:UNIT_SELECTED',
+    PLAYER_SELECTION_CLEARED: 'PLAYER:SELECTION_CLEARED',
+    PLAYER_MOVE_ORDER: 'PLAYER:MOVE_ORDER',
+    
+    // Combate
+    COMBAT_UNIT_DAMAGED: 'COMBAT:UNIT_DAMAGED',
+    COMBAT_UNIT_DESTROYED: 'COMBAT:UNIT_DESTROYED',
+    
+    // Sensores
+    INPUT_KEY_DOWN: 'INPUT:KEY_DOWN',
+    INPUT_KEY_UP: 'INPUT:KEY_UP'
 };

@@ -1,51 +1,49 @@
 /**
- * InputSystem.ts
- * Captura de Entradas e Disparo de Eventos.
+ * src/game/systems/InputSystem.ts
+ * Sensores de Entrada com Sinalização Normalizada.
  */
-import { eventBus } from '../../core/EventBus';
+import { eventBus, Events } from '../../core/EventBus';
 import { GameSystem } from '../systemsRegistry';
  
 export class InputSystem implements GameSystem {
     private keysPressed: Set<string> = new Set();
  
     public init(): void {
-        console.log('[SYSTEM] InputSystem - Sensors online.');
-        window.addEventListener('keydown', this.handleKeyDown);
-        window.addEventListener('keyup', this.handleKeyUp);
+        console.log('[SYSTEM] InputSystem - Online.');
+        window.addEventListener('keydown', this.handleKeyDown.bind(this));
+        window.addEventListener('keyup', this.handleKeyUp.bind(this));
     }
  
     public update(deltaTime: number): void {
-        // Log básico de telemetria
-        if (this.keysPressed.size > 0) {
-            console.log(`[SYSTEM] InputSystem update - Active keys: ${Array.from(this.keysPressed).join(', ')}`);
-        }
+        // Telemetria básica
     }
  
     public destroy(): void {
         window.removeEventListener('keydown', this.handleKeyDown);
         window.removeEventListener('keyup', this.handleKeyUp);
-        console.log('[SYSTEM] InputSystem - Sensors offline.');
     }
  
-    private handleKeyDown = (e: KeyboardEvent) => {
+    private handleKeyDown(e: KeyboardEvent): void {
         if (!this.keysPressed.has(e.code)) {
             this.keysPressed.add(e.code);
+            
             eventBus.emit({
-                type: 'KEY_DOWN',
+                type: Events.INPUT_KEY_DOWN,
                 timestamp: Date.now(),
                 data: { key: e.code }
             });
         }
-    };
+    }
  
-    private handleKeyUp = (e: KeyboardEvent) => {
+    private handleKeyUp(e: KeyboardEvent): void {
         this.keysPressed.delete(e.code);
+        
         eventBus.emit({
-            type: 'KEY_UP',
+            type: Events.INPUT_KEY_UP,
             timestamp: Date.now(),
             data: { key: e.code }
         });
-    };
+    }
  
     public isKeyPressed(code: string): boolean {
         return this.keysPressed.has(code);

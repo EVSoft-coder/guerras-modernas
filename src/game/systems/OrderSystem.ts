@@ -1,17 +1,16 @@
 /**
  * src/game/systems/OrderSystem.ts
- * Gestão de Selecção e Ordens de Marcha.
+ * Centro de Comando com Sinalização Normalizada.
  */
 import { entityManager } from '../../core/EntityManager';
-import { eventBus } from '../../core/EventBus';
+import { eventBus, Events } from '../../core/EventBus';
 import { TargetComponent, SelectionComponent } from '../components/BaseComponents';
 import { GameSystem } from '../systemsRegistry';
  
 export class OrderSystem implements GameSystem {
     public init(): void {
-        console.log('[SYSTEM] OrderSystem - Tactical Uplink ACTIVE.');
+        console.log('[SYSTEM] OrderSystem - Tactical Downlink ACTIVE.');
         window.addEventListener('mousedown', this.handleMouseClick.bind(this));
-        // Impedir o menu de contexto padrão para usar botão direito como ordem
         window.addEventListener('contextmenu', (e) => e.preventDefault());
     }
  
@@ -19,9 +18,9 @@ export class OrderSystem implements GameSystem {
         const mouseX = e.clientX;
         const mouseY = e.clientY;
  
-        if (e.button === 0) { // BOTÃO ESQUERDO: Selecção
+        if (e.button === 0) { // ESQUERDO: Selecção
             this.processSelection(mouseX, mouseY);
-        } else if (e.button === 2) { // BOTÃO DIREITO: Ordem de Marcha
+        } else if (e.button === 2) { // DIREITO: Marcha
             this.processMoveOrder(mouseX, mouseY);
         }
     }
@@ -30,29 +29,36 @@ export class OrderSystem implements GameSystem {
         const entities = entityManager.getEntitiesWith(['Position', 'Sprite']);
         let found = false;
  
-        // 1. Limpar selecções anteriores
+        // 1. Limpar Selecções
         const selected = entityManager.getEntitiesWith(['Selection']);
         selected.forEach(id => entityManager.removeComponent(id, 'Selection'));
  
-        // 2. Tentar seleccionar nova unidade
+        // 2. Novo Target
         for (const id of entities) {
             const pos = entityManager.getComponent<any>(id, 'Position');
             const dist = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
  
-            if (dist < 40) { // Raio de clique tático
+            if (dist < 40) {
                 entityManager.addComponent(id, new SelectionComponent());
+                
                 eventBus.emit({
-                    type: 'UNIT_SELECTED',
+                    type: Events.PLAYER_UNIT_SELECTED,
+                    entityId: id,
                     timestamp: Date.now(),
-                    data: { entityId: id }
+                    data: { x: pos.x, y: pos.y }
                 });
+                
                 found = true;
                 break;
             }
         }
  
         if (!found) {
-            eventBus.emit({ type: 'SELECTION_CLEARED', timestamp: Date.now(), data: {} });
+            eventBus.emit({
+                type: Events.PLAYER_SELECTION_CLEARED,
+                timestamp: Date.now(),
+                data: {}
+            });
         }
     }
  
@@ -60,24 +66,23 @@ export class OrderSystem implements GameSystem {
         const selected = entityManager.getEntitiesWith(['Selection', 'Position']);
         
         selected.forEach(id => {
-            // Adicionar ou Atualizar Alvo
             entityManager.addComponent(id, new TargetComponent(x, y));
             
             eventBus.emit({
-                type: 'MOVE_ORDER_ISSUED',
+                type: Events.PLAYER_MOVE_ORDER,
+                entityId: id,
                 timestamp: Date.now(),
-                data: { entityId: id, targetX: x, targetY: y }
+                data: { targetX: x, targetY: y }
             });
         });
     }
  
     public update(deltaTime: number): void {
-        // Lógica de pulso se necessário
+        // Lógica de pulso
     }
  
     public destroy(): void {
         window.removeEventListener('mousedown', this.handleMouseClick);
-        console.log('[SYSTEM] OrderSystem - Downlink Offline.');
     }
 }
  

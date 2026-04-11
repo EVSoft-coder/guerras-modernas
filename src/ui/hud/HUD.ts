@@ -1,20 +1,17 @@
 /**
  * src/ui/hud/HUD.ts
- * Visualização tática de telemetria em tempo real.
+ * Telemetria Visual Sincronizada com Doutrina v1.2.
  */
-import { eventBus, Events } from '../../core/EventBus';
+import { eventBus, Events, EventPayload } from '../../core/EventBus';
  
 export class HUD {
-    private domElement: HTMLElement | null = null;
- 
     public initialize(): void {
         this.createDOM();
         this.subscribeToEvents();
-        console.log('[UI_HUD] Tactical monitors initialized.');
+        console.log('[UI_HUD] Tactical Monitors NORMALIZING.');
     }
  
     private createDOM(): void {
-        // Criação dinámica do HUD tático (Injetado via DOM)
         const hud = document.createElement('div');
         hud.id = 'tactical-hud';
         hud.style.position = 'absolute';
@@ -22,8 +19,8 @@ export class HUD {
         hud.style.left = '20px';
         hud.style.zIndex = '1000';
         hud.style.fontFamily = 'monospace';
-        hud.style.color = '#00ff00'; // Verde militar
-        hud.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        hud.style.color = '#00ff00';
+        hud.style.backgroundColor = 'rgba(0,0,0,0.7)';
         hud.style.padding = '15px';
         hud.style.borderLeft = '4px solid #00ff00';
         hud.style.pointerEvents = 'none';
@@ -36,21 +33,20 @@ export class HUD {
         `;
         
         document.body.appendChild(hud);
-        this.domElement = hud;
     }
  
     private subscribeToEvents(): void {
-        // SUBSCREVER TELEMETRIA DE JOGO
-        eventBus.subscribe('UNIT_DAMAGED', (payload) => {
-            this.updateHealth(payload.data.newHealth);
+        // Subscrever aos novos canais normalizados
+        eventBus.subscribe(Events.COMBAT_UNIT_DAMAGED, (p: EventPayload) => {
+            this.updateHealth(p.data.newHealth);
         });
  
-        eventBus.subscribe('UNIT_MOVED', (payload) => {
-            this.updateProgress(payload.data.x);
+        eventBus.subscribe(Events.PLAYER_MOVE_ORDER, (p: EventPayload) => {
+            this.updateProgress(p.data.targetX); // Exemplo de telemetria de progresso
         });
  
-        eventBus.subscribe(Events.STATE_CHANGED, (payload) => {
-            this.updateState(payload.data.newState);
+        eventBus.subscribe(Events.GAME_STATE_CHANGED, (p: EventPayload) => {
+            this.updateState(p.data.newState);
         });
     }
  
@@ -61,7 +57,8 @@ export class HUD {
  
     private updateProgress(x: number): void {
         const el = document.getElementById('hud-score');
-        if (el) el.innerText = `PROGRESS: ${Math.floor(x)}m`;
+        // Simulação de cálculo de distância tática
+        if (el) el.innerText = `DESTINATION_X: ${Math.floor(x)}m`;
     }
  
     private updateState(state: string): void {
