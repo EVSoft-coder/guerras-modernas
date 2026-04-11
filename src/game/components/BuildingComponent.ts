@@ -4,7 +4,9 @@ export class BuildingComponent implements Component {
     public readonly type = 'Building';
     constructor(
         public name: string,
+        public buildingType: string,
         public level: number,
-        public villageId: number // Referência à entidade Village (Player)
+        public position: { x: number; y: number },
+        public villageId: number
     ) {}
 }

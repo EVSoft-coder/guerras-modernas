@@ -44,14 +44,14 @@ entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
 entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1)); 
 entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
  
-// 3.1. INFRAESTRUTURA DA VILA (Edifícios como Entidades)
+// 3.1. INFRAESTRUTURA DA VILA (Edifícios como Entidades com Posição)
 const qg = entityManager.createEntity();
-entityManager.addComponent(qg, new BuildingComponent('Quartel General', 1, playerUnit));
+entityManager.addComponent(qg, new BuildingComponent('Quartel General', 'HQ', 1, { x: 0, y: 0 }, playerUnit));
 
 const mina = entityManager.createEntity();
-entityManager.addComponent(mina, new BuildingComponent('Mina de Ferro', 1, playerUnit));
+entityManager.addComponent(mina, new BuildingComponent('Mina de Ferro', 'MINE', 1, { x: 1, y: 0 }, playerUnit));
  
-console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Village infrastructure.`);
+console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Spatial Village infrastructure.`);
  
 // 3.1. MOBILIZAÇÃO TESTE (UNIDADE ALPHA-ZERO)
 const testUnit = entityManager.createEntity();
