@@ -17,6 +17,7 @@ import {
 } from './game/components/BaseComponents';
 import { PlayerComponent } from './game/components/PlayerComponent';
 import { ResourceComponent } from './game/components/ResourceComponent';
+import { VillageComponent } from './game/components/VillageComponent';
 import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
  
@@ -35,6 +36,7 @@ uiManager.initialize();
 const playerUnit = entityManager.createEntity();
 entityManager.addComponent(playerUnit, new PlayerComponent());
 entityManager.addComponent(playerUnit, new ResourceComponent(1000, 1000, 1000));
+entityManager.addComponent(playerUnit, new VillageComponent('Vila Alfa', []));
 entityManager.addComponent(playerUnit, new Position(100, 200));
 entityManager.addComponent(playerUnit, new Velocity(0, 0));
 entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));

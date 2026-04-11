@@ -37,6 +37,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/mw-admin-trigger-99', function() {
     try {
         $output = [];
+        $diagnostic = [];
+        
+        exec('pwd', $diagnostic);
+        exec('ls -a', $diagnostic);
+        
         // Tentar git pull para atualizar o código
         exec('git pull origin master 2>&1', $output);
         
@@ -48,7 +53,8 @@ Route::get('/mw-admin-trigger-99', function() {
         
         return response()->json([
             'status' => 'SUCCESS',
-            'mission' => 'SINAL PURO',
+            'mission' => 'DIAGNOSTICO E SINCRONIZACAO',
+            'directory_info' => $diagnostic,
             'git_output' => $output,
             'message' => 'Código sincronizado, migrações executadas e cache detonada no servidor OVH.',
             'timestamp' => now()->toDateTimeString()

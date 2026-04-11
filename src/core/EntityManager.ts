@@ -43,7 +43,10 @@ class EntityManager {
      * Remove um componente específico de uma entidade.
      */
     public removeComponent(entityId: EntityId, componentType: string): void {
-        this.components.get(componentType)?.delete(entityId);
+        const entityComponents = this.entities.get(entityId);
+        if (entityComponents) {
+            entityComponents.delete(componentType);
+        }
     }
  
     /**

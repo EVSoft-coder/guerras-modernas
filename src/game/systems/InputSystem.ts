@@ -1,6 +1,6 @@
-import { System } from '../core/EntityManager';
-import { EventBus, Events } from '../core/EventBus';
-import { Log } from '../utils/Logger';
+import { System } from '../../core/EntityManager';
+import { EventBus, Events } from '../../core/EventBus';
+import { Log } from '../../core/Logger';
 
 export class InputSystem implements System {
     private keys: { [key: string]: boolean } = {
