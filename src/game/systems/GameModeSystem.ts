@@ -13,9 +13,11 @@ export class GameModeSystem implements GameSystem {
     public init(): void {
         console.log(`[SYSTEM] GameModeSystem - Strategy Layer ONLINE. Initial Mode: ${this.currentMode}`);
         
-        // Subscrever à troca de modo
-        eventBus.subscribe(Events.GAMEMODE_CHANGED, (payload: EventPayload) => {
-            this.handleModeChange(payload.data.mode as GameMode);
+        // Subscrever ao pedido de troca de modo
+        eventBus.subscribe(Events.GAME_CHANGE_MODE, (payload: EventPayload) => {
+            if (payload.data && payload.data.mode) {
+                this.handleModeChange(payload.data.mode as GameMode);
+            }
         });
     }
 

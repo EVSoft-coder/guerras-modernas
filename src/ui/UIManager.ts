@@ -42,6 +42,7 @@ class UIManager {
     }
 
     private handleModeChange(mode: GameMode): void {
+        console.log("CURRENT MODE:", mode);
         if (mode === GameMode.WORLD_MAP) {
             villageView.hide();
             worldMapView.show();
