@@ -1,6 +1,7 @@
 import { stateManager } from './StateManager';
 import { systemsRegistry } from '../game/systems/systemsRegistry';
 import { Logger } from './Logger';
+import { gameStateService } from '../services/GameStateService';
  
 class GameLoop {
     private gameRunning: boolean = false;
@@ -83,6 +84,9 @@ class GameLoop {
             console.log("Running system (POST):", system.constructor.name);
             system.postUpdate(dt);
         }
+ 
+        // 4. SNAPSHOT DE ESTADO (Exposição para UI)
+        gameStateService.snap();
  
         this.animationFrameId = requestAnimationFrame(this.loop.bind(this));
     }
