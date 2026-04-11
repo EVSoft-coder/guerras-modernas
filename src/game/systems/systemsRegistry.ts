@@ -5,12 +5,13 @@
 import { inputSystem } from './InputSystem';
 import { timeSystem } from './TimeSystem';
 import { resourceSystem } from './ResourceSystem';
+import { buildQueueSystem } from './BuildQueueSystem';
 import { orderSystem } from './OrderSystem';
 import { aiSystem } from './AISystem';
 import { movementSystem } from './MovementSystem';
 import { combatSystem } from './CombatSystem';
 import { renderSystem } from './RenderSystem';
- 
+
 /**
  * Interface operativa com estratificação de fases.
  */
@@ -24,7 +25,7 @@ export interface GameSystem {
     
     destroy(): void;
 }
- 
+
 /**
  * LISTA EXPLÍCITA E ORDENADA DE SISTEMAS.
  */
@@ -32,6 +33,7 @@ export const systemsRegistry: ReadonlyArray<GameSystem> = [
     inputSystem,
     timeSystem,
     resourceSystem,
+    buildQueueSystem,
     orderSystem,
     aiSystem,
     movementSystem,

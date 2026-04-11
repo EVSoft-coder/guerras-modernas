@@ -69,5 +69,8 @@ export const Events = {
     
     // Sensores
     INPUT_KEY_DOWN: 'INPUT:KEY_DOWN',
-    INPUT_KEY_UP: 'INPUT:KEY_UP'
+    INPUT_KEY_UP: 'INPUT:KEY_UP',
+    
+    // Logística
+    BUILDING_COMPLETED: 'BUILDING:COMPLETED'
 };
