@@ -30,7 +30,11 @@ gameLoop.init();
 // 2. INICIALIZAÃ‡ÃƒO DE SUBSISTEMAS OPERATIVOS
 console.log('[BOOT] Initializing Modern Wars Engine with VISUALS...');
 for (const system of systemsRegistry) {
-    system.init();
+    if (system && typeof system.init === 'function') {
+        system.init();
+    } else {
+        console.warn(`[BOOT] System ${system ? 'invalid' : 'missing'} detected. Skipping init.`);
+    }
 }
 uiManager.initialize();
  

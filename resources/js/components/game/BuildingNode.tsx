@@ -16,7 +16,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, i
     
     // Caminho da imagem de resiliÃªncia absoluta
     const blueprintUrl = "/images/building_blueprint_placeholder.png";
-    const imgUrl = usePlaceholder ? blueprintUrl : `/images/edificios/${tipo}/lvl_${currentTryLevel}.png`;
+    const imgUrl = usePlaceholder ? blueprintUrl : `/images/edificios/${tipo.toLowerCase()}/lvl_${currentTryLevel}.png`;
 
     return (
         <motion.div 

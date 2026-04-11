@@ -73,6 +73,7 @@ Route::middleware(['auth'])->group(function () {
     // Core Game
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/mapa', [MapaController::class, 'index'])->name('mapa');
+    Route::get('/api/mapa/data', [MapaController::class, 'apiData'])->name('api.mapa.data');
     Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
     Route::get('/manual', [ManualController::class, 'index'])->name('manual');
     Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
