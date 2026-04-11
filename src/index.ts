@@ -19,6 +19,7 @@ import { PlayerComponent } from './game/components/PlayerComponent';
 import { ResourceComponent } from './game/components/ResourceComponent';
 import { VillageComponent } from './game/components/VillageComponent';
 import { BuildingComponent } from './game/components/BuildingComponent';
+import { BuildQueueComponent } from './game/systems/BuildQueueSystem';
 import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
  
@@ -36,7 +37,8 @@ uiManager.initialize();
 // 3. MOBILIZAÇÃO JOGADOR (UNIDADE ALFA + VILA)
 const playerUnit = entityManager.createEntity();
 entityManager.addComponent(playerUnit, new PlayerComponent());
-entityManager.addComponent(playerUnit, new ResourceComponent(1000, 1000, 1000));
+entityManager.addComponent(playerUnit, new ResourceComponent(5000, 5000, 5000));
+entityManager.addComponent(playerUnit, new BuildQueueComponent());
 entityManager.addComponent(playerUnit, new VillageComponent('Vila Alfa'));
 entityManager.addComponent(playerUnit, new Position(100, 200));
 entityManager.addComponent(playerUnit, new Velocity(0, 0));

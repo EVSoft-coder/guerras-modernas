@@ -1,137 +1,121 @@
 /**
  * src/game/systems/BuildQueueSystem.ts
- * Gestão de Prioridades e Cronogramas de Construção.
+ * Gestão de Prioridades e Cronogramas de Construção e Upgrade.
  */
 import { eventBus, EventPayload, Events } from '../../core/EventBus';
 import { entityManager } from '../../core/EntityManager';
+import { BuildingComponent } from '../components/BuildingComponent';
+import { ResourceComponent } from '../components/ResourceComponent';
 import { GameSystem } from '../systemsRegistry';
-import { buildingCosts } from '../config/buildingCosts';
 
 export interface BuildItem {
-    type: string;
+    type: 'NEW' | 'UPGRADE';
+    buildingType: string;
+    targetEntityId?: number; // Para upgrades
     totalTime: number;
     remainingTime: number;
 }
 
-export interface BuildQueueComponent {
-    queue: BuildItem[];
+export class BuildQueueComponent {
+    public readonly type = 'BuildQueue';
+    constructor(public queue: BuildItem[] = []) {}
 }
 
 export class BuildQueueSystem implements GameSystem {
     public init(): void {
         console.log('[SYSTEM] BuildQueueSystem - Logistics Core ONLINE.');
         
-        // Subscrever à pulsação do tempo para processar filas
-        eventBus.subscribe('GAME:TICK', () => {
-            this.updateQueues();
-        });
-
-        // Subscrever a requisições de construção
-        eventBus.subscribe(Events.BUILDING_REQUEST, (payload: EventPayload) => {
-            this.handleBuildRequest(payload);
+        // Subscrever a requisições de upgrade
+        eventBus.subscribe(Events.BUILDING_UPGRADE_REQUEST, (payload: EventPayload) => {
+            this.handleUpgradeRequest(payload);
         });
     }
 
-    private handleBuildRequest(payload: EventPayload): void {
-        const { entityId, data } = payload;
-        const { buildingType } = data;
+    private handleUpgradeRequest(payload: EventPayload): void {
+        const buildingId = payload.data.id;
+        if (buildingId === undefined) return;
 
-        if (entityId === undefined || !buildingType) return;
+        const building = entityManager.getComponent<BuildingComponent>(buildingId, 'Building');
+        if (!building) return;
 
-        const costs = buildingCosts[buildingType];
-        if (!costs) {
-            console.warn(`[BUILD] Unknown building type: ${buildingType}`);
+        const ownerId = building.villageId;
+        const resources = entityManager.getComponent<ResourceComponent>(ownerId, 'Resource');
+        const buildQueue = entityManager.getComponent<BuildQueueComponent>(ownerId, 'BuildQueue');
+
+        if (!resources || !buildQueue) {
+            console.error(`[BUILD_SYSTEM] Owner ${ownerId} missing Resource or BuildQueue components.`);
             return;
         }
 
-        const resources = entityManager.getComponent<any>(entityId, 'Resource');
-        if (!resources) {
-            eventBus.emit({
-                type: Events.BUILDING_FAILED,
-                entityId,
-                timestamp: Date.now(),
-                data: { reason: 'NO_RESOURCES_ENTITY', buildingType }
-            });
-            return;
-        }
-
-        // Validação de recursos
-        const hasEnough = 
-            resources.wood >= costs.wood && 
-            resources.stone >= costs.stone && 
-            resources.iron >= costs.iron;
+        // Custo Simples: 150 de cada recurso por nível atual
+        const cost = building.level * 150;
+        const hasEnough = resources.wood >= cost && resources.stone >= cost && resources.iron >= cost;
 
         if (hasEnough) {
-            // Consumo imediato
-            resources.wood -= costs.wood;
-            resources.stone -= costs.stone;
-            resources.iron -= costs.iron;
+            // Consumir
+            resources.wood -= cost;
+            resources.stone -= cost;
+            resources.iron -= cost;
 
-            // Inserção na fila
-            const buildQueue = entityManager.getComponent<BuildQueueComponent>(entityId, 'BuildQueue');
-            if (buildQueue) {
-                // Tempo base de construção (pode ser expandido no config no futuro)
-                const buildTime = 10; 
-                buildQueue.queue.push({ 
-                    type: buildingType, 
-                    totalTime: buildTime,
-                    remainingTime: buildTime 
-                });
-                
-                console.log(`[BUILD] Construction started for ${buildingType} on Entity ${entityId}`);
-            }
-        } else {
-            eventBus.emit({
-                type: Events.BUILDING_FAILED,
-                entityId,
-                timestamp: Date.now(),
-                data: { 
-                    reason: 'INSUFFICIENT_RESOURCES', 
-                    buildingType,
-                    required: costs,
-                    current: { wood: resources.wood, stone: resources.stone, iron: resources.iron }
-                }
+            // Enfileirar upgrade
+            const upgradeTime = building.level * 5; // 5 segundos por nível
+            buildQueue.queue.push({
+                type: 'UPGRADE',
+                buildingType: building.buildingType,
+                targetEntityId: buildingId,
+                totalTime: upgradeTime,
+                remainingTime: upgradeTime
             });
+
+            console.log(`[BUILD_SYSTEM] Upgrade of ${building.name} (LVL ${building.level} -> ${building.level + 1}) initiated for Player ${ownerId}.`);
+            
+            // Emitir evento de início opcionalmente
+            eventBus.emit({
+                type: Events.BUILDING_REQUEST,
+                entityId: ownerId,
+                timestamp: Date.now(),
+                data: { status: 'STARTED', buildingId }
+            });
+        } else {
+            console.warn(`[BUILD_SYSTEM] Insufficient resources for upgrade of ${building.name}. Required: ${cost}`);
         }
     }
 
-    private updateQueues(): void {
-        // Assume-se que as entidades que podem construir têm um componente 'BuildQueue'
-        const entities = entityManager.getEntitiesWith(['BuildQueue']);
+    public update(deltaTime: number): void {
+        const builders = entityManager.getEntitiesWith(['BuildQueue']);
 
-        for (const id of entities) {
-            const buildQueue = entityManager.getComponent<BuildQueueComponent>(id, 'BuildQueue');
-            
-            if (buildQueue && buildQueue.queue.length > 0) {
-                const activeTask = buildQueue.queue[0];
-                
-                // Decrementar tempo (1 tick = 1 segundo por defeito)
-                activeTask.remainingTime -= 1;
+        for (const id of builders) {
+            const bq = entityManager.getComponent<BuildQueueComponent>(id, 'BuildQueue');
+            if (bq && bq.queue.length > 0) {
+                const task = bq.queue[0];
+                task.remainingTime -= deltaTime;
 
-                if (activeTask.remainingTime <= 0) {
-                    // Tarefa Concluída
-                    const completedTask = buildQueue.queue.shift();
-                    
-                    if (completedTask) {
-                        eventBus.emit({
-                            type: Events.BUILDING_COMPLETED,
-                            entityId: id,
-                            timestamp: Date.now(),
-                            data: {
-                                buildingType: completedTask.type,
-                                status: 'SUCCESS'
-                            }
-                        });
-                        
-                        console.log(`[BUILD] Entity ${id} completed construction of: ${completedTask.type}`);
-                    }
+                if (task.remainingTime <= 0) {
+                    bq.queue.shift();
+                    this.completeTask(task);
                 }
+            }
+        }
+    }
+
+    private completeTask(task: BuildItem): void {
+        if (task.type === 'UPGRADE' && task.targetEntityId !== undefined) {
+            const building = entityManager.getComponent<BuildingComponent>(task.targetEntityId, 'Building');
+            if (building) {
+                building.level += 1;
+                console.log(`[BUILD_SYSTEM] Building ${building.name} upgraded to Level ${building.level}!`);
+                
+                eventBus.emit({
+                    type: Events.BUILDING_COMPLETED,
+                    entityId: task.targetEntityId,
+                    timestamp: Date.now(),
+                    data: { buildingType: task.buildingType, newLevel: building.level }
+                });
             }
         }
     }
 
     public preUpdate(deltaTime: number): void {}
-    public update(deltaTime: number): void {}
     public postUpdate(deltaTime: number): void {}
 
     public destroy(): void {
