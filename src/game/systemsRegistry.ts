@@ -1,22 +1,17 @@
 /**
  * systemsRegistry.ts
- * Ordem de Batalha Estática e Documentada.
+ * Registo Estático e Ordenado de Sistemas (Fase 3 - Ciclo Completo).
  */
 import { inputSystem } from './systems/InputSystem';
 import { movementSystem } from './systems/MovementSystem';
+import { renderSystem } from './systems/RenderSystem';
+import { GameSystem } from './systemsRegistry';
+ 
+export { GameSystem };
  
 /**
- * Interface obrigatória para todos os sistemas do motor.
- */
-export interface GameSystem {
-    init(): void;
-    update(deltaTime: number): void;
-    destroy(): void;
-}
- 
-/**
- * LISTA EXPLÍCITA E ORDENADA DE SISTEMAS.
- * Categoria: [INPUT] -> [LOGIC] -> [RENDER] (pendente)
+ * LISTA ESTÁTICA E ORDENADA DE SISTEMAS.
+ * Categoria: [INPUT] -> [LOGIC] -> [STATE_MGR (Externo)] -> [RENDER] (Fila Final)
  */
 export const systemsRegistry: ReadonlyArray<GameSystem> = [
     // --- [INPUT] ---
@@ -25,5 +20,6 @@ export const systemsRegistry: ReadonlyArray<GameSystem> = [
     // --- [LOGIC] ---
     movementSystem,
  
-    // --- [RENDER] (Fila Tática Futura) ---
+    // --- [RENDER] (Sempre por último no ciclo) ---
+    renderSystem,
 ];
