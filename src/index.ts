@@ -37,6 +37,13 @@ entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/bli
  
 console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with APC armor.`);
  
+// 3.1. MOBILIZAÇÃO TESTE (UNIDADE ALPHA-ZERO)
+const testUnit = entityManager.createEntity();
+entityManager.addComponent(testUnit, new Position(0, 0));
+entityManager.addComponent(testUnit, new Velocity(0, 0));
+entityManager.addComponent(testUnit, new SpriteComponent('/images/unidades/agente_espiao.png')); 
+console.log(`[BOOT] Test Unit Alpha-Zero (ID: ${testUnit}) deployed at ORIGIN.`);
+ 
 // 4. MOBILIZAÇÃO IA INIMIGA (UNIDADE OMEGA)
 const enemyUnit = entityManager.createEntity();
 entityManager.addComponent(enemyUnit, new Position(500, 200));
