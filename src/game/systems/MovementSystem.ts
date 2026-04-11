@@ -16,13 +16,11 @@ export class MovementSystem implements GameSystem {
     }
  
     private handlePlayerMove(direction: string): void {
-        const entities = entityManager.getEntitiesWith(['Position', 'Velocity']);
+        const entities = entityManager.getEntitiesWith(['Position', 'Velocity', 'Player']);
         
         for (const id of entities) {
-            const isAI = entityManager.getComponent<any>(id, 'AI');
-            if (isAI) continue;
- 
             const vel = entityManager.getComponent<any>(id, 'Velocity');
+            if (!vel) continue;
  
             // Atribuição Literal conforme exemplo do Comandante
             switch (direction) {

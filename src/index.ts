@@ -15,6 +15,7 @@ import {
     AIComponent,
     SpriteComponent 
 } from './game/components/BaseComponents';
+import { PlayerComponent } from './game/components/PlayerComponent';
 import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
  
@@ -31,6 +32,7 @@ uiManager.initialize();
  
 // 3. MOBILIZAÇÃO JOGADOR (UNIDADE ALFA)
 const playerUnit = entityManager.createEntity();
+entityManager.addComponent(playerUnit, new PlayerComponent());
 entityManager.addComponent(playerUnit, new Position(100, 200));
 entityManager.addComponent(playerUnit, new Velocity(0, 0));
 entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
@@ -41,6 +43,7 @@ console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with APC armo
  
 // 3.1. MOBILIZAÇÃO TESTE (UNIDADE ALPHA-ZERO)
 const testUnit = entityManager.createEntity();
+entityManager.addComponent(testUnit, new PlayerComponent());
 entityManager.addComponent(testUnit, new Position(0, 0));
 entityManager.addComponent(testUnit, new Velocity(0, 0));
 entityManager.addComponent(testUnit, new SpriteComponent('/images/unidades/agente_espiao.png')); 
