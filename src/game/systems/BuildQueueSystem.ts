@@ -9,6 +9,7 @@ import { buildingCosts } from '../config/buildingCosts';
 
 export interface BuildItem {
     type: string;
+    totalTime: number;
     remainingTime: number;
 }
 
@@ -71,7 +72,11 @@ export class BuildQueueSystem implements GameSystem {
             if (buildQueue) {
                 // Tempo base de construção (pode ser expandido no config no futuro)
                 const buildTime = 10; 
-                buildQueue.queue.push({ type: buildingType, remainingTime: buildTime });
+                buildQueue.queue.push({ 
+                    type: buildingType, 
+                    totalTime: buildTime,
+                    remainingTime: buildTime 
+                });
                 
                 console.log(`[BUILD] Construction started for ${buildingType} on Entity ${entityId}`);
             }
