@@ -1,7 +1,9 @@
-export class VelocityComponent {
-    public readonly type = 'Velocity';
-    constructor(
-        public dx: number = 0,
-        public dy: number = 0
-    ) {}
+export interface Velocity {
+  vx: number;
+  vy: number;
+}
+
+export class VelocityComponent implements Velocity {
+  public readonly type = 'Velocity';
+  constructor(public vx: number = 0, public vy: number = 0) {}
 }

@@ -23,20 +23,20 @@ export class MovementSystem implements GameSystem {
             const vel = entityManager.getComponent<any>(id, 'Velocity');
             if (!vel) continue;
  
-            // Reset de velocidade para cÃ¡lculo fresco
-            vel.dx = 0;
-            vel.dy = 0;
+            // Reset de velocidade para cálculo fresco
+            vel.vx = 0;
+            vel.vy = 0;
  
-            if (state.up)    vel.dy -= 1;
-            if (state.down)  vel.dy += 1;
-            if (state.left)  vel.dx -= 1;
-            if (state.right) vel.dx += 1;
+            if (state.up)    vel.vy -= 1;
+            if (state.down)  vel.vy += 1;
+            if (state.left)  vel.vx -= 1;
+            if (state.right) vel.vx += 1;
  
             // NormalizaÃ§Ã£o: Evitar que diagonal seja mais rÃ¡pida (sqrt(2))
-            const length = Math.sqrt(vel.dx * vel.dx + vel.dy * vel.dy);
+            const length = Math.sqrt(vel.vx * vel.vx + vel.vy * vel.vy);
             if (length > 0) {
-                vel.dx /= length;
-                vel.dy /= length;
+                vel.vx /= length;
+                vel.vy /= length;
             }
         }
     }
@@ -51,8 +51,8 @@ export class MovementSystem implements GameSystem {
             const vel = entityManager.getComponent<any>(entityId, 'Velocity');
  
             if (pos && vel) {
-                pos.x += vel.dx * deltaTime;
-                pos.y += vel.dy * deltaTime;
+                pos.x += vel.vx * deltaTime;
+                pos.y += vel.vy * deltaTime;
                 
                 // Telemetria de PosiÃ§Ã£o (Alpha-Zero & Outros)
                 console.log(`[TELEMETRY] Entity ${entityId} at (${Math.round(pos.x)}, ${Math.round(pos.y)})`);

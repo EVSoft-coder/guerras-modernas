@@ -7,8 +7,8 @@ import { gameLoop } from './core/GameLoop';
 import { inputSystem } from './game/systems/InputSystem';
 import { uiManager } from './ui/UIManager';
 import { entityManager } from './core/EntityManager';
-import { Position } from './game/components/Position';
-import { Velocity } from './game/components/Velocity';
+import { Position, PositionComponent } from './game/components/Position';
+import { Velocity, VelocityComponent } from './game/components/Velocity';
 import { 
     HealthComponent, 
     AttackComponent, 
@@ -40,8 +40,8 @@ entityManager.addComponent(playerUnit, new PlayerComponent());
 entityManager.addComponent(playerUnit, new ResourceComponent(5000, 5000, 5000));
 entityManager.addComponent(playerUnit, new BuildQueueComponent());
 entityManager.addComponent(playerUnit, new VillageComponent('Vila Alfa'));
-entityManager.addComponent(playerUnit, new Position(100, 200));
-entityManager.addComponent(playerUnit, new Velocity(0, 0));
+entityManager.addComponent(playerUnit, new PositionComponent(100, 200));
+entityManager.addComponent(playerUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
 entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1)); 
 entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
@@ -58,15 +58,15 @@ console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Spatial 
 // 3.1. MOBILIZAÃ‡ÃƒO TESTE (UNIDADE ALPHA-ZERO)
 const testUnit = entityManager.createEntity();
 entityManager.addComponent(testUnit, new PlayerComponent());
-entityManager.addComponent(testUnit, new Position(0, 0));
-entityManager.addComponent(testUnit, new Velocity(0, 0));
+entityManager.addComponent(testUnit, new PositionComponent(0, 0));
+entityManager.addComponent(testUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(testUnit, new SpriteComponent('/images/unidades/agente_espiao.png')); 
 console.log(`[BOOT] Test Unit Alpha-Zero (ID: ${testUnit}) deployed at ORIGIN.`);
  
 // 4. MOBILIZAÃ‡ÃƒO IA INIMIGA (UNIDADE OMEGA)
 const enemyUnit = entityManager.createEntity();
-entityManager.addComponent(enemyUnit, new Position(500, 200));
-entityManager.addComponent(enemyUnit, new Velocity(0, 0));
+entityManager.addComponent(enemyUnit, new PositionComponent(500, 200));
+entityManager.addComponent(enemyUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(enemyUnit, new HealthComponent(2000, 2000));
 entityManager.addComponent(enemyUnit, new AttackComponent(100, 200, 3)); 
 entityManager.addComponent(enemyUnit, new AIComponent('AGGRESSIVE')); 
