@@ -6,6 +6,16 @@ import { eventBus, Events, EventPayload } from '../../core/EventBus';
 import { GameMode } from '../../core/StateManager';
 
 export class HUD {
+    public show(): void {
+        const el = document.getElementById('tactical-hud');
+        if (el) el.style.display = 'block';
+    }
+
+    public hide(): void {
+        const el = document.getElementById('tactical-hud');
+        if (el) el.style.display = 'none';
+    }
+
     public initialize(): void {
         this.createDOM();
         this.subscribeToEvents();
@@ -19,6 +29,7 @@ export class HUD {
             position: absolute;
             top: 20px;
             left: 20px;
+            display: none; /* Oculto por defeito */
             z-index: 1000;
             font-family: monospace;
             color: #00ff00;
@@ -27,6 +38,7 @@ export class HUD {
             border-left: 4px solid #00ff00;
             min-width: 200px;
         `;
+
         
         hud.innerHTML = `
             <div style="font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #00ff0033;">>>> RADAR TELEMETRY</div>

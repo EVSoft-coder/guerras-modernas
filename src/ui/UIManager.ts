@@ -37,6 +37,22 @@ class UIManager {
             }
         });
  
+        // Atalho para Telemetria (Tecla T)
+        let hudVisible = false;
+        eventBus.subscribe(Events.INPUT_KEY_DOWN, (p: EventPayload) => {
+            if (p.data.code === 'KeyT') {
+                hudVisible = !hudVisible;
+                if (hudVisible) {
+                    hud.show();
+                    if (stateManager.getMode() === GameMode.VILLAGE) villageView.show();
+                } else {
+                    hud.hide();
+                    villageView.hide();
+                }
+                console.log(`[UI] Telemetry ${hudVisible ? 'ENABLED' : 'DISABLED'}`);
+            }
+        });
+
         this.createScreens();
     }
 
@@ -47,9 +63,10 @@ class UIManager {
             worldMapView.show();
         } else {
             worldMapView.hide();
-            villageView.show();
+            // villageView.show(); // Desativado: Agora controlado por toggle 'T'
         }
     }
+
  
     private handleStateChange(newState: GameState): void {
         this.screens.forEach(screen => {
