@@ -1,6 +1,6 @@
 /**
  * src/game/components/BaseComponents.ts
- * Assinatura de Componentes (Fase 5 - EXPANSÃO).
+ * Assinatura de Componentes (Fase 5 - EXPANSÃO VISUAL).
  */
 import { Component } from '../../core/EntityManager';
  
@@ -17,6 +17,14 @@ export class VelocityComponent implements Component {
 export class HealthComponent implements Component {
     public type = 'Health';
     constructor(public value: number = 100, public max: number = 100) {}
+}
+ 
+/**
+ * SpriteComponent: Assinatura Visual da Entidade.
+ */
+export class SpriteComponent implements Component {
+    public type = 'Sprite';
+    constructor(public imagePath: string) {}
 }
  
 /**

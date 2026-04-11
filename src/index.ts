@@ -1,12 +1,19 @@
 /**
  * src/index.ts
- * Ponto de entrada e Simulação de Engajamento (Phase 5).
+ * Ponto de entrada e Simulação de Engajamento COM IMAGENS.
  */
 import { gameLoop } from './core/GameLoop';
 import { inputSystem } from './game/systems/InputSystem';
 import { uiManager } from './ui/UIManager';
 import { entityManager } from './core/EntityManager';
-import { PositionComponent, VelocityComponent, HealthComponent, AttackComponent, AIComponent } from './game/components/BaseComponents';
+import { 
+    PositionComponent, 
+    VelocityComponent, 
+    HealthComponent, 
+    AttackComponent, 
+    AIComponent,
+    SpriteComponent 
+} from './game/components/BaseComponents';
 import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
  
@@ -14,33 +21,35 @@ import { stateManager, GameState } from './core/StateManager';
 gameLoop.init();
  
 // 2. INICIALIZAÇÃO DE SUBSISTEMAS OPERATIVOS
-console.log('[BOOT] Initializing Modern Wars Engine...');
+console.log('[BOOT] Initializing Modern Wars Engine with VISUALS...');
 for (const system of systemsRegistry) {
     system.init();
 }
 uiManager.initialize();
  
-// 3. MOBILIZAÇÃO UNIDADE ALFA: JOGADOR
-const alphaUnit = entityManager.createEntity();
-entityManager.addComponent(alphaUnit, new PositionComponent(100, 100));
-entityManager.addComponent(alphaUnit, new VelocityComponent(0, 0)); // Imóvel por defeito
-entityManager.addComponent(alphaUnit, new HealthComponent(1000, 1000));
-entityManager.addComponent(alphaUnit, new AttackComponent(50, 100, 2)); // 50 Dano, 100 Range, 2s Cooldown
+// 3. MOBILIZAÇÃO JOGADOR (UNIDADE ALFA)
+const playerUnit = entityManager.createEntity();
+entityManager.addComponent(playerUnit, new PositionComponent(100, 200));
+entityManager.addComponent(playerUnit, new VelocityComponent(0, 0));
+entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
+entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1)); 
+entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
  
-console.log(`[DEPLOYMENT] Unit Alpha (PLAYER) - ID: ${alphaUnit} deployed at Front Line.`);
+console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with APC armor.`);
  
-// 4. MOBILIZAÇÃO UNIDADE OMEGA: IA INIMIGA
-const omegaUnit = entityManager.createEntity();
-entityManager.addComponent(omegaUnit, new PositionComponent(400, 100));
-entityManager.addComponent(omegaUnit, new VelocityComponent(0, 0));
-entityManager.addComponent(omegaUnit, new HealthComponent(500, 500));
-entityManager.addComponent(omegaUnit, new AttackComponent(25, 80, 1.5));
-entityManager.addComponent(omegaUnit, new AIComponent('AGGRESSIVE')); // Vai perseguir o Jogador
+// 4. MOBILIZAÇÃO IA INIMIGA (UNIDADE OMEGA)
+const enemyUnit = entityManager.createEntity();
+entityManager.addComponent(enemyUnit, new PositionComponent(500, 200));
+entityManager.addComponent(enemyUnit, new VelocityComponent(0, 0));
+entityManager.addComponent(enemyUnit, new HealthComponent(2000, 2000));
+entityManager.addComponent(enemyUnit, new AttackComponent(100, 200, 3)); 
+entityManager.addComponent(enemyUnit, new AIComponent('AGGRESSIVE')); 
+entityManager.addComponent(enemyUnit, new SpriteComponent('/images/unidades/tanque_combate.png'));
  
-console.log(`[DEPLOYMENT] Unit Omega (ENEMY_AI) - ID: ${omegaUnit} detected in the Sector.`);
+console.log(`[BOOT] Enemy Unit Omega (ID: ${enemyUnit}) detected with Main Battle Tank.`);
  
 // 5. AUTORIZAÇÃO DE COMBATE
 stateManager.forceState(GameState.PLAYING);
 gameLoop.run();
  
-console.log('--- OPERATIONS ACTIVE: BATTLE ENGAGEMENT IN PROGRESS ---');
+console.log('--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---');
