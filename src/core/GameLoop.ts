@@ -3,7 +3,7 @@
  * Ciclo principal com Pipeline Táctico em 4 Fases.
  */
 import { stateManager, GameState } from './StateManager';
-import { systemsRegistry, GameSystem } from '../game/systemsRegistry';
+import { systemsRegistry, GameSystem } from '../game/systems/systemsRegistry';
  
 class GameLoop {
     private gameRunning: boolean = false;
