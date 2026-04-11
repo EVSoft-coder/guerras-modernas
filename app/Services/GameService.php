@@ -375,6 +375,9 @@ class GameService
             $taxas[$res] = floor($porHora / 60);
         }
 
+        return $taxas;
+    }
+
     /**
      * Calcula o tempo de viagem entre duas coordenadas.
      */
