@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('jogadores', function (Blueprint $table) {
-            $table->unsignedBigInteger('xp')->default(0)->after('alianca_id');
-            $table->unsignedInteger('nivel')->default(1)->after('xp');
-            $table->string('cargo')->default('Recruta')->after('nivel');
+            if (!Schema::hasColumn('jogadores', 'xp')) {
+                $table->unsignedBigInteger('xp')->default(0)->after('email');
+            }
+            if (!Schema::hasColumn('jogadores', 'nivel')) {
+                $table->unsignedInteger('nivel')->default(1)->after('xp');
+            }
+            if (!Schema::hasColumn('jogadores', 'cargo')) {
+                $table->string('cargo')->default('Recruta')->after('nivel');
+            }
         });
     }
 
