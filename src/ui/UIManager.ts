@@ -5,6 +5,7 @@
 import { eventBus, Events, EventPayload } from '../core/EventBus';
 import { GameState } from '../core/StateManager';
 import { hud } from './hud/HUD';
+import { villageView } from './village/VillageView';
  
 class UIManager {
     private screens: Map<GameState, HTMLElement> = new Map();
@@ -13,6 +14,7 @@ class UIManager {
         console.log('[UI_MGR] Commands Interfaces NORMALIZING.');
         
         hud.initialize();
+        villageView.initialize();
  
         // Subscrever à mudança de estado normalizada
         eventBus.subscribe(Events.GAME_STATE_CHANGED, (p: EventPayload) => {
