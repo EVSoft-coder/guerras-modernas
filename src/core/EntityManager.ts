@@ -40,6 +40,13 @@ class EntityManager {
     }
  
     /**
+     * Remove um componente específico de uma entidade.
+     */
+    public removeComponent(entityId: EntityId, componentType: string): void {
+        this.components.get(componentType)?.delete(entityId);
+    }
+ 
+    /**
      * Obtém todas as entidades que possuem TODOS os componentes listados.
      * Suporta queries múltiplas: getEntitiesWith(["Position", "Velocity"])
      */

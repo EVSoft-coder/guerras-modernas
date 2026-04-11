@@ -24,6 +24,10 @@ export class AISystem implements GameSystem {
         const targets = entityManager.getEntitiesWith(['Health', 'Position']);
  
         for (const droneId of drones) {
+            // SOBERANIA DE COMANDO: Se a unidade tiver uma ordem ativa (Target), a IA ignora
+            const targetComp = entityManager.getComponent<any>(droneId, 'Target');
+            if (targetComp) continue;
+ 
             const aiComp = entityManager.getComponent<any>(droneId, 'AI');
             const velComp = entityManager.getComponent<any>(droneId, 'Velocity');
             const posComp = entityManager.getComponent<any>(droneId, 'Position');

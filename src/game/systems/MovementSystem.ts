@@ -11,7 +11,6 @@ export class MovementSystem implements GameSystem {
     }
  
     public update(deltaTime: number): void {
-        // Obter todas as entidades com capacidades de manobra (Position + Velocity)
         const entities = entityManager.getEntitiesWith(['Position', 'Velocity']);
         
         let processedCount = 0;
@@ -19,7 +18,27 @@ export class MovementSystem implements GameSystem {
         for (const entityId of entities) {
             const pos = entityManager.getComponent<any>(entityId, 'Position');
             const vel = entityManager.getComponent<any>(entityId, 'Velocity');
+            const target = entityManager.getComponent<any>(entityId, 'Target');
  
+            // 1. Processar Navegação de Alvo se existir
+            if (target) {
+                const dx = target.x - pos.x;
+                const dy = target.y - pos.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+ 
+                if (distance > 5) { // Threshold de chegada
+                    const speed = 100; // Velocidade de marcha
+                    vel.vx = (dx / distance) * speed;
+                    vel.vy = (dy / distance) * speed;
+                } else {
+                    // Alvo atingido: Parar e remover alvo
+                    vel.vx = 0;
+                    vel.vy = 0;
+                    entityManager.removeComponent(entityId, 'Target');
+                }
+            }
+ 
+            // 2. Aplicar Manobra Física
             if (pos && vel) {
                 pos.x += vel.vx * deltaTime;
                 pos.y += vel.vy * deltaTime;
@@ -28,7 +47,7 @@ export class MovementSystem implements GameSystem {
         }
  
         if (processedCount > 0) {
-            console.log(`[SYSTEM] MovementSystem processed ${processedCount} entities.`);
+            // console.log(`[SYSTEM] MovementSystem processed ${processedCount} entities.`);
         }
     }
  

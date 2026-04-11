@@ -1,8 +1,9 @@
 /**
  * systemsRegistry.ts
- * Ordem de Batalha (Fase 5 - EXPANSÃO COMPLETA).
+ * Ordem de Batalha (Fase 6 - SISTEMA DE ORDENS).
  */
 import { inputSystem } from './systems/InputSystem';
+import { orderSystem } from './systems/OrderSystem';
 import { aiSystem } from './systems/AISystem';
 import { movementSystem } from './systems/MovementSystem';
 import { combatSystem } from './systems/CombatSystem';
@@ -13,11 +14,14 @@ export { GameSystem };
  
 /**
  * LISTA ESTÁTICA EXPLICITA - FUNDAMENTAL PARA O DETERMINISMO.
- * Categoria: [INPUT] -> [IA] -> [LOGIC] -> [COMBAT] -> [RENDER]
+ * Categoria: [INPUT] -> [ORDERS] -> [IA] -> [LOGIC] -> [COMBAT] -> [RENDER]
  */
 export const systemsRegistry: ReadonlyArray<GameSystem> = [
     // --- [INPUT] ---
     inputSystem,
+ 
+    // --- [ORDERS] (Comando Humano) ---
+    orderSystem,
  
     // --- [IA] (Decisão Autónoma) ---
     aiSystem,

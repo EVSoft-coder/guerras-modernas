@@ -1,6 +1,6 @@
 /**
  * src/game/components/BaseComponents.ts
- * Assinatura de Componentes (Fase 5 - EXPANSÃO VISUAL).
+ * Assinatura de Componentes (Fase 6 - ORDENS E SELECÇÃO).
  */
 import { Component } from '../../core/EntityManager';
  
@@ -19,31 +19,38 @@ export class HealthComponent implements Component {
     constructor(public value: number = 100, public max: number = 100) {}
 }
  
-/**
- * SpriteComponent: Assinatura Visual da Entidade.
- */
 export class SpriteComponent implements Component {
     public type = 'Sprite';
     constructor(public imagePath: string) {}
 }
  
-/**
- * AttackComponent: Poder de fogo e raio de ação.
- */
 export class AttackComponent implements Component {
     public type = 'Attack';
     constructor(
         public power: number = 10,
         public range: number = 50,
-        public cooldown: number = 1, // Segundos entre ataques
+        public cooldown: number = 1,
         public lastAttack: number = 0
     ) {}
 }
  
-/**
- * AIComponent: Marcar Entidade como Autónoma.
- */
 export class AIComponent implements Component {
     public type = 'AI';
     constructor(public behavior: 'AGGRESSIVE' | 'PATROL' = 'AGGRESSIVE') {}
+}
+ 
+/**
+ * TargetComponent: Coordenadas de destino para manobras.
+ */
+export class TargetComponent implements Component {
+    public type = 'Target';
+    constructor(public x: number, public y: number) {}
+}
+ 
+/**
+ * SelectionComponent: Marca a unidade como selecionada pelo jogador.
+ */
+export class SelectionComponent implements Component {
+    public type = 'Selection';
+    constructor(public isSelected: boolean = true) {}
 }
