@@ -1,10 +1,13 @@
 <?php
-
+ 
 namespace App\Http\Controllers;
-
+ 
 use App\Models\Base;
+use App\Models\Ataque;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+ 
 class MapaController extends Controller
 {
     /**
@@ -15,30 +18,32 @@ class MapaController extends Controller
         $x = (int) $request->get('x', 500);
         $y = (int) $request->get('y', 500);
         
-        // Impedir coordenadas fora do mundo (0-1000)
         $x = max(0, min(1000, $x));
         $y = max(0, min(1000, $y));
-
-        $raio = 6; // Ver total de 13x13 (raio 6 central)
+ 
+        $raio = 6;
         
         $bases = Base::with(['jogador.alianca', 'recursos'])
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
             ->get();
-
+ 
+        $jogadorId = Auth::id();
         $selectedBaseId = session('selected_base_id');
-        $origemBase = Base::with('tropas')->find($selectedBaseId) ?? Base::where('jogador_id', \Illuminate\Support\Facades\Auth::id())->with('tropas')->first();
-
-        return \Inertia\Inertia::render('mapa', [
+        $origemBase = Base::with('tropas')->find($selectedBaseId) ?? Base::where('jogador_id', $jogadorId)->with('tropas')->first();
+ 
+        return Inertia::render('mapa', [
             'bases' => $bases,
             'x' => $x,
             'y' => $y,
             'raio' => $raio,
             'origemBase' => $origemBase,
+            'ataquesEnviados' => Ataque::where('origem_base_id', $origemBase?->id)->where('processado', false)->get(),
+            'ataquesRecebidos' => Ataque::where('destino_base_id', $origemBase?->id)->where('processado', false)->get(),
             'gameConfig' => config('game')
         ]);
     }
-
+ 
     /**
      * API para buscar dados do mapa via Ajax/React.
      */
@@ -47,12 +52,12 @@ class MapaController extends Controller
         $x = $request->get('x', 500);
         $y = $request->get('y', 500);
         $raio = $request->get('raio', 15);
-
+ 
         $bases = Base::with('jogador:id,username')
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
             ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel']);
-
+ 
         return response()->json([
             'center' => ['x' => (int)$x, 'y' => (int)$y],
             'bases' => $bases

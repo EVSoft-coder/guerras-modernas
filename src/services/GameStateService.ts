@@ -3,7 +3,7 @@
  * Exposição de Estado ECS para Camada UI (ReadOnly).
  */
 import { entityManager } from '../core/EntityManager';
- 
+
 export interface EntitySnapshot {
     id: number;
     x: number;
@@ -12,46 +12,91 @@ export interface EntitySnapshot {
     health?: { current: number; max: number };
     isSelected?: boolean;
     resources?: { wood: number; stone: number; iron: number };
+    march?: {
+        state: string;
+        remainingTime: number;
+        totalTime: number;
+        target: { x: number, y: number };
+        loot: { wood: number; stone: number; iron: number };
+    };
 }
- 
+
 class GameStateService {
     private snapshots: EntitySnapshot[] = [];
- 
+
+    /**
+     * Sincroniza ataques do Laravel com o motor ECS.
+     */
+    public syncAttacks(attacks: any[]): void {
+        attacks.forEach(atk => {
+            const eId = 10000 + atk.id; // Namespace para entidades de ataque
+            if (!entityManager.getEntitiesWith(['AttackMarch']).includes(eId)) {
+                const now = Date.now();
+                const arrival = new Date(atk.chegada_em).getTime();
+                const total = Math.round((arrival - new Date(atk.created_at).getTime()) / 1000);
+                const remaining = Math.round((arrival - now) / 1000);
+
+                if (remaining > 0) {
+                    // Nota: Carregamento dinâmico para evitar problemas de dependência circular
+                    const { AttackMarchComponent } = require('../game/components/AttackMarchComponent');
+                    entityManager.createEntity(eId);
+                    entityManager.addComponent(eId, new AttackMarchComponent(
+                        atk.origem_base_id,
+                        atk.destino_x || 0,
+                        atk.destino_y || 0,
+                        atk.tropas || {},
+                        total,
+                        remaining,
+                        'GOING'
+                    ));
+                }
+            }
+        });
+    }
+
     /**
      * Captura o estado actual de todas as entidades relevantes.
-     * Chamado pelo GameLoop a cada frame.
      */
     public snap(): void {
         const entities = entityManager.getEntitiesWith(['Position']);
+        const marches = entityManager.getEntitiesWith(['AttackMarch']);
         const newSnapshots: EntitySnapshot[] = [];
- 
-        for (const id of entities) {
+
+        // União de IDs
+        const allIds = Array.from(new Set([...entities, ...marches]));
+
+        for (const id of allIds) {
             const pos = entityManager.getComponent<any>(id, 'Position');
             const sprite = entityManager.getComponent<any>(id, 'Sprite');
             const health = entityManager.getComponent<any>(id, 'Health');
             const selection = entityManager.getComponent<any>(id, 'Selection');
             const res = entityManager.getComponent<any>(id, 'Resource');
- 
+            const march = entityManager.getComponent<any>(id, 'AttackMarch');
+
             newSnapshots.push({
                 id,
-                x: pos.x,
-                y: pos.y,
+                x: pos ? pos.x : 0,
+                y: pos ? pos.y : 0,
                 sprite: sprite?.imagePath,
                 health: health ? { current: health.value, max: health.max } : undefined,
                 isSelected: !!selection,
-                resources: res ? { wood: res.wood, stone: res.stone, iron: res.iron } : undefined
+                resources: res ? { wood: res.wood, stone: res.stone, iron: res.iron } : undefined,
+                march: march ? {
+                    state: march.state,
+                    remainingTime: march.remainingTime,
+                    totalTime: march.totalTime,
+                    target: { x: march.targetX, y: march.targetY },
+                    loot: { ...march.loot }
+                } : undefined
             });
         }
- 
+
         this.snapshots = newSnapshots;
     }
- 
-    /**
-     * Retorna o estado actual para a UI.
-     */
+
     public getGameState(): EntitySnapshot[] {
         return this.snapshots;
     }
 }
- 
+
 export const gameStateService = new GameStateService();

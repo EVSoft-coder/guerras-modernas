@@ -21,7 +21,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Mapa Tático', href: '/mapa' },
 ];
 
-export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any) {
+export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos }: any) {
     const { addToast } = useToasts();
     const [selectedTarget, setSelectedTarget] = React.useState<any>(null);
     const [isSending, setIsSending] = React.useState(false);
@@ -30,14 +30,34 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any)
     const [entities, setEntities] = React.useState(gameStateService.getGameState());
 
     React.useEffect(() => {
+        // Sincronizar ataques com o motor ECS
+        if (ataquesEnviados) gameStateService.syncAttacks(ataquesEnviados);
+        if (ataquesRecebidos) gameStateService.syncAttacks(ataquesRecebidos);
+
+        // Feedback de Combate em Tempo Real
+        const unsubArrived = eventBus.subscribe(Events.ATTACK_ARRIVED, (ev) => {
+            const res = ev.data.result === 'VICTORY' ? 'VITÓRIA' : 'MISSÃO CONCLUÍDA';
+            addToast(`OFENSIVA: ${res} em [${ev.data.targetId || 'Sector'}]. Saque iniciado.`, 'success');
+        });
+
+        const unsubReturned = eventBus.subscribe(Events.ATTACK_RETURNED, (ev) => {
+            addToast(`LOGÍSTICA: Tropas regressaram com recursos capturados.`, 'info');
+            router.reload({ only: ['origemBase'] });
+        });
+
         let frameId: number;
         const sync = () => {
             setEntities([...gameStateService.getGameState()]);
             frameId = requestAnimationFrame(sync);
         };
         frameId = requestAnimationFrame(sync);
-        return () => cancelAnimationFrame(frameId);
-    }, []);
+        
+        return () => {
+            cancelAnimationFrame(frameId);
+            unsubArrived();
+            unsubReturned();
+        };
+    }, [ataquesEnviados, ataquesRecebidos]);
 
     // Inject config for the modal's internal stats engine
     if (typeof window !== 'undefined') {
@@ -107,10 +127,14 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any)
                                 {row.map((cell, cellIndex) => (
                                     <div 
                                         key={`${cell.x}-${cell.y}`}
-                                        onClick={() => cell.base && cell.base.jogador_id !== origemBase?.jogador_id && setSelectedTarget(cell.base)}
+                                        onClick={() => {
+                                            if (cell.base && cell.base.jogador_id === origemBase?.jogador_id) return;
+                                            setSelectedTarget(cell.base || { nome: `Setor [${cell.x}:${cell.y}]`, coordenada_x: cell.x, coordenada_y: cell.y, id: null });
+                                        }}
                                         className={`w-12 h-12 md:w-16 md:h-16 border rounded flex flex-col items-center justify-center relative transition-all duration-300 group cursor-pointer
                                             ${cell.base ? (cell.base.jogador_id === origemBase?.jogador_id ? 'bg-green-500/20 border-green-500/40 hover:bg-green-500/40' : 'bg-red-500/10 border-red-500/40 hover:bg-red-500/30 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]') : 'bg-white/5 border-white/5 hover:border-white/20'}
                                             ${cell.x === x && cell.y === y ? 'border-orange-500/60 ring-1 ring-orange-500/40' : ''}
+                                            ${selectedTarget?.coordenada_x === cell.x && selectedTarget?.coordenada_y === cell.y ? 'ring-2 ring-sky-500 border-sky-500 shadow-[0_0_15px_rgba(14,165,233,0.5)]' : ''}
                                         `}
                                     >
                                         <span className="text-[8px] text-neutral-600 absolute top-1 left-1">{cell.x}:{cell.y}</span>
@@ -164,6 +188,20 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any)
                                 >
                                     Construir MINE
                                 </button>
+                                {ent.march && (
+                                    <div className="mt-2 bg-red-500/10 p-1 border border-red-500/20 rounded">
+                                        <div className="flex justify-between items-center text-[7px] font-black uppercase">
+                                            <span className="text-red-400">{ent.march.state}</span>
+                                            <span className="text-white">{ent.march.remainingTime}s</span>
+                                        </div>
+                                        <div className="w-full h-1 bg-white/5 mt-1 overflow-hidden">
+                                            <div 
+                                                className="h-full bg-red-500 transition-all duration-1000" 
+                                                style={{ width: `${(1 - ent.march.remainingTime / ent.march.totalTime) * 100}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                         {entities.length === 0 && (
@@ -184,12 +222,19 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig }: any)
                 isSending={isSending}
                 onEnviar={(params) => {
                     setIsSending(true);
-                    router.post('/base/atacar', params, {
+                    const payload = {
+                        ...params,
+                        destino_id: selectedTarget?.id,
+                        destino_x: selectedTarget?.coordenada_x,
+                        destino_y: selectedTarget?.coordenada_y
+                    };
+                    
+                    router.post('/base/atacar', payload, {
                         onSuccess: () => {
                             addToast('ORDEM DE MARCHA CONFIRMADA!', 'success');
                             setSelectedTarget(null);
                             setIsSending(false);
-                            router.visit('/dashboard');
+                            router.reload({ only: ['ataquesEnviados'] });
                         },
                         onError: (e: any) => {
                             addToast(e.error || 'FALHA NA TRANSMISSÃO', 'error');

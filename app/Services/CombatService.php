@@ -13,15 +13,22 @@ class CombatService
     /**
      * Lança uma ordem de ataque.
      */
-    public function iniciarAtaque(Base $origem, Base $destino, array $tropas, $tipo = 'ataque')
+    public function iniciarAtaque(Base $origem, ?Base $destino, array $tropas, $tipo = 'ataque', $coords = null)
     {
-        $dx = $destino->coordenada_x - $origem->coordenada_x;
-        $dy = $destino->coordenada_y - $origem->coordenada_y;
+        if ($destino) {
+            $dx = $destino->coordenada_x - $origem->coordenada_x;
+            $dy = $destino->coordenada_y - $origem->coordenada_y;
+        } elseif ($coords) {
+            $dx = $coords['x'] - $origem->coordenada_x;
+            $dy = $coords['y'] - $origem->coordenada_y;
+        } else {
+            throw new \Exception("Nenhum alvo identificado.");
+        }
+
         $distancia = sqrt($dx*$dx + $dy*$dy);
-        
         $tempo = CombatRules::calculateTravelTime($distancia, $tropas);
  
-        return DB::transaction(function() use ($origem, $destino, $tropas, $tipo, $tempo) {
+        return DB::transaction(function() use ($origem, $destino, $tropas, $tipo, $tempo, $coords) {
             // Deduzir tropas da base de origem
             foreach ($tropas as $unidade => $qtd) {
                 if ($qtd <= 0) continue;
@@ -32,7 +39,9 @@ class CombatService
  
             return Ataque::create([
                 'origem_base_id' => $origem->id,
-                'destino_base_id' => $destino->id,
+                'destino_base_id' => $destino ? $destino->id : null,
+                'destino_x' => $coords ? $coords['x'] : null,
+                'destino_y' => $coords ? $coords['y'] : null,
                 'tropas' => $tropas,
                 'tipo' => $tipo,
                 'chegada_em' => now()->addSeconds($tempo),
@@ -50,7 +59,20 @@ class CombatService
             $origem = $ataque->origem;
             $unidadesConfig = config('game.units');
             
-            // 1. Cálculos de força (simplificado para o Domain em seguida se necessário)
+            // Se não houver destino (ataque a coordenadas vazias)
+            if (!$destino) {
+                $relatorio = Relatorio::create([
+                    'atacante_id' => $origem->jogador_id,
+                    'defensor_id' => null,
+                    'vitoria' => true,
+                    'dados' => ['saque' => [], 'perdas_atacante' => $ataque->tropas, 'message' => 'Sector vazio. Nenhum combate travado.']
+                ]);
+                $this->retornarTropas($ataque, $ataque->tropas);
+                $ataque->update(['processado' => true]);
+                return;
+            }
+
+            // 1. Cálculos de força
             $forcaAtk = 0;
             foreach ($ataque->tropas as $u => $q) $forcaAtk += $q * ($unidadesConfig[$u]['attack'] ?? 0);
             
@@ -62,7 +84,7 @@ class CombatService
             $vitoria = $resultado['vitoriaAtacante'];
             $atrito = $resultado['atrito'];
  
-            // 3. Aplicar perdas e saque (Lógica de orquestração)
+            // 3. Aplicar perdas e saque
             $tropasRestantes = [];
             foreach ($ataque->tropas as $u => $q) {
                 $perdas = floor($q * ($vitoria ? ($atrito * 0.8) : 1.0));
@@ -75,23 +97,18 @@ class CombatService
                 $t->decrement('quantidade', $perdas);
             }
  
-            // 4. Loot e Retorno (Pode ser expandido conforme V52.2)
+            // 4. Loot
             $saque = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0];
             if ($vitoria) {
-                // Cálculo de saque simplificado para MVP
                 foreach($saque as $res => $v) {
-                    $qtd = floor($destino->recursos->$res * 0.3); // 30% de saque em vitória
+                    $qtd = floor($destino->recursos->$res * 0.3);
                     $saque[$res] = $qtd;
                     $destino->recursos->decrement($res, $qtd);
                     $origem->recursos->increment($res, $qtd);
                 }
             }
  
-            // Retorno das tropas sobreviventes
-            foreach ($tropasRestantes as $u => $q) {
-                if ($q <= 0) continue;
-                $origem->tropas()->firstOrCreate(['unidade' => $u], ['quantidade' => 0])->increment('quantidade', $q);
-            }
+            $this->retornarTropas($ataque, $tropasRestantes);
  
             // 5. Finalizar missao e gerar relatório
             Relatorio::create([
@@ -103,5 +120,14 @@ class CombatService
  
             $ataque->update(['processado' => true]);
         });
+    }
+
+    private function retornarTropas(Ataque $ataque, array $tropas)
+    {
+        $origem = $ataque->origem;
+        foreach ($tropas as $u => $q) {
+            if ($q <= 0) continue;
+            $origem->tropas()->firstOrCreate(['unidade' => $u], ['quantidade' => 0])->increment('quantidade', $q);
+        }
     }
 }

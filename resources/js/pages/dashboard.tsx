@@ -11,6 +11,8 @@ import { useToasts } from '@/components/game/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Target, Zap, ShieldAlert, Crosshair } from 'lucide-react';
 import { ArmyMovementPanel } from '@/components/game/ArmyMovementPanel';
+import { gameStateService } from '../../../src/services/GameStateService';
+import { eventBus, Events } from '../../../src/core/EventBus';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -23,33 +25,47 @@ export default function Dashboard({
     jogador, base, taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal 
 }: DashboardProps) {
-    // DIAGNÓSTICO DE CAMPO - VISÍVEL NO CONSOLE DO COMANDANTE
-    console.log("DADOS_DASHBOARD:", { base, jogador, taxasPerSecond });
-    if (base?.construcoes) console.log("FILA_CONSTRUCAO:", base.construcoes);
-    if (base?.treinos) console.log("FILA_TREINO:", base.treinos);
-
     const { addToast } = useToasts();
     const [selectedBuilding, setSelectedBuilding] = useState<any>(null);
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [isTraining, setIsTraining] = useState(false);
  
-    // AUTO-REFRESH TÁTICO: Sincroniza o dashboard se houver ações pendentes
+    // AUTO-REFRESH TÁTICO & ECS BRIDGE
     useEffect(() => {
+        // Alimenta o motor ECS com os ataques vindos do Laravel
+        if (ataquesEnviados) gameStateService.syncAttacks(ataquesEnviados);
+        if (ataquesRecebidos) gameStateService.syncAttacks(ataquesRecebidos);
+
+        // Feedback de Combate em Tempo Real
+        const unsubArrived = eventBus.subscribe(Events.ATTACK_ARRIVED, (ev) => {
+            const res = ev.data.result === 'VICTORY' ? 'VITÓRIA' : 'OPERACIONAL';
+            addToast(`MISSÃO: Força de ataque atingiu o alvo com ${res}.`, 'success');
+        });
+
+        const unsubReturned = eventBus.subscribe(Events.ATTACK_RETURNED, (ev) => {
+            addToast(`LOGÍSTICA: Coluna militar regressou à base. Saque capturado.`, 'info');
+            router.reload({ only: ['base'] });
+        });
+
         const hasActiveActions = 
             (base?.construcoes?.length ?? 0) > 0 || 
             (base?.treinos?.length ?? 0) > 0 || 
             (ataquesEnviados?.length ?? 0) > 0 || 
             (ataquesRecebidos?.length ?? 0) > 0;
 
-        if (hasActiveActions) {
-            const interval = setInterval(() => {
+        const interval = setInterval(() => {
+            if (hasActiveActions) {
                 router.reload({ only: ['base', 'ataquesEnviados', 'ataquesRecebidos', 'relatoriosGlobal'] });
-            }, 30000); // 30 segundos
-            return () => clearInterval(interval);
-        }
+            }
+        }, 15000); // 15 segundos para loop tático
+
+        return () => {
+            clearInterval(interval);
+            unsubArrived();
+            unsubReturned();
+        };
     }, [base, ataquesEnviados, ataquesRecebidos]);
 
-    // GATE DE SEGURANÇA: Se a base falhar, impedimos o colapso do React
     if (!base) {
         return (
             <AppLayout breadcrumbs={breadcrumbs}>
@@ -109,11 +125,9 @@ export default function Dashboard({
             <Head title="Centro de Comando Tático" />
             
             <div className="flex h-full flex-1 flex-col gap-6 p-4 bg-neutral-950 text-white min-h-screen">
-                {/* HUD SUPERIOR - RECURSOS */}
-                <ResourceBar recursos={base.recursos} taxasPerSecond={taxasPerSecond} />
+                <ResourceBar recursos={base.recursos} taxasPerSecond={taxasPerSecond || []} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
-                    {/* COLUNA ESQUERDA - VISTA DA BASE (8 COLUNAS) */}
                     <div className="lg:col-span-8 flex flex-col gap-4">
                         <div className="flex justify-between items-center px-2">
                              <h2 className="text-xl font-black uppercase tracking-tighter text-white flex items-center gap-2">
@@ -133,18 +147,14 @@ export default function Dashboard({
                         <VillageView base={base} onBuildingClick={handleBuildingClick} />
                     </div>
 
-                    {/* COLUNA DIREITA - INTELIGÊNCIA & FILAS (4 COLUNAS) */}
                     <div className="lg:col-span-4 flex flex-col gap-6">
-                        {/* FILA DE PRODUÇÃO TÁTICA (CONSTRUÇÃO E TREINO) */}
                         <ProductionQueue 
                             construcoes={base.construcoes || []} 
                             treinos={base.treinos || []} 
                         />
 
-                        {/* PAINEL DE TROPAS (GUARNIÇÃO) */}
                         <GarrisonPanel tropas={base?.tropas ?? []} gameConfig={gameConfig} />
 
-                        {/* FEED GLOBAL */}
                         <OrderPanel title="Inteligência Global" icon={<Target className="text-orange-500" size={18} />}>
                             <div className="space-y-3">
                                 {(relatoriosGlobal ?? []).map((r, i) => (
@@ -158,7 +168,6 @@ export default function Dashboard({
                     </div>
                 </div>
 
-                {/* MODAL DE EDIFÍCIO */}
                 <BuildingModal 
                     isOpen={!!selectedBuilding} 
                     onClose={() => setSelectedBuilding(null)}

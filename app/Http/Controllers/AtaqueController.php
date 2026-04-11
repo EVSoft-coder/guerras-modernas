@@ -24,7 +24,9 @@ class AtaqueController extends Controller
     {
         $request->validate([
             'origem_id' => 'required|exists:bases,id',
-            'destino_id' => 'required|exists:bases,id',
+            'destino_id' => 'nullable|exists:bases,id',
+            'destino_x' => 'nullable|integer',
+            'destino_y' => 'nullable|integer',
             'tropas' => 'required|array',
             'tipo' => 'required|string|in:ataque,espionagem,conquista'
         ]);
@@ -32,11 +34,19 @@ class AtaqueController extends Controller
         $baseOrigem = Base::findOrFail($request->origem_id);
         if ($baseOrigem->jogador_id !== Auth::id()) abort(403);
  
-        $baseDestino = Base::findOrFail($request->destino_id);
+        // Destino pode ser uma base ou coordenadas directas
+        $coords = null;
+        if (!$request->destino_id && isset($request->destino_x) && isset($request->destino_y)) {
+            $coords = ['x' => $request->destino_x, 'y' => $request->destino_y];
+            $baseDestino = null;
+        } else {
+            $baseDestino = Base::findOrFail($request->destino_id);
+        }
  
         try {
-            $this->combatService->iniciarAtaque($baseOrigem, $baseDestino, $request->tropas, $request->tipo);
-            return redirect()->back()->with('success', "ORDEM DE MARCHA: Tropas enviadas para {$baseDestino->nome}.");
+            $this->combatService->iniciarAtaque($baseOrigem, $baseDestino, $request->tropas, $request->tipo, $coords);
+            $nomeDestino = $baseDestino ? $baseDestino->nome : "[{$request->destino_x}:{$request->destino_y}]";
+            return redirect()->back()->with('success', "ORDEM DE MARCHA: Tropas enviadas para {$nomeDestino}.");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
