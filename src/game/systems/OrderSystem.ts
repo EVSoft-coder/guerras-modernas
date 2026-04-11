@@ -14,13 +14,19 @@ export class OrderSystem implements GameSystem {
         window.addEventListener('contextmenu', (e) => e.preventDefault());
     }
  
+    public preUpdate(deltaTime: number): void {}
+ 
+    public update(deltaTime: number): void {
+        // Lógica de pulso (opcional)
+    }
+ 
     private handleMouseClick(e: MouseEvent): void {
         const mouseX = e.clientX;
         const mouseY = e.clientY;
  
-        if (e.button === 0) { // ESQUERDO: Selecção
+        if (e.button === 0) {
             this.processSelection(mouseX, mouseY);
-        } else if (e.button === 2) { // DIREITO: Marcha
+        } else if (e.button === 2) {
             this.processMoveOrder(mouseX, mouseY);
         }
     }
@@ -28,26 +34,21 @@ export class OrderSystem implements GameSystem {
     private processSelection(x: number, y: number): void {
         const entities = entityManager.getEntitiesWith(['Position', 'Sprite']);
         let found = false;
- 
-        // 1. Limpar Selecções
         const selected = entityManager.getEntitiesWith(['Selection']);
         selected.forEach(id => entityManager.removeComponent(id, 'Selection'));
  
-        // 2. Novo Target
         for (const id of entities) {
             const pos = entityManager.getComponent<any>(id, 'Position');
             const dist = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
  
             if (dist < 40) {
                 entityManager.addComponent(id, new SelectionComponent());
-                
                 eventBus.emit({
                     type: Events.PLAYER_UNIT_SELECTED,
                     entityId: id,
                     timestamp: Date.now(),
                     data: { x: pos.x, y: pos.y }
                 });
-                
                 found = true;
                 break;
             }
@@ -64,10 +65,8 @@ export class OrderSystem implements GameSystem {
  
     private processMoveOrder(x: number, y: number): void {
         const selected = entityManager.getEntitiesWith(['Selection', 'Position']);
-        
         selected.forEach(id => {
             entityManager.addComponent(id, new TargetComponent(x, y));
-            
             eventBus.emit({
                 type: Events.PLAYER_MOVE_ORDER,
                 entityId: id,
@@ -77,12 +76,11 @@ export class OrderSystem implements GameSystem {
         });
     }
  
-    public update(deltaTime: number): void {
-        // Lógica de pulso
-    }
+    public postUpdate(deltaTime: number): void {}
  
     public destroy(): void {
         window.removeEventListener('mousedown', this.handleMouseClick);
+        console.log('[SYSTEM] OrderSystem - Tactical Downlink Offline.');
     }
 }
  

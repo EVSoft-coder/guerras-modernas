@@ -1,34 +1,30 @@
 /**
  * A ordem dos systems define o comportamento do jogo. Não alterar sem revisão.
- * systemsRegistry.ts - Doutrina de Execução Determinística v1.0.
+ * systemsRegistry.ts - Doutrina de Execução Determinística v1.1 (Phases).
  */
-import { inputSystem } from './systems/InputSystem';
-import { orderSystem } from './systems/OrderSystem';
-import { aiSystem } from './systems/AISystem';
-import { movementSystem } from './systems/MovementSystem';
-import { combatSystem } from './systems/CombatSystem';
-import { renderSystem } from './systems/RenderSystem';
+import { inputSystem } from './InputSystem';
+import { orderSystem } from './OrderSystem';
+import { aiSystem } from './AISystem';
+import { movementSystem } from './MovementSystem';
+import { combatSystem } from './CombatSystem';
+import { renderSystem } from './RenderSystem';
  
 /**
- * Interface obrigatória para todos os sistemas operativos.
+ * Interface operativa com estratificação de fases.
  */
 export interface GameSystem {
     init(): void;
+    
+    // Fases de Execução
+    preUpdate(deltaTime: number): void;
     update(deltaTime: number): void;
+    postUpdate(deltaTime: number): void;
+    
     destroy(): void;
 }
  
 /**
  * LISTA EXPLÍCITA E ORDENADA DE SISTEMAS.
- * O GameLoop executa esta lista de forma sequencial e imutável.
- * 
- * ORDEM OPERATIVA:
- * 1. [PERCEPÇÃO] Input - Capta sinais brutos.
- * 2. [COMANDO] Order - Traduz cliques em intenções.
- * 3. [INTELIGÊNCIA] AI - Decide acções para unidades autónomas.
- * 4. [FÍSICA] Movement - Única autoridade sobre cinemática.
- * 5. [ATRTITO] Combat - Única autoridade sobre integridade (Health).
- * 6. [PROJECÇÃO] Render - Visualização final do estado validado.
  */
 export const systemsRegistry: ReadonlyArray<GameSystem> = [
     inputSystem,

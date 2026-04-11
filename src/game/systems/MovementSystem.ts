@@ -10,8 +10,9 @@ export class MovementSystem implements GameSystem {
         console.log('[SYSTEM] MovementSystem - Navigation Online.');
     }
  
+    public preUpdate(deltaTime: number): void {}
+ 
     public update(deltaTime: number): void {
-        // Unidades com capacidade de movimento
         const entities = entityManager.getEntitiesWith(['Position', 'Velocity']);
         
         for (const entityId of entities) {
@@ -19,7 +20,6 @@ export class MovementSystem implements GameSystem {
             const vel = entityManager.getComponent<any>(entityId, 'Velocity');
             const target = entityManager.getComponent<any>(entityId, 'Target');
  
-            // 1. Resolver Navegação (Target -> Velocity)
             if (target) {
                 const dx = target.x - pos.x;
                 const dy = target.y - pos.y;
@@ -30,20 +30,20 @@ export class MovementSystem implements GameSystem {
                     vel.vx = (dx / distance) * speed;
                     vel.vy = (dy / distance) * speed;
                 } else {
-                    // Alvo alcançado: Estabilizar
                     vel.vx = 0;
                     vel.vy = 0;
                     entityManager.removeComponent(entityId, 'Target');
                 }
             }
  
-            // 2. Aplicar Física (Velocity -> Position)
             if (vel.vx !== 0 || vel.vy !== 0) {
                 pos.x += vel.vx * deltaTime;
                 pos.y += vel.vy * deltaTime;
             }
         }
     }
+ 
+    public postUpdate(deltaTime: number): void {}
  
     public destroy(): void {
         console.log('[SYSTEM] MovementSystem - Navigation Offline.');

@@ -11,6 +11,8 @@ export class CombatSystem implements GameSystem {
         console.log('[SYSTEM] CombatSystem - Engagement Protocols Normalizing.');
     }
  
+    public preUpdate(deltaTime: number): void {}
+ 
     public update(deltaTime: number): void {
         const currentTime = Date.now() / 1000;
         const attackers = entityManager.getEntitiesWith(['Attack', 'Position']);
@@ -24,7 +26,6 @@ export class CombatSystem implements GameSystem {
  
             for (const tarId of targets) {
                 if (atkId === tarId) continue;
- 
                 const tarPos = entityManager.getComponent<any>(tarId, 'Position');
                 const dist = Math.sqrt(Math.pow(tarPos.x - atkPos.x, 2) + Math.pow(tarPos.y - atkPos.y, 2));
  
@@ -42,7 +43,6 @@ export class CombatSystem implements GameSystem {
         if (targetHealth) {
             targetHealth.value -= power;
             
-            // RELATÓRIO DE DANO NORMALIZADO
             eventBus.emit({
                 type: Events.COMBAT_UNIT_DAMAGED,
                 entityId: targetId,
@@ -51,7 +51,6 @@ export class CombatSystem implements GameSystem {
             });
  
             if (targetHealth.value <= 0) {
-                // RELATÓRIO DE DESTRUIÇÃO NORMALIZADO
                 eventBus.emit({
                     type: Events.COMBAT_UNIT_DESTROYED,
                     entityId: targetId,
@@ -62,8 +61,10 @@ export class CombatSystem implements GameSystem {
         }
     }
  
+    public postUpdate(deltaTime: number): void {}
+ 
     public destroy(): void {
-        // Encerramento de operações
+        console.log('[SYSTEM] CombatSystem - Engagement Suspended.');
     }
 }
  
