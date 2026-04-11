@@ -6,9 +6,9 @@ import { gameLoop } from './core/GameLoop';
 import { inputSystem } from './game/systems/InputSystem';
 import { uiManager } from './ui/UIManager';
 import { entityManager } from './core/EntityManager';
+import { Position } from './game/components/Position';
+import { Velocity } from './game/components/Velocity';
 import { 
-    PositionComponent, 
-    VelocityComponent, 
     HealthComponent, 
     AttackComponent, 
     AIComponent,
@@ -29,8 +29,8 @@ uiManager.initialize();
  
 // 3. MOBILIZAÇÃO JOGADOR (UNIDADE ALFA)
 const playerUnit = entityManager.createEntity();
-entityManager.addComponent(playerUnit, new PositionComponent(100, 200));
-entityManager.addComponent(playerUnit, new VelocityComponent(0, 0));
+entityManager.addComponent(playerUnit, new Position(100, 200));
+entityManager.addComponent(playerUnit, new Velocity(0, 0));
 entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
 entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1)); 
 entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
@@ -39,8 +39,8 @@ console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with APC armo
  
 // 4. MOBILIZAÇÃO IA INIMIGA (UNIDADE OMEGA)
 const enemyUnit = entityManager.createEntity();
-entityManager.addComponent(enemyUnit, new PositionComponent(500, 200));
-entityManager.addComponent(enemyUnit, new VelocityComponent(0, 0));
+entityManager.addComponent(enemyUnit, new Position(500, 200));
+entityManager.addComponent(enemyUnit, new Velocity(0, 0));
 entityManager.addComponent(enemyUnit, new HealthComponent(2000, 2000));
 entityManager.addComponent(enemyUnit, new AttackComponent(100, 200, 3)); 
 entityManager.addComponent(enemyUnit, new AIComponent('AGGRESSIVE')); 
