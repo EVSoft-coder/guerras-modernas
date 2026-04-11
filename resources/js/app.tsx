@@ -4,12 +4,13 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { ToastProvider } from '@/components/game/ToastProvider';
-import { route as routeFn } from 'ziggy-js';
 import { initializeTheme } from './hooks/use-appearance';
-
 declare global {
-    const route: typeof routeFn;
+    interface Window {
+        route: any;
+    }
 }
+
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

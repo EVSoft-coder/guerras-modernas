@@ -9,8 +9,10 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
         
         @viteReactRefresh
+        @routes
         @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         @inertiaHead
+
     </head>
     <body class="bg-black text-white antialiased">
         @inertia

@@ -24,19 +24,12 @@ import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
  
 console.log("BEFORE GAMELOOP");
-// 1. INICIALIZAÃ‡ÃƒO CORE (PreparaÃ§Ã£o de Monitores)
-gameLoop.init();
- 
-// 2. INICIALIZAÃ‡ÃƒO DE SUBSISTEMAS OPERATIVOS
-console.log('[BOOT] Initializing Modern Wars Engine with VISUALS...');
-for (const system of systemsRegistry) {
-    if (system && typeof system.init === 'function') {
-        system.init();
-    } else {
-        console.warn(`[BOOT] System ${system ? 'invalid' : 'missing'} detected. Skipping init.`);
-    }
-}
+// 1. INICIALIZAÇÃO CORE (Sequência de Ignição)
+// Nota: gameLoop.start() já orquestra a inicialização de todos os sistemas registrados.
+gameLoop.start();
+
 uiManager.initialize();
+
  
 // 3. MOBILIZAÃ‡ÃƒO JOGADOR (UNIDADE ALFA + VILA)
 const playerUnit = entityManager.createEntity();
@@ -80,6 +73,6 @@ console.log(`[BOOT] Enemy Unit Omega (ID: ${enemyUnit}) detected with Main Battl
  
 // 5. AUTORIZAÃ‡ÃƒO DE COMBATE
 stateManager.forceState(GameState.PLAYING);
-gameLoop.run();
+
  
 console.log('--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---');
