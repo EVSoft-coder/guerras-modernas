@@ -22,8 +22,21 @@ export interface EntitySnapshot {
     };
 }
 
+export interface GlobalGameState {
+    player: { name: string; id: number };
+    village: { name: string; id: number };
+    resources: { wood: number; stone: number; iron: number };
+    buildings: Array<{ type: string; level: number }>;
+}
+
 class GameStateService {
     private snapshots: EntitySnapshot[] = [];
+    private globalState: GlobalGameState = {
+        player: { name: 'OPERATIVE', id: 1 },
+        village: { name: 'BASE_ALPHA', id: 1 },
+        resources: { wood: 0, stone: 0, iron: 0 },
+        buildings: []
+    };
 
     /**
      * Synchronizes Laravel attacks with ECS motor.
@@ -97,10 +110,52 @@ class GameStateService {
         }
 
         this.snapshots = newSnapshots;
+        this.updateGlobalSummary();
+        
+        // Log de estado solicitado (Doctrine Logic)
+        console.log("GAME STATE:", this.globalState);
+    }
+
+    private updateGlobalSummary(): void {
+        const buildingEntities = entityManager.getEntitiesWith(['Building']);
+        const resEntities = entityManager.getEntitiesWith(['Resource']);
+        
+        // Aggregate Resources
+        let totalRes = { wood: 0, stone: 0, iron: 0 };
+        resEntities.forEach(id => {
+            const r = entityManager.getComponent<any>(id, 'Resource');
+            if (r) {
+                totalRes.wood += r.wood || 0;
+                totalRes.stone += r.stone || 0;
+                totalRes.iron += r.iron || 0;
+            }
+        });
+        
+        // Gather Buildings
+        const buildingList = buildingEntities.map(id => {
+            const b = entityManager.getComponent<any>(id, 'Building');
+            return { type: b?.buildingType || 'STRUCTURE', level: b?.level || 1 };
+        });
+
+        // Ensure defaults and update
+        this.globalState = {
+            player: this.globalState?.player ?? { name: 'OPERATIVE', id: 1 },
+            village: this.globalState?.village ?? { name: 'BASE_ALPHA', id: 1 },
+            resources: totalRes,
+            buildings: buildingList
+        };
+
+        // Extra Validation
+        if (!this.globalState.player) this.globalState.player = { name: 'UNKNOWN', id: 0 };
+        if (!this.globalState.village) this.globalState.village = { name: 'OUTPOST', id: 0 };
     }
 
     public getGameState(): EntitySnapshot[] {
         return this.snapshots;
+    }
+
+    public getGlobalState(): GlobalGameState {
+        return this.globalState;
     }
 
     public getGameMode(): GameMode {
