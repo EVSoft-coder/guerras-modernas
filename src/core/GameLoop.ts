@@ -6,7 +6,7 @@ class GameLoop {
     private gameRunning: boolean = false;
     private lastTime: number = 0;
     private initialized: boolean = false;
-    private animationFrameId: number | null = null;
+    private animationFrameId: number | null = null; // Ciclo Assíncrono (Browser-safe)
  
     public init(): void {
         if (this.initialized) return;
