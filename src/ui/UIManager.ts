@@ -6,6 +6,8 @@ import { eventBus, Events, EventPayload } from '../core/EventBus';
 import { GameState } from '../core/StateManager';
 import { hud } from './hud/HUD';
 import { villageView } from './village/VillageView';
+import { worldMapView } from './map/WorldMapView';
+import { GameMode } from '../core/StateManager';
  
 class UIManager {
     private screens: Map<GameState, HTMLElement> = new Map();
@@ -15,13 +17,33 @@ class UIManager {
         
         hud.initialize();
         villageView.initialize();
+        worldMapView.initialize();
  
+        // Subscrever à mudança de estado tático (Vila / Mapa)
+        eventBus.subscribe(Events.GAMEMODE_CHANGED, (p: EventPayload) => {
+            this.handleModeChange(p.data.mode as GameMode);
+        });
+
         // Subscrever à mudança de estado normalizada
         eventBus.subscribe(Events.GAME_STATE_CHANGED, (p: EventPayload) => {
             this.handleStateChange(p.data.newState);
+            // Se entramos em PLAYING, garantimos que a vista inicial está correta
+            if (p.data.newState === GameState.PLAYING) {
+                villageView.show();
+            }
         });
  
         this.createScreens();
+    }
+
+    private handleModeChange(mode: GameMode): void {
+        if (mode === GameMode.WORLD_MAP) {
+            villageView.hide();
+            worldMapView.show();
+        } else {
+            worldMapView.hide();
+            villageView.show();
+        }
     }
  
     private handleStateChange(newState: GameState): void {

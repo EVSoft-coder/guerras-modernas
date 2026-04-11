@@ -26,11 +26,19 @@ export class VillageView {
             top: 150px;
             left: 20px;
             z-index: 1000;
-            display: flex;
+            display: none; /* Escondido por defeito */
             gap: 20px;
             font-family: 'Courier New', Courier, monospace;
         `;
         document.body.appendChild(this.container);
+    }
+
+    public show(): void {
+        if (this.container) this.container.style.display = 'flex';
+    }
+
+    public hide(): void {
+        if (this.container) this.container.style.display = 'none';
     }
 
     private setupInteractions(): void {
