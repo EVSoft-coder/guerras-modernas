@@ -27,7 +27,7 @@ export class RenderSystem implements GameSystem {
             const sprite = entityManager.getComponent<any>(entityId, 'Sprite');
             const health = entityManager.getComponent<any>(entityId, 'Health');
             const isSelected = entityManager.getComponent<any>(entityId, 'Selection');
-            this.drawEntity(pos, sprite, health, isSelected);
+            this.drawEntity(pos, sprite, health, isSelected, entityId);
         }
     }
  
@@ -48,35 +48,33 @@ export class RenderSystem implements GameSystem {
         this.ctx = canvas.getContext('2d');
     }
  
-    private drawEntity(pos: any, sprite: any, health: any, isSelected: any): void {
+    private drawEntity(pos: any, sprite: any, health: any, isSelected: any, entityId: number): void {
         if (!this.ctx) return;
-        let img = this.images.get(sprite.imagePath);
-        if (!img) {
-            img = new Image();
-            img.src = sprite.imagePath;
-            this.images.set(sprite.imagePath, img);
+        
+        const size = 32;
+        const isPlayer = entityManager.getComponent<any>(entityId, 'Player');
+        const isAI = entityManager.getComponent<any>(entityId, 'AI');
+ 
+        // 1. DESENHO DO QUADRADO BASE
+        this.ctx.fillStyle = isPlayer ? '#0ea5e9' : (isAI ? '#ef4444' : '#ffffff');
+        this.ctx.fillRect(pos.x - size / 2, pos.y - size / 2, size, size);
+ 
+        // 2. BORDA DE SELECÇÃO
+        if (isSelected) {
+            this.ctx.strokeStyle = '#00ff00';
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeRect(pos.x - size / 2 - 2, pos.y - size / 2 - 2, size + 4, size + 4);
         }
-        if (img.complete) {
-            const size = 64;
-            if (isSelected) {
-                this.ctx.beginPath();
-                this.ctx.arc(pos.x, pos.y, size/2 + 5, 0, Math.PI * 2);
-                this.ctx.strokeStyle = '#00ff00';
-                this.ctx.lineWidth = 2;
-                this.ctx.stroke();
-                this.ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
-                this.ctx.fill();
-            }
-            this.ctx.drawImage(img, pos.x - size/2, pos.y - size/2, size, size);
-            if (health) {
-                const barWidth = 50;
-                const barHeight = 4;
-                const healthPercent = health.value / health.max;
-                this.ctx.fillStyle = '#ff0000';
-                this.ctx.fillRect(pos.x - barWidth/2, pos.y - size/2 - 10, barWidth, barHeight);
-                this.ctx.fillStyle = '#00ff00';
-                this.ctx.fillRect(pos.x - barWidth/2, pos.y - size/2 - 10, barWidth * healthPercent, barHeight);
-            }
+ 
+        // 3. BARRA DE INTEGRIDADE (HEALTH)
+        if (health) {
+            const barWidth = 32;
+            const barHeight = 4;
+            const healthPercent = health.value / health.max;
+            this.ctx.fillStyle = '#333333';
+            this.ctx.fillRect(pos.x - barWidth / 2, pos.y - size / 2 - 10, barWidth, barHeight);
+            this.ctx.fillStyle = isPlayer ? '#22c55e' : '#ef4444';
+            this.ctx.fillRect(pos.x - barWidth / 2, pos.y - size / 2 - 10, barWidth * healthPercent, barHeight);
         }
     }
  
