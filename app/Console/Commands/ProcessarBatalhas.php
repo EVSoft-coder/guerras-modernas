@@ -10,12 +10,11 @@ use Illuminate\Support\Facades\DB;
 class ProcessarBatalhas extends Command
 {
     protected $signature = 'game:processar-batalhas';
-    protected $description = 'Processa os ataques que chegaram ao destino em background';
+    protected $description = 'Processa os ataques e regresso de tropas em background';
 
     public function handle()
     {
-        $ataques = Ataque::with(['origem.jogador', 'destino.tropas', 'destino.recursos'])
-            ->where('processado', 0)
+        $ataques = Ataque::where('processado', 0)
             ->where('chegada_em', '<=', now())
             ->get();
 
@@ -23,29 +22,22 @@ class ProcessarBatalhas extends Command
             return;
         }
 
-        $combatService = new CombatService();
+        $combatService = app(CombatService::class);
 
         foreach ($ataques as $atq) {
-            DB::transaction(function () use ($atq, $combatService) {
-                if (!$atq->origem || !$atq->destino) {
-                    Ataque::where('id', $atq->id)->update(['processado' => 1]);
-                    return;
+            try {
+                if ($atq->tipo === 'retorno') {
+                    $combatService->finalizarRetorno($atq);
+                    $this->info("REGRESSO: Tropas e saque retornaram à base.");
+                } else {
+                    $combatService->resolverCombate($atq);
+                    $this->info("COMBATE: Operação militar processada ativamente.");
                 }
-
-                // Resolver a batalha usando o serviço centralizado
-                $combatService->resolver(
-                    $atq->tropas, 
-                    $atq->destino, 
-                    $atq->origem->jogador_id, 
-                    $atq->tipo,
-                    $atq->origem
-                );
-
-                // Marcar como processado
-                Ataque::where('id', $atq->id)->update(['processado' => 1]);
-            });
-
-            $this->info("Operação Militar [ID: {$atq->id}] processada com sucesso.");
+            } catch (\Exception $e) {
+                $this->error("FALHA CRÍTICA [ATQ: {$atq->id}]: " . $e->getMessage());
+                // Marcar como processado para evitar loops infinitos de erro
+                $atq->update(['processado' => true]);
+            }
         }
     }
 }

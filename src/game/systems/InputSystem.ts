@@ -1,52 +1,55 @@
-/**
- * src/game/systems/InputSystem.ts
- * Sensor de Estado de Comando Contínuo.
- */
-import { eventBus } from '../../core/EventBus';
-import { GameSystem } from '../systemsRegistry';
- 
-export class InputSystem implements GameSystem {
-    private keys: Record<string, boolean> = {
+import { System } from '../core/EntityManager';
+import { EventBus, Events } from '../core/EventBus';
+import { Log } from '../utils/Logger';
+
+export class InputSystem implements System {
+    private keys: { [key: string]: boolean } = {
         up: false,
         down: false,
         left: false,
         right: false
     };
- 
-    public init(): void {
-        console.log('[SYSTEM] InputSystem - Continuous Sensors ONLINE.');
-        
+
+    init(): void {
+        Log.info('[SYSTEM] InputSystem - Continuous Sensors ONLINE.');
         window.addEventListener('keydown', (e) => this.updateKeyState(e.code, true));
         window.addEventListener('keyup', (e) => this.updateKeyState(e.code, false));
     }
- 
-    private updateKeyState(code: string, isPressed: boolean): void {
+
+    private updateKeyState(code: string, isDown: boolean): void {
         switch (code) {
-            case 'KeyW': case 'ArrowUp':    this.keys.up = isPressed; break;
-            case 'KeyS': case 'ArrowDown':  this.keys.down = isPressed; break;
-            case 'KeyA': case 'ArrowLeft':  this.keys.left = isPressed; break;
-            case 'KeyD': case 'ArrowRight': this.keys.right = isPressed; break;
+            case 'KeyW':
+            case 'ArrowUp':
+                this.keys.up = isDown;
+                break;
+            case 'KeyS':
+            case 'ArrowDown':
+                this.keys.down = isDown;
+                break;
+            case 'KeyA':
+            case 'ArrowLeft':
+                this.keys.left = isDown;
+                break;
+            case 'KeyD':
+            case 'ArrowRight':
+                this.keys.right = isDown;
+                break;
         }
     }
- 
-    public preUpdate(deltaTime: number): void {}
- 
-    public update(deltaTime: number): void {
-        // Emitir estado actual para o barramento a cada frame
-        eventBus.emit({
+
+    preUpdate(dt: number): void {}
+
+    update(dt: number): void {
+        EventBus.emit({
             type: 'PLAYER:INPUT_STATE',
             timestamp: Date.now(),
             data: { ...this.keys }
         });
     }
- 
-    public postUpdate(deltaTime: number): void {}
- 
-    public destroy(): void {
-        console.log('[SYSTEM] InputSystem - Continuous Sensors OFFLINE.');
+
+    postUpdate(dt: number): void {}
+
+    destroy(): void {
+        Log.info('[SYSTEM] InputSystem - Continuous Sensors OFFLINE.');
     }
 }
- 
-export const inputSystem = new InputSystem();
-鼓
-鼓
