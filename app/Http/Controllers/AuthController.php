@@ -1,216 +1,129 @@
 <?php
-
+ 
 namespace App\Http\Controllers;
-
+ 
 use App\Models\Jogador;
 use App\Models\Base;
-use App\Models\Recurso;
-use App\Models\Edificio;
-use App\Models\Ataque;
-use App\Services\GameService;
-use App\Services\CombatService;
+use App\Services\EconomyService;
+use App\Services\BuildingService;
+use App\Services\UnitService;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Inertia\Inertia;
+ 
 class AuthController extends Controller
 {
+    protected $economyService;
+    protected $buildingService;
+    protected $unitService;
+ 
+    public function __construct(
+        EconomyService $economyService,
+        BuildingService $buildingService,
+        UnitService $unitService
+    ) {
+        $this->economyService = $economyService;
+        $this->buildingService = $buildingService;
+        $this->unitService = $unitService;
+    }
+ 
     // ====================== VIEWS ======================
     public function showLogin() { return view('auth.login'); }
     public function showRegister() { return view('auth.register'); }
-    public function perfil() { return view('dashboard'); } // Perfil por agora redireciona ou mostra dashboard
-
-    // ====================== REGISTO ======================
-    public function register(RegisterRequest $request)
-    {
-        try {
-            return DB::transaction(function () use ($request) {
-                // Criar o jogador
-                $jogador = Jogador::create([
-                    'username' => $request->username,
-                    'email'    => $request->email,
-                    'password' => Hash::make($request->password),
-                    'xp'       => 0,
-                    'nivel'    => 1,
-                    'cargo'    => 'Recruta',
-                ]);
-
-                // Criar a primeira base automaticamente
-                $base = Base::create([
-                    'jogador_id'     => $jogador->id,
-                    'nome'           => 'Base Principal',
-                    'coordenada_x'   => rand(100, 900),
-                    'coordenada_y'   => rand(100, 900),
-                    'qg_nivel'       => 1,
-                    'muralha_nivel'  => 1,
-                ]);
-
-                // Criar recursos iniciais
-                Recurso::create([
-                    'base_id'     => $base->id,
-                    'suprimentos' => 1500,
-                    'combustivel' => 1000,
-                    'municoes'    => 800,
-                    'pessoal'     => 600,
-                ]);
-
-                // Criar edifícios básicos (Usando os nomes corretos do config/game.php)
-                // QG e Muralha estão nas colunas da base, mas os outros são registros em edifícios
-                Edificio::create(['base_id' => $base->id, 'tipo' => 'mina_suprimentos', 'nivel' => 1]);
-                Edificio::create(['base_id' => $base->id, 'tipo' => 'quartel', 'nivel' => 1]);
-                Edificio::create(['base_id' => $base->id, 'tipo' => 'posto_recrutamento', 'nivel' => 1]);
-
-                // Fazer login automático
-                Auth::login($jogador);
-
-                return redirect('/dashboard')->with('success', 'Conta de Oficial criada com sucesso! Bem-vindo ao Comando!');
-            });
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Falha crítica ao mobilizar conta. Tente novamente.'])->withInput();
-        }
-    }
-
-    // ====================== LOGIN ======================
+    public function perfil() { return Inertia::render('perfil'); }
+ 
+    // ====================== LOGIN/LOGOUT ======================
     public function login(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($request->only('email', 'password'))) {
             $request->session()->regenerate();
             return redirect('/dashboard');
         }
-
-        return redirect()->back()->withErrors(['email' => 'Credenciais de oficial inválidas.']);
+        return redirect()->back()->withErrors(['email' => 'Credenciais inválidas.']);
     }
-
-    // ====================== LOGOUT ======================
+ 
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect('/')->with('success', 'Sessão terminada.');
     }
-
-    // ====================== DASHBOARD ======================
+ 
+    // ====================== DASHBOARD (REFACTORED) ======================
     public function dashboard(Request $request)
     {
-        // Forçar Charset de Conexão
-        \Illuminate\Support\Facades\DB::statement("SET NAMES 'utf8mb4'");
-        
         $jogador = Auth::user();
         if (!$jogador) return redirect('/login');
-
-        // Buscar todas as bases do jogador
-        $bases = $jogador->bases()->with('recursos', 'edificios', 'construcoes', 'treinos')->get();
-        
-        // Determinar qual base exibir (via sessão ou primeira da lista)
+ 
+        // 1. Obter Base Selecionada
+        $bases = $jogador->bases()->with('recursos', 'edificios', 'construcoes', 'treinos', 'tropas')->get();
         $selectedBaseId = session('selected_base_id');
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
-
+ 
         if ($base) {
-            // AUTO-REPAIR: Assegurar que os recursos existem antes de carregar
-            if (!$base->recursos()->exists()) {
-                \App\Models\Recurso::create([
-                    'base_id'     => $base->id,
-                    'suprimentos' => 500,
-                    'combustivel' => 500,
-                    'municoes'    => 500,
-                    'pessoal'     => 100,
-                ]);
-            }
-
-            // Atualizar Recursos e Fila (Encapsulado no Trait e Service)
-            $base->updateResources();
-            $gameService = new GameService();
-            $gameService->processarFila($base);
-            $gameService->processarAtaques($base);
+            // 2. Orquestração via Services (Sem lógica no Controller)
+            $this->economyService->atualizarRecursos($base);
+            $this->buildingService->processarFila($base);
+            $this->unitService->processarFila($base);
             
-            // Recarregar com todas as dependências finais
+            // 3. Persistência de Sessão
+            session(['selected_base_id' => $base->id]);
             $base->refresh();
             $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
-            
-            // Guardar o ID selecionado na sessão para persistência
-            session(['selected_base_id' => $base->id]);
-
-            // Obter taxas de produção p/min via Trait
-            $taxas = $base->getProductionRates();
-            
-            // Obter taxas p/segundo para o ticker do frontend
-            $taxasPerSecond = [];
-            foreach($taxas as $res => $minRate) {
-                $taxasPerSecond[$res] = $minRate / 60;
-            }
-
-            // NOVAS VARIÁVEIS PARA O UI MODERNO (FASES 11-14)
-            $intelLevel = $base->edificios()->where('tipo', 'radar_estrategico')->first()?->nivel ?? 0;
-            
-            // Cálculo de População/Guarnição
-            $nivelRecrutamento = $base->edificios()->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0;
-            $capacidadeBase = (100 * ($nivelRecrutamento + 1)) * 1.5;
-            $nivelLogistica = $jogador->obterNivelTech('logistica');
-            $multiplicadorCap = 1 + ($nivelLogistica * 0.10);
-            $capTotal = $capacidadeBase * $multiplicadorCap;
-
-            $popOcupada = 0;
-            foreach ($base->tropas as $t) {
-                $popOcupada += ($t->quantidade * (config("game.units.{$t->unidade}.cost.pessoal") ?? 1));
-            }
-            $popPercent = ($capTotal > 0) ? min(100, ($popOcupada / $capTotal) * 100) : 0;
-
-            // Pesquisas em curso
-            $pesquisasEmCurso = \App\Models\Pesquisa::where('jogador_id', $jogador->id)
-                ->where('completado_em', '>', now())
-                ->get();
-
-            // Ataques
-            $ataquesRecebidos = \App\Models\Ataque::where('destino_base_id', $base->id)->where('processado', false)->get();
-            $ataquesEnviados = \App\Models\Ataque::where('origem_base_id', $base->id)->where('processado', false)->get();
-
-        } else {
-            $taxas = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 'pessoal' => 0];
-            $taxasPerSecond = $taxas;
-            $intelLevel = 0;
-            $popOcupada = 0;
-            $capTotal = 0;
-            $popPercent = 0;
-            $pesquisasEmCurso = collect();
-            $ataquesRecebidos = collect();
-            $ataquesEnviados = collect();
+ 
+            // 4. Preparação de Dados para o HUD (Via EconomyService)
+            $taxas = $this->economyService->obterTaxasProducao($base);
         }
-
-        // Buscar últimos relatórios envolvidos
-        $relatorios = \App\Models\Relatorio::where('atacante_id', $jogador->id)
-            ->orWhere('defensor_id', $jogador->id)
-            ->orderBy('created_at', 'desc')
-            ->take(8)
-            ->get();
-
-        $relatoriosGlobal = \App\Models\Relatorio::with(['atacante', 'defensor'])
-            ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
-
-        return \Inertia\Inertia::render('dashboard', [
-            'jogador'           => $jogador,
-            'base'              => $base,
-            'bases'             => $bases,
-            'relatorios'        => $relatorios,
-            'relatoriosGlobal'  => $relatoriosGlobal,
-            'taxas'             => $taxas,
-            'taxasPerSecond'    => $taxasPerSecond,
-            'intelLevel'        => $intelLevel,
-            'popOcupada'        => $popOcupada,
-            'capTotal'          => $capTotal,
-            'popPercent'        => $popPercent,
-            'pesquisasEmCurso'  => $pesquisasEmCurso,
-            'ataquesRecebidos'  => $ataquesRecebidos,
-            'ataquesEnviados'   => $ataquesEnviados,
-            'gameConfig'        => config('game')
+ 
+        return Inertia::render('dashboard', [
+            'jogador' => $jogador,
+            'base' => $base,
+            'bases' => $bases,
+            'taxas' => $taxas ?? [],
+            'relatorios' => \App\Models\Relatorio::where('atacante_id', $jogador->id)
+                ->orWhere('defensor_id', $jogador->id)
+                ->latest()->take(10)->get(),
+            'ataquesRecebidos' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get(),
+            'ataquesEnviados' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get(),
+            'gameConfig' => config('game')
         ]);
+    }
+ 
+    // ====================== REGISTO ======================
+    public function register(RegisterRequest $request)
+    {
+        try {
+            return DB::transaction(function () use ($request) {
+                $jogador = Jogador::create([
+                    'username' => $request->username,
+                    'email'    => $request->email,
+                    'password' => Hash::make($request->password),
+                ]);
+ 
+                // Criação de Base Inicial
+                $base = Base::create([
+                    'jogador_id' => $jogador->id,
+                    'nome' => 'Setor Primário',
+                    'coordenada_x' => rand(100, 900),
+                    'coordenada_y' => rand(100, 900),
+                    'qg_nivel' => 1,
+                    'muralha_nivel' => 1,
+                ]);
+ 
+                $base->recursos()->create([
+                    'suprimentos' => 1000, 'combustivel' => 800, 'municoes' => 500, 'pessoal' => 300,
+                ]);
+ 
+                Auth::login($jogador);
+                return redirect('/dashboard')->with('success', 'Comandante, a sua base está pronta.');
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Falha na mobilização: ' . $e->getMessage()]);
+        }
     }
 }

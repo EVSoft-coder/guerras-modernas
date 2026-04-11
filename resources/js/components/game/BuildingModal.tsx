@@ -55,7 +55,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         if (!baseAmount) return null;
         
         const scaling = gameConfig?.scaling || 1.5;
-        const totalCost = calculateBuildingCost(baseAmount, nextLevel, scaling);
+        const totalCost = calculateBuildingCost(baseAmount, building.nivel || 0, scaling);
         const playerAmount = building.base?.recursos?.[resourceType] || 0;
         const hasEnough = playerAmount >= totalCost;
         
@@ -115,12 +115,12 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     
     // Cálculo de tempo real
     const constSpeed = gameConfig?.speed?.construction || 1;
-    const totalTime = calculateConstructionTime(config.time_base, nextLevel, constSpeed);
+    const totalTime = calculateConstructionTime(config.time_base, building.nivel || 0, constSpeed);
     const timeFormatted = `${Math.floor(totalTime / 60)}m ${Math.floor(totalTime % 60)}s`;
 
     // Verificar se tem todos os recursos para o upgrade
     const canAfford = config.cost ? Object.entries(config.cost).every(([type, amount]: any) => {
-        const cost = calculateBuildingCost(amount, nextLevel, gameConfig?.scaling || 1.5);
+        const cost = calculateBuildingCost(amount, building.nivel || 0, gameConfig?.scaling || 1.5);
         return (building.base?.recursos?.[type] || 0) >= cost;
     }) : true;
 

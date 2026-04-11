@@ -4,18 +4,17 @@ namespace App\Http\Controllers;
  
 use App\Models\Base;
 use App\Models\Ataque;
-use App\Services\GameService;
+use App\Services\CombatService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
  
 class AtaqueController extends Controller
 {
-    protected $gameService;
+    protected $combatService;
  
-    public function __construct(GameService $gameService)
+    public function __construct(CombatService $combatService)
     {
-        $this->gameService = $gameService;
+        $this->combatService = $combatService;
     }
  
     /**
@@ -36,9 +35,31 @@ class AtaqueController extends Controller
         $baseDestino = Base::findOrFail($request->destino_id);
  
         try {
-            $ataque = $this->gameService->iniciarAtaque($baseOrigem, $baseDestino, $request->tropas, $request->tipo);
-            
-            return redirect()->back()->with('success', "ORDEM DE MARCHA: Tropas enviadas para {$baseDestino->nome}. Chegada em {$ataque->chegada_em->format('H:i:s')}.");
+            $this->combatService->iniciarAtaque($baseOrigem, $baseDestino, $request->tropas, $request->tipo);
+            return redirect()->back()->with('success', "ORDEM DE MARCHA: Tropas enviadas para {$baseDestino->nome}.");
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+ 
+    /**
+     * Cancela uma operação em andamento (se possível).
+     */
+    public function cancelar($id)
+    {
+        $ataque = Ataque::findOrFail($id);
+        $baseOrigem = $ataque->origem;
+ 
+        if ($baseOrigem->jogador_id !== Auth::id()) abort(403);
+        if ($ataque->processado) return redirect()->back()->withErrors(['error' => 'A missão já atingiu o alvo.']);
+ 
+        try {
+            // Devolver tropas à base
+            foreach ($ataque->tropas as $unidade => $quantidade) {
+                $baseOrigem->tropas()->where('unidade', $unidade)->increment('quantidade', $quantidade);
+            }
+            $ataque->delete();
+            return redirect()->back()->with('success', 'MISSÃO ABORTADA: Tropas regressaram à base.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
