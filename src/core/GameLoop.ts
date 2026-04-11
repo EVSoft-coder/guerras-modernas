@@ -51,6 +51,7 @@ class GameLoop {
          * FASE I: PRE_UPDATE (Preparação Global)
          */
         for (const system of systemsRegistry) {
+            console.log("Running system (PRE):", system.constructor.name);
             system.preUpdate(dt);
         }
  
@@ -59,10 +60,12 @@ class GameLoop {
          */
          
         // 1. [INPUT]
+        console.log("Running system (UPDATE):", systemsRegistry[0].constructor.name);
         systemsRegistry[0].update(dt);
  
         // 2. [SYSTEMS] (Lógica Intermédia)
         for (let i = 1; i < systemsRegistry.length - 1; i++) {
+            console.log("Running system (UPDATE):", systemsRegistry[i].constructor.name);
             systemsRegistry[i].update(dt);
         }
  
@@ -70,12 +73,14 @@ class GameLoop {
         stateManager.update(dt);
  
         // 4. [RENDER]
+        console.log("Running system (UPDATE):", systemsRegistry[systemsRegistry.length - 1].constructor.name);
         systemsRegistry[systemsRegistry.length - 1].update(dt);
  
         /**
          * FASE III: POST_UPDATE (Consolidação Global)
          */
         for (const system of systemsRegistry) {
+            console.log("Running system (POST):", system.constructor.name);
             system.postUpdate(dt);
         }
  
