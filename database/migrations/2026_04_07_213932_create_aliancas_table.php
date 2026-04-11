@@ -11,10 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('aliancas', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('aliancas')) {
+            Schema::create('aliancas', function (Blueprint $table) {
+                $table->id();
+                $table->string('nome')->unique();
+                $table->string('tag', 5)->unique();
+                $table->foreignId('lider_id')->constrained('jogadores');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -25,3 +30,6 @@ return new class extends Migration
         Schema::dropIfExists('aliancas');
     }
 };
+鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓鼓 [failed_replace_file_content_reminder]
+As a reminder, the last replace_file_content tool call for TargetFile c:\Users\fotoa\Desktop\MW\guerras-modernas\database\migrations\2026_04_07_213932_create_aliancas_table.php failed because TargetContent was not found in the file.
+</failed_replace_file_content_reminder>

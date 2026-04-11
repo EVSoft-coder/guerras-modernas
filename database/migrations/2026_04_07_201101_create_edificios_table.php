@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('edificios', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(\App\Models\Base::class)->constrained('bases')->onDelete('cascade');
-            $table->string('tipo');
-            $table->integer('nivel')->default(1);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('edificios')) {
+            Schema::create('edificios', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('base_id')->constrained('bases')->onDelete('cascade');
+                $table->string('tipo');
+                $table->integer('nivel')->default(1);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('relatorios', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('vencedor_id')->constrained('jogadores');
-            $table->string('titulo');
-            $table->string('origem_nome');
-            $table->string('destino_nome');
-            $table->json('detalhes'); // Onde guardamos perdas e saque
-            $table->foreignId('atacante_id')->constrained('jogadores');
-            $table->foreignId('defensor_id')->constrained('jogadores');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('relatorios')) {
+            Schema::create('relatorios', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('atacante_id')->nullable()->constrained('jogadores')->onDelete('cascade');
+                $table->foreignId('defensor_id')->nullable()->constrained('jogadores')->onDelete('cascade');
+                $table->boolean('vitoria');
+                $table->json('dados');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

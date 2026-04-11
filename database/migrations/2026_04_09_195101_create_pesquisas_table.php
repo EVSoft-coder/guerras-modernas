@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pesquisas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('jogador_id')->constrained('jogadores')->onDelete('cascade');
-            $table->string('tipo'); // ex: pontaria, blindagem, logistica
-            $table->unsignedInteger('nivel');
-            $table->timestamp('completado_em');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('pesquisas')) {
+            Schema::create('pesquisas', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('base_id')->constrained('bases')->onDelete('cascade');
+                $table->string('tipo');
+                $table->integer('nivel')->default(0);
+                $table->timestamp('concluido_em')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

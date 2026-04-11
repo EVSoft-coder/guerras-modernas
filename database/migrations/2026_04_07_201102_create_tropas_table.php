@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tropas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(\App\Models\Base::class)->constrained('bases')->onDelete('cascade');
-            $table->string('unidade');
-            $table->integer('quantidade')->default(0);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('tropas')) {
+            Schema::create('tropas', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('base_id')->constrained('bases')->onDelete('cascade');
+                $table->string('unidade');
+                $table->integer('quantidade')->default(0);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

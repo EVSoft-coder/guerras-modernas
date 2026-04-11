@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recursos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(\App\Models\Base::class)->constrained('bases')->onDelete('cascade');
-            $table->double('suprimentos')->default(500);
-            $table->double('combustivel')->default(500);
-            $table->double('municoes')->default(500);
-            $table->double('pessoal')->default(100);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('recursos')) {
+            Schema::create('recursos', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('base_id')->constrained('bases')->onDelete('cascade');
+                $table->integer('suprimentos');
+                $table->integer('combustivel');
+                $table->integer('municoes');
+                $table->integer('pessoal');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
