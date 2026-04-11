@@ -1,6 +1,6 @@
 /**
  * src/services/GameStateService.ts
- * Exposição de Estado ECS para Camada UI (ReadOnly).
+ * ECS State Exposure for UI Layer (ReadOnly).
  */
 import { entityManager } from '../core/EntityManager';
 import { stateManager, GameMode } from '../core/StateManager';
@@ -26,11 +26,11 @@ class GameStateService {
     private snapshots: EntitySnapshot[] = [];
 
     /**
-     * Sincroniza ataques do Laravel com o motor ECS.
+     * Synchronizes Laravel attacks with ECS motor.
      */
     public syncAttacks(attacks: any[]): void {
         attacks.forEach(atk => {
-            const eId = 10000 + atk.id; // Namespace para entidades de ataque
+            const eId = 10000 + atk.id; // Namespace for attack entities
             if (!entityManager.getEntitiesWith(['AttackMarch']).includes(eId)) {
                 const now = Date.now();
                 const arrival = new Date(atk.chegada_em).getTime();
@@ -38,32 +38,36 @@ class GameStateService {
                 const remaining = Math.round((arrival - now) / 1000);
 
                 if (remaining > 0) {
-                    // Nota: Carregamento dinâmico para evitar problemas de dependência circular
-                    const { AttackMarchComponent } = require('../game/components/AttackMarchComponent');
-                    entityManager.createEntity(eId);
-                    entityManager.addComponent(eId, new AttackMarchComponent(
-                        atk.origem_base_id,
-                        atk.destino_x || 0,
-                        atk.destino_y || 0,
-                        atk.tropas || {},
-                        total,
-                        remaining,
-                        'GOING'
-                    ));
+                    // Note: Dynamic loading to avoid circular dependencies
+                    try {
+                        const { AttackMarchComponent } = require('../game/components/AttackMarchComponent');
+                        entityManager.createEntity(eId);
+                        entityManager.addComponent(eId, new AttackMarchComponent(
+                            atk.origem_base_id,
+                            atk.destino_x || 0,
+                            atk.destino_y || 0,
+                            atk.tropas || {},
+                            total,
+                            remaining,
+                            'GOING'
+                        ));
+                    } catch (e) {
+                        console.error("Failed to load AttackMarchComponent:", e);
+                    }
                 }
             }
         });
     }
 
     /**
-     * Captura o estado actual de todas as entidades relevantes.
+     * Captures current state of all relevant entities.
      */
     public snap(): void {
         const entities = entityManager.getEntitiesWith(['Position']);
         const marches = entityManager.getEntitiesWith(['AttackMarch']);
         const newSnapshots: EntitySnapshot[] = [];
 
-        // União de IDs
+        // Combine IDs
         const allIds = Array.from(new Set([...entities, ...marches]));
 
         for (const id of allIds) {
