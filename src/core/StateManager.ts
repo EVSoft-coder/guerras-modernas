@@ -11,14 +11,30 @@ export enum GameState {
     GAME_OVER = 'GAME_OVER'
 }
  
+export enum GameMode {
+    VILLAGE = 'VILLAGE',
+    WORLD_MAP = 'WORLD_MAP'
+}
+ 
 class StateManager {
     private _currentState: GameState = GameState.MENU;
+    private _currentMode: GameMode = GameMode.VILLAGE;
  
     constructor() {
         this.initializeListeners();
     }
  
+    public getMode(): GameMode {
+        return this._currentMode;
+    }
+ 
     private initializeListeners(): void {
+        // Escuta mudanças de modo tático
+        eventBus.subscribe(Events.GAMEMODE_CHANGED, (p: EventPayload) => {
+            this._currentMode = p.data.mode as GameMode;
+            console.log(`[STATE_MGR] Mode synced: ${this._currentMode}`);
+        });
+
         // Escuta pedidos táticos normalizados
         eventBus.subscribe(Events.GAME_REQUEST_PAUSE, () => {
             this.internalTransition(GameState.PAUSED);

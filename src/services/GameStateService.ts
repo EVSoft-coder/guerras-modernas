@@ -3,6 +3,7 @@
  * Exposição de Estado ECS para Camada UI (ReadOnly).
  */
 import { entityManager } from '../core/EntityManager';
+import { stateManager, GameMode } from '../core/StateManager';
 
 export interface EntitySnapshot {
     id: number;
@@ -96,6 +97,10 @@ class GameStateService {
 
     public getGameState(): EntitySnapshot[] {
         return this.snapshots;
+    }
+
+    public getGameMode(): GameMode {
+        return stateManager.getMode();
     }
 }
 
