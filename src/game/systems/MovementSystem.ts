@@ -53,10 +53,8 @@ export class MovementSystem implements GameSystem {
             if (pos && vel) {
                 pos.x += vel.vx * deltaTime;
                 pos.y += vel.vy * deltaTime;
-                
-                // Telemetria de PosiÃ§Ã£o (Alpha-Zero & Outros)
-                console.log(`[TELEMETRY] Entity ${entityId} at (${Math.round(pos.x)}, ${Math.round(pos.y)})`);
             }
+
         }
     }
  
