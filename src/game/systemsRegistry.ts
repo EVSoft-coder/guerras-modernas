@@ -1,19 +1,29 @@
 /**
  * systemsRegistry.ts
- * Registo Estático e Ordenado de Sistemas (Ordem de Batalha).
+ * Ordem de Batalha Estática e Documentada.
  */
+import { inputSystem } from './systems/InputSystem';
 import { movementSystem } from './systems/MovementSystem';
-// import { combatSystem } from './systems/CombatExpansion';
  
+/**
+ * Interface obrigatória para todos os sistemas do motor.
+ */
 export interface GameSystem {
+    init(): void;
     update(deltaTime: number): void;
+    destroy(): void;
 }
  
 /**
- * LISTA ESTÁTICA EXPLICITA.
- * A ordem aqui define a precedência lógica invariável.
+ * LISTA EXPLÍCITA E ORDENADA DE SISTEMAS.
+ * Categoria: [INPUT] -> [LOGIC] -> [RENDER] (pendente)
  */
 export const systemsRegistry: ReadonlyArray<GameSystem> = [
+    // --- [INPUT] ---
+    inputSystem,
+ 
+    // --- [LOGIC] ---
     movementSystem,
-    // combatSystem, // Implementar em fase de expansão
+ 
+    // --- [RENDER] (Fila Tática Futura) ---
 ];
