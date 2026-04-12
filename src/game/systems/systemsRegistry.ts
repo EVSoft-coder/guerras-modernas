@@ -13,6 +13,7 @@ import { aiSystem } from './AISystem';
 import { movementSystem } from './MovementSystem';
 import { combatSystem } from './CombatSystem';
 import { attackSystem } from './AttackSystem';
+import { marchSystem } from './MarchSystem';
 import { visionSystem } from './VisionSystem';
 import { ResearchSystem } from './ResearchSystem';
 import { renderSystem } from './RenderSystem';
@@ -41,6 +42,7 @@ export const systemsRegistry: ReadonlyArray<GameSystem> = [
     aiSystem,
     movementSystem,
     combatSystem,
+    marchSystem,
     attackSystem,
     new RebelGeneratorSystem(),
     visionSystem,
