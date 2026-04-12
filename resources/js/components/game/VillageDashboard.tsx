@@ -144,9 +144,7 @@ export function VillageDashboard({
                         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent"></div>
                         <CardHeader className="py-4 bg-white/[0.02] border-b border-white/5">
                             <CardTitle className="text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center gap-2">
-                                <div className="p-1.5 bg-orange-500/10 rounded-lg border border-orange-500/20">
-                                    <Target className="text-orange-500" size={14} />
-                                </div>
+                                <Target className="text-orange-500" size={16} />
                                 Transmissões Globais
                             </CardTitle>
                         </CardHeader>

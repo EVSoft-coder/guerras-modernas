@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Fuel, Rocket, Users } from 'lucide-react';
+import { Layers, Fuel, Rocket, Users } from 'lucide-react';
 import { Recurso } from '@/types';
 import { motion, animate } from 'framer-motion';
 
@@ -33,12 +33,12 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full bg-black/40 backdrop-blur-2xl p-4 rounded-[2rem] border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-20 overflow-hidden relative">
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/20 to-transparent"></div>
             <ResourceItem 
-                icon={<Box className="text-sky-400" size={20} />} 
+                icon={<Layers className="text-sky-400 drop-shadow-[0_0_8px_rgba(56,189,248,0.4)]" size={20} />} 
                 label="Suprimentos" 
                 value={current.suprimentos} 
                 rate={(taxasPerSecond?.suprimentos ?? 0) * 3600}
                 color="text-white"
-                accentColor="bg-sky-500"
+                accentColor="bg-sky-400"
             />
             <ResourceItem 
                 icon={<Fuel className="text-orange-400" size={20} />} 

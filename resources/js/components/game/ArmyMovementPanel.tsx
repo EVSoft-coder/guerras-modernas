@@ -60,10 +60,10 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end gap-1.5">
-                                    <div className="px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-lg font-mono text-lg font-black text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]">
+                                    <div className="font-mono text-2xl font-black text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.6)]">
                                         -{getTimeLeft(atk.chegada_em)}
                                     </div>
-                                    <div className="text-[7px] text-neutral-600 font-black uppercase tracking-[0.2em]">Tempo até Impacto</div>
+                                    <div className="text-[7px] text-neutral-600 font-black uppercase tracking-[0.2em] opacity-50">Tempo até Impacto</div>
                                 </div>
                             </motion.div>
                         ))}
@@ -88,10 +88,10 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end gap-1.5">
-                                    <div className="px-3 py-1 bg-sky-500/5 border border-sky-500/10 rounded-lg font-mono text-lg font-black text-sky-400 group-hover/of:border-sky-500/30 transition-all">
+                                    <div className="font-mono text-2xl font-black text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]">
                                         {getTimeLeft(atk.chegada_em)}
                                     </div>
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-1 opacity-50">
                                         <span className="text-[7px] text-neutral-600 font-black uppercase tracking-[0.2em]">ETR_TIME</span>
                                         <ChevronRight size={8} className="text-sky-500 animate-slide-right" />
                                     </div>
