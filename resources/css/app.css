@@ -163,11 +163,7 @@
     z-index: 400;
 }
 
-#GAME_SCREEN[style*="display: flex"], 
-#MAIN_MENU[style*="display: flex"], 
-#PAUSE_SCREEN[style*="display: flex"] {
-    /* Só permite cliques se estiver visível E não for o GAME_SCREEN (que é fundo) */
-}
+/* Só permite cliques se estiver visível E não for o GAME_SCREEN (que é fundo) */
 
 #MAIN_MENU, #PAUSE_SCREEN {
     pointer-events: auto !important; /* Menus precisam de clique */
@@ -176,13 +172,15 @@
 /* MILITARY UI UTILITIES */
 @layer utilities {
     .sidebar-tactical-item {
-        @apply transition-all duration-300 border-l-[4px] border-transparent;
+        @apply transition-all duration-300 border-l-[4px] border-transparent !bg-transparent;
     }
-    .sidebar-tactical-item:hover {
-        @apply border-sky-400 bg-linear-to-r from-sky-400/20 to-transparent shadow-[0_10px_30px_-5px_rgba(56,189,248,0.3)];
+    .sidebar-tactical-item:hover, .sidebar-tactical-item[data-active="true"] {
+        @apply border-sky-400 bg-linear-to-r from-sky-400/20 to-transparent !shadow-none opacity-100;
     }
-    .sidebar-tactical-item[data-active="true"] {
-        @apply border-sky-400 bg-linear-to-r from-sky-400/30 to-transparent shadow-[inset_0_0_20px_rgba(56,189,248,0.1)];
+    
+    /* Override for SidebarMenuButton default active state */
+    button[data-sidebar="menu-button"][data-active="true"] {
+        @apply !bg-sky-400/10 !text-white;
     }
     .military-text-glitch {
         text-shadow: 0 0 5px rgba(14, 165, 233, 0.5);
