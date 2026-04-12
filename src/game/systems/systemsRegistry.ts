@@ -5,6 +5,7 @@
 import { inputSystem } from './InputSystem';
 import { gameModeSystem } from './GameModeSystem';
 import { timeSystem } from './TimeSystem';
+import { worldSystem } from './WorldSystem';
 import { resourceSystem } from './ResourceSystem';
 import { buildQueueSystem } from './BuildQueueSystem';
 import { orderSystem } from './OrderSystem';
@@ -24,6 +25,7 @@ export const systemsRegistry: ReadonlyArray<GameSystem> = [
     inputSystem,
     gameModeSystem,
     timeSystem,
+    worldSystem,
     resourceSystem,
     buildQueueSystem,
     orderSystem,
