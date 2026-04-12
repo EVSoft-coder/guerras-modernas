@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, DashboardProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -23,11 +23,11 @@ export default function Dashboard(props: DashboardProps) {
     const gameMode = useGameMode();
     const { entities } = useGameEntities();
     const hasActiveArmy = entities.some(e => e.march);
-    const isReloading = React.useRef(false);
+    const isReloading = useRef(false);
     
     // Controlo de Sincronização
-    const [lastSync, setLastSync] = React.useState<Date>(new Date());
-    const [secondsSinceSync, setSecondsSinceSync] = React.useState(0);
+    const [lastSync, setLastSync] = useState<Date>(new Date());
+    const [secondsSinceSync, setSecondsSinceSync] = useState(0);
 
     useEffect(() => {
         const handlePolling = () => {
