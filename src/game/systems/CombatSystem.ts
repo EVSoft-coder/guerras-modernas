@@ -1,5 +1,6 @@
 import { entityManager } from '../../core/EntityManager';
 import { eventBus, Events } from '../../core/EventBus';
+import { Logger } from '../../core/Logger';
 import { GameSystem } from './types';
 import { VillageComponent } from '../components/VillageComponent';
 import { ArmyComponent } from '../components/ArmyComponent';
@@ -7,7 +8,7 @@ import { unitStats } from '../config/unitStats';
 
 export class CombatSystem implements GameSystem {
     public init(): void {
-        console.log('[SYSTEM] CombatSystem - Engagement Protocols ONLINE.');
+        Logger.info('CombatSystem - Engagement Protocols ONLINE.');
 
         // Subscrever à resolução tática de ataque
         eventBus.subscribe(Events.ATTACK_RESOLVE, (payload) => {
@@ -40,7 +41,7 @@ export class CombatSystem implements GameSystem {
                 this.executeRaid(armyId, army, targetId, village);
             }
         } else {
-            console.log(`[COMBAT] Empty Sector Engage at ${march.targetX}:${march.targetY}. Returning.`);
+            Logger.info(`Empty Sector Engage at ${march.targetX}:${march.targetY}. Returning.`);
             const marchComp = entityManager.getComponent<any>(armyId, 'March');
             if (marchComp) {
                 marchComp.status = 'returning';
@@ -78,7 +79,7 @@ export class CombatSystem implements GameSystem {
         }
 
         const attackerWins = totalAttack > totalDefense;
-        console.log(`[COMBAT] FORCES: ATK(${totalAttack}) vs DEF(${totalDefense}) | Success: ${attackerWins}`);
+        Logger.info(`FORCES: ATK(${totalAttack}) vs DEF(${totalDefense}) | Success: ${attackerWins}`);
 
         // 3. Aplicar Perdas (Percentagem de baixas)
         const lossFactor = attackerWins ? 0.15 : 0.70;

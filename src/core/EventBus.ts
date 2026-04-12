@@ -49,9 +49,9 @@ class EventBus {
         }
 
         const type = payload.type.toUpperCase();
-        console.log("EVENT EMITTED:", type);
         
-        // Registo Táctico (Silencioso para alta frequência)
+        // Registo Táctico (Controlado por DEBUG_MODE)
+        Logger.info(`EVENT EMITTED: ${type}`, payload);
         Logger.event(type, payload);
  
         // Validação estrita em runtime (MEA Protocol)
