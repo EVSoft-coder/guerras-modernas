@@ -13,11 +13,9 @@ interface BuildingNodeProps {
 
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, gridPos, isConstructing, onClick }) => {
     const [currentTryLevel, setCurrentTryLevel] = useState(getEvolutionLevelAsset(nivel));
-    const [usePlaceholder, setUsePlaceholder] = useState(false);
     
-    // Caminho da imagem de resiliência absoluta
-    const blueprintUrl = "/images/building_blueprint_placeholder.png";
-    const imgUrl = usePlaceholder ? blueprintUrl : `/images/edificios/${tipo.toLowerCase()}/lvl_${currentTryLevel}.png`;
+    // Caminho da imagem de ativos reais
+    const imgUrl = `/images/edificios/${tipo.toLowerCase()}/lvl_${currentTryLevel}.png`;
 
     return (
         <motion.div 
@@ -49,11 +47,6 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, g
                     src={imgUrl} 
                     className="w-20 h-20 md:w-36 md:h-36 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] group-hover/bldg:drop-shadow-[0_0_25px_rgba(14,165,233,0.4)] transition-all duration-500" 
                     alt={nome}
-                    onError={() => {
-                        if (usePlaceholder) return;
-                        if (currentTryLevel > 1) setCurrentTryLevel(1);
-                        else setUsePlaceholder(true);
-                    }}
                 />
 
                 {/* LEVEL BADGE TÁCTICO */}

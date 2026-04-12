@@ -59,12 +59,8 @@ export class RenderSystem implements GameSystem {
         const size = 32;
         const isPlayer = entityManager.getComponent<any>(entityId, 'Player');
         const isAI = entityManager.getComponent<any>(entityId, 'AI');
- 
-        // 1. DESENHO DO QUADRADO BASE
-        this.ctx.fillStyle = isPlayer ? '#0ea5e9' : (isAI ? '#ef4444' : '#ffffff');
-        this.ctx.fillRect(pos.x - size / 2, pos.y - size / 2, size, size);
- 
-        // 2. BORDA DE SELECÃ‡ÃƒO
+
+        // 2. BORDA DE SELECÇÃO (Apenas se houver sprite ou for vital)
         if (isSelected) {
             this.ctx.strokeStyle = '#00ff00';
             this.ctx.lineWidth = 2;
