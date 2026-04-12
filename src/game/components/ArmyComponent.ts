@@ -1,6 +1,6 @@
 /**
  * src/game/components/ArmyComponent.ts
- * RepresentaÃ§Ã£o de uma ForÃ§a Militar em trÃ¢nsito ou guarniÃ§Ã£o.
+ * Representação de uma Força Militar em trânsito ou guarnição com espólio táctico.
  */
 import { Component } from '../../core/EntityManager';
 
@@ -11,6 +11,13 @@ export class ArmyComponent implements Component {
         public ownerId: number,
         public units: Record<string, number> = {},
         public targetId?: number,
-        public loot: Record<string, number> = { wood: 0, stone: 0, iron: 0 }
+        public loot: Record<string, number> = { 
+            suprimentos: 0, 
+            combustivel: 0, 
+            municoes: 0, 
+            pessoal: 0, 
+            metal: 0, 
+            energia: 0 
+        }
     ) {}
 }

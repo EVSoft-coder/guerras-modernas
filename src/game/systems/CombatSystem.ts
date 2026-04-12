@@ -1,12 +1,9 @@
-/**
- * src/game/systems/CombatSystem.ts
- * GestÃ£o de Engagement e ResoluÃ§Ã£o de Conflitos TÃ¡cticos.
- */
 import { entityManager } from '../../core/EntityManager';
 import { eventBus, Events } from '../../core/EventBus';
 import { GameSystem } from './types';
 import { VillageComponent } from '../components/VillageComponent';
 import { ArmyComponent } from '../components/ArmyComponent';
+import { unitStats } from '../config/unitStats';
 
 export class CombatSystem implements GameSystem {
     public init(): void {
@@ -23,7 +20,7 @@ export class CombatSystem implements GameSystem {
         const army = entityManager.getComponent<ArmyComponent>(armyId, 'Army');
         if (!army) return;
 
-        // Localizar alvo na coordenada de destino (Vila ou Entidade)
+        // Localizar alvo na coordenada de destino
         const targetBases = entityManager.getEntitiesWith(['Village', 'GridPosition']);
         let targetId: number | null = null;
 
@@ -39,128 +36,95 @@ export class CombatSystem implements GameSystem {
             const village = entityManager.getComponent<VillageComponent>(targetId, 'Village');
             if (village) {
                 this.executeRaid(armyId, army, targetId, village);
-                
-                // Pós-Combate: Iniciar Regresso se houver sobreviventes
-                const marchComp = entityManager.getComponent<any>(armyId, 'March');
-                if (marchComp) {
-                    marchComp.status = 'returning';
-                    console.log(`[COMBAT] Survivors of Army ${armyId} heading back to origin.`);
-                }
             }
         } else {
-            console.log(`[COMBAT] No structural target at ${march.targetX}:${march.targetY}. Empty Sector.`);
+            console.log(`[COMBAT] Empty Sector Engage at ${march.targetX}:${march.targetY}. Returning.`);
             const marchComp = entityManager.getComponent<any>(armyId, 'March');
-            if (marchComp) marchComp.status = 'returning';
+            if (marchComp) {
+                marchComp.status = 'returning';
+                marchComp.startTime = Date.now(); 
+            }
         }
     }
 
-    public update(deltaTime: number): void {
-        // A resolução agora é baseada em eventos (ATTACK:RESOLVE), 
-        // mas mantemos o update para outros engajamentos de proximidade se necessário.
-    }
+    public update(deltaTime: number): void {}
 
     private executeRaid(armyId: number, army: ArmyComponent, targetId: number, village: VillageComponent): void {
-        console.log(`[COMBAT] STRATEGIC ENGAGEMENT: Army ${armyId} vs Village ${targetId}`);
+        console.log(`[COMBAT] STRATEGIC ENGAGEMENT: Army ${armyId} vs Base ${targetId}`);
 
-        const attackerUnit = entityManager.getComponent<any>(armyId, 'Unit');
-        const defenderUnit = entityManager.getComponent<any>(targetId, 'Unit');
-
-        // 1. Soma Ataque Atacante (Baseado na composição do Exército)
-        const attackerQty = Object.values(army.units).reduce((a, b) => a + b, 0);
-        const attackBase = attackerUnit?.attack || 100;
-        const attackBonus = attackerUnit?.attackBonus || 1.0;
-        const totalAttack = attackBase * attackBonus * attackerQty;
-
-        // 2. Soma Defesa Defensor (Baseado na estrutura ou guarnição)
-        const totalDefense = (defenderUnit?.defense || 1500) + (village.resources.wood * 0.01); // Paredes de madeira?
-
-        console.log(`[COMBAT] CALCULATED FORCE: ATK(${totalAttack}) vs DEF(${totalDefense})`);
-
-        // 3. Regra de Resolução
-        const attackerWins = totalAttack > totalDefense;
-        
-        // 4. Aplicar Perdas Percentuais
-        const attackerLossPercent = attackerWins ? 0.2 : 0.8; // Se vencer perde 20%, se perder perde 80%
-        const defenderLossPercent = attackerWins ? 0.5 : 0.1; // Se perder (vila) perde 50% eficiência? (Aqui perdemos recursos)
-
-        const attackerQtyBefore = Object.values(army.units).reduce((a, b) => a + b, 0);
-        for (const type in army.units) {
-            army.units[type] = Math.floor(army.units[type] * (1 - attackerLossPercent));
+        // 1. Calcular Força de Impacto e Capacidade de Carga
+        let totalAttack = 0;
+        let carryCapacity = 0;
+        for (const [unitType, qty] of Object.entries(army.units)) {
+            const stats = unitStats[unitType];
+            if (stats) {
+                totalAttack += stats.attack * qty;
+                carryCapacity += stats.capacity * qty;
+            }
         }
-        const lossesQty = attackerQtyBefore - Object.values(army.units).reduce((a, b) => a + b, 0);
 
-        if (attackerWins) {
-            // ... [Lógica de saque mantida] ...
-            const totalCapacity = (attackerUnit?.capacity || 1000) * attackerQty;
+        // 2. Determinar Vencedor (Defesa baseada no nível da base)
+        const totalDefense = (village.level * 200) + 500;
+        const attackerWins = totalAttack > totalDefense;
+
+        console.log(`[COMBAT] FORCES: ATK(${totalAttack}) vs DEF(${totalDefense}) | Success: ${attackerWins}`);
+
+        // 3. Aplicar Perdas (Percentagem de baixas)
+        const lossFactor = attackerWins ? 0.15 : 0.70;
+        const attackerQtyBefore = Object.values(army.units).reduce((a, b) => a + b, 0);
+        
+        for (const type in army.units) {
+            army.units[type] = Math.floor(army.units[type] * (1 - lossFactor));
+        }
+        
+        const attackerQtyAfter = Object.values(army.units).reduce((a, b) => a + b, 0);
+        const lossesQty = attackerQtyBefore - attackerQtyAfter;
+
+        const marchComp = entityManager.getComponent<any>(armyId, 'March');
+
+        if (attackerWins && marchComp) {
+            // 4. Executar Pilhagem (min(target.resources, carryCapacity))
+            const loot: Record<string, number> = {};
+            let totalLooted = 0;
+            const resourceOrder = ['suprimentos', 'combustivel', 'metal', 'municoes'];
             
-            let possibleWood = Math.floor(village.resources.wood * 0.3);
-            let possibleStone = Math.floor(village.resources.stone * 0.3);
-            let possibleIron = Math.floor(village.resources.iron * 0.3);
-            
-            const totalRequested = possibleWood + possibleStone + possibleIron;
-            
-            if (totalRequested > totalCapacity) {
-                const ratio = totalCapacity / totalRequested;
-                possibleWood = Math.floor(possibleWood * ratio);
-                possibleStone = Math.floor(possibleStone * ratio);
-                possibleIron = Math.floor(possibleIron * ratio);
+            for (const res of resourceOrder) {
+                if (totalLooted >= carryCapacity) break;
+                
+                const available = (village.resources as any)[res] || 0;
+                const canTake = Math.min(available, carryCapacity - totalLooted);
+                
+                if (canTake > 0) {
+                    loot[res] = Math.floor(canTake);
+                    (village.resources as any)[res] -= canTake;
+                    totalLooted += canTake;
+                }
             }
 
-            village.resources.wood -= possibleWood;
-            village.resources.stone -= possibleStone;
-            village.resources.iron -= possibleIron;
-
-            // Transferir para o exército
-            army.loot.wood += possibleWood;
-            army.loot.stone += possibleStone;
-            army.loot.iron += possibleIron;
-
-            const reportData = {
-                vencedor: 'ATACANTE',
-                resultado: 'VICTORY',
-                perdas_atacante: lossesQty,
-                perdas_defensor: 0,
-                loot: { wood: possibleWood, stone: possibleStone, iron: possibleIron }
-            };
-
-            eventBus.emit(Events.ATTACK_ARRIVED, {
-                entityId: armyId,
-                data: {
-                    result: 'VICTORY',
-                    looted: reportData.loot,
-                    report: reportData
-                }
-            });
-            
-            console.log(`[COMBAT] VICTORY: Resources captured and casualties reported.`);
-        } else {
-            // DERROTA DO ATACANTE
-            const reportData = {
-                vencedor: 'DEFENSOR',
-                resultado: 'DEFEAT',
-                perdas_atacante: lossesQty,
-                perdas_defensor: 0,
-                loot: null
-            };
-
-            eventBus.emit(Events.ATTACK_ARRIVED, {
-                entityId: armyId,
-                data: {
-                    result: 'DEFEAT',
-                    looted: { wood: 0, stone: 0, iron: 0 },
-                    report: reportData
-                }
-            });
-            console.log(`[COMBAT] DEFEAT: Attack repelled. High casualties sustained.`);
+            marchComp.loot = loot;
+            army.loot = { ...army.loot, ...loot };
+            console.log(`[COMBAT] VICTORY! Resources captured: ${totalLooted} units. Losses: ${lossesQty}`);
         }
 
-        // Se o exército ficar sem tropas, remover
-        const remainingTroops = Object.values(army.units).reduce((a, b) => a + b, 0);
-        if (remainingTroops <= 0) {
-            entityManager.removeEntity(armyId);
-        } else {
-            // Todo: Retornar à base (por agora, apenas destruímos para simplificar ou deixamos parado)
-            entityManager.removeEntity(armyId);
+        // 5. Iniciar Protocolo de Regresso
+        if (marchComp) {
+            const livingTroops = Object.values(army.units).reduce((a, b) => a + b, 0);
+            if (livingTroops <= 0) {
+                console.log(`[COMBAT] TOTAL ANNIHILATION: Army ${armyId} destroyed.`);
+                entityManager.removeEntity(armyId);
+            } else {
+                marchComp.status = 'returning';
+                
+                // Reset temporal: Inverter o curso da marcha
+                const now = Date.now();
+                const tripDuration = marchComp.arrivalTime - marchComp.startTime;
+                
+                marchComp.startTime = now;
+                marchComp.arrivalTime = now + tripDuration;
+                marchComp.returnTime = now + tripDuration; 
+                
+                console.log(`[COMBAT] RETREAT: Survivors returning to origin. ETA: ${(tripDuration / 1000).toFixed(1)}s`);
+            }
         }
     }
 

@@ -13,6 +13,7 @@ export class MarchComponent implements Component {
         public startTime: number,
         public arrivalTime: number,
         public returnTime: number,
-        public status: "going" | "returning" | "completed"
+        public status: "going" | "returning" | "completed",
+        public loot: Record<string, number> = {}
     ) {}
 }
