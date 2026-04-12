@@ -50,11 +50,10 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     }, [gameEntities, selectedUnit]);
 
     const handleWheel = (e: React.WheelEvent) => {
-        if (e.ctrlKey || e.metaKey) {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? -0.1 : 0.1;
-            setZoom(prev => Math.min(Math.max(prev + delta, 0.5), 2));
-        }
+        // Zoom fluido e centrado
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.05 : 0.05;
+        setZoom(prev => Math.min(Math.max(prev + delta, 0.4), 2.5));
     };
 
     const CHUNK_SIZE = 50;
@@ -174,7 +173,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                             width: `${20 * 80}px`, 
                             height: `${20 * 80}px`,
                             transform: `scale(${zoom})`,
-                            transformOrigin: 'top left'
+                            transformOrigin: 'center center'
                         }}
                     >
                         <TooltipProvider>
