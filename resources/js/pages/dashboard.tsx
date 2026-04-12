@@ -31,15 +31,12 @@ export default function Dashboard(props: DashboardProps) {
     const [lastSync, setLastSync] = useState<Date>(new Date());
     const [secondsSinceSync, setSecondsSinceSync] = useState(0);
 
+    // Gestão de Polling Estável (Instância Única)
     useEffect(() => {
-        // Regra Adaptativa: 3s se houver movimentos actuais, senão respeita o modo.
-        let delay = gameMode === "WORLD_MAP" ? 5000 : 10000;
-        if (hasActiveArmy) {
-            delay = 3000;
-        }
+        // Intervalo Controlado: 12 segundos (Regime 10-15s)
+        const POLL_INTERVAL = 12000;
 
-        const intervalId = setInterval(() => {
-            // Monitor de Concorrência: Abortar se já estiver em processamento ou página oculta
+        PollingService.start(() => {
             if (document.hidden || isReloading) return;
 
             setIsReloading(true);
@@ -50,14 +47,14 @@ export default function Dashboard(props: DashboardProps) {
                     setLastSync(new Date());
                 },
                 onFinish: () => {
-                    // Pequeno delay para libertar o semáforo e evitar colisão no próximo frame
-                    setTimeout(() => setIsReloading(false), 500);
+                    // Protecção de Concorrência
+                    setTimeout(() => setIsReloading(false), 1000);
                 }
             });
-        }, delay);
+        }, POLL_INTERVAL);
 
-        return () => clearInterval(intervalId);
-    }, [gameMode, hasActiveArmy, isReloading]);
+        return () => PollingService.stop();
+    }, [isReloading]); // Apenas re-vincula se o estado de recarga mudar drasticamente
 
     // Timer visual de sincronização
     useEffect(() => {
