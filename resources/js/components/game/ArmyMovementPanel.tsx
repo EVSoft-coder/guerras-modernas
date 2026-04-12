@@ -34,9 +34,7 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-red-500/20 to-transparent"></div>
             <CardHeader className="py-4 bg-red-500/[0.03] border-b border-white/5">
                 <CardTitle className="text-[10px] uppercase font-black tracking-[0.25em] text-red-500/80 flex items-center gap-2">
-                    <div className="p-1.5 bg-red-500/10 rounded-lg border border-red-500/20">
-                        <Zap className="animate-pulse" size={14} />
-                    </div>
+                    <Zap className="animate-pulse" size={16} />
                     Monitor de Espaço Aéreo e Fronteira
                 </CardTitle>
             </CardHeader>
@@ -52,9 +50,7 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
                                 className="p-5 flex items-center justify-between bg-red-950/20 group/atk hover:bg-red-900/30 transition-all duration-500"
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
-                                        <PlaneLanding className="text-red-500 animate-bounce" size={20} />
-                                    </div>
+                                    <PlaneLanding className="text-red-500 animate-bounce drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" size={24} />
                                     <div>
                                         <h4 className="text-[11px] font-black text-red-400 uppercase tracking-tight">Invasão Hostil Detetada</h4>
                                         <div className="flex items-center gap-2 mt-1">
@@ -83,9 +79,7 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
                                 className="p-5 flex items-center justify-between group/of hover:bg-white/[0.02] transition-all duration-500"
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-sky-500/10 rounded-xl border border-sky-500/20 shadow-[0_0_15px_rgba(14,165,233,0.1)] group-hover/of:border-sky-500/40 transition-colors">
-                                        <PlaneTakeoff className="text-sky-500" size={20} />
-                                    </div>
+                                    <PlaneTakeoff className="text-sky-500 drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]" size={24} />
                                     <div>
                                         <h4 className="text-[11px] font-black text-white uppercase tracking-tight group-hover/of:text-sky-400 transition-colors">Ofensiva em Curso</h4>
                                         <div className="flex items-center gap-2 mt-1">

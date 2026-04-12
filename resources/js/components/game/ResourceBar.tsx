@@ -77,7 +77,6 @@ const ResourceItem = ({ icon, label, value, rate, color, accentColor, isStatic =
                 <div className="bg-neutral-900/95 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] flex flex-col items-center min-w-[180px]">
                     <div className="w-full flex justify-between items-center mb-2 pb-1.5 border-b border-white/5">
                         <span className="text-[7px] font-black text-neutral-500 uppercase tracking-widest">Resource_Node</span>
-                        <div className={`w-1 h-1 rounded-full ${accentColor} shadow-[0_0_5px_currentColor]`}></div>
                     </div>
                     <span className="text-[10px] font-black uppercase text-white tracking-[0.2em]">{label}</span>
                     <div className="text-[7px] text-neutral-500 mt-2 font-mono uppercase tracking-tighter text-center leading-relaxed">
@@ -103,16 +102,14 @@ const ResourceItem = ({ icon, label, value, rate, color, accentColor, isStatic =
 
             <div className="mt-2 flex items-center gap-3">
                 {!isStatic ? (
-                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/5">
-                        <div className={`w-1 h-1 rounded-full ${accentColor} animate-pulse`}></div>
-                        <span className="text-[9px] font-bold text-neutral-500">
-                             +{Math.floor(rate).toLocaleString()} <span className="text-[7px] opacity-50">/H</span>
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/5 opacity-50">
+                        <span className="text-[9px] font-bold text-neutral-400">
+                             {Math.floor(rate).toLocaleString()} <span className="text-[7px] opacity-50">/H</span>
                         </span>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                         <div className="w-1 h-1 rounded-full bg-emerald-500"></div>
-                         <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-tighter">Operacional</span>
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/5 shadow-[inset_0_1px_10px_rgba(16,185,129,0.05)] border border-emerald-500/10">
+                         <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-tighter opacity-70">Operacional</span>
                     </div>
                 )}
             </div>

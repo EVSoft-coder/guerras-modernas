@@ -17,9 +17,7 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameC
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"></div>
             <CardHeader className="py-4 bg-white/[0.02] border-b border-white/5">
                 <CardTitle className="text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center gap-2">
-                    <div className="p-1.5 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
-                        <Users className="text-emerald-500" size={14} />
-                    </div>
+                    <Users className="text-emerald-500" size={16} />
                     Guarnição Ativa
                 </CardTitle>
             </CardHeader>
@@ -39,10 +37,9 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameC
                                         <span className="text-[10px] font-black uppercase text-white tracking-tight">
                                             {config.name}
                                         </span>
-                                        <div className="flex items-center gap-1.5 mt-1">
-                                            <div className="w-1 h-1 rounded-full bg-emerald-500"></div>
-                                            <span className="text-[8px] text-neutral-500 font-bold uppercase tracking-widest">
-                                                Status: Prontidão
+                                        <div className="flex items-center gap-1.5 mt-1 opacity-50">
+                                            <span className="text-[8px] text-neutral-400 font-bold uppercase tracking-widest leading-none">
+                                                Status: Prontidão Operacional
                                             </span>
                                         </div>
                                     </div>

@@ -45,9 +45,7 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({ construcoes = 
             <CardHeader className="py-4 bg-white/[0.02] border-b border-white/5">
                 <CardTitle className="text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-sky-500/10 rounded-lg border border-sky-500/20">
-                            <Activity className="text-sky-500 animate-pulse" size={14} />
-                        </div>
+                        <Activity className="text-sky-500 animate-pulse" size={16} />
                         Comandos em Execução
                     </div>
                 </CardTitle>
@@ -130,7 +128,6 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
             <div className="flex justify-between items-end mb-2 px-1">
                 <div className="flex flex-col">
                     <div className="flex items-center gap-2">
-                        <div className={`w-1.5 h-1.5 rounded-full ${item.tipo === 'construcao' ? 'bg-orange-500' : 'bg-sky-500'} ${isFirst ? 'animate-pulse' : ''}`}></div>
                         <span className="text-xs font-black uppercase text-white tracking-tighter">
                             {item.label}
                         </span>
