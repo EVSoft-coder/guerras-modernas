@@ -88,6 +88,36 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                 fetchChunkData(nx, ny);
             }
         });
+
+        // 3. LISTENERS DE FEEDBACK (RADAR TÁCTICO)
+        if ((window as any).eventBus) {
+            const eb = (window as any).eventBus;
+            
+            const unsubCombat = eb.subscribe('COMBAT:RESULT', (payload: any) => {
+                const { vitoria, losses, loot } = payload.data;
+                if (vitoria) {
+                    toast.success(`VITÓRIA MILITAR: Capturadas ${loot} unidades de recursos! Baixas: ${losses}`, {
+                        icon: <Sword className="text-emerald-500" />
+                    });
+                } else {
+                    toast.error(`DERROTA NO CAMPO: Forças repelidas com ${losses} baixas.`, {
+                        icon: <ShieldAlert className="text-red-500" />
+                    });
+                }
+            });
+
+            const unsubConquered = eb.subscribe('VILLAGE:CONQUERED', (payload: any) => {
+                toast.success("DOMÍNIO ABSOLUTO: Nova base anexada ao seu comando!", {
+                    description: `Setor ${payload.data.villageId} agora sob sua soberania.`,
+                    duration: 6000
+                });
+            });
+
+            return () => {
+                unsubCombat();
+                unsubConquered();
+            };
+        }
     }, [center]);
 
     const visibleBases = useMemo(() => {

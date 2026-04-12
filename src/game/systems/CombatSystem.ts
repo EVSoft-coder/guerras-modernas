@@ -155,6 +155,14 @@ export class CombatSystem implements GameSystem {
             });
         }
 
+        // 4.4 Sinalizar Resultado para UI
+        eventBus.emit('COMBAT:RESULT', { 
+            vitoria: attackerWins, 
+            losses: lossesQty, 
+            loot: attackerWins ? Object.values(marchComp.loot || {}).reduce((a: any, b: any) => a + b, 0) : 0,
+            targetId: targetId
+        });
+
         // 5. Iniciar Protocolo de Regresso
         if (marchComp) {
             const livingTroops = Object.values(army.units).reduce((a, b) => a + b, 0);
