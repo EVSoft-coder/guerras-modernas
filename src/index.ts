@@ -9,6 +9,8 @@ import { uiManager } from './ui/UIManager';
 import { entityManager } from './core/EntityManager';
 import { Position, PositionComponent } from './game/components/Position';
 import { Velocity, VelocityComponent } from './game/components/Velocity';
+import { GridPositionComponent } from './game/components/GridPositionComponent';
+import { RenderableComponent } from './game/components/RenderableComponent';
 import { 
     HealthComponent, 
     AttackComponent, 
@@ -43,17 +45,17 @@ entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
 entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1)); 
 entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
 
-// Componentes Tácticos de Grelha (Doutrina Requisitada)
+// Componentes TÃ¡cticos de Grelha (Doutrina Requisitada)
 entityManager.addComponent(playerUnit, {
     type: "GridPosition",
     x: 5,
     y: 5
-} as any);
+} as GridPositionComponent);
 
 entityManager.addComponent(playerUnit, {
     type: "Renderable",
     renderType: "unit"
-} as any);
+} as RenderableComponent);
 const qg = entityManager.createEntity();
 entityManager.addComponent(qg, new BuildingComponent('Quartel General', 'HQ', 1, { x: 0, y: 0 }, playerUnit));
 
@@ -86,12 +88,12 @@ entityManager.addComponent(enemyUnit, {
     type: "GridPosition",
     x: 10,
     y: 10
-} as any);
+} as GridPositionComponent);
 
 entityManager.addComponent(enemyUnit, {
     type: "Renderable",
     renderType: "unit"
-} as any);
+} as RenderableComponent);
 stateManager.setState(GameState.PLAYING);
 
  

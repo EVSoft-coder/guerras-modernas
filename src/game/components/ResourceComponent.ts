@@ -1,4 +1,6 @@
-export class ResourceComponent {
+import { Component } from '../../core/EntityManager';
+
+export class ResourceComponent implements Component {
     public readonly type = 'Resource';
     constructor(
         public wood: number = 0,

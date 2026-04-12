@@ -3,7 +3,7 @@
  * GestÃ£o de Prioridades e Cronogramas de ConstruÃ§Ã£o e Upgrade.
  */
 import { eventBus, EventPayload, Events } from '../../core/EventBus';
-import { entityManager } from '../../core/EntityManager';
+import { Component, entityManager } from '../../core/EntityManager';
 import { BuildingComponent } from '../components/BuildingComponent';
 import { ResourceComponent } from '../components/ResourceComponent';
 import { GameSystem } from './types';
@@ -16,7 +16,7 @@ export interface BuildItem {
     remainingTime: number;
 }
 
-export class BuildQueueComponent {
+export class BuildQueueComponent implements Component {
     public readonly type = 'BuildQueue';
     constructor(public queue: BuildItem[] = []) {}
 }
