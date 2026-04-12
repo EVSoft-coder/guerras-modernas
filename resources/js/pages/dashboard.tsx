@@ -24,7 +24,7 @@ export default function Dashboard(props: DashboardProps) {
     const { entities } = useGameEntities() || { entities: [] };
     const hasActiveArmy = entities?.some(e => e.march) ?? false;
     
-    // Semáforo de Recarga via State para estabilidade em produção
+    // Semáforo de Recarga via State
     const [isReloading, setIsReloading] = useState(false);
     
     // Controlo de Sincronização
@@ -32,47 +32,29 @@ export default function Dashboard(props: DashboardProps) {
     const [secondsSinceSync, setSecondsSinceSync] = useState(0);
 
     useEffect(() => {
-        const handlePolling = () => {
-            if (document.hidden) {
-                PollingService.stop();
-                return;
-            }
+        // Regra Adaptativa: 3s se houver movimentos actuais, senão respeita o modo.
+        let delay = gameMode === "WORLD_MAP" ? 5000 : 10000;
+        if (hasActiveArmy) {
+            delay = 3000;
+        }
 
-            // Regra Adaptativa: 3s se houver movimentos actuais, senão respeita o modo.
-            let delay = gameMode === "WORLD_MAP" ? 5000 : 10000;
-            if (hasActiveArmy) {
-                delay = 3000;
-            }
+        const intervalId = setInterval(() => {
+            if (document.hidden || isReloading) return;
 
-            PollingService.start(() => {
-                // Bloqueio de pedidos concorrentes
-                setIsReloading(loading => {
-                    if (loading) return true;
+            setIsReloading(true);
+            router.reload({
+                only: ["gameData"],
+                onSuccess: () => {
+                    setLastSync(new Date());
+                },
+                onFinish: () => {
+                    setIsReloading(false);
+                }
+            });
+        }, delay);
 
-                    router.reload({
-                        only: ["gameData"],
-                        onSuccess: () => {
-                            setLastSync(new Date());
-                        },
-                        onFinish: () => {
-                            setIsReloading(false);
-                        }
-                    });
-
-                    return true;
-                });
-            }, delay);
-        };
-
-        handlePolling();
-
-        document.addEventListener("visibilitychange", handlePolling);
-        
-        return () => {
-            PollingService.stop();
-            document.removeEventListener("visibilitychange", handlePolling);
-        };
-    }, [gameMode, hasActiveArmy]);
+        return () => clearInterval(intervalId);
+    }, [gameMode, hasActiveArmy, isReloading]);
 
     // Timer visual de sincronização
     useEffect(() => {
