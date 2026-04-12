@@ -23,6 +23,7 @@ export default function Dashboard(props: DashboardProps) {
     const gameMode = useGameMode();
     const { entities } = useGameEntities();
     const hasActiveArmy = entities.some(e => e.march);
+    const isReloading = React.useRef(false);
 
     useEffect(() => {
         const handlePolling = () => {
@@ -38,8 +39,14 @@ export default function Dashboard(props: DashboardProps) {
             }
 
             PollingService.start(() => {
+                if (isReloading.current) return;
+
+                isReloading.current = true;
                 router.reload({
-                    only: ["gameData"]
+                    only: ["gameData"],
+                    onFinish: () => {
+                        isReloading.current = false;
+                    }
                 });
             }, delay);
         };
