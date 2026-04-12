@@ -49,19 +49,21 @@ class GameLoop {
         const deltaTime = deltaTimeMillis / 1000;
         this.lastTime = currentTime;
  
-        // Orquestração de fases táticas
-        try {
-            // 1. Fase de Preparação (Input, Sensing)
-            systemsRegistry.forEach(s => s.preUpdate(deltaTime));
-            
-            // 2. Fase de Lógica (AI, Física, Combate)
-            systemsRegistry.forEach(s => s.update(deltaTime));
-            
-            // 3. Fase de Finalização (Render, Sync)
-            systemsRegistry.forEach(s => s.postUpdate(deltaTime));
-        } catch (e) {
-            console.error('[GAMELOOP_EXCEPTION] State integrity compromised:', e);
-        }
+        // Orquestração de fases táticas com isolamento de falhas
+        systemsRegistry.forEach(s => {
+            try { s.preUpdate(deltaTime); } 
+            catch (e) { console.error(`[GAMELOOP_ERROR] preUpdate failure: ${s.constructor.name}`, e); }
+        });
+
+        systemsRegistry.forEach(s => {
+            try { s.update(deltaTime); } 
+            catch (e) { console.error(`[GAMELOOP_ERROR] update failure: ${s.constructor.name}`, e); }
+        });
+
+        systemsRegistry.forEach(s => {
+            try { s.postUpdate(deltaTime); } 
+            catch (e) { console.error(`[GAMELOOP_ERROR] postUpdate failure: ${s.constructor.name}`, e); }
+        });
  
         this.frameId = requestAnimationFrame(this.loop.bind(this));
     }

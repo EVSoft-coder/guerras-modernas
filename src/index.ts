@@ -46,11 +46,7 @@ entityManager.addComponent(villageEntity, new VillageComponent(
     'Vila Alfa'
 ));
 entityManager.addComponent(villageEntity, new VisionComponent(5));
-entityManager.addComponent(villageEntity, {
-    type: "GridPosition",
-    x: 5,
-    y: 5
-} as GridPositionComponent);
+entityManager.addComponent(villageEntity, new GridPositionComponent(5, 5));
 entityManager.addComponent(villageEntity, {
     type: "Renderable",
     renderType: "building"
@@ -64,11 +60,7 @@ entityManager.addComponent(villageBeta, new VillageComponent(
     'Base Beta'
 ));
 entityManager.addComponent(villageBeta, new VisionComponent(5));
-entityManager.addComponent(villageBeta, {
-    type: "GridPosition",
-    x: 15,
-    y: 10
-} as GridPositionComponent);
+entityManager.addComponent(villageBeta, new GridPositionComponent(15, 10));
 entityManager.addComponent(villageBeta, {
     type: "Renderable",
     renderType: "building"
@@ -84,11 +76,7 @@ entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1));
 entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
 
 // Componentes TÃ¡cticos de Grelha (Doutrina Requisitada)
-entityManager.addComponent(playerUnit, {
-    type: "GridPosition",
-    x: 6,
-    y: 5
-} as GridPositionComponent);
+entityManager.addComponent(playerUnit, new GridPositionComponent(6, 5));
 
 entityManager.addComponent(playerUnit, {
     type: "Renderable",
@@ -121,11 +109,7 @@ entityManager.addComponent(enemyUnit, new SpriteComponent('/images/unidades/tanq
 console.log(`[BOOT] Enemy Unit Omega (ID: ${enemyUnit}) detected with Main Battle Tank.`);
 
 // Componentes Visuais Inimigo (Doutrina Requisitada)
-entityManager.addComponent(enemyUnit, {
-    type: "GridPosition",
-    x: 10,
-    y: 10
-} as GridPositionComponent);
+entityManager.addComponent(enemyUnit, new GridPositionComponent(10, 10));
 
 entityManager.addComponent(enemyUnit, {
     type: "Renderable",
