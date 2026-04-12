@@ -17,6 +17,7 @@ import { visionSystem } from './VisionSystem';
 import { ResearchSystem } from './ResearchSystem';
 import { renderSystem } from './RenderSystem';
 import { RebelGeneratorSystem } from './RebelGeneratorSystem';
+import { syncSystem } from './SyncSystem';
 
 import { GameSystem } from './types';
 
