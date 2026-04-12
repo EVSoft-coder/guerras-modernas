@@ -14,6 +14,8 @@ declare global {
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+const rootElement = document.getElementById('app');
+
 if (rootElement) {
     initializeTheme();
     console.log("--- GUERRAS MODERNAS SINAL V3.9.2 ATIVO ---");
