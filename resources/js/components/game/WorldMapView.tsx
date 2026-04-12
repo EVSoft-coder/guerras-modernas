@@ -158,7 +158,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                             ))
                         ))}
 
-                        {/* ECS Entity Layer (Mobile Units) */}
+                        {/* ECS Entity Layer (Mobile Units) - Alinhadas à Grelha */}
                         <div className="absolute inset-0 pointer-events-none z-30">
                             {gameEntities.map(e => (
                                 <motion.div 
@@ -167,13 +167,14 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{
                                         position: "absolute",
-                                        left: e.x,
-                                        top: e.y,
-                                        transform: 'translate(-50%, -50%)'
+                                        left: e.x * 64,
+                                        top: e.y * 64,
+                                        width: 64,
+                                        height: 64
                                     }}
-                                    className="text-sky-400 drop-shadow-[0_0_5px_rgba(14,165,233,0.8)]"
+                                    className="unit flex items-center justify-center"
                                 >
-                                    ●
+                                    <div className="w-3 h-3 bg-sky-500 rounded-full shadow-[0_0_15px_rgba(14,165,233,0.8)] border border-white/50 animate-pulse" />
                                 </motion.div>
                             ))}
                         </div>

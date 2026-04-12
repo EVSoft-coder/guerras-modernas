@@ -92,8 +92,8 @@ class GameStateService {
 
             newSnapshots.push({
                 id,
-                x: gridPos ? gridPos.x * TILE_SIZE : 0,
-                y: gridPos ? gridPos.y * TILE_SIZE : 0,
+                x: gridPos ? gridPos.x : 0,
+                y: gridPos ? gridPos.y : 0,
                 sprite: sprite?.imagePath,
                 health: health ? { current: health.value, max: health.max } : undefined,
                 isSelected: !!selection,
