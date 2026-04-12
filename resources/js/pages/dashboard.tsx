@@ -24,6 +24,10 @@ export default function Dashboard(props: DashboardProps) {
     const { entities } = useGameEntities();
     const hasActiveArmy = entities.some(e => e.march);
     const isReloading = React.useRef(false);
+    
+    // Controlo de Sincronização
+    const [lastSync, setLastSync] = React.useState<Date>(new Date());
+    const [secondsSinceSync, setSecondsSinceSync] = React.useState(0);
 
     useEffect(() => {
         const handlePolling = () => {
@@ -44,6 +48,9 @@ export default function Dashboard(props: DashboardProps) {
                 isReloading.current = true;
                 router.reload({
                     only: ["gameData"],
+                    onSuccess: () => {
+                        setLastSync(new Date());
+                    },
                     onFinish: () => {
                         isReloading.current = false;
                     }
@@ -61,6 +68,20 @@ export default function Dashboard(props: DashboardProps) {
         };
     }, [gameMode, hasActiveArmy]);
 
+    // Timer visual de sincronização
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setSecondsSinceSync(Math.floor((new Date().getTime() - lastSync.getTime()) / 1000));
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [lastSync]);
+
+    const SyncIndicator = (
+        <div className="fixed bottom-4 right-4 z-50 rounded-full bg-black/80 px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-emerald-500 shadow-lg backdrop-blur-sm border border-emerald-500/20">
+            <span className="mr-1 inline-block h-1 w-1 animate-pulse rounded-full bg-emerald-500"></span>
+            Sync: {secondsSinceSync}s ago
+        </div>
+    );
 
     if (gameMode === "WORLD_MAP") {
         return (
@@ -71,6 +92,7 @@ export default function Dashboard(props: DashboardProps) {
                     troops={props.base?.tropas} 
                     gameConfig={props.gameConfig} 
                 />
+                {SyncIndicator}
             </AppLayout>
         );
     }
@@ -79,6 +101,7 @@ export default function Dashboard(props: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <VillageDashboard {...props} />
+            {SyncIndicator}
         </AppLayout>
     );
 }
