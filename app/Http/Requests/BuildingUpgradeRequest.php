@@ -13,6 +13,15 @@ class BuildingUpgradeRequest extends FormRequest
         return true;
     }
  
+    protected function prepareForValidation()
+    {
+        if ($this->has('tipo')) {
+            $this->merge([
+                'tipo' => strtolower($this->tipo)
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         return [

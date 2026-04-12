@@ -38,7 +38,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     
     // Caminho da imagem de resiliência absoluta
     const blueprintUrl = "/images/building_blueprint_placeholder.png";
-    const currentImage = usePlaceholder ? blueprintUrl : `/images/edificios/${building.tipo}/lvl_${currentTryLevel}.png`;
+    const currentImage = usePlaceholder ? blueprintUrl : `/images/edificios/${building.tipo?.toLowerCase()}/lvl_${currentTryLevel}.png`;
 
     // Reset de estado quando o edifício muda
     useEffect(() => {
