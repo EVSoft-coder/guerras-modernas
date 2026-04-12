@@ -49,6 +49,8 @@ export interface Recurso {
     combustivel: number;
     municoes: number;
     pessoal: number;
+    metal: number;
+    energia: number;
     updated_at: string;
 }
 
