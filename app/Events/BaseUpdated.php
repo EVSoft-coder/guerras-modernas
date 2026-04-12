@@ -2,24 +2,13 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class BaseUpdated implements ShouldBroadcast
+class BaseUpdated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, SerializesModels;
 
     public function __construct(public \App\Models\Base $base) {}
-
-    public function broadcastOn(): array
-    {
-        return [
-            new PrivateChannel('base.' . $this->base->id),
-        ];
-    }
 }
