@@ -5,14 +5,20 @@ import { gameStateService } from '../../../src/services/GameStateService';
  * Hook para obter entidades com posição do motor ECS.
  */
 export function useGameEntities() {
-    const [entities, setEntities] = useState(gameStateService.getGameState());
+    const [state, setState] = useState({
+        entities: gameStateService.getGameState(),
+        globalState: gameStateService.getGlobalState()
+    });
 
     useEffect(() => {
         const unsub = gameStateService.subscribe(() => {
-            setEntities(gameStateService.getGameState());
+            setState({
+                entities: gameStateService.getGameState(),
+                globalState: gameStateService.getGlobalState()
+            });
         });
         return unsub;
     }, []);
 
-    return entities;
+    return state;
 }

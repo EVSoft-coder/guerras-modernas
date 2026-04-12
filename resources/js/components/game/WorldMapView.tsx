@@ -8,6 +8,7 @@ import { AttackModal } from './AttackModal';
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { useGameEntities } from '@/hooks/use-game-entities';
+import { StrategyHUD } from './StrategyHUD';
 
 interface BaseMap {
     id: number;
@@ -35,9 +36,12 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: BaseMap } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
     const [isAttackModalOpen, setIsAttackModalOpen] = useState(false);
-    const [zoom, setZoom] = useState(1);
     const [selectedUnit, setSelectedUnit] = useState<number | null>(null);
-    const gameEntities = useGameEntities();
+    const { entities: gameEntities, globalState } = useGameEntities();
+
+    const selectedEntityObj = useMemo(() => {
+        return gameEntities.find(e => e.id === selectedUnit);
+    }, [gameEntities, selectedUnit]);
 
     const handleWheel = (e: React.WheelEvent) => {
         if (e.ctrlKey || e.metaKey) {
@@ -348,6 +352,13 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                     isSending={processing}
                 />
             )}
+
+            <StrategyHUD 
+                resources={globalState.resources}
+                coordinates={center}
+                selectedEntity={selectedEntityObj}
+                miniMapData={gameEntities}
+            />
         </div>
     );
 }
