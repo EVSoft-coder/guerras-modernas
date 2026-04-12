@@ -74,9 +74,16 @@ export function VillageDashboard({
     if (!base) return <div className="p-10 text-white uppercase font-mono">Connecting to Satellite...</div>;
 
     // Encontrar o edifício atualizado na base (Cálculo derivado garantindo reatividade)
-    const currentBuilding = selectedBuildingType === 'qg' 
-        ? { tipo: 'qg', nome: 'Quartel General', nivel: Number(base.qg_nivel), base: base }
-        : (base.edificios || []).find(b => b.id === selectedBuildingId || b.tipo === selectedBuildingType);
+    const foundBuilding = (base.edificios || []).find(b => b.id === selectedBuildingId || b.tipo === selectedBuildingType);
+    let currentBuilding = null;
+    
+    if (selectedBuildingType === 'qg') {
+        currentBuilding = { tipo: 'qg', nome: 'Quartel General', nivel: Number(base.qg_nivel), base: base };
+    } else if (selectedBuildingType === 'muralha') {
+        currentBuilding = { tipo: 'muralha', nome: 'Perímetro Defensivo', nivel: Number(base.muralha_nivel), base: base };
+    } else if (foundBuilding) {
+        currentBuilding = { ...foundBuilding, base: base };
+    }
 
     const handleBuildingClick = (building: any) => {
         console.log("CLICK_CAPTURE:", building.tipo, "LVL:", building.nivel);
