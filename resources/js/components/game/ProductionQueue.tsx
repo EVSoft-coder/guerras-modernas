@@ -40,16 +40,19 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({ construcoes = 
     ].sort((a, b) => new Date(a.ends_at).getTime() - new Date(b.ends_at).getTime());
 
     return (
-        <Card className="bg-black/40 border-white/10 backdrop-blur-md overflow-hidden shadow-2xl">
-            <CardHeader className="py-3 bg-white/5 border-b border-white/10">
-                <CardTitle className="text-[10px] uppercase font-black tracking-[0.2em] text-neutral-400 flex items-center justify-between">
+        <Card className="bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+            <CardHeader className="py-4 bg-white/[0.02] border-b border-white/5">
+                <CardTitle className="text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Activity className="text-sky-500 animate-pulse" size={14} />
-                        Fila de Produção Tática
+                        <div className="p-1.5 bg-sky-500/10 rounded-lg border border-sky-500/20">
+                            <Activity className="text-sky-500 animate-pulse" size={14} />
+                        </div>
+                        Comandos em Execução
                     </div>
                 </CardTitle>
             </CardHeader>
-            <CardContent className="py-4 space-y-4">
+            <CardContent className="py-6 space-y-6">
                 <AnimatePresence mode="popLayout">
                     {unifiedQueue.length > 0 ? (
                         unifiedQueue.map((item, index) => (
@@ -59,11 +62,11 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({ construcoes = 
                         <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="text-center py-8 border-2 border-dashed border-white/5 rounded-2xl"
+                            className="text-center py-10 border-2 border-dashed border-white/5 rounded-2xl bg-white/[0.01]"
                         >
-                            <Hammer className="mx-auto text-neutral-800 mb-2" size={24} />
-                            <span className="text-[9px] uppercase font-black text-neutral-600 tracking-widest">
-                                Sem Atividade de Engenharia ou Recrutamento
+                            <Hammer className="mx-auto text-neutral-800 mb-3 opacity-20" size={32} />
+                            <span className="text-[9px] uppercase font-black text-neutral-600 tracking-[0.2em] block">
+                                Sistemas em Espera
                             </span>
                         </motion.div>
                     )}
@@ -122,49 +125,39 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className={`group relative ${!isFirst ? 'opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all' : ''}`}
+            className={`group relative ${!isFirst ? 'opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500' : ''}`}
         >
-            <div className="flex justify-between items-end mb-1.5 px-1">
+            <div className="flex justify-between items-end mb-2 px-1">
                 <div className="flex flex-col">
-                    <div className="flex items-center gap-1.5">
-                        {item.tipo === 'construcao' ? (
-                            <Hammer size={10} className="text-orange-500" />
-                        ) : (
-                            <Shield size={10} className="text-sky-500" />
-                        )}
-                        <span className="text-[10px] font-black uppercase text-white tracking-tighter">
+                    <div className="flex items-center gap-2">
+                        <div className={`w-1.5 h-1.5 rounded-full ${item.tipo === 'construcao' ? 'bg-orange-500' : 'bg-sky-500'} ${isFirst ? 'animate-pulse' : ''}`}></div>
+                        <span className="text-xs font-black uppercase text-white tracking-tighter">
                             {item.label}
                         </span>
                     </div>
-                    <span className="text-[8px] text-neutral-400 font-bold uppercase pl-4">{item.sublabel}</span>
+                    <span className="text-[8px] text-neutral-500 font-bold uppercase pl-3.5 tracking-wider">{item.sublabel}</span>
                 </div>
                 <div className="flex flex-col items-end">
-                    <span className={`text-[9px] font-mono font-bold flex items-center gap-1 ${isFirst ? 'text-orange-500' : 'text-neutral-500'}`}>
-                        {isFirst && <Clock className="animate-pulse" size={10} />}
+                    <span className={`text-[10px] font-mono font-black flex items-center gap-1.5 ${isFirst ? 'text-white' : 'text-neutral-500'}`}>
+                        {isFirst && <div className="size-1 bg-red-500 rounded-full animate-ping"></div>}
                         {timeLeft}
                     </span>
                 </div>
             </div>
 
-            <div className="relative h-1.5 bg-black/60 rounded-full border border-white/5 overflow-hidden shadow-inner">
+            <div className="relative h-1 bg-neutral-900 rounded-full overflow-hidden shadow-inner border border-white/5">
                 <motion.div 
-                    className={`absolute inset-y-0 left-0 transition-colors duration-500 ${
+                    className={`absolute inset-y-0 left-0 ${
                         item.tipo === 'construcao' ? 'bg-gradient-to-r from-orange-600 to-orange-400' : 'bg-gradient-to-r from-sky-600 to-sky-400'
-                    }`}
+                    } shadow-[0_0_10px_rgba(14,165,233,0.3)]`}
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
-                    transition={{ type: "spring", bounce: 0, duration: 1 }}
-                >
-                    {isFirst && (
-                        <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.4)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.4)_50%,rgba(255,255,255,0.4)_75%,transparent_75%,transparent)] bg-[length:40px_40px] animate-progress-stripes opacity-40"></div>
-                    )}
-                </motion.div>
+                    transition={{ type: "spring", bounce: 0, duration: 1.5 }}
+                />
             </div>
             
-            {!isFirst && (
-                <div className="absolute -left-2 top-1/2 -translate-y-1/2">
-                    <ChevronRight size={10} className="text-neutral-700" />
-                </div>
+            {isFirst && (
+                <div className="absolute -inset-x-2 -inset-y-3 bg-white/[0.02] rounded-xl -z-10 group-hover:bg-white/[0.04] transition-colors"></div>
             )}
         </motion.div>
     );

@@ -30,63 +30,80 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
     }, [taxasPerSecond]);
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full bg-black/60 backdrop-blur-xl p-5 rounded-2xl border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] z-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full bg-black/40 backdrop-blur-2xl p-4 rounded-[2rem] border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-20 overflow-hidden relative">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/20 to-transparent"></div>
             <ResourceItem 
-                icon={<Box className="text-sky-400 group-hover:rotate-12 transition-transform" size={22} />} 
+                icon={<Box className="text-sky-400" size={20} />} 
                 label="Suprimentos" 
                 value={current.suprimentos} 
-                rate={(taxasPerSecond?.suprimentos ?? 0) * 60}
-                color="text-sky-400"
+                rate={(taxasPerSecond?.suprimentos ?? 0) * 3600}
+                color="text-white"
+                accentColor="bg-sky-500"
             />
             <ResourceItem 
-                icon={<Fuel className="text-orange-400 group-hover:rotate-12 transition-transform" size={22} />} 
+                icon={<Fuel className="text-orange-400" size={20} />} 
                 label="Combustível" 
                 value={current.combustivel} 
-                rate={(taxasPerSecond?.combustivel ?? 0) * 60}
-                color="text-orange-400"
+                rate={(taxasPerSecond?.combustivel ?? 0) * 3600}
+                color="text-white"
+                accentColor="bg-orange-500"
             />
             <ResourceItem 
-                icon={<Rocket className="text-red-400 group-hover:rotate-12 transition-transform" size={22} />} 
+                icon={<Rocket className="text-red-400" size={20} />} 
                 label="Munições" 
                 value={current.municoes} 
-                rate={(taxasPerSecond?.municoes ?? 0) * 60}
-                color="text-red-400"
+                rate={(taxasPerSecond?.municoes ?? 0) * 3600}
+                color="text-white"
+                accentColor="bg-red-500"
             />
             <ResourceItem 
-                icon={<Users className="text-emerald-400 group-hover:rotate-12 transition-transform" size={22} />} 
+                icon={<Users className="text-emerald-400" size={20} />} 
                 label="Guarnição" 
                 value={current.pessoal} 
                 rate={0}
-                color="text-emerald-400"
+                color="text-white"
+                accentColor="bg-emerald-500"
                 isStatic
             />
         </div>
     );
 };
 
-const ResourceItem = ({ icon, label, value, rate, color, isStatic = false }: any) => {
+const ResourceItem = ({ icon, label, value, rate, color, accentColor, isStatic = false }: any) => {
     return (
-        <div className="flex flex-col items-center justify-center border-r border-white/5 last:border-0 px-2 group cursor-help transition-all duration-300 hover:bg-white/5 rounded-xl py-2 relative overflow-hidden">
-            <div className="flex items-center gap-2 mb-1 z-10">
+        <div className="flex flex-col items-center justify-center border-r border-white/5 last:border-0 px-4 group cursor-help transition-all duration-500 hover:bg-white/[0.03] py-3 relative">
+            <div className="flex items-center gap-2 mb-2 opacity-60 group-hover:opacity-100 transition-opacity">
                 {icon}
-                <span className="text-[10px] uppercase font-black tracking-[0.2em] text-neutral-500 group-hover:text-neutral-300 transition-colors">{label}</span>
+                <span className="text-[9px] uppercase font-black tracking-[0.2em] text-neutral-400">{label}</span>
             </div>
+            
             <motion.div 
                 key={value}
-                initial={{ scale: 1.1, opacity: 0.8 }}
+                initial={{ scale: 1.05, opacity: 0.9 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className={`text-2xl font-black font-mono tracking-tighter ${color} z-10`}
+                className={`text-3xl font-black font-mono tracking-tighter ${color} drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]`}
             >
                 <AnimatedNumber value={value} />
             </motion.div>
-            {!isStatic && (
-                <div className="text-[10px] font-black text-neutral-600 group-hover:text-neutral-400 transition-colors z-10 flex items-center gap-1">
-                    <span className="animate-pulse">▲</span> {Math.floor(rate).toLocaleString()} /h
-                </div>
-            )}
+
+            <div className="mt-2 flex items-center gap-3">
+                {!isStatic ? (
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/5">
+                        <div className={`w-1 h-1 rounded-full ${accentColor} animate-pulse`}></div>
+                        <span className="text-[9px] font-bold text-neutral-500">
+                             +{Math.floor(rate).toLocaleString()} <span className="text-[7px] opacity-50">/H</span>
+                        </span>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                         <div className="w-1 h-1 rounded-full bg-emerald-500"></div>
+                         <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-tighter">Operacional</span>
+                    </div>
+                )}
+            </div>
             
-            {/* Background Glow Effect on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {/* Hover Indicator */}
+            <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] ${accentColor} group-hover:w-1/2 transition-all duration-500 opacity-50`}></div>
         </div>
     );
 };

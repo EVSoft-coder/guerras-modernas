@@ -32,19 +32,19 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
     };
 
     return (
-        <div className="relative w-full aspect-video bg-neutral-900 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/5 group">
+        <div className="relative w-full aspect-video bg-black rounded-[2.5rem] overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.9)] border border-white/5 group">
             {/* Background Map com Grid Tática */}
-            <div className="absolute inset-0 bg-[url('/images/maps/village_base_v2.png')] bg-cover bg-center brightness-50 contrast-125 transition-all duration-700 group-hover:scale-105 group-hover:brightness-75"></div>
+            <div className="absolute inset-0 bg-[url('/images/maps/village_base_v2.png')] bg-cover bg-center transition-all duration-1000 group-hover:scale-110 opacity-40 contrast-150"></div>
             
-            {/* Grid Overlay */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:5%_8.33%] pointer-events-none opacity-40"></div>
+            {/* Grid Overlay Subtil */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:10%_16.6%] pointer-events-none opacity-50"></div>
             
-            {/* Overlay de Scanline e Sombra tática */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 pointer-events-none z-10"></div>
+            {/* Overlay de Scanline e Vinheta */}
+            <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black pointer-events-none z-10"></div>
             
-            {/* Edifícios Interativos */}
-            <div className="absolute inset-0 z-20">
-                {/* Renderizar QG (que é uma coluna da base, não um Edificio na tabela por enquanto) */}
+            {/* Edifícios Interativos (Absolute Grid) */}
+            <div className="absolute inset-2 z-20 grid grid-cols-5 grid-rows-5">
+                {/* Renderizar QG */}
                 <BuildingNode 
                     tipo="qg" 
                     nome="Quartel General" 
@@ -67,9 +67,19 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
             </div>
 
             {/* Bússola Tática / HUD sobreposto ao mapa */}
-            <div className="absolute bottom-6 right-6 z-30 flex flex-col items-end gap-1 pointer-events-none opacity-60">
-                <div className="text-[10px] font-black uppercase text-sky-500 tracking-[0.3em]">Sector_Map_Active</div>
-                <div className="text-[8px] font-mono text-neutral-500">LAT: {base.coordenada_x} | LON: {base.coordenada_y}</div>
+            <div className="absolute top-8 left-8 z-30 flex items-center gap-4 pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity">
+                <div className="p-2 border border-sky-500/30 rounded-full animate-spin-slow">
+                     <div className="w-1 h-1 bg-sky-500 rounded-full"></div>
+                </div>
+                <div className="flex flex-col">
+                    <div className="text-[10px] font-black uppercase text-sky-500 tracking-[0.4em] leading-none">Sector_Active</div>
+                    <div className="text-[8px] font-mono text-neutral-500 mt-1 uppercase">Holographic_Downlink_1.8b</div>
+                </div>
+            </div>
+
+            <div className="absolute bottom-8 right-8 z-30 text-right pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity">
+                <div className="text-[14px] font-black text-white leading-none">GRID_{base.coordenada_x}:{base.coordenada_y}</div>
+                <div className="text-[8px] font-black text-sky-500 uppercase mt-1 tracking-widest">Sinal GPS Estável</div>
             </div>
         </div>
     );
