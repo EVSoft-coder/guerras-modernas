@@ -23,7 +23,9 @@ export default function Dashboard(props: DashboardProps) {
     const gameMode = useGameMode();
     const { entities } = useGameEntities() || { entities: [] };
     const hasActiveArmy = entities?.some(e => e.march) ?? false;
-    const isReloading = useRef(false);
+    
+    // Semáforo de Recarga via State para estabilidade em produção
+    const [isReloading, setIsReloading] = useState(false);
     
     // Controlo de Sincronização
     const [lastSync, setLastSync] = useState<Date>(new Date());
@@ -43,17 +45,21 @@ export default function Dashboard(props: DashboardProps) {
             }
 
             PollingService.start(() => {
-                if (isReloading.current) return;
+                // Bloqueio de pedidos concorrentes
+                setIsReloading(loading => {
+                    if (loading) return true;
 
-                isReloading.current = true;
-                router.reload({
-                    only: ["gameData"],
-                    onSuccess: () => {
-                        setLastSync(new Date());
-                    },
-                    onFinish: () => {
-                        isReloading.current = false;
-                    }
+                    router.reload({
+                        only: ["gameData"],
+                        onSuccess: () => {
+                            setLastSync(new Date());
+                        },
+                        onFinish: () => {
+                            setIsReloading(false);
+                        }
+                    });
+
+                    return true;
                 });
             }, delay);
         };
