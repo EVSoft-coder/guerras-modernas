@@ -79,9 +79,16 @@ class AuthController extends Controller
                 ->orWhere('defensor_id', $jogador->id)
                 ->latest()->take(10)->get() ?? [],
             'relatoriosGlobal' => \App\Models\Relatorio::latest()->take(10)->get() ?? [],
-            'ataquesRecebidos' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get() ?? [],
-            'ataquesEnviados' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get() ?? [],
-            'gameConfig' => config('game')
+            'gameConfig' => config('game'),
+            // Payload optimizado para Polling
+            'gameData' => [
+                'resources' => $base?->recursos,
+                'units' => $base?->tropas,
+                'movements' => [
+                    'sent' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get() ?? [],
+                    'received' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get() ?? [],
+                ]
+            ]
         ]);
     }
  

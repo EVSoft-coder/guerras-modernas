@@ -39,7 +39,7 @@ export default function Dashboard(props: DashboardProps) {
 
             PollingService.start(() => {
                 router.reload({
-                    only: ["base", "bases", "relatorios", "ataquesEnviados", "ataquesRecebidos"]
+                    only: ["gameData"]
                 });
             }, delay);
         };

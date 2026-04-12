@@ -91,8 +91,6 @@ export interface DashboardProps {
     bases: Base[];
     relatorios: any[];
     relatoriosGlobal: any[];
-    ataquesEnviados: any[];
-    ataquesRecebidos: any[];
     taxas: Record<string, number>;
     taxasPerSecond: Record<string, number>;
     intelLevel: number;
@@ -100,4 +98,12 @@ export interface DashboardProps {
     capTotal: number;
     popPercent: number;
     gameConfig: any;
+    gameData?: {
+        resources: Recurso;
+        units: any[];
+        movements: {
+            sent: any[];
+            received: any[];
+        };
+    };
 }
