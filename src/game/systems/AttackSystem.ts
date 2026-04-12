@@ -12,11 +12,13 @@ export class AttackSystem implements GameSystem {
         
         // Listen for arrival to resolve combat
         eventBus.subscribe(Events.ATTACK_ARRIVED, (payload) => {
+            if (payload.entityId === undefined) return;
             this.resolveCombat(payload.entityId, payload.data.march);
         });
 
         // Listen for return to reintegrate troops
         eventBus.subscribe(Events.ATTACK_RETURNED, (payload) => {
+            if (payload.entityId === undefined) return;
             this.reintegrateTroops(payload.entityId, payload.data.march);
         });
     }
@@ -32,7 +34,7 @@ export class AttackSystem implements GameSystem {
         console.log(`Resolving engagement at [${march.targetX}:${march.targetY}]`);
         
         // Emissão para o motor de combate balístico resolver os dados
-        eventBus.emit('ATTACK:RESOLVE', {
+        eventBus.emit(Events.ATTACK_RESOLVE, {
             entityId: armyId,
             timestamp: Date.now(),
             data: { march }
@@ -77,13 +79,6 @@ export class AttackSystem implements GameSystem {
 
     public destroy(): void {
         console.log('[SYSTEM] AttackSystem - Tactical Ops Terminated.');
-    }
-}
-
-    public postUpdate(deltaTime: number): void {}
-
-    public destroy(): void {
-        console.log('[SYSTEM] AttackSystem - War Room Offline.');
     }
 }
 

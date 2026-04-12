@@ -10,7 +10,7 @@ export class CombatSystem implements GameSystem {
         console.log('[SYSTEM] CombatSystem - Engagement Protocols ONLINE.');
 
         // Subscrever à resolução tática de ataque
-        eventBus.subscribe('ATTACK:RESOLVE', (payload) => {
+        eventBus.subscribe(Events.ATTACK_RESOLVE, (payload) => {
             const { entityId, data } = payload;
             if (entityId !== undefined) {
                 this.handleAttackResolve(entityId, data.march);
