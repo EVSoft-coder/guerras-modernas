@@ -9,8 +9,8 @@ export function useGameMode() {
     const [mode, setMode] = useState(gameStateService.getMode());
     
     useEffect(() => {
-        const unsub = eventBus.subscribe(Events.GAMEMODE_CHANGED, (p) => {
-            setMode(p.data.mode);
+        const unsub = gameStateService.subscribe(() => {
+            setMode(gameStateService.getMode());
         });
         return unsub;
     }, []);
