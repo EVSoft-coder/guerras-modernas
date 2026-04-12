@@ -47,27 +47,69 @@ export class CombatSystem implements GameSystem {
     }
 
     private executeRaid(armyId: number, army: ArmyComponent, targetId: number, village: VillageComponent): void {
-        console.log(`[COMBAT] Army ${armyId} raiding Village ${targetId}`);
+        console.log(`[COMBAT] STRATEGIC ENGAGEMENT: Army ${armyId} vs Village ${targetId}`);
 
-        // Saque: 30% dos recursos da vila
-        const lootedWood = Math.floor(village.resources.wood * 0.3);
-        const lootedStone = Math.floor(village.resources.stone * 0.3);
-        const lootedIron = Math.floor(village.resources.iron * 0.3);
+        const attackerUnit = entityManager.getComponent<any>(armyId, 'Unit');
+        const defenderUnit = entityManager.getComponent<any>(targetId, 'Unit');
 
-        village.resources.wood -= lootedWood;
-        village.resources.stone -= lootedStone;
-        village.resources.iron -= lootedIron;
+        // 1. Soma Ataque Atacante (Baseado na composição do Exército)
+        const attackerQty = Object.values(army.units).reduce((a, b) => a + b, 0);
+        const totalAttack = (attackerUnit?.attack || 100) * attackerQty;
 
-        eventBus.emit(Events.ATTACK_ARRIVED, {
-            entityId: armyId,
-            data: {
-                result: 'VICTORY',
-                looted: { wood: lootedWood, stone: lootedStone, iron: lootedIron }
-            }
-        });
+        // 2. Soma Defesa Defensor (Baseado na estrutura ou guarnição)
+        const totalDefense = (defenderUnit?.defense || 1500) + (village.resources.wood * 0.01); // Paredes de madeira?
 
-        // O exÃ©rcito entra em "modo retorno" ou Ã© destruÃ­do (simplificado: auto-destruição apÃ³s saque por agora)
-        entityManager.removeEntity(armyId);
+        console.log(`[COMBAT] CALCULATED FORCE: ATK(${totalAttack}) vs DEF(${totalDefense})`);
+
+        // 3. Regra de Resolução
+        const attackerWins = totalAttack > totalDefense;
+        
+        // 4. Aplicar Perdas Percentuais
+        const attackerLossPercent = attackerWins ? 0.2 : 0.8; // Se vencer perde 20%, se perder perde 80%
+        const defenderLossPercent = attackerWins ? 0.5 : 0.1; // Se perder (vila) perde 50% eficiência? (Aqui perdemos recursos)
+
+        for (const type in army.units) {
+            army.units[type] = Math.floor(army.units[type] * (1 - attackerLossPercent));
+        }
+
+        if (attackerWins) {
+            // Saque: 30% dos recursos da vila
+            const lootedWood = Math.floor(village.resources.wood * 0.3);
+            const lootedStone = Math.floor(village.resources.stone * 0.3);
+            const lootedIron = Math.floor(village.resources.iron * 0.3);
+
+            village.resources.wood -= lootedWood;
+            village.resources.stone -= lootedStone;
+            village.resources.iron -= lootedIron;
+
+            eventBus.emit(Events.ATTACK_ARRIVED, {
+                entityId: armyId,
+                data: {
+                    result: 'VICTORY',
+                    looted: { wood: lootedWood, stone: lootedStone, iron: lootedIron }
+                }
+            });
+            
+            console.log(`[COMBAT] VICTORY: Resources captured and casualties reported.`);
+        } else {
+            eventBus.emit(Events.ATTACK_ARRIVED, {
+                entityId: armyId,
+                data: {
+                    result: 'DEFEAT',
+                    looted: { wood: 0, stone: 0, iron: 0 }
+                }
+            });
+            console.log(`[COMBAT] DEFEAT: Attack repelled. High casualties sustained.`);
+        }
+
+        // Se o exército ficar sem tropas, remover
+        const remainingTroops = Object.values(army.units).reduce((a, b) => a + b, 0);
+        if (remainingTroops <= 0) {
+            entityManager.removeEntity(armyId);
+        } else {
+            // Todo: Retornar à base (por agora, apenas destruímos para simplificar ou deixamos parado)
+            entityManager.removeEntity(armyId);
+        }
     }
 
     public preUpdate(deltaTime: number): void {}
