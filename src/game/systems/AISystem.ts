@@ -14,14 +14,14 @@ export class AISystem implements GameSystem {
     public preUpdate(deltaTime: number): void {}
  
     public update(deltaTime: number): void {
-        const drones = entityManager.getEntitiesWith(['AI', 'Position']);
-        const targets = entityManager.getEntitiesWith(['Health', 'Position']);
+        const drones = entityManager.getEntitiesWith(['AI', 'GridPosition']);
+        const targets = entityManager.getEntitiesWith(['Health', 'GridPosition']);
  
         for (const droneId of drones) {
             if (entityManager.getComponent<any>(droneId, 'Target')) continue;
  
             const aiComp = entityManager.getComponent<any>(droneId, 'AI');
-            const posComp = entityManager.getComponent<any>(droneId, 'Position');
+            const posComp = entityManager.getComponent<any>(droneId, 'GridPosition');
  
             if (aiComp.behavior === 'AGGRESSIVE') {
                 this.pursueTarget(droneId, posComp, targets);
@@ -35,7 +35,9 @@ export class AISystem implements GameSystem {
  
         for (const targetId of targets) {
             if (targetId === droneId) continue;
-            const tPos = entityManager.getComponent<any>(targetId, 'Position');
+            const tPos = entityManager.getComponent<any>(targetId, 'GridPosition');
+            if (!tPos || !pos) continue;
+
             const dist = Math.sqrt(Math.pow(tPos.x - pos.x, 2) + Math.pow(tPos.y - pos.y, 2));
  
             if (dist < nearestDist) {
@@ -44,7 +46,7 @@ export class AISystem implements GameSystem {
             }
         }
  
-        if (targetPos && nearestDist > 20) {
+        if (targetPos && nearestDist > 20 && pos) {
             entityManager.addComponent(droneId, new TargetComponent(targetPos.x, targetPos.y));
         }
     }

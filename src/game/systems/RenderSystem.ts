@@ -34,6 +34,7 @@ export class RenderSystem implements GameSystem {
 
         entities.forEach(entityId => {
             const gridPos = entityManager.getComponent<any>(entityId, "GridPosition");
+            if (!gridPos) return;
             
             // Converter para coordenadas de píxeis
             const pos = {

@@ -32,13 +32,13 @@ export class OrderSystem implements GameSystem {
     }
  
     private processSelection(x: number, y: number): void {
-        const entities = entityManager.getEntitiesWith(['Position', 'Sprite']);
+        const entities = entityManager.getEntitiesWith(['GridPosition', 'Sprite']);
         let found = false;
         const selected = entityManager.getEntitiesWith(['Selection']);
         selected.forEach(id => entityManager.removeComponent(id, 'Selection'));
  
         for (const id of entities) {
-            const pos = entityManager.getComponent<any>(id, 'Position');
+            const pos = entityManager.getComponent<any>(id, 'GridPosition');
             const dist = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
  
             if (dist < 40) {
@@ -64,7 +64,7 @@ export class OrderSystem implements GameSystem {
     }
  
     private processMoveOrder(x: number, y: number): void {
-        const selected = entityManager.getEntitiesWith(['Selection', 'Position']);
+        const selected = entityManager.getEntitiesWith(['Selection', 'GridPosition']);
         selected.forEach(id => {
             entityManager.addComponent(id, new TargetComponent(x, y));
             eventBus.emit({

@@ -105,14 +105,13 @@ console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Spatial 
 // 3.1. MOBILIZAÃ‡ÃƒO TESTE (UNIDADE ALPHA-ZERO)
 const testUnit = entityManager.createEntity();
 entityManager.addComponent(testUnit, new PlayerComponent());
-entityManager.addComponent(testUnit, new PositionComponent(0, 0));
 entityManager.addComponent(testUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(testUnit, new SpriteComponent('/images/unidades/agente_espiao.png')); 
 console.log(`[BOOT] Test Unit Alpha-Zero (ID: ${testUnit}) deployed at ORIGIN.`);
  
 // 4. MOBILIZAÃ‡ÃƒO IA INIMIGA (UNIDADE OMEGA)
 const enemyUnit = entityManager.createEntity();
-entityManager.addComponent(enemyUnit, new PositionComponent(500, 200));
+entityManager.addComponent(enemyUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(enemyUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(enemyUnit, new HealthComponent(2000, 2000));
 entityManager.addComponent(enemyUnit, new AttackComponent(100, 200, 3)); 
