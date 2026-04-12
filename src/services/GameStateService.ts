@@ -75,11 +75,23 @@ class GameStateService {
             const unit = entityManager.getComponent<any>(id, 'Unit');
             const player = entityManager.getComponent<any>(id, 'Player');
 
+            let x = gridPos ? gridPos.x : 0;
+            let y = gridPos ? gridPos.y : 0;
+
+            if (march) {
+                const now = Date.now();
+                const total = march.arrivalTime - march.startTime;
+                const elapsed = now - march.startTime;
+                const progress = Math.min(1, Math.max(0, elapsed / (total || 1)));
+                x = march.originX + (march.targetX - march.originX) * progress;
+                y = march.originY + (march.targetY - march.originY) * progress;
+            }
+
             newSnapshots.push({
                 id,
                 type: army ? 'Army' : (building?.buildingType || unit?.unitCategory || (village ? 'VILLAGE' : (march ? 'MARCH' : undefined))),
-                x: gridPos ? gridPos.x : 0,
-                y: gridPos ? gridPos.y : 0,
+                x,
+                y,
                 sprite: sprite?.imagePath,
                 health: health ? { current: health.value, max: health.max } : undefined,
                 loyalty: village ? village.loyalty : undefined,
@@ -98,7 +110,6 @@ class GameStateService {
                     state: march.status,
                     remainingTime: (march.arrivalTime - Date.now()) / 1000,
                     totalTime: (march.arrivalTime - march.startTime) / 1000,
-                    arrivalTime: march.arrivalTime,
                     target: { x: march.targetX, y: march.targetY },
                     loot: march.units 
                 } : undefined
