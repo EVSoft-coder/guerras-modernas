@@ -4,6 +4,7 @@
  */
 import { eventBus, Events, EventPayload } from '../../core/EventBus';
 import { GameSystem } from './types';
+import { gameStateService } from '../../services/GameStateService';
 
 export type GameMode = "VILLAGE" | "WORLD_MAP";
 
@@ -34,12 +35,8 @@ export class GameModeSystem implements GameSystem {
         console.log(`[GAMEMODE_SYSTEM] Perspective shift: ${this.currentMode} -> ${newMode}`);
         this.currentMode = newMode;
 
-        // Notificar outros sistemas se necessÃ¡rio (sem tocar na UI diretamente)
-        eventBus.emit({
-            type: Events.GAMEMODE_CHANGED,
-            timestamp: Date.now(),
-            data: { mode: this.currentMode }
-        });
+        // Atualizar o estado global e notificar a UI e outros sistemas
+        gameStateService.setMode(newMode as any);
     }
 
     public getCurrentMode(): GameMode {

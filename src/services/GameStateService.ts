@@ -163,6 +163,11 @@ class GameStateService {
         return this.getGameMode();
     }
 
+    public setMode(mode: GameMode): void {
+        stateManager.setMode(mode);
+        this.notify();
+    }
+
     public subscribe(listener: () => void): () => void {
         this.listeners.push(listener);
         return () => {
