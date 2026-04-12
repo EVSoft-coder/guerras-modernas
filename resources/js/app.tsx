@@ -18,6 +18,7 @@ const rootElement = document.getElementById('app');
 
 if (rootElement) {
     initializeTheme();
+    console.log("FRONTEND VERSION 2026");
     console.log("--- GUERRAS MODERNAS SINAL V3.9.2 ATIVO ---");
     
     createInertiaApp({
