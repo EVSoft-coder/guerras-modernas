@@ -69,6 +69,7 @@ export class MovementSystem implements GameSystem {
     public update(deltaTime: number): void {
         const entities = entityManager.getEntitiesWith(['GridPosition', 'Velocity']);
 
+        // 1. Processar Movimento Base (A*)
         for (const entityId of entities) {
             const pos = entityManager.getComponent<any>(entityId, 'GridPosition');
             const vel = entityManager.getComponent<any>(entityId, 'Velocity');
@@ -76,7 +77,6 @@ export class MovementSystem implements GameSystem {
             if (pos && vel && vel.isMoving && vel.path && vel.path.length > 0) {
                 const nextPoint = vel.path[0];
                 
-                // ValidaÃ§Ã£o de Integridade do Ponto
                 if (!nextPoint || nextPoint.x === undefined || nextPoint.y === undefined) {
                     vel.path.shift();
                     if (vel.path.length === 0) vel.isMoving = false;
@@ -88,7 +88,6 @@ export class MovementSystem implements GameSystem {
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
                 if (distance < 0.1) {
-                    // Ponto alcanÃ§ado, remover da fila e passar para o prÃ³ximo
                     pos.x = nextPoint.x;
                     pos.y = nextPoint.y;
                     vel.path.shift();
@@ -97,10 +96,8 @@ export class MovementSystem implements GameSystem {
                         vel.isMoving = false;
                         vel.vx = 0;
                         vel.vy = 0;
-                        console.log(`Unit ${entityId} reached final objective.`);
                     }
                 } else {
-                    // Mover gradualmente (NÃO TELEPORTAR)
                     const unit = entityManager.getComponent<any>(entityId, 'Unit');
                     const baseSpeed = unit?.speed || this.speed;
                     const speedBonus = unit?.speedBonus || 1.0;
@@ -112,8 +109,35 @@ export class MovementSystem implements GameSystem {
                     pos.x += vx * deltaTime;
                     pos.y += vy * deltaTime;
                     
-                    vel.vx = vx; // Para efeitos visuais/rastreamento
+                    vel.vx = vx;
                     vel.vy = vy;
+                }
+            }
+        }
+
+        // 2. Processar Movimento de Marchas (Interpolação Temporal)
+        const marchEntities = entityManager.getEntitiesWith(['March', 'GridPosition']);
+        const now = Date.now();
+
+        for (const mId of marchEntities) {
+            const march = entityManager.getComponent<any>(mId, 'March');
+            const pos = entityManager.getComponent<any>(mId, 'GridPosition');
+
+            if (march && pos && march.status !== 'completed') {
+                if (march.status === "going") {
+                    const duration = march.arrivalTime - march.startTime;
+                    if (duration > 0) {
+                        const progress = Math.min(1, Math.max(0, (now - march.startTime) / duration));
+                        pos.x = march.originX + (march.targetX - march.originX) * progress;
+                        pos.y = march.originY + (march.targetY - march.originY) * progress;
+                    }
+                } else if (march.status === "returning") {
+                    const duration = march.returnTime - march.arrivalTime;
+                    if (duration > 0) {
+                        const progress = Math.min(1, Math.max(0, (now - march.arrivalTime) / duration));
+                        pos.x = march.targetX + (march.originX - march.targetX) * progress;
+                        pos.y = march.targetY + (march.originY - march.targetY) * progress;
+                    }
                 }
             }
         }

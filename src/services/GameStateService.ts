@@ -28,6 +28,7 @@ export interface EntitySnapshot {
 
 export interface GlobalGameState {
     player: { name: string; id: number };
+    villages: Array<{ id: number; name: string; x: number; y: number }>;
     resources: { suprimentos: number; combustivel: number; municoes: number; metal: number; energia: number; pessoal: number };
     buildings: Array<{ type: string; level: number }>;
     revealedTiles?: string[];

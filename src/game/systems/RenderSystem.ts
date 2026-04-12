@@ -36,29 +36,9 @@ export class RenderSystem implements GameSystem {
             const gridPos = entityManager.getComponent<any>(entityId, "GridPosition");
             if (!gridPos) return;
 
-            const march = entityManager.getComponent<any>(entityId, "March");
-            const village = entityManager.getComponent<any>(entityId, 'Village');
-
-            // 1. Interpolação Táctica para Marchas (Animação de Movimento Digital)
-            if (march && march.status !== 'completed') {
-                const now = Date.now();
-                
-                if (march.status === "going") {
-                    const duration = march.arrivalTime - march.startTime;
-                    if (duration > 0) {
-                        const progress = Math.min(1, Math.max(0, (now - march.startTime) / duration));
-                        gridPos.x = march.originX + (march.targetX - march.originX) * progress;
-                        gridPos.y = march.originY + (march.targetY - march.originY) * progress;
-                    }
-                } else if (march.status === "returning") {
-                    const duration = march.returnTime - march.arrivalTime;
-                    if (duration > 0) {
-                        const progress = Math.min(1, Math.max(0, (now - march.arrivalTime) / duration));
-                        gridPos.x = march.targetX + (march.originX - march.targetX) * progress;
-                        gridPos.y = march.targetY + (march.originY - march.targetY) * progress;
-                    }
-                }
-            }
+            const sprite = entityManager.getComponent<any>(entityId, 'Sprite');
+            const health = entityManager.getComponent<any>(entityId, 'Health');
+            const isSelected = entityManager.getComponent<any>(entityId, 'Selection');
             
             // Converter para coordenadas de píxeis (Para renderização interna se ativa)
             const pos = {
@@ -66,10 +46,6 @@ export class RenderSystem implements GameSystem {
                 y: gridPos.y * this.TILE_SIZE + this.TILE_SIZE / 2
             };
 
-            const sprite = entityManager.getComponent<any>(entityId, 'Sprite');
-            const health = entityManager.getComponent<any>(entityId, 'Health');
-            const isSelected = entityManager.getComponent<any>(entityId, 'Selection');
-            
             this.drawEntity(pos, sprite, health, isSelected, entityId);
         });
     }
