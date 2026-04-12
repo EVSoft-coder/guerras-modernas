@@ -35,7 +35,16 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: BaseMap } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
     const [isAttackModalOpen, setIsAttackModalOpen] = useState(false);
+    const [zoom, setZoom] = useState(1);
     const gameEntities = useGameEntities();
+
+    const handleWheel = (e: React.WheelEvent) => {
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            setZoom(prev => Math.min(Math.max(prev + delta, 0.5), 2));
+        }
+    };
 
     const RAIO = 5; // Visualizar 11x11
     
@@ -128,12 +137,15 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                 <div 
                     className="relative overflow-auto bg-neutral-900 custom-scrollbar shadow-inner"
                     style={{ height: '600px' }} // Altura tática fixa para scroll
+                    onWheel={handleWheel}
                 >
                     <div 
-                        className="relative bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"
+                        className="relative bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] transition-transform duration-200 ease-out"
                         style={{ 
                             width: `${20 * 64}px`, 
-                            height: `${20 * 64}px` 
+                            height: `${20 * 64}px`,
+                            transform: `scale(${zoom})`,
+                            transformOrigin: 'top left'
                         }}
                     >
                         {/* Renderizar Grelha Táctica (20x20) */}
