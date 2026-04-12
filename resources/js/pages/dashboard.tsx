@@ -39,16 +39,19 @@ export default function Dashboard(props: DashboardProps) {
         }
 
         const intervalId = setInterval(() => {
+            // Monitor de Concorrência: Abortar se já estiver em processamento ou página oculta
             if (document.hidden || isReloading) return;
 
             setIsReloading(true);
             router.reload({
                 only: ["gameData"],
+                preserveScroll: true,
                 onSuccess: () => {
                     setLastSync(new Date());
                 },
                 onFinish: () => {
-                    setIsReloading(false);
+                    // Pequeno delay para libertar o semáforo e evitar colisão no próximo frame
+                    setTimeout(() => setIsReloading(false), 500);
                 }
             });
         }, delay);

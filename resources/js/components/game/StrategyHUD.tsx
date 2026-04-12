@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Shield, Zap, Box, Crosshair, Target, Map as MapIcon, ChevronRight } from 'lucide-react';
 import { ActiveMovements } from './ActiveMovements';
 
 interface StrategyHUDProps {
