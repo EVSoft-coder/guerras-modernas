@@ -52,9 +52,7 @@ export function VillageDashboard({
                 isSyncing = true;
                 router.reload({ 
                     only: ['base', 'ataquesEnviados', 'ataquesRecebidos', 'relatoriosGlobal'],
-                    onFinish: () => { isSyncing = false; },
-                    preserveScroll: true,
-                    preserveState: true
+                    onFinish: () => { isSyncing = false; }
                 });
             }
         }, 15000);
