@@ -16,6 +16,7 @@ export class GameModeSystem implements GameSystem {
         
         // Subscrever ao pedido de troca de modo
         eventBus.subscribe(Events.GAME_CHANGE_MODE, (payload: EventPayload) => {
+            console.log("EVENT RECEIVED");
             if (payload.data && payload.data.mode) {
                 this.handleModeChange(payload.data.mode as GameMode);
             }
