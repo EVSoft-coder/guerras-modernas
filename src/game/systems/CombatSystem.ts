@@ -73,20 +73,36 @@ export class CombatSystem implements GameSystem {
         }
 
         if (attackerWins) {
-            // Saque: 30% dos recursos da vila
-            const lootedWood = Math.floor(village.resources.wood * 0.3);
-            const lootedStone = Math.floor(village.resources.stone * 0.3);
-            const lootedIron = Math.floor(village.resources.iron * 0.3);
+            // 5. Sistema de Saque com Limite de Capacidade
+            const totalCapacity = (attackerUnit?.capacity || 1000) * attackerQty;
+            
+            let possibleWood = Math.floor(village.resources.wood * 0.3);
+            let possibleStone = Math.floor(village.resources.stone * 0.3);
+            let possibleIron = Math.floor(village.resources.iron * 0.3);
+            
+            const totalRequested = possibleWood + possibleStone + possibleIron;
+            
+            if (totalRequested > totalCapacity) {
+                const ratio = totalCapacity / totalRequested;
+                possibleWood = Math.floor(possibleWood * ratio);
+                possibleStone = Math.floor(possibleStone * ratio);
+                possibleIron = Math.floor(possibleIron * ratio);
+            }
 
-            village.resources.wood -= lootedWood;
-            village.resources.stone -= lootedStone;
-            village.resources.iron -= lootedIron;
+            village.resources.wood -= possibleWood;
+            village.resources.stone -= possibleStone;
+            village.resources.iron -= possibleIron;
+
+            // Transferir para o exército
+            army.loot.wood += possibleWood;
+            army.loot.stone += possibleStone;
+            army.loot.iron += possibleIron;
 
             eventBus.emit(Events.ATTACK_ARRIVED, {
                 entityId: armyId,
                 data: {
                     result: 'VICTORY',
-                    looted: { wood: lootedWood, stone: lootedStone, iron: lootedIron }
+                    looted: { wood: possibleWood, stone: possibleStone, iron: possibleIron }
                 }
             });
             

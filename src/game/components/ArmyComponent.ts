@@ -10,6 +10,7 @@ export class ArmyComponent implements Component {
     constructor(
         public ownerId: number,
         public units: Record<string, number> = {},
-        public targetId?: number
+        public targetId?: number,
+        public loot: Record<string, number> = { wood: 0, stone: 0, iron: 0 }
     ) {}
 }
