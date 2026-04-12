@@ -30,6 +30,7 @@ export interface GlobalGameState {
     resources: { wood: number; stone: number; iron: number };
     buildings: Array<{ type: string; level: number }>;
     revealedTiles?: string[];
+    research?: Record<string, number>;
 }
 
 class GameStateService {

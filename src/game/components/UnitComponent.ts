@@ -11,6 +11,8 @@ export class UnitComponent implements Component {
         public defense: number,
         public speed: number,
         public capacity: number,
-        public intelRange: number = 2
+        public intelRange: number = 2,
+        public attackBonus: number = 1.0,
+        public speedBonus: number = 1.0
     ) {}
 }

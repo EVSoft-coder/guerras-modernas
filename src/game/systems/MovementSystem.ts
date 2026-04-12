@@ -101,8 +101,13 @@ export class MovementSystem implements GameSystem {
                     }
                 } else {
                     // Mover gradualmente (NÃO TELEPORTAR)
-                    const vx = (dx / distance) * this.speed;
-                    const vy = (dy / distance) * this.speed;
+                    const unit = entityManager.getComponent<any>(entityId, 'Unit');
+                    const baseSpeed = unit?.speed || this.speed;
+                    const speedBonus = unit?.speedBonus || 1.0;
+                    const currentSpeed = baseSpeed * speedBonus;
+
+                    const vx = (dx / distance) * currentSpeed;
+                    const vy = (dy / distance) * currentSpeed;
                     
                     pos.x += vx * deltaTime;
                     pos.y += vy * deltaTime;

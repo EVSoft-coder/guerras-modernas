@@ -54,7 +54,9 @@ export class CombatSystem implements GameSystem {
 
         // 1. Soma Ataque Atacante (Baseado na composição do Exército)
         const attackerQty = Object.values(army.units).reduce((a, b) => a + b, 0);
-        const totalAttack = (attackerUnit?.attack || 100) * attackerQty;
+        const attackBase = attackerUnit?.attack || 100;
+        const attackBonus = attackerUnit?.attackBonus || 1.0;
+        const totalAttack = attackBase * attackBonus * attackerQty;
 
         // 2. Soma Defesa Defensor (Baseado na estrutura ou guarnição)
         const totalDefense = (defenderUnit?.defense || 1500) + (village.resources.wood * 0.01); // Paredes de madeira?
