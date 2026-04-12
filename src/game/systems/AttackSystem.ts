@@ -3,12 +3,7 @@ import { eventBus, Events } from '../../core/EventBus';
 import { GameSystem } from './types';
 import { ArmyComponent } from '../components/ArmyComponent';
 import { GridPositionComponent } from '../components/GridPositionComponent';
-import { VelocityComponent } from '../components/Velocity';
-import { Pathfinding } from '../../utils/Pathfinding';
-import { RenderableComponent } from '../components/RenderableComponent';
-import { UnitComponent } from '../components/UnitComponent';
 import { MarchComponent } from '../components/MarchComponent';
-import { movementSystem } from './MovementSystem';
 
 export class AttackSystem implements GameSystem {
     public init(): void {
@@ -19,6 +14,8 @@ export class AttackSystem implements GameSystem {
             this.launchAttack(payload.data);
         });
     }
+
+    public preUpdate(deltaTime: number): void {}
 
     public update(deltaTime: number): void {
         const now = Date.now();
@@ -57,17 +54,15 @@ export class AttackSystem implements GameSystem {
         // 2. Definir Posição Geográfica Inicial
         entityManager.addComponent(armyId, new GridPositionComponent(originX, originY, true));
 
-        // 3. Calcular Logística de Marcha (Usando a nova factory logic se possível, ou inline aqui)
+        // 3. Calcular Logística de Marcha
         const dx = targetX - originX;
         const dy = targetY - originY;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        // Obter velocidade mais lenta
+        // Velocidade base táctica
         let slowestSpeed = 10; 
-        // Nota: unitStats deve ser importado se quisermos precisão total aqui, 
-        // mas para o lançamento ECS usamos a lógica tática definida.
-
-        const travelTimeMs = (distance / slowestSpeed) * (3600 / 5) * 1000;
+        const travelMultiplier = 5;
+        const travelTimeMs = (distance / slowestSpeed) * (3600 / travelMultiplier) * 1000;
 
         entityManager.addComponent(armyId, new MarchComponent(
             missionId,
@@ -87,6 +82,7 @@ export class AttackSystem implements GameSystem {
 
         console.log(`[WAR] Army ${armyId} [${missionId}] deployed. ETA: ${(travelTimeMs / 1000).toFixed(1)}s`);
     }
+
     public postUpdate(deltaTime: number): void {}
 
     public destroy(): void {
