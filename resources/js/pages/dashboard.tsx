@@ -5,6 +5,7 @@ import { Head } from '@inertiajs/react';
 import { VillageDashboard } from '@/components/game/VillageDashboard';
 import { WorldMapView } from '@/components/game/WorldMapView';
 import { useGameMode } from '@/hooks/use-game-mode';
+import { gameStateService } from '@src/services/GameStateService';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,17 +15,17 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 /**
- * ROOT UI: Orquestrador de Vistas TÃ¡cticas.
- * Gere a transiÃ§Ã£o entre Dashboard (Vila) e WorldMapView baseado no estado ECS.
+ * ROOT UI: Orquestrador de Vistas Tácticas.
+ * Gere a transição entre Dashboard (Vila) e WorldMapView baseado no estado ECS.
  */
 export default function Dashboard(props: DashboardProps) {
-    const mode = useGameMode();
+    const gameMode = useGameMode();
+    console.log("RENDER MODE:", gameMode);
 
-    // RenderizaÃ§Ã£o Condicional baseada no Modo de Jogo
-    if (mode === "WORLD_MAP") {
+    if (gameMode === "WORLD_MAP") {
         return (
             <AppLayout breadcrumbs={breadcrumbs}>
-                <Head title="Mapa Mundial TÃ¡ctico" />
+                <Head title="SITREP: Mapa Mundial" />
                 <WorldMapView 
                     playerBase={props.base} 
                     troops={props.base?.tropas} 
@@ -34,21 +35,10 @@ export default function Dashboard(props: DashboardProps) {
         );
     }
 
-    // Default: VILLAGE
-    if (mode === "VILLAGE") {
-        return (
-            <AppLayout breadcrumbs={breadcrumbs}>
-                <VillageDashboard {...props} />
-            </AppLayout>
-        );
-    }
-
-    // Fallback de SeguranÃ§a
+    // Default: VILLAGE -> Dashboard UI
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex items-center justify-center min-h-screen bg-black text-green-500 font-mono">
-                SINAL_INTERROMPIDO: RECONECTANDO_AO_MOTOR_NUCLEAR...
-            </div>
+            <VillageDashboard {...props} />
         </AppLayout>
     );
 }
