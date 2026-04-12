@@ -21,8 +21,8 @@ const breadcrumbs: BreadcrumbItem[] = [
  */
 export default function Dashboard(props: DashboardProps) {
     const gameMode = useGameMode();
-    const { entities } = useGameEntities();
-    const hasActiveArmy = entities.some(e => e.march);
+    const { entities } = useGameEntities() || { entities: [] };
+    const hasActiveArmy = entities?.some(e => e.march) ?? false;
     const isReloading = useRef(false);
     
     // Controlo de Sincronização
@@ -83,15 +83,20 @@ export default function Dashboard(props: DashboardProps) {
         </div>
     );
 
+    // Protecção de Props durante carregamento parcial
+    const currentBase = props.gameData?.resources ? { ...props.base, recursos: props.gameData.resources } : props.base;
+
     if (gameMode === "WORLD_MAP") {
         return (
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title="SITREP: Mapa Mundial" />
-                <WorldMapView 
-                    playerBase={props.base} 
-                    troops={props.base?.tropas} 
-                    gameConfig={props.gameConfig} 
-                />
+                {props.base && (
+                    <WorldMapView 
+                        playerBase={currentBase} 
+                        troops={props.gameData?.units ?? props.base?.tropas} 
+                        gameConfig={props.gameConfig} 
+                    />
+                )}
                 {SyncIndicator}
             </AppLayout>
         );
@@ -100,7 +105,7 @@ export default function Dashboard(props: DashboardProps) {
     // Default: VILLAGE -> Dashboard UI
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <VillageDashboard {...props} />
+            <VillageDashboard {...props} base={currentBase} />
             {SyncIndicator}
         </AppLayout>
     );
