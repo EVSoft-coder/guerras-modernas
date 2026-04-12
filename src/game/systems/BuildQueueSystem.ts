@@ -50,13 +50,13 @@ export class BuildQueueSystem implements GameSystem {
 
         // Custo Simples: 250 de cada recurso por nÃ­vel atual
         const cost = building.level * 250;
-        const hasEnough = resources.wood >= cost && resources.stone >= cost && resources.iron >= cost;
+        const hasEnough = resources.suprimentos >= cost && resources.metal >= cost && resources.energia >= cost;
 
         if (hasEnough) {
             // Consumir
-            resources.wood -= cost;
-            resources.stone -= cost;
-            resources.iron -= cost;
+            resources.suprimentos -= cost;
+            resources.metal -= cost;
+            resources.energia -= cost;
 
             // Enfileirar upgrade
             const upgradeTime = building.level * 10; // 10 segundos por nÃ­vel

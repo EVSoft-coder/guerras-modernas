@@ -4,6 +4,7 @@ import { GameSystem } from './types';
 import { ArmyComponent } from '../components/ArmyComponent';
 import { GridPositionComponent } from '../components/GridPositionComponent';
 import { MarchComponent } from '../components/MarchComponent';
+import { VillageComponent } from '../components/VillageComponent';
 
 export class AttackSystem implements GameSystem {
     public init(): void {

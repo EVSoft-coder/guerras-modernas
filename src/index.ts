@@ -42,7 +42,7 @@ const villageEntity = entityManager.createEntity();
 entityManager.addComponent(villageEntity, new VillageComponent(
     playerUnit, 
     1, 
-    { wood: 5000, stone: 5000, iron: 5000 }, 
+    { suprimentos: 5000, combustivel: 5000, municoes: 5000, pessoal: 100, metal: 5000, energia: 5000 }, 
     'Vila Alfa'
 ));
 entityManager.addComponent(villageEntity, new VisionComponent(5));
@@ -56,7 +56,7 @@ const villageBeta = entityManager.createEntity();
 entityManager.addComponent(villageBeta, new VillageComponent(
     playerUnit, 
     1, 
-    { wood: 2000, stone: 2000, iron: 2000 }, 
+    { suprimentos: 2000, combustivel: 2000, municoes: 2000, pessoal: 50, metal: 2000, energia: 2000 }, 
     'Base Beta'
 ));
 entityManager.addComponent(villageBeta, new VisionComponent(5));
@@ -66,7 +66,7 @@ entityManager.addComponent(villageBeta, {
     renderType: "building"
 } as RenderableComponent);
 
-entityManager.addComponent(playerUnit, new ResourceComponent(5000, 5000, 5000));
+entityManager.addComponent(playerUnit, new ResourceComponent(5000, 5000, 5000, 5000, 5000, 500));
 entityManager.addComponent(playerUnit, new BuildQueueComponent());
 entityManager.addComponent(playerUnit, new VisionComponent(10));
 // entityManager.addComponent(playerUnit, new PositionComponent(100, 200)); // Deprecado

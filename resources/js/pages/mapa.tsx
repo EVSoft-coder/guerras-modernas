@@ -68,7 +68,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
     for (let iy = y - raio; iy <= y + raio; iy++) {
         const row = [];
         for (let ix = x - raio; ix <= x + raio; ix++) {
-            const base = bases.find(b => b.coordenada_x === ix && b.coordenada_y === iy);
+            const base = bases.find((b: any) => b.coordenada_x === ix && b.coordenada_y === iy);
             row.push({ x: ix, y: iy, base });
         }
         grid.push(row);
@@ -170,9 +170,9 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                                 </div>
                                 {ent.resources && (
                                     <div className="flex gap-2 mt-1 text-[8px] font-bold">
-                                        <span className="text-amber-500">W: {ent.resources.wood}</span>
-                                        <span className="text-neutral-400">S: {ent.resources.stone}</span>
-                                        <span className="text-sky-400">I: {ent.resources.iron}</span>
+                                        <span className="text-amber-500">S: {ent.resources.suprimentos}</span>
+                                        <span className="text-neutral-400">M: {ent.resources.metal}</span>
+                                        <span className="text-sky-400">E: {ent.resources.energia}</span>
                                     </div>
                                 )}
                                 <button 
@@ -216,6 +216,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
             <AttackModal 
                 isOpen={!!selectedTarget}
                 onClose={() => setSelectedTarget(null)}
+                gameConfig={gameConfig}
                 origemBase={origemBase}
                 destinoBase={selectedTarget}
                 tropasDisponiveis={origemBase?.tropas || []}

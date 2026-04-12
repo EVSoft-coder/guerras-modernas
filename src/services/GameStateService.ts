@@ -16,20 +16,19 @@ export interface EntitySnapshot {
     loyalty?: number;
     isSelected?: boolean;
     status?: "going" | "returning" | "completed";
-    resources?: { wood: number; stone: number; iron: number };
+    resources?: { suprimentos: number; combustivel: number; municoes: number; metal: number; energia: number; pessoal: number };
     march?: {
         state: string;
         remainingTime: number;
         totalTime: number;
         target: { x: number, y: number };
-        loot: { wood: number; stone: number; iron: number };
+        loot: any;
     };
 }
 
 export interface GlobalGameState {
     player: { name: string; id: number };
-    villages: Array<{ id: number, name: string; x: number, y: number }>;
-    resources: { wood: number; stone: number; iron: number };
+    resources: { suprimentos: number; combustivel: number; municoes: number; metal: number; energia: number; pessoal: number };
     buildings: Array<{ type: string; level: number }>;
     revealedTiles?: string[];
     research?: Record<string, number>;
@@ -40,7 +39,7 @@ class GameStateService {
     private globalState: GlobalGameState = {
         player: { name: 'OPERATIVE', id: 1 },
         villages: [],
-        resources: { wood: 0, stone: 0, iron: 0 },
+        resources: { suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0, pessoal: 0 },
         buildings: []
     };
     private listeners: Array<() => void> = [];
@@ -83,13 +82,20 @@ class GameStateService {
                 loyalty: village ? village.loyalty : undefined,
                 isSelected: !!selection,
                 status: march?.status,
-                resources: res ? { wood: res.wood, stone: res.stone, iron: res.iron } : undefined,
+                resources: res ? { 
+                    suprimentos: res.suprimentos, 
+                    combustivel: res.combustivel, 
+                    municoes: res.municoes,
+                    metal: res.metal,
+                    energia: res.energia,
+                    pessoal: res.pessoal
+                } : undefined,
                 march: march ? {
                     state: march.status,
                     remainingTime: (march.arrivalTime - Date.now()) / 1000,
                     totalTime: (march.arrivalTime - march.startTime) / 1000,
                     target: { x: march.targetX, y: march.targetY },
-                    loot: march.units // Usamos unidades como proxy para loot se necessário no snapshot simplificado
+                    loot: march.units 
                 } : undefined
             });
         }
@@ -105,13 +111,16 @@ class GameStateService {
         const villageEntities = entityManager.getEntitiesWith(['Village', 'GridPosition']);
         
         // Aggregate Resources
-        let totalRes = { wood: 0, stone: 0, iron: 0 };
+        let totalRes = { suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0, pessoal: 0 };
         resEntities.forEach(id => {
             const r = entityManager.getComponent<any>(id, 'Resource');
             if (r) {
-                totalRes.wood += r.wood || 0;
-                totalRes.stone += r.stone || 0;
-                totalRes.iron += r.iron || 0;
+                totalRes.suprimentos += r.suprimentos || 0;
+                totalRes.combustivel += r.combustivel || 0;
+                totalRes.municoes += r.municoes || 0;
+                totalRes.metal += r.metal || 0;
+                totalRes.energia += r.energia || 0;
+                totalRes.pessoal += r.pessoal || 0;
             }
         });
 
@@ -171,6 +180,11 @@ class GameStateService {
 
     public notify(): void {
         this.listeners.forEach(l => l());
+    }
+
+    public syncAttacks(attacks: any[]): void {
+        // Implementação de sincronização (placeholder por agora para satisfazer o TS)
+        console.log(`[SYNC] Military Command: Synchronizing ${attacks.length} operations.`);
     }
 }
 
