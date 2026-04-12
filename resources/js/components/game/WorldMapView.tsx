@@ -84,7 +84,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     const { post, processing } = useForm();
 
     const handleSendAttack = (params: any) => {
-        post(route('base.atacar', { ...params, origem_id: playerBase.id }), {
+        post((window as any).route('base.atacar', { ...params, origem_id: playerBase.id }), {
             onSuccess: () => {
                 setIsAttackModalOpen(false);
                 setSelectedSector(null);
