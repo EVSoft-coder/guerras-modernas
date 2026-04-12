@@ -22,6 +22,11 @@ export class GameModeSystem implements GameSystem {
                 this.handleModeChange(payload.data.mode as GameMode);
             }
         });
+
+        // Debug Log Automático (Solicitado)
+        eventBus.subscribe("GAME:CHANGE_MODE", (payload) => {
+            console.log("MODE CHANGE EVENT RECEIVED", payload);
+        });
     }
 
     private handleModeChange(newMode: GameMode): void {
