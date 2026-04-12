@@ -10,11 +10,12 @@ export class RenderSystem implements GameSystem {
     private ctx: CanvasRenderingContext2D | null = null;
     private images: Map<string, HTMLImageElement> = new Map();
     private frameCount: number = 0;
-    private debug: boolean = true; // Ativar para monitorização
+    private debug: boolean = false; // Desativado para performance
     private TILE_SIZE: number = 64;
+    private maxEntitiesRender: number = 200;
  
     public init(): void {
-        console.log('[SYSTEM] RenderSystem - Initializing Visual Canvas...');
+        console.log('[SYSTEM] RenderSystem - Visual Protocols ONLINE.');
         this.createCanvas();
     }
  
@@ -27,19 +28,16 @@ export class RenderSystem implements GameSystem {
         
         const now = Date.now();
         
-        // Protocolo ECS: Obter todas as entidades em grelha
-        const entities = entityManager.getEntitiesWith(['GridPosition']);
+        // Protocolo ECS: Obter entidades táticas (limite 200)
+        const allEntities = entityManager.getEntitiesWith(['GridPosition']);
+        const entities = allEntities.slice(0, this.maxEntitiesRender);
 
         entities.forEach(entityId => {
             const gridPos = entityManager.getComponent<any>(entityId, "GridPosition");
+            if (!gridPos) return;
+
             const march = entityManager.getComponent<any>(entityId, "March");
             const village = entityManager.getComponent<any>(entityId, 'Village');
-            
-            if (village) {
-                console.log("RENDER VILLAGE:", village);
-            }
-
-            if (!gridPos) return;
 
             // 1. Interpolação Táctica para Marchas (Animação de Movimento Digital)
             if (march && march.status !== 'completed') {
