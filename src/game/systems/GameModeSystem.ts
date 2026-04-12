@@ -11,6 +11,7 @@ export class GameModeSystem implements GameSystem {
     private currentMode: GameMode = "VILLAGE";
 
     public init(): void {
+        console.log("GameModeSystem INIT");
         console.log(`[SYSTEM] GameModeSystem - Strategy Layer ONLINE. Initial Mode: ${this.currentMode}`);
         
         // Subscrever ao pedido de troca de modo
