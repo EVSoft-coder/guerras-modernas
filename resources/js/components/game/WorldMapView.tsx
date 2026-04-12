@@ -36,6 +36,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: BaseMap } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
     const [isAttackModalOpen, setIsAttackModalOpen] = useState(false);
+    const [zoom, setZoom] = useState(1);
     const [selectedUnit, setSelectedUnit] = useState<number | null>(null);
     const { entities: gameEntities, globalState } = useGameEntities();
 
