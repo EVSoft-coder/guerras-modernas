@@ -17,18 +17,10 @@ use Inertia\Inertia;
  
 class AuthController extends Controller
 {
-    protected $economyService;
-    protected $buildingService;
-    protected $unitService;
+    protected $gameService;
  
-    public function __construct(
-        EconomyService $economyService,
-        BuildingService $buildingService,
-        UnitService $unitService
-    ) {
-        $this->economyService = $economyService;
-        $this->buildingService = $buildingService;
-        $this->unitService = $unitService;
+    public function __construct(GameService $gameService) {
+        $this->gameService = $gameService;
     }
  
     // ====================== VIEWS ======================
@@ -66,18 +58,17 @@ class AuthController extends Controller
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
  
         if ($base) {
-            // 2. Orquestração via Services (Sem lógica no Controller)
-            $this->economyService->atualizarRecursos($base);
-            $this->buildingService->processarFila($base);
-            $this->unitService->processarFila($base);
+            // 2. Orquestração via GameService (Centralizado)
+            $this->gameService->atualizarRecursos($base);
+            $this->gameService->processarFilas($base);
             
-            // 3. Persistência de Sessão
+            // 3. Persistência de Sessão e Recarga Real
             session(['selected_base_id' => $base->id]);
             $base->refresh();
             $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
  
-            // 4. Preparação de Dados para o HUD (Via EconomyService)
-            $taxas = $this->economyService->obterTaxasProducao($base);
+            // 4. Preparação de Dados para o HUD
+            $taxas = $this->gameService->obterTaxasProducao($base);
         }
  
         return Inertia::render('dashboard', [

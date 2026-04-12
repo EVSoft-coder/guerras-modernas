@@ -19,7 +19,8 @@ export function VillageDashboard({
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal 
 }: DashboardProps) {
     const { addToast } = useToasts();
-    const [selectedBuilding, setSelectedBuilding] = useState<any>(null);
+    const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
+    const [selectedBuildingType, setSelectedBuildingType] = useState<string | null>(null);
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [isTraining, setIsTraining] = useState(false);
     const [gameMode, setGameMode] = useState<'VILLAGE' | 'WORLD_MAP'>('VILLAGE');
@@ -72,14 +73,22 @@ export function VillageDashboard({
 
     if (!base) return <div className="p-10 text-white uppercase font-mono">Connecting to Satellite...</div>;
 
-    const handleBuildingClick = (building: any) => setSelectedBuilding(building);
+    // Encontrar o edifício atualizado na base (Cálculo derivado garantindo reatividade)
+    const currentBuilding = selectedBuildingType === 'qg' 
+        ? { tipo: 'qg', nome: 'Quartel General', nivel: Number(base.qg_nivel), base: base }
+        : (base.edificios || []).find(b => b.id === selectedBuildingId || b.tipo === selectedBuildingType);
+
+    const handleBuildingClick = (building: any) => {
+        console.log("CLICK_CAPTURE:", building.tipo, "LVL:", building.nivel);
+        setSelectedBuildingId(building.id || null);
+        setSelectedBuildingType(building.tipo || null);
+    };
 
     const handleUpgrade = (tipo: string) => {
         setIsUpgrading(true);
         router.post('/base/upgrade', { base_id: base.id, tipo: tipo }, {
             onSuccess: () => {
                 addToast(`ORDEM DE ENGENHARIA CONFIRMADA: Upgrade de ${tipo.replace(/_/g, ' ')} iniciado.`, 'success');
-                setSelectedBuilding(null);
                 setIsUpgrading(false);
             },
             onError: (errors: any) => {
@@ -96,7 +105,6 @@ export function VillageDashboard({
             onSuccess: () => {
                 addToast(`MOBILIZAÇÃO INICIADA: Recrutamento de ${quantidade}x ${unidade.replace(/_/g, ' ')} em curso.`, 'military');
                 setIsTraining(false);
-                setSelectedBuilding(null);
             },
             onError: (errors: any) => {
                 const errorMsg = Object.values(errors).flat().join(' | ');
@@ -178,9 +186,12 @@ export function VillageDashboard({
             </div>
 
             <BuildingModal 
-                isOpen={!!selectedBuilding} 
-                onClose={() => setSelectedBuilding(null)}
-                building={selectedBuilding}
+                isOpen={!!selectedBuildingType} 
+                onClose={() => {
+                    setSelectedBuildingId(null);
+                    setSelectedBuildingType(null);
+                }}
+                building={currentBuilding}
                 gameConfig={gameConfig}
                 onUpgrade={handleUpgrade}
                 onTrain={handleTrain}

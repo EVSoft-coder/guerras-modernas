@@ -63,10 +63,10 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                     onClick={() => onBuildingClick({ tipo: 'qg', nome: 'Quartel General', nivel: base.qg_nivel, base: base })}
                 />
 
-                {/* Renderizar Edifícios da tabela edificios */}
-                {(base.edificios || []).map(b => {
+                {/* Renderizar Edifícios da tabela edificios (excluindo QG e Muralha que são renderizados explicitamente ou HUD) */}
+                {(base.edificios || []).filter(b => b.tipo?.toLowerCase() !== 'qg' && b.tipo?.toLowerCase() !== 'muralha').map(b => {
                     const tipoNormalizado = b.tipo?.toLowerCase();
-                    const pos = buildingPositions[tipoNormalizado] || { x: 0, y: 2 }; // Fallback para y=2 (evita HUD top-left)
+                    const pos = buildingPositions[tipoNormalizado] || { x: 0, y: 2 }; 
                     
                     return (
                         <BuildingNode 
@@ -75,7 +75,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                             nome={buildingDisplayNames[tipoNormalizado] || b.tipo}
                             nivel={b.nivel}
                             gridPos={pos}
-                            onClick={() => onBuildingClick({ ...b, nome: buildingDisplayNames[tipoNormalizado] || b.tipo, base: base })}
+                            onClick={() => onBuildingClick({ ...b, id: b.id, nome: buildingDisplayNames[tipoNormalizado] || b.tipo, base: base })}
                         />
                     );
                 })}
