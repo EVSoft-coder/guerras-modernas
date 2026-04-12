@@ -95,7 +95,7 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
     );
 };
 
-const ResourceItem = ({ icon, label, value, rate, color, accentColor, isStatic = false }: any) => {
+const ResourceItem = ({ icon, label, value, rate, cap, color, accentColor, isStatic = false }: any) => {
     return (
         <div className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-3xl p-6 rounded-[2.5rem] border border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.6)] group cursor-help transition-all duration-500 hover:bg-white/[0.05] hover:border-white/10 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
