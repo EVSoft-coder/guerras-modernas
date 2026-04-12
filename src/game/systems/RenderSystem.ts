@@ -9,6 +9,8 @@ export class RenderSystem implements GameSystem {
     private canvas: HTMLCanvasElement | null = null;
     private ctx: CanvasRenderingContext2D | null = null;
     private images: Map<string, HTMLImageElement> = new Map();
+    private frameCount: number = 0;
+    private debug: boolean = true; // Ativar para monitorização
  
     public init(): void {
         console.log('[SYSTEM] RenderSystem - Initializing Visual Canvas...');
@@ -20,13 +22,17 @@ export class RenderSystem implements GameSystem {
     public update(deltaTime: number): void {
         if (!this.ctx || !this.canvas) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.frameCount++;
         
         // Protocolo ECS: Obter todas as entidades com coordenadas
         const entities = entityManager.getEntitiesWith(['Position']);
 
+        if (this.debug && this.frameCount % 60 === 0) {
+            console.log("Entities Rendered:", entities.length);
+        }
+
         entities.forEach(entityId => {
             const pos = entityManager.getComponent<any>(entityId, "Position");
-            console.log("RENDER ENTITY:", pos);
 
             const sprite = entityManager.getComponent<any>(entityId, 'Sprite');
             const health = entityManager.getComponent<any>(entityId, 'Health');
