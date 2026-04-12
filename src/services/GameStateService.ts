@@ -57,6 +57,10 @@ class GameStateService {
 
         for (const id of allIds) {
             const gridPos = entityManager.getComponent<any>(id, 'GridPosition');
+            
+            // FOG OF WAR: Se nÃ£o for visÃ­vel tactinamente, ignorar na exposiÃ§Ã£o para a UI
+            if (gridPos && !gridPos.isVisible) continue;
+
             const sprite = entityManager.getComponent<any>(id, 'Sprite');
             const health = entityManager.getComponent<any>(id, 'Health');
             const selection = entityManager.getComponent<any>(id, 'Selection');

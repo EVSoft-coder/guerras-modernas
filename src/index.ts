@@ -21,6 +21,7 @@ import { PlayerComponent } from './game/components/PlayerComponent';
 import { ResourceComponent } from './game/components/ResourceComponent';
 import { VillageComponent } from './game/components/VillageComponent';
 import { BuildingComponent } from './game/components/BuildingComponent';
+import { VisionComponent } from './game/components/VisionComponent';
 import { BuildQueueComponent } from './game/systems/BuildQueueSystem';
 import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
@@ -44,6 +45,7 @@ entityManager.addComponent(villageEntity, new VillageComponent(
     { wood: 5000, stone: 5000, iron: 5000 }, 
     'Vila Alfa'
 ));
+entityManager.addComponent(villageEntity, new VisionComponent(5));
 entityManager.addComponent(villageEntity, {
     type: "GridPosition",
     x: 5,
@@ -56,6 +58,7 @@ entityManager.addComponent(villageEntity, {
 
 entityManager.addComponent(playerUnit, new ResourceComponent(5000, 5000, 5000));
 entityManager.addComponent(playerUnit, new BuildQueueComponent());
+entityManager.addComponent(playerUnit, new VisionComponent(10));
 // entityManager.addComponent(playerUnit, new PositionComponent(100, 200)); // Deprecado
 entityManager.addComponent(playerUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
