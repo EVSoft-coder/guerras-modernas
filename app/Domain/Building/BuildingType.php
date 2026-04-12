@@ -14,6 +14,8 @@ class BuildingType
     const AERODROMO = 'aerodromo';
     const RADAR_ESTRATEGICO = 'radar_estrategico';
     const CENTRO_PESQUISA = 'centro_pesquisa';
+    const FACTORY = 'factory';
+    const SOLAR = 'solar';
  
     /**
      * Aliases para compatibilidade com nomes legados ou front-end.
@@ -36,6 +38,10 @@ class BuildingType
             'quartel' => self::QUARTEL,
             'radar' => self::RADAR_ESTRATEGICO,
             'centro_pesquisa' => self::CENTRO_PESQUISA,
+            'factory' => self::FACTORY,
+            'fabrica' => self::FACTORY,
+            'solar' => self::SOLAR,
+            'planta_solar' => self::SOLAR,
         ];
  
         $cleaned = strtolower(str_replace([' ', '_', '-'], '', $type));

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Fuel, Rocket, Users } from 'lucide-react';
+import { Shield, Fuel, Rocket, Users, Boxes, Zap } from 'lucide-react';
 import { Recurso } from '@/types';
 import { motion, animate } from 'framer-motion';
 
@@ -13,7 +13,9 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
         suprimentos: recursos?.suprimentos ?? 0,
         combustivel: recursos?.combustivel ?? 0,
         municoes: recursos?.municoes ?? 0,
-        pessoal: recursos?.pessoal ?? 0
+        pessoal: recursos?.pessoal ?? 0,
+        metal: recursos?.metal ?? 0,
+        energia: recursos?.energia ?? 0
     });
 
     useEffect(() => {
@@ -22,6 +24,8 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 suprimentos: prev.suprimentos + (taxasPerSecond?.suprimentos ?? 0),
                 combustivel: prev.combustivel + (taxasPerSecond?.combustivel ?? 0),
                 municoes: prev.municoes + (taxasPerSecond?.municoes ?? 0),
+                metal: prev.metal + (taxasPerSecond?.metal ?? 0),
+                energia: prev.energia + (taxasPerSecond?.energia ?? 0),
                 pessoal: prev.pessoal
             }));
         }, 1000);
@@ -30,7 +34,7 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
     }, [taxasPerSecond]);
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full z-20">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 w-full z-20">
             <ResourceItem 
                 icon={<Shield className="text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]" size={24} />} 
                 label="Suprimentos" 
@@ -48,12 +52,28 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 accentColor="bg-orange-500"
             />
             <ResourceItem 
+                icon={<Boxes className="text-zinc-400 drop-shadow-[0_0_12px_rgba(161,161,170,0.5)]" size={24} />} 
+                label="Metal" 
+                value={current.metal} 
+                rate={(taxasPerSecond?.metal ?? 0) * 3600}
+                color="text-white"
+                accentColor="bg-zinc-500"
+            />
+            <ResourceItem 
                 icon={<Rocket className="text-red-400 drop-shadow-[0_0_12px_rgba(248,113,113,0.5)]" size={24} />} 
                 label="Munições" 
                 value={current.municoes} 
                 rate={(taxasPerSecond?.municoes ?? 0) * 3600}
                 color="text-white"
                 accentColor="bg-red-500"
+            />
+            <ResourceItem 
+                icon={<Zap className="text-yellow-400 drop-shadow-[0_0_12px_rgba(250,204,21,0.5)]" size={24} />} 
+                label="Energia" 
+                value={current.energia} 
+                rate={(taxasPerSecond?.energia ?? 0) * 3600}
+                color="text-white"
+                accentColor="bg-yellow-500"
             />
             <ResourceItem 
                 icon={<Users className="text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.5)]" size={24} />} 

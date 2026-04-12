@@ -26,6 +26,8 @@ return [
         'combustivel' => 40,
         'municoes' => 30,
         'pessoal' => 20,
+        'metal' => 15,
+        'energia' => 10,
     ],
 
     /*
@@ -92,6 +94,16 @@ return [
             'name' => 'Centro de Pesquisa & I&D',
             'cost' => ['suprimentos' => 2000, 'combustivel' => 1000, 'municoes' => 1000, 'pessoal' => 40],
             'time_base' => 1200,
+        ],
+        'factory' => [
+            'name' => 'Fábrica Metalúrgica',
+            'cost' => ['suprimentos' => 500, 'combustivel' => 300, 'pessoal' => 20],
+            'time_base' => 180,
+        ],
+        'solar' => [
+            'name' => 'Planta de Energia Solar',
+            'cost' => ['suprimentos' => 300, 'metal' => 200, 'pessoal' => 10],
+            'time_base' => 120,
         ],
     ],
 
