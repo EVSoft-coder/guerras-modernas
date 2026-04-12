@@ -13,7 +13,7 @@ return new class extends Migration
                 $table->id();
                 $table->string('nome')->unique();
                 $table->string('tag', 5)->unique();
-                $table->foreignId('lider_id')->constrained('jogadores');
+                $table->foreignId('fundador_id')->constrained('jogadores');
                 $table->timestamps();
             });
         }
