@@ -25,6 +25,7 @@ export class GameModeSystem implements GameSystem {
     }
 
     private handleModeChange(newMode: GameMode): void {
+        console.log("MODE CHANGED:", newMode);
         if (newMode !== "VILLAGE" && newMode !== "WORLD_MAP") {
             console.error(`[GAMEMODE_SYSTEM] Invalid mode requested: ${newMode}`);
             return;
