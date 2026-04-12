@@ -36,9 +36,26 @@ uiManager.initialize();
 // 3. MOBILIZAÃ‡ÃƒO JOGADOR (UNIDADE ALFA + VILA)
 const playerUnit = entityManager.createEntity();
 entityManager.addComponent(playerUnit, new PlayerComponent());
+
+const villageEntity = entityManager.createEntity();
+entityManager.addComponent(villageEntity, new VillageComponent(
+    playerUnit, 
+    1, 
+    { wood: 5000, stone: 5000, iron: 5000 }, 
+    'Vila Alfa'
+));
+entityManager.addComponent(villageEntity, {
+    type: "GridPosition",
+    x: 5,
+    y: 5
+} as GridPositionComponent);
+entityManager.addComponent(villageEntity, {
+    type: "Renderable",
+    renderType: "building"
+} as RenderableComponent);
+
 entityManager.addComponent(playerUnit, new ResourceComponent(5000, 5000, 5000));
 entityManager.addComponent(playerUnit, new BuildQueueComponent());
-entityManager.addComponent(playerUnit, new VillageComponent('Vila Alfa'));
 // entityManager.addComponent(playerUnit, new PositionComponent(100, 200)); // Deprecado
 entityManager.addComponent(playerUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
@@ -48,7 +65,7 @@ entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/bli
 // Componentes TÃ¡cticos de Grelha (Doutrina Requisitada)
 entityManager.addComponent(playerUnit, {
     type: "GridPosition",
-    x: 5,
+    x: 6,
     y: 5
 } as GridPositionComponent);
 
