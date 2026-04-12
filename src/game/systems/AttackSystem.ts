@@ -20,69 +20,73 @@ export class AttackSystem implements GameSystem {
         });
     }
 
+    public update(deltaTime: number): void {
+        const now = Date.now();
+        const marches = entityManager.getEntitiesWith(['March']);
+
+        for (const armyId of marches) {
+            const march = entityManager.getComponent<any>(armyId, 'March');
+            
+            if (march && march.status === 'going' && now >= march.arrivalTime) {
+                console.log(`[WAR] CONTACT: Army ${armyId} reached objective at ${march.targetX}:${march.targetY}`);
+                
+                // Disparar resolução de combate
+                eventBus.emit('ATTACK:RESOLVE', {
+                    entityId: armyId,
+                    timestamp: now,
+                    data: { march }
+                });
+
+                // Mudar estado para evitar múltiplos disparos no mesmo frame
+                march.status = 'completed'; // Será processado pelo CombatSystem para 'returning' ou 'destroyed'
+            }
+        }
+    }
+
     private launchAttack(data: any): void {
         const { originX, originY, targetX, targetY, ownerId, troops } = data;
+
+        // Gerar ID único de missão
+        const missionId = `MSN_${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
         const armyId = entityManager.createEntity();
         
         // 1. Definir Identidade e Composição
         entityManager.addComponent(armyId, new ArmyComponent(ownerId, troops));
         
-        // 2. Definir Posição Geográfica
-        entityManager.addComponent(armyId, {
-            type: 'GridPosition',
-            x: originX,
-            y: originY
-        } as GridPositionComponent);
+        // 2. Definir Posição Geográfica Inicial
+        entityManager.addComponent(armyId, new GridPositionComponent(originX, originY, true));
 
-        // 3. Calcular Logística de Marcha
-        const travelTimeSeconds = movementSystem.calculateMarchTime(
-            { x: originX, y: originY },
-            { x: targetX, y: targetY }
-        );
+        // 3. Calcular Logística de Marcha (Usando a nova factory logic se possível, ou inline aqui)
+        const dx = targetX - originX;
+        const dy = targetY - originY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Obter velocidade mais lenta
+        let slowestSpeed = 10; 
+        // Nota: unitStats deve ser importado se quisermos precisão total aqui, 
+        // mas para o lançamento ECS usamos a lógica tática definida.
+
+        const travelTimeMs = (distance / slowestSpeed) * (3600 / 5) * 1000;
 
         entityManager.addComponent(armyId, new MarchComponent(
-            { x: originX, y: originY },
-            { x: targetX, y: targetY },
+            missionId,
+            originX,
+            originY,
+            targetX,
+            targetY,
             troops,
             Date.now(),
-            Date.now() + (travelTimeSeconds * 1000)
+            Date.now() + travelTimeMs,
+            Date.now() + (travelTimeMs * 2), // Estimativa de retorno
+            'going'
         ));
 
-        // 4. Configurar Cinética e Trajetória
-        const path = Pathfinding.findPath(
-            { x: originX, y: originY },
-            { x: targetX, y: targetY },
-            () => true // Caminho livre por agora
-        );
+        // 4. Marcação de Tipo para o Satélite
+        entityManager.addComponent(armyId, { type: 'Army' });
 
-        entityManager.addComponent(armyId, new VelocityComponent(0, 0, targetX, targetY, true, path || []));
-
-        // 5. Visualização Táctica
-        entityManager.addComponent(armyId, {
-            type: 'Renderable',
-            renderType: 'unit'
-        } as RenderableComponent);
-
-        // 6. Atributos de Combate Modernos (UnitComponent)
-        const isDrone = Object.keys(troops).some(t => t.includes('drone') || t.includes('helicoptero'));
-        const unitType = Object.keys(troops).includes('tanque_combate') ? 'tank' : 
-                         isDrone ? 'drone' : 'infantry';
-
-        entityManager.addComponent(armyId, new UnitComponent(
-            unitType,
-            120,    // Attack
-            80,     // Defense
-            25,     // Speed
-            5000,   // Capacity
-            isDrone ? 10 : 3 // Drones têm alcance de visão tática superior
-        ));
-
-        console.log(`[WAR] Army ${armyId} launched with MarchComponent. Arrival in ${travelTimeSeconds.toFixed(1)}s`);
+        console.log(`[WAR] Army ${armyId} [${missionId}] deployed. ETA: ${(travelTimeMs / 1000).toFixed(1)}s`);
     }
-
-    public preUpdate(deltaTime: number): void {}
-    public update(deltaTime: number): void {}
     public postUpdate(deltaTime: number): void {}
 
     public destroy(): void {

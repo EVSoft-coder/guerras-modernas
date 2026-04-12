@@ -14,6 +14,7 @@ export interface EntitySnapshot {
     sprite?: string;
     health?: { current: number; max: number };
     isSelected?: boolean;
+    status?: "going" | "returning" | "completed";
     resources?: { wood: number; stone: number; iron: number };
     march?: {
         state: string;
@@ -49,11 +50,8 @@ class GameStateService {
      */
     public snap(): void {
         const entities = entityManager.getEntitiesWith(['GridPosition']);
-        const marches = entityManager.getEntitiesWith(['AttackMarch']);
+        const marches = entityManager.getEntitiesWith(['March']);
         const newSnapshots: EntitySnapshot[] = [];
-
-        // TILE_SIZE constante para conversão de projeção
-        const TILE_SIZE = 64;
 
         // Combine IDs
         const allIds = Array.from(new Set([...entities, ...marches]));
@@ -68,26 +66,28 @@ class GameStateService {
             const health = entityManager.getComponent<any>(id, 'Health');
             const selection = entityManager.getComponent<any>(id, 'Selection');
             const res = entityManager.getComponent<any>(id, 'Resource');
-            const march = entityManager.getComponent<any>(id, 'AttackMarch');
+            const march = entityManager.getComponent<any>(id, 'March');
+            const army = entityManager.getComponent<any>(id, 'Army');
             const building = entityManager.getComponent<any>(id, 'Building');
             const village = entityManager.getComponent<any>(id, 'Village');
             const unit = entityManager.getComponent<any>(id, 'Unit');
 
             newSnapshots.push({
                 id,
-                type: building?.buildingType || unit?.unitCategory || (village ? 'VILLAGE' : (march ? 'MARCH' : undefined)),
+                type: army ? 'Army' : (building?.buildingType || unit?.unitCategory || (village ? 'VILLAGE' : (march ? 'MARCH' : undefined))),
                 x: gridPos ? gridPos.x : 0,
                 y: gridPos ? gridPos.y : 0,
                 sprite: sprite?.imagePath,
                 health: health ? { current: health.value, max: health.max } : undefined,
                 isSelected: !!selection,
+                status: march?.status,
                 resources: res ? { wood: res.wood, stone: res.stone, iron: res.iron } : undefined,
                 march: march ? {
-                    state: march.state,
-                    remainingTime: march.remainingTime,
-                    totalTime: march.totalTime,
+                    state: march.status,
+                    remainingTime: (march.arrivalTime - Date.now()) / 1000,
+                    totalTime: (march.arrivalTime - march.startTime) / 1000,
                     target: { x: march.targetX, y: march.targetY },
-                    loot: { ...march.loot }
+                    loot: march.units // Usamos unidades como proxy para loot se necessário no snapshot simplificado
                 } : undefined
             });
         }

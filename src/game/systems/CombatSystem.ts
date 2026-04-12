@@ -11,39 +11,52 @@ import { ArmyComponent } from '../components/ArmyComponent';
 export class CombatSystem implements GameSystem {
     public init(): void {
         console.log('[SYSTEM] CombatSystem - Engagement Protocols ONLINE.');
+
+        // Subscrever à resolução tática de ataque
+        eventBus.subscribe('ATTACK:RESOLVE', (payload) => {
+            const { entityId, data } = payload;
+            this.handleAttackResolve(entityId, data.march);
+        });
     }
 
-    public update(deltaTime: number): void {
-        const armies = entityManager.getEntitiesWith(['Army', 'Velocity', 'GridPosition']);
+    private handleAttackResolve(armyId: number, march: any): void {
+        const army = entityManager.getComponent<ArmyComponent>(armyId, 'Army');
+        if (!army) return;
 
-        for (const armyId of armies) {
-            const vel = entityManager.getComponent<any>(armyId, 'Velocity');
-            const army = entityManager.getComponent<ArmyComponent>(armyId, 'Army');
-            const pos = entityManager.getComponent<any>(armyId, 'GridPosition');
+        // Localizar alvo na coordenada de destino (Vila ou Entidade)
+        const targetBases = entityManager.getEntitiesWith(['Village', 'GridPosition']);
+        let targetId: number | null = null;
 
-            // Se o exÃ©rcito parou de se mover e tem um alvo
-            if (vel && army && pos && !vel.isMoving && vel.path.length === 0) {
-                this.resolveEngagement(armyId, army, pos);
-            }
-        }
-    }
-
-    private resolveEngagement(armyId: number, army: ArmyComponent, pos: any): void {
-        // Localizar Vilas ou Unidades no mesmo tile
-        const targets = entityManager.getEntitiesWith(['Village', 'GridPosition']);
-        
-        for (const targetId of targets) {
-            const targetPos = entityManager.getComponent<any>(targetId, 'GridPosition');
-            const village = entityManager.getComponent<VillageComponent>(targetId, 'Village');
-
-            if (targetPos && village && targetPos.x === pos.x && targetPos.y === pos.y) {
-                // Evitar fogo amigo
-                if (village.ownerId === army.ownerId) continue;
-
-                this.executeRaid(armyId, army, targetId, village);
+        for (const baseId of targetBases) {
+            const pos = entityManager.getComponent<any>(baseId, 'GridPosition');
+            if (pos && pos.x === march.targetX && pos.y === march.targetY) {
+                targetId = baseId;
                 break;
             }
         }
+
+        if (targetId) {
+            const village = entityManager.getComponent<VillageComponent>(targetId, 'Village');
+            if (village) {
+                this.executeRaid(armyId, army, targetId, village);
+                
+                // Pós-Combate: Iniciar Regresso se houver sobreviventes
+                const marchComp = entityManager.getComponent<any>(armyId, 'March');
+                if (marchComp) {
+                    marchComp.status = 'returning';
+                    console.log(`[COMBAT] Survivors of Army ${armyId} heading back to origin.`);
+                }
+            }
+        } else {
+            console.log(`[COMBAT] No structural target at ${march.targetX}:${march.targetY}. Empty Sector.`);
+            const marchComp = entityManager.getComponent<any>(armyId, 'March');
+            if (marchComp) marchComp.status = 'returning';
+        }
+    }
+
+    public update(deltaTime: number): void {
+        // A resolução agora é baseada em eventos (ATTACK:RESOLVE), 
+        // mas mantemos o update para outros engajamentos de proximidade se necessário.
     }
 
     private executeRaid(armyId: number, army: ArmyComponent, targetId: number, village: VillageComponent): void {
