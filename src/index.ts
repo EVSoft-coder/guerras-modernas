@@ -42,8 +42,18 @@ entityManager.addComponent(playerUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
 entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1)); 
 entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
- 
-// 3.1. INFRAESTRUTURA DA VILA (EdifÃ­cios como Entidades com PosiÃ§Ã£o)
+
+// Componentes Visuais (Doutrina Requisitada)
+entityManager.addComponent(playerUnit, {
+    type: "Position",
+    x: 100,
+    y: 100
+} as any);
+
+entityManager.addComponent(playerUnit, {
+    type: "Renderable",
+    renderType: "unit"
+} as any);
 const qg = entityManager.createEntity();
 entityManager.addComponent(qg, new BuildingComponent('Quartel General', 'HQ', 1, { x: 0, y: 0 }, playerUnit));
 
@@ -70,8 +80,18 @@ entityManager.addComponent(enemyUnit, new AIComponent('AGGRESSIVE'));
 entityManager.addComponent(enemyUnit, new SpriteComponent('/images/unidades/tanque_combate.png'));
  
 console.log(`[BOOT] Enemy Unit Omega (ID: ${enemyUnit}) detected with Main Battle Tank.`);
- 
-// 5. AUTORIZAÃ‡ÃƒO DE COMBATE
+
+// Componentes Visuais Inimigo (Doutrina Requisitada)
+entityManager.addComponent(enemyUnit, {
+    type: "Position",
+    x: 500,
+    y: 200
+} as any);
+
+entityManager.addComponent(enemyUnit, {
+    type: "Renderable",
+    renderType: "unit"
+} as any);
 stateManager.setState(GameState.PLAYING);
 
  
