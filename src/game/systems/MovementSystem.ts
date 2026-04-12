@@ -64,6 +64,14 @@ export class MovementSystem implements GameSystem {
 
             if (pos && vel && vel.isMoving && vel.path && vel.path.length > 0) {
                 const nextPoint = vel.path[0];
+                
+                // ValidaÃ§Ã£o de Integridade do Ponto
+                if (!nextPoint || nextPoint.x === undefined || nextPoint.y === undefined) {
+                    vel.path.shift();
+                    if (vel.path.length === 0) vel.isMoving = false;
+                    continue;
+                }
+
                 const dx = nextPoint.x - pos.x;
                 const dy = nextPoint.y - pos.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);

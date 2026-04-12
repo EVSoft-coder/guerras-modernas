@@ -20,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
  */
 export default function Dashboard(props: DashboardProps) {
     const gameMode = useGameMode();
-    console.log("UI MODE:", gameMode);
+
 
     if (gameMode === "WORLD_MAP") {
         return (

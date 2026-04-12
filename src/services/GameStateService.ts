@@ -87,9 +87,6 @@ class GameStateService {
 
         this.snapshots = newSnapshots;
         this.updateGlobalSummary();
-        
-        // Log de estado solicitado (Doctrine Logic)
-        console.log("GAME STATE:", this.globalState);
         this.notify();
     }
 
