@@ -37,6 +37,7 @@ class GameStateService {
         resources: { wood: 0, stone: 0, iron: 0 },
         buildings: []
     };
+    private listeners: Array<() => void> = [];
 
     /**
      * Synchronizes Laravel attacks with ECS motor.
@@ -114,6 +115,7 @@ class GameStateService {
         
         // Log de estado solicitado (Doctrine Logic)
         console.log("GAME STATE:", this.globalState);
+        this.notify();
     }
 
     private updateGlobalSummary(): void {
@@ -164,6 +166,17 @@ class GameStateService {
 
     public getMode(): GameMode {
         return this.getGameMode();
+    }
+
+    public subscribe(listener: () => void): () => void {
+        this.listeners.push(listener);
+        return () => {
+            this.listeners = this.listeners.filter(l => l !== listener);
+        };
+    }
+
+    public notify(): void {
+        this.listeners.forEach(l => l());
     }
 }
 
