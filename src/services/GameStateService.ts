@@ -98,6 +98,7 @@ class GameStateService {
                     state: march.status,
                     remainingTime: (march.arrivalTime - Date.now()) / 1000,
                     totalTime: (march.arrivalTime - march.startTime) / 1000,
+                    arrivalTime: march.arrivalTime,
                     target: { x: march.targetX, y: march.targetY },
                     loot: march.units 
                 } : undefined
