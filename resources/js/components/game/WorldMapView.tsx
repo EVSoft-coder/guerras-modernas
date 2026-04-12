@@ -155,7 +155,16 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                 <div 
                                     key={`${x}-${y}`}
                                     className="absolute border border-white/5 transition-colors hover:bg-sky-500/5 cursor-crosshair"
-                                    onClick={() => setSelectedSector({ x, y })}
+                                    onClick={() => {
+                                        setSelectedSector({ x, y });
+                                        // Emitir ordem de movimento se houver unidade seleccionada
+                                        if (selectedUnit) {
+                                            (window as any).eventBus.emit("UNIT:MOVE", {
+                                                timestamp: Date.now(),
+                                                data: { targetX: x, targetY: y }
+                                            });
+                                        }
+                                    }}
                                     style={{
                                         left: x * 64,
                                         top: y * 64,
