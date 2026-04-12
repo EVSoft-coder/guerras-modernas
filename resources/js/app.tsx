@@ -5,9 +5,11 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { ToastProvider } from '@/components/game/ToastProvider';
 import { initializeTheme } from './hooks/use-appearance';
+import { eventBus } from '../../src/core/EventBus';
 declare global {
     interface Window {
         route: any;
+        eventBus: any;
     }
 }
 
@@ -17,6 +19,7 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 const rootElement = document.getElementById('app');
 
 if (rootElement) {
+    window.eventBus = eventBus;
     initializeTheme();
     console.log("FRONTEND VERSION 2026");
     console.log("--- GUERRAS MODERNAS SINAL V3.9.2 ATIVO ---");

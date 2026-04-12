@@ -33,10 +33,21 @@ class EventBus {
     }
  
     /**
-     * Emite um evento através de um payload COMPLETO e normalizado.
-     * Única via de sinalização autorizada nesta doutrina.
+     * Emite um evento. Suporta payload único ou (tipo, dados).
      */
-    public emit(payload: EventPayload): void {
+    public emit(typeOrPayload: string | EventPayload, data?: any): void {
+        let payload: EventPayload;
+
+        if (typeof typeOrPayload === 'string') {
+            payload = {
+                type: typeOrPayload,
+                timestamp: data?.timestamp || Date.now(),
+                data: data?.data ? data.data : (data || {})
+            };
+        } else {
+            payload = typeOrPayload;
+        }
+
         const type = payload.type.toUpperCase();
         
         // Registo Táctico (Silencioso para alta frequência)

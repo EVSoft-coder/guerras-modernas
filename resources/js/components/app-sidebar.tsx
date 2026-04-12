@@ -72,7 +72,13 @@ export function AppSidebar() {
                         </SidebarMenuItem>
                         <SidebarMenuItem>
                             <SidebarMenuButton 
-                                onClick={() => changeMode('WORLD_MAP')} 
+                                onClick={() => {
+                                    console.log("CLICK MAPA");
+                                    (window as any).eventBus.emit("GAME:CHANGE_MODE", {
+                                        timestamp: Date.now(),
+                                        data: { mode: "WORLD_MAP" }
+                                    });
+                                }}
                                 className="sidebar-tactical-item h-11 px-3 group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 <MapIcon className="text-neutral-300 group-hover:text-red-500 transition-colors" />
