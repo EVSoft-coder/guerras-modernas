@@ -25,7 +25,7 @@ export interface EntitySnapshot {
 
 export interface GlobalGameState {
     player: { name: string; id: number };
-    village: { name: string; id: number };
+    villages: Array<{ id: number, name: string; x: number, y: number }>;
     resources: { wood: number; stone: number; iron: number };
     buildings: Array<{ type: string; level: number }>;
 }
@@ -34,7 +34,7 @@ class GameStateService {
     private snapshots: EntitySnapshot[] = [];
     private globalState: GlobalGameState = {
         player: { name: 'OPERATIVE', id: 1 },
-        village: { name: 'BASE_ALPHA', id: 1 },
+        villages: [],
         resources: { wood: 0, stone: 0, iron: 0 },
         buildings: []
     };
@@ -96,6 +96,7 @@ class GameStateService {
     private updateGlobalSummary(): void {
         const buildingEntities = entityManager.getEntitiesWith(['Building']);
         const resEntities = entityManager.getEntitiesWith(['Resource']);
+        const villageEntities = entityManager.getEntitiesWith(['Village', 'GridPosition']);
         
         // Aggregate Resources
         let totalRes = { wood: 0, stone: 0, iron: 0 };
@@ -107,6 +108,13 @@ class GameStateService {
                 totalRes.iron += r.iron || 0;
             }
         });
+
+        // List Villages
+        const villageList = villageEntities.map(id => {
+            const v = entityManager.getComponent<any>(id, 'Village');
+            const p = entityManager.getComponent<any>(id, 'GridPosition');
+            return { id, name: v?.name || 'OUTPOST', x: p?.x || 0, y: p?.y || 0 };
+        });
         
         // Gather Buildings
         const buildingList = buildingEntities.map(id => {
@@ -117,14 +125,10 @@ class GameStateService {
         // Ensure defaults and update
         this.globalState = {
             player: this.globalState?.player ?? { name: 'OPERATIVE', id: 1 },
-            village: this.globalState?.village ?? { name: 'BASE_ALPHA', id: 1 },
+            villages: villageList,
             resources: totalRes,
             buildings: buildingList
         };
-
-        // Extra Validation
-        if (!this.globalState.player) this.globalState.player = { name: 'UNKNOWN', id: 0 };
-        if (!this.globalState.village) this.globalState.village = { name: 'OUTPOST', id: 0 };
     }
 
     public getGameState(): EntitySnapshot[] {

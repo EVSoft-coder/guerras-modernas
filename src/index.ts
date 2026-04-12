@@ -56,6 +56,24 @@ entityManager.addComponent(villageEntity, {
     renderType: "building"
 } as RenderableComponent);
 
+const villageBeta = entityManager.createEntity();
+entityManager.addComponent(villageBeta, new VillageComponent(
+    playerUnit, 
+    1, 
+    { wood: 2000, stone: 2000, iron: 2000 }, 
+    'Base Beta'
+));
+entityManager.addComponent(villageBeta, new VisionComponent(5));
+entityManager.addComponent(villageBeta, {
+    type: "GridPosition",
+    x: 15,
+    y: 10
+} as GridPositionComponent);
+entityManager.addComponent(villageBeta, {
+    type: "Renderable",
+    renderType: "building"
+} as RenderableComponent);
+
 entityManager.addComponent(playerUnit, new ResourceComponent(5000, 5000, 5000));
 entityManager.addComponent(playerUnit, new BuildQueueComponent());
 entityManager.addComponent(playerUnit, new VisionComponent(10));

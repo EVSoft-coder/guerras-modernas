@@ -359,6 +359,8 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                 coordinates={center}
                 selectedEntity={selectedEntityObj}
                 miniMapData={gameEntities}
+                villages={globalState.villages}
+                onJump={(x, y) => setCenter({ x, y })}
             />
         </div>
     );

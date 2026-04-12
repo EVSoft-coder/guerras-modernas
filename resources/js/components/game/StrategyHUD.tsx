@@ -11,22 +11,45 @@ interface StrategyHUDProps {
     coordinates: { x: number, y: number };
     selectedEntity?: any;
     miniMapData: any[];
+    villages: Array<{ id: number, name: string, x: number, y: number }>;
+    onJump: (x: number, y: number) => void;
 }
 
 export const StrategyHUD: React.FC<StrategyHUDProps> = ({ 
     resources, 
     coordinates, 
     selectedEntity,
-    miniMapData 
+    miniMapData,
+    villages,
+    onJump
 }) => {
     return (
         <div className="fixed inset-0 pointer-events-none z-50 flex flex-col justify-between p-6">
             {/* TOPO: RECURSOS E STATUS ESTRATÉGICO */}
             <div className="flex justify-between items-start w-full">
-                <div className="flex gap-4 pointer-events-auto">
-                    <ResourceNode icon={<Box size={14} />} label="WOOD" value={resources.wood} color="text-amber-400" />
-                    <ResourceNode icon={<Shield size={14} />} label="STONE" value={resources.stone} color="text-slate-400" />
-                    <ResourceNode icon={<Zap size={14} />} label="IRON" value={resources.iron} color="text-sky-400" />
+                <div className="flex flex-col gap-2 pointer-events-auto">
+                    <div className="flex gap-4">
+                        <ResourceNode icon={<Box size={14} />} label="WOOD" value={resources.wood} color="text-amber-400" />
+                        <ResourceNode icon={<Shield size={14} />} label="STONE" value={resources.stone} color="text-slate-400" />
+                        <ResourceNode icon={<Zap size={14} />} label="IRON" value={resources.iron} color="text-sky-400" />
+                    </div>
+
+                    <div className="mt-4 space-y-2">
+                        <span className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em] block ml-2">VILLAGES_ACTIVE</span>
+                        <div className="flex flex-col gap-1">
+                            {villages.map(v => (
+                                <button 
+                                    key={v.id}
+                                    onClick={() => onJump(v.x, v.y)}
+                                    className="bg-neutral-900/40 hover:bg-sky-500/20 border border-white/5 hover:border-sky-500/40 px-3 py-2 rounded-xl flex items-center gap-3 transition-all group"
+                                >
+                                    <MapIcon size={12} className="text-neutral-500 group-hover:text-sky-400" />
+                                    <span className="text-[10px] font-black text-white uppercase tracking-tighter">{v.name}</span>
+                                    <span className="text-[8px] font-mono text-neutral-600 ml-auto">{v.x}:{v.y}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 <div className="bg-black/80 backdrop-blur-xl border border-white/10 px-6 py-3 rounded-2xl flex items-center gap-4 pointer-events-auto shadow-2xl">
