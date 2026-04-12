@@ -10,8 +10,12 @@
         
         @viteReactRefresh
         @routes
-        @vite(['resources/css/app.css', 'resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
+        @vite(['resources/css/app.css', 'resources/js/app.tsx'])
         @inertiaHead
+
+        <script>
+            console.log("BLADE OK V1");
+        </script>
 
     </head>
     <body class="bg-black text-white antialiased">
