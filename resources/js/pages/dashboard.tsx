@@ -65,9 +65,12 @@ export default function Dashboard(props: DashboardProps) {
     }, [lastSync]);
 
     const SyncIndicator = (
-        <div className="fixed bottom-4 right-4 z-50 rounded-full bg-black/80 px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-emerald-500 shadow-lg backdrop-blur-sm border border-emerald-500/20">
-            <span className="mr-1 inline-block h-1 w-1 animate-pulse rounded-full bg-emerald-500"></span>
-            Sync: {secondsSinceSync}s ago
+        <div className="fixed bottom-4 right-4 z-50 rounded-full bg-black/80 px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-emerald-500 shadow-lg backdrop-blur-sm border border-emerald-500/20 flex flex-col items-end">
+            <div className="flex items-center">
+                <span className="mr-1 inline-block h-1 w-1 animate-pulse rounded-full bg-emerald-500"></span>
+                Sync: {secondsSinceSync}s ago
+            </div>
+            <div className="text-[6px] text-neutral-600 mt-0.5 tracking-normal">BUILD_VER: 2026.04.12.2101</div>
         </div>
     );
 

@@ -40,23 +40,12 @@ export function VillageDashboard({
             router.reload({ only: ['base'] });
         });
 
-        // WEB-SOCKETS: Escuta ativa de atualizações de base (Substitui Polling)
-        const channel = (window as any).Echo.private(`base.${base.id}`)
-            .listen('.BaseUpdated', (e: any) => {
-                console.log("[WS] RECEÇÃO DE SINAL TÁTICO:", e);
-                router.reload({ 
-                    only: ['base', 'ataquesEnviados', 'ataquesRecebidos', 'relatoriosGlobal'],
-                    onSuccess: () => addToast("SINAL: Base sincronizada via Satélite.", "info")
-                });
-            });
-
         const unsubMode = eventBus.subscribe(Events.GAME_CHANGE_MODE, (ev) => {
             console.log("MODE CHANGE RECEIVED:", ev.data.mode);
             setGameMode(ev.data.mode);
         });
 
         return () => {
-            (window as any).Echo.leave(`base.${base.id}`);
             unsubArrived();
             unsubReturned();
             unsubMode();
