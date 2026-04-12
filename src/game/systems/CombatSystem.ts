@@ -125,25 +125,19 @@ export class CombatSystem implements GameSystem {
             });
 
             // 4.2 LÓGICA DE LEALDADE E CONQUISTA
-            if (marchComp.missionType === 'conquista') {
-                const hasPolitico = army.units['politico'] && army.units['politico'] > 0;
+            const hasPolitico = army.units['politico'] && army.units['politico'] > 0;
+            
+            if (hasPolitico) {
+                // Redução dinâmica entre 20 e 35
+                const reduction = Math.floor(Math.random() * (35 - 20 + 1)) + 20;
                 
-                if (hasPolitico) {
-                    // Redução dinâmica entre 20 e 35
-                    const reduction = Math.floor(Math.random() * (35 - 20 + 1)) + 20;
-                    
-                    eventBus.emit('VILLAGE:LOYALTY_REDUCE', {
-                        targetId: targetId,
-                        amount: reduction,
-                        attackerId: army.ownerId
-                    });
+                eventBus.emit('VILLAGE:LOYALTY_REDUCE', {
+                    targetId: targetId,
+                    amount: reduction,
+                    attackerId: army.ownerId
+                });
 
-                    console.log(`[COMBAT] POLITICAL SUBVERSION: Base ${targetId} being influenced by Politico. Expected reduction: ${reduction}%`);
-                } else {
-                    console.log(`[COMBAT] CONQUEST ATTEMPT FAILED: No Politico unit present in expedition.`);
-                }
-
-                // A transição de posse será agora gerida pelo StateManager ao ouvir o evento acima
+                console.log(`[COMBAT] POLITICAL SUBVERSION: Base ${targetId} being influenced by Politico. Reduction: ${reduction}%`);
             }
 
             // 4.3 SE FOR REBELDE (E NÃO CONQUISTADO AGORA): Destruir posto avançado (Respawn System)
