@@ -12,15 +12,15 @@ interface BuildingNodeProps {
 }
 
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, gridPos, isConstructing, onClick }) => {
-    const [currentTryLevel, setCurrentTryLevel] = useState(getEvolutionLevelAsset(nivel));
+    const [currentTryLevel, setCurrentTryLevel] = useState(getEvolutionLevelAsset(nivel ?? 1));
     
     // Caminho da imagem de ativos reais
-    const imgUrl = `/images/edificios/${tipo.toLowerCase()}/lvl_${currentTryLevel}.png`;
+    const imgUrl = `/images/edificios/${tipo?.toLowerCase() ?? 'base'}/lvl_${currentTryLevel ?? 1}.png`;
 
     return (
         <motion.div 
             style={{ 
-                gridArea: `${gridPos.y + 1} / ${gridPos.x + 1} / span 1 / span 1` 
+                gridArea: `${(gridPos?.y ?? 0) + 1} / ${(gridPos?.x ?? 0) + 1} / span 1 / span 1` 
             }}
             whileHover={{ scale: 1.05, zIndex: 50 }}
             whileTap={{ scale: 0.95 }}
@@ -34,8 +34,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, g
                         <span className="text-[8px] font-black text-sky-500 uppercase tracking-widest">Unit_Intel</span>
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                     </div>
-                    <span className="text-[10px] font-black uppercase text-white tracking-widest leading-none">{nome}</span>
-                    <span className="text-[7px] text-neutral-500 font-bold uppercase tracking-[0.2em] mt-1.5">Nível de Acesso: {nivel}</span>
+                    <span className="text-[10px] font-black uppercase text-white tracking-widest leading-none">{nome ?? 'UNKNOWN'}</span>
+                    <span className="text-[7px] text-neutral-500 font-bold uppercase tracking-[0.2em] mt-1.5">Nível de Acesso: {nivel ?? 0}</span>
                 </div>
                 {/* Arrow */}
                 <div className="w-2 h-2 bg-neutral-900/95 border-r border-b border-sky-500/30 rotate-45 -mt-1 mx-auto relative z-10"></div>
@@ -46,14 +46,14 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, g
                 <motion.img 
                     src={imgUrl} 
                     className="w-20 h-20 md:w-36 md:h-36 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] group-hover/bldg:drop-shadow-[0_0_25px_rgba(14,165,233,0.4)] transition-all duration-500" 
-                    alt={nome}
+                    alt={nome ?? 'STRUCTURE'}
                 />
 
                 {/* LEVEL BADGE TÁCTICO */}
                 <div className="absolute -bottom-2 -right-2 bg-neutral-950 border border-sky-500/50 rounded-lg px-2 py-1 shadow-2xl backdrop-blur-md z-40 transform group-hover/bldg:scale-110 transition-transform">
                     <div className="flex flex-col items-center leading-none">
                         <span className="text-[6px] text-sky-500 font-black uppercase tracking-tighter">LVL</span>
-                        <span className="text-sm font-mono font-black text-white">{nivel}</span>
+                        <span className="text-sm font-mono font-black text-white">{nivel ?? 0}</span>
                     </div>
                 </div>
 
@@ -67,8 +67,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, g
             </div>
 
             {/* NOME SEMPRE VISÍVEL (SUBTIL) */}
-            <span className="mt-2 text-[8px] font-black uppercase text-neutral-500 tracking-widest group-hover:text-sky-400 transition-colors">
-                {nome.split(' / ')[0]}
+            <span className="mt-2 text-[8px] font-black uppercase text-neutral-400 tracking-widest group-hover:text-sky-300 transition-colors">
+                {nome?.split?.(' / ')?.[0] ?? 'UNKNOWN_STRUC'}
             </span>
         </motion.div>
     );
