@@ -101,21 +101,21 @@ export function VillageDashboard({
     };
 
     return (
-        <div className="flex h-full flex-1 flex-col gap-6 p-6 bg-neutral-950 text-white min-h-screen relative overflow-hidden">
+        <div className="flex h-full flex-1 flex-col gap-10 p-8 bg-neutral-950 text-white min-h-screen relative overflow-hidden">
             {/* Background Decorativo Sutil */}
-            <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-sky-500/5 blur-[150px] pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-orange-500/5 blur-[150px] pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-[60%] h-[60%] bg-sky-500/10 blur-[200px] pointer-events-none animate-pulse duration-[10s]"></div>
+            <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-orange-500/5 blur-[150px] pointer-events-none"></div>
 
             <Head title="Centro de Comando Tático" />
             <ResourceBar recursos={base?.recursos ?? {}} taxasPerSecond={taxasPerSecond ?? {}} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 flex-1 relative z-10">
                 <div className="lg:col-span-8 flex flex-col gap-6">
                     <div className="flex justify-between items-center px-4">
                          <div className="flex flex-col">
                             <h2 className="text-2xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
-                                <Zap className="text-orange-500 animate-pulse" size={28} />
-                                Setor: {base?.nome ?? 'Desconhecido'}
+                                <Target className="text-orange-500 animate-pulse" size={28} />
+                                CENTRAL: {base?.nome ?? 'Desconhecido'}
                             </h2>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>

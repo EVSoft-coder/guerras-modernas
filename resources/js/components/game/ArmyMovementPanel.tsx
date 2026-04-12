@@ -6,10 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface ArmyMovementPanelProps {
     ataquesEnviados: any[];
     ataquesRecebidos: any[];
+    gameConfig: any;
 }
 
 export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({ 
-    ataquesEnviados, ataquesRecebidos 
+    ataquesEnviados, ataquesRecebidos, gameConfig 
 }) => {
     const [now, setNow] = useState(Date.now());
 

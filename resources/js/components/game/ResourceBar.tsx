@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layers, Fuel, Rocket, Users } from 'lucide-react';
+import { Shield, Fuel, Rocket, Users } from 'lucide-react';
 import { Recurso } from '@/types';
 import { motion, animate } from 'framer-motion';
 
@@ -30,10 +30,9 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
     }, [taxasPerSecond]);
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full bg-black/40 backdrop-blur-2xl p-4 rounded-[2rem] border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-20 overflow-hidden relative">
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/20 to-transparent"></div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full z-20">
             <ResourceItem 
-                icon={<Layers className="text-sky-400 drop-shadow-[0_0_8px_rgba(56,189,248,0.4)]" size={20} />} 
+                icon={<Shield className="text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]" size={24} />} 
                 label="Suprimentos" 
                 value={current.suprimentos} 
                 rate={(taxasPerSecond?.suprimentos ?? 0) * 3600}
@@ -41,7 +40,7 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 accentColor="bg-sky-400"
             />
             <ResourceItem 
-                icon={<Fuel className="text-orange-400" size={20} />} 
+                icon={<Fuel className="text-orange-400 drop-shadow-[0_0_12px_rgba(251,146,60,0.5)]" size={24} />} 
                 label="Combustível" 
                 value={current.combustivel} 
                 rate={(taxasPerSecond?.combustivel ?? 0) * 3600}
@@ -49,7 +48,7 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 accentColor="bg-orange-500"
             />
             <ResourceItem 
-                icon={<Rocket className="text-red-400" size={20} />} 
+                icon={<Rocket className="text-red-400 drop-shadow-[0_0_12px_rgba(248,113,113,0.5)]" size={24} />} 
                 label="Munições" 
                 value={current.municoes} 
                 rate={(taxasPerSecond?.municoes ?? 0) * 3600}
@@ -57,7 +56,7 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 accentColor="bg-red-500"
             />
             <ResourceItem 
-                icon={<Users className="text-emerald-400" size={20} />} 
+                icon={<Users className="text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.5)]" size={24} />} 
                 label="Guarnição" 
                 value={current.pessoal} 
                 rate={0}
@@ -71,51 +70,47 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
 
 const ResourceItem = ({ icon, label, value, rate, color, accentColor, isStatic = false }: any) => {
     return (
-        <div className="flex flex-col items-center justify-center border-r border-white/5 last:border-0 px-4 group cursor-help transition-all duration-500 hover:bg-white/[0.03] py-3 relative">
+        <div className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-3xl p-6 rounded-[2.5rem] border border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.6)] group cursor-help transition-all duration-500 hover:bg-white/[0.05] hover:border-white/10 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
             {/* TACTICAL TOOLTIP */}
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 z-50 pointer-events-none scale-95 group-hover:scale-100 translate-y-4 group-hover:translate-y-0">
-                <div className="bg-neutral-900/95 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] flex flex-col items-center min-w-[180px]">
-                    <div className="w-full flex justify-between items-center mb-2 pb-1.5 border-b border-white/5">
-                        <span className="text-[7px] font-black text-neutral-500 uppercase tracking-widest">Resource_Node</span>
-                    </div>
-                    <span className="text-[10px] font-black uppercase text-white tracking-[0.2em]">{label}</span>
-                    <div className="text-[7px] text-neutral-500 mt-2 font-mono uppercase tracking-tighter text-center leading-relaxed">
-                         Monitorização em tempo real de fluxos logísticos e reservas estratégicas do setor operacional
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 z-50 pointer-events-none scale-90 group-hover:scale-100 translate-y-4 group-hover:translate-y-0">
+                <div className="bg-neutral-900 border border-white/10 px-5 py-4 rounded-3xl shadow-[0_40px_80px_rgba(0,0,0,1)] flex flex-col items-center min-w-[200px]">
+                    <span className="text-[10px] font-black uppercase text-white tracking-[0.3em] mb-2">{label}</span>
+                    <div className="text-[8px] text-neutral-500 font-mono uppercase tracking-tighter text-center leading-relaxed">
+                         Monitorização em tempo real de fluxos e reservas estratégicas
                     </div>
                 </div>
-                <div className="w-2.5 h-2.5 bg-neutral-900 border-r border-b border-white/10 rotate-45 -mt-1.5 mx-auto relative z-10"></div>
             </div>
 
-            <div className="flex items-center gap-2 mb-2 opacity-60 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-2.5 mb-3 opacity-60 group-hover:opacity-100 transition-all duration-300">
                 {icon}
-                <span className="text-[9px] uppercase font-black tracking-[0.2em] text-neutral-400">{label}</span>
+                <span className="text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 group-hover:text-white transition-colors">{label}</span>
             </div>
             
             <motion.div 
                 key={value}
-                initial={{ scale: 1.05, opacity: 0.9 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className={`text-3xl font-black font-mono tracking-tighter ${color} drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]`}
+                className={`text-4xl font-black font-mono tracking-tighter ${color} drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]`}
             >
                 <AnimatedNumber value={value} />
             </motion.div>
 
-            <div className="mt-2 flex items-center gap-3">
+            <div className="mt-3">
                 {!isStatic ? (
-                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/5 opacity-50">
-                        <span className="text-[9px] font-bold text-neutral-400">
-                             {Math.floor(rate).toLocaleString()} <span className="text-[7px] opacity-50">/H</span>
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 opacity-50 group-hover:opacity-100 transition-opacity">
+                        <span className="text-[10px] font-black text-neutral-400">
+                             {Math.floor(rate).toLocaleString()} <span className="text-[8px] opacity-40">/H</span>
                         </span>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/5 shadow-[inset_0_1px_10px_rgba(16,185,129,0.05)] border border-emerald-500/10">
-                         <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-tighter opacity-70">Operacional</span>
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                         <span className="text-[10px] font-black text-emerald-400 uppercase tracking-tighter">Ativo</span>
                     </div>
                 )}
             </div>
             
-            {/* Hover Indicator */}
-            <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] ${accentColor} group-hover:w-1/2 transition-all duration-500 opacity-50`}></div>
+            <div className={`absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent ${accentColor} to-transparent opacity-0 group-hover:opacity-40 transition-all duration-500`}></div>
         </div>
     );
 };

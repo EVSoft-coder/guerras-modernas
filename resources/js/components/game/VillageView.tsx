@@ -5,9 +5,10 @@ import { BuildingNode } from './BuildingNode';
 interface VillageViewProps {
     base: Base;
     onBuildingClick: (building: any) => void;
+    gameConfig: any;
 }
 
-export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick }) => {
+export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig }) => {
     // Mapeamento de posições fixas táticas para os tipos de edifícios
     const buildingPositions: Record<string, { x: number, y: number }> = {
         'quartel': { x: 2, y: 1 },

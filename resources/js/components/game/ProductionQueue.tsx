@@ -16,9 +16,14 @@ interface QueueItemData {
 interface ProductionQueueProps {
     construcoes: any[];
     treinos: any[];
+    gameConfig: any;
 }
 
-export const ProductionQueue: React.FC<ProductionQueueProps> = ({ construcoes = [], treinos = [] }) => {
+export const ProductionQueue: React.FC<ProductionQueueProps> = ({ 
+    construcoes = [], 
+    treinos = [], 
+    gameConfig 
+}) => {
     // Unificar e ordenar as filas pelo tempo de conclusão
     const unifiedQueue: QueueItemData[] = [
         ...construcoes.map(c => ({

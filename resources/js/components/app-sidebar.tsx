@@ -10,9 +10,9 @@ import { eventBus, Events } from '@src/core/EventBus';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'TERMINAL',
         url: '/dashboard',
-        icon: LayoutGrid,
+        icon: Target,
     },
 ];
 
