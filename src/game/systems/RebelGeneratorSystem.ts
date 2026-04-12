@@ -20,6 +20,29 @@ export class RebelGeneratorSystem implements GameSystem {
         this.lastSpawnTime = Date.now();
         this.lastProgressionTime = Date.now();
         this.lastRegenTime = Date.now();
+
+        // DEBUG: Force spawn rebel near player for verification
+        console.log('[DEBUG] FORCING MANUAL REBEL SPAWN AT 505, 505');
+        this.spawnManualRebel(505, 505);
+    }
+
+    private spawnManualRebel(x: number, y: number): void {
+        const rebelId = entityManager.createEntity();
+        const level = 3;
+        
+        entityManager.addComponent(rebelId, new VillageComponent(
+            null, 
+            level,
+            { suprimentos: 1000, combustivel: 1000, municoes: 1000, pessoal: 0, metal: 1000, energia: 0 },
+            `FORCE_INSURGENT_SQUAD`,
+            true
+        ));
+
+        const units: Record<string, number> = { 'infantaria': 150, 'blindado_apc': 10 };
+        entityManager.addComponent(rebelId, new ArmyComponent(0, units));
+        entityManager.addComponent(rebelId, new GridPositionComponent(x, y));
+        
+        console.log(`[DEBUG] MANUAL REBEL CREATED: Entity ${rebelId} at ${x}:${y}.`);
     }
 
     public preUpdate(deltaTime: number): void {}
@@ -127,8 +150,11 @@ export class RebelGeneratorSystem implements GameSystem {
         const coords = this.findFreeCoords();
         if (!coords) return;
 
+        console.log("SPAWNING REBEL:", coords);
+
         const level = Math.floor(Math.random() * 5) + 1;
         const rebelId = entityManager.createEntity();
+        console.log("ENTITY CREATED:", rebelId);
         
         entityManager.addComponent(rebelId, new VillageComponent(
             null, 
@@ -144,6 +170,10 @@ export class RebelGeneratorSystem implements GameSystem {
             `Rebel_Outpost_LVL${level}`,
             true
         ));
+
+        // Verificação imediata de conformidade
+        const checkVillage = entityManager.getComponent<VillageComponent>(rebelId, 'Village');
+        console.log(`VERIFICATION: VillageComponent exists? ${!!checkVillage}, isRebel? ${checkVillage?.isRebel}`);
 
         const units: Record<string, number> = {};
         units['infantaria'] = level === 1 ? 20 : (level * 120); 

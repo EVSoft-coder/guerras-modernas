@@ -4,7 +4,7 @@
  */
 import { Component } from '../../core/EntityManager';
 
-export type ProductionResource = 'wood' | 'stone' | 'iron' | 'all';
+export type ProductionResource = 'suprimentos' | 'combustivel' | 'municoes' | 'metal' | 'energia' | 'pessoal' | 'all';
 
 export class ProductionComponent implements Component {
     public readonly type = 'Production';

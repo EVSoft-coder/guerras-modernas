@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Users, Shield, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
+import { getUnitAsset } from '@/utils/assetMapper';
 
 interface GarrisonPanelProps {
     tropas: any[];
@@ -33,14 +34,19 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameC
                                 className="bg-white/[0.03] p-4 rounded-2xl border border-white/5 group hover:border-emerald-500/30 transition-all duration-300 relative overflow-hidden"
                             >
                                 <div className="flex justify-between items-center mb-3">
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-black uppercase text-white tracking-tight">
-                                            {config.name}
-                                        </span>
-                                        <div className="flex items-center gap-1.5 mt-1 opacity-50">
-                                            <span className="text-[8px] text-neutral-400 font-bold uppercase tracking-widest leading-none">
-                                                Status: Prontidão Operacional
+                                    <div className="flex gap-4 items-center">
+                                        <div className="w-12 h-12 bg-black/40 rounded-xl border border-white/5 flex items-center justify-center p-1 group-hover:border-emerald-500/30 transition-all">
+                                            <img src={getUnitAsset(t.tipo)} className="w-full h-full object-contain brightness-75 group-hover:brightness-110 transition-all" alt={config.name} />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black uppercase text-white tracking-tight">
+                                                {config.name}
                                             </span>
+                                            <div className="flex items-center gap-1.5 mt-1 opacity-50">
+                                                <span className="text-[8px] text-neutral-400 font-bold uppercase tracking-widest leading-none">
+                                                    Status: Prontidão Operacional
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end">

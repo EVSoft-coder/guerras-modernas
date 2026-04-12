@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { getEvolutionLevelAsset } from '@/lib/game-utils';
+import { getBuildingAsset } from '@/utils/assetMapper';
 
 interface BuildingNodeProps {
     tipo: string;
@@ -12,10 +13,10 @@ interface BuildingNodeProps {
 }
 
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, gridPos, isConstructing, onClick }) => {
-    const [currentTryLevel, setCurrentTryLevel] = useState(getEvolutionLevelAsset(nivel ?? 1));
+    const currentTryLevel = getEvolutionLevelAsset(nivel ?? 1);
     
-    // Caminho da imagem de ativos reais
-    const imgUrl = `/images/edificios/${tipo?.toLowerCase() ?? 'base'}/lvl_${currentTryLevel ?? 1}.png`;
+    // Caminho da imagem de ativos reais ou placeholder tático
+    const imgUrl = getBuildingAsset(tipo, currentTryLevel);
 
     return (
         <motion.div 

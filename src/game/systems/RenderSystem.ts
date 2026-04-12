@@ -33,7 +33,12 @@ export class RenderSystem implements GameSystem {
         entities.forEach(entityId => {
             const gridPos = entityManager.getComponent<any>(entityId, "GridPosition");
             const march = entityManager.getComponent<any>(entityId, "March");
+            const village = entityManager.getComponent<any>(entityId, 'Village');
             
+            if (village) {
+                console.log("RENDER VILLAGE:", village);
+            }
+
             if (!gridPos) return;
 
             // 1. Interpolação Táctica para Marchas (Animação de Movimento Digital)

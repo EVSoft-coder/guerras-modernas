@@ -18,6 +18,7 @@ import { ResearchSystem } from './ResearchSystem';
 import { renderSystem } from './RenderSystem';
 import { RebelGeneratorSystem } from './RebelGeneratorSystem';
 import { syncSystem } from './SyncSystem';
+import { systemIntegrityCheck } from './SystemIntegrityCheck';
 
 import { GameSystem } from './types';
 
@@ -25,6 +26,7 @@ import { GameSystem } from './types';
  * LISTA EXPLÍCITA E ORDENADA DE SISTEMAS.
  */
 export const systemsRegistry: ReadonlyArray<GameSystem> = [
+    systemIntegrityCheck,
     inputSystem,
     gameModeSystem,
     timeSystem,

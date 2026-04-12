@@ -26,7 +26,8 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 municoes: prev.municoes + (taxasPerSecond?.municoes ?? 0),
                 metal: prev.metal + (taxasPerSecond?.metal ?? 0),
                 energia: prev.energia + (taxasPerSecond?.energia ?? 0),
-                pessoal: prev.pessoal
+                pessoal: prev.pessoal,
+                cap: recursos?.cap ?? 10000
             }));
         }, 1000);
 
@@ -39,7 +40,8 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 icon={<Shield className="text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]" size={24} />} 
                 label="Suprimentos" 
                 value={current.suprimentos} 
-                rate={(taxasPerSecond?.suprimentos ?? 0) * 3600}
+                rate={taxasPerSecond?.suprimentos ?? 0}
+                cap={recursos?.cap ?? 10000}
                 color="text-white"
                 accentColor="bg-sky-400"
             />
@@ -47,7 +49,8 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 icon={<Fuel className="text-orange-400 drop-shadow-[0_0_12px_rgba(251,146,60,0.5)]" size={24} />} 
                 label="Combustível" 
                 value={current.combustivel} 
-                rate={(taxasPerSecond?.combustivel ?? 0) * 3600}
+                rate={taxasPerSecond?.combustivel ?? 0}
+                cap={recursos?.cap ?? 10000}
                 color="text-white"
                 accentColor="bg-orange-500"
             />
@@ -55,7 +58,8 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 icon={<Boxes className="text-zinc-400 drop-shadow-[0_0_12px_rgba(161,161,170,0.5)]" size={24} />} 
                 label="Metal" 
                 value={current.metal} 
-                rate={(taxasPerSecond?.metal ?? 0) * 3600}
+                rate={taxasPerSecond?.metal ?? 0}
+                cap={recursos?.cap ?? 10000}
                 color="text-white"
                 accentColor="bg-zinc-500"
             />
@@ -63,7 +67,8 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 icon={<Rocket className="text-red-400 drop-shadow-[0_0_12px_rgba(248,113,113,0.5)]" size={24} />} 
                 label="Munições" 
                 value={current.municoes} 
-                rate={(taxasPerSecond?.municoes ?? 0) * 3600}
+                rate={taxasPerSecond?.municoes ?? 0}
+                cap={recursos?.cap ?? 10000}
                 color="text-white"
                 accentColor="bg-red-500"
             />
@@ -71,7 +76,8 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 icon={<Zap className="text-yellow-400 drop-shadow-[0_0_12px_rgba(250,204,21,0.5)]" size={24} />} 
                 label="Energia" 
                 value={current.energia} 
-                rate={(taxasPerSecond?.energia ?? 0) * 3600}
+                rate={taxasPerSecond?.energia ?? 0}
+                cap={recursos?.cap ?? 10000}
                 color="text-white"
                 accentColor="bg-yellow-500"
             />
@@ -80,6 +86,7 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 label="Guarnição" 
                 value={current.pessoal} 
                 rate={0}
+                cap={0}
                 color="text-white"
                 accentColor="bg-emerald-500"
                 isStatic
@@ -115,12 +122,25 @@ const ResourceItem = ({ icon, label, value, rate, color, accentColor, isStatic =
                 <AnimatedNumber value={value} />
             </motion.div>
 
-            <div className="mt-3">
+            <div className="mt-3 w-full">
                 {!isStatic ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 opacity-50 group-hover:opacity-100 transition-opacity">
-                        <span className="text-[10px] font-black text-neutral-400">
-                             {Math.floor(rate).toLocaleString()} <span className="text-[8px] opacity-40">/H</span>
-                        </span>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between px-3 py-1 rounded-full bg-white/[0.03] border border-white/5">
+                            <span className={`text-[9px] font-black ${rate >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                                 {rate >= 0 ? '+' : ''}{rate.toFixed(1)} <span className="text-[7px] opacity-40">/S</span>
+                            </span>
+                            <span className="text-[8px] font-mono text-neutral-500 uppercase">
+                                MAX: {cap.toLocaleString()}
+                            </span>
+                        </div>
+                        {/* Progress Bar Tática */}
+                        <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                            <motion.div 
+                                className={`h-full ${accentColor}`}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.min(100, (value / cap) * 100)}%` }}
+                            />
+                        </div>
                     </div>
                 ) : (
                     <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
