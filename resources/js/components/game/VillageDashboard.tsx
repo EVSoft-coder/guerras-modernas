@@ -45,9 +45,17 @@ export function VillageDashboard({
             (ataquesEnviados?.length ?? 0) > 0 || 
             (ataquesRecebidos?.length ?? 0) > 0;
 
+        let isSyncing = false;
         const interval = setInterval(() => {
-            if (hasActiveActions) {
-                router.reload({ only: ['base', 'ataquesEnviados', 'ataquesRecebidos', 'relatoriosGlobal'] });
+            // Só sincroniza se houver ações ativas, o documento estiver visível e não houver outro sync em curso
+            if (hasActiveActions && document.visibilityState === 'visible' && !isSyncing) {
+                isSyncing = true;
+                router.reload({ 
+                    only: ['base', 'ataquesEnviados', 'ataquesRecebidos', 'relatoriosGlobal'],
+                    onFinish: () => { isSyncing = false; },
+                    preserveScroll: true,
+                    preserveState: true
+                });
             }
         }, 15000);
 
