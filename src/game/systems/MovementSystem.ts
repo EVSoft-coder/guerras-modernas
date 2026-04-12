@@ -19,6 +19,17 @@ export class MovementSystem implements GameSystem {
         });
     }
 
+    /**
+     * Calcula o tempo tático de marcha baseado em distância física e velocidade operacional.
+     */
+    public calculateMarchTime(origin: {x: number, y: number}, target: {x: number, y: number}, unitSpeed?: number): number {
+        const dx = target.x - origin.x;
+        const dy = target.y - origin.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const calcSpeed = unitSpeed || this.speed;
+        return (distance / calcSpeed) * 10; // Fator de escala tático
+    }
+
     private handleMoveOrder(data: any): void {
         const { targetX, targetY } = data;
         // Obter entidade sob selecção

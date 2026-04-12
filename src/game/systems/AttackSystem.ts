@@ -7,6 +7,8 @@ import { VelocityComponent } from '../components/Velocity';
 import { Pathfinding } from '../../utils/Pathfinding';
 import { RenderableComponent } from '../components/RenderableComponent';
 import { UnitComponent } from '../components/UnitComponent';
+import { MarchComponent } from '../components/MarchComponent';
+import { movementSystem } from './MovementSystem';
 
 export class AttackSystem implements GameSystem {
     public init(): void {
@@ -33,7 +35,21 @@ export class AttackSystem implements GameSystem {
             y: originY
         } as GridPositionComponent);
 
-        // 3. Configurar Cinética e Trajetória
+        // 3. Calcular Logística de Marcha
+        const travelTimeSeconds = movementSystem.calculateMarchTime(
+            { x: originX, y: originY },
+            { x: targetX, y: targetY }
+        );
+
+        entityManager.addComponent(armyId, new MarchComponent(
+            { x: originX, y: originY },
+            { x: targetX, y: targetY },
+            troops,
+            Date.now(),
+            Date.now() + (travelTimeSeconds * 1000)
+        ));
+
+        // 4. Configurar Cinética e Trajetória
         const path = Pathfinding.findPath(
             { x: originX, y: originY },
             { x: targetX, y: targetY },
@@ -42,13 +58,13 @@ export class AttackSystem implements GameSystem {
 
         entityManager.addComponent(armyId, new VelocityComponent(0, 0, targetX, targetY, true, path || []));
 
-        // 4. Visualização Táctica
+        // 5. Visualização Táctica
         entityManager.addComponent(armyId, {
             type: 'Renderable',
             renderType: 'unit'
         } as RenderableComponent);
 
-        // 5. Atributos de Combate Modernos (UnitComponent)
+        // 6. Atributos de Combate Modernos (UnitComponent)
         const unitType = Object.keys(troops).includes('tanque_combate') ? 'tank' : 
                          Object.keys(troops).includes('helicoptero_ataque') ? 'drone' : 'infantry';
 
@@ -60,7 +76,7 @@ export class AttackSystem implements GameSystem {
             5000    // Capacity
         ));
 
-        console.log(`[WAR] Army ${armyId} launched with UnitComponent(${unitType})`);
+        console.log(`[WAR] Army ${armyId} launched with MarchComponent. Arrival in ${travelTimeSeconds.toFixed(1)}s`);
     }
 
     public preUpdate(deltaTime: number): void {}
