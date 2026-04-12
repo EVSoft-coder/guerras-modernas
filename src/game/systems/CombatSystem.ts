@@ -1,71 +1,81 @@
 /**
  * src/game/systems/CombatSystem.ts
- * ResoluÃ§Ã£o de BalÃ­stica com SinalizaÃ§Ã£o Normalizada.
+ * GestÃ£o de Engagement e ResoluÃ§Ã£o de Conflitos TÃ¡cticos.
  */
 import { entityManager } from '../../core/EntityManager';
 import { eventBus, Events } from '../../core/EventBus';
 import { GameSystem } from './types';
- 
+import { VillageComponent } from '../components/VillageComponent';
+import { ArmyComponent } from '../components/ArmyComponent';
+
 export class CombatSystem implements GameSystem {
     public init(): void {
-        console.log('[SYSTEM] CombatSystem - Engagement Protocols Normalizing.');
+        console.log('[SYSTEM] CombatSystem - Engagement Protocols ONLINE.');
     }
- 
-    public preUpdate(deltaTime: number): void {}
- 
+
     public update(deltaTime: number): void {
-        const currentTime = Date.now() / 1000;
-        const attackers = entityManager.getEntitiesWith(['Attack', 'Position']);
-        const targets = entityManager.getEntitiesWith(['Health', 'Position']);
- 
-        for (const atkId of attackers) {
-            const atkComp = entityManager.getComponent<any>(atkId, 'Attack');
-            const atkPos = entityManager.getComponent<any>(atkId, 'Position');
- 
-            if (currentTime - atkComp.lastAttack < atkComp.cooldown) continue;
- 
-            for (const tarId of targets) {
-                if (atkId === tarId) continue;
-                const tarPos = entityManager.getComponent<any>(tarId, 'Position');
-                const dist = Math.sqrt(Math.pow(tarPos.x - atkPos.x, 2) + Math.pow(tarPos.y - atkPos.y, 2));
- 
-                if (dist <= atkComp.range) {
-                    this.executeAttack(atkId, tarId, atkComp.power);
-                    atkComp.lastAttack = currentTime;
-                    break;
-                }
+        const armies = entityManager.getEntitiesWith(['Army', 'Velocity', 'GridPosition']);
+
+        for (const armyId of armies) {
+            const vel = entityManager.getComponent<any>(armyId, 'Velocity');
+            const army = entityManager.getComponent<ArmyComponent>(armyId, 'Army');
+            const pos = entityManager.getComponent<any>(armyId, 'GridPosition');
+
+            // Se o exÃ©rcito parou de se mover e tem um alvo
+            if (vel && army && pos && !vel.isMoving && vel.path.length === 0) {
+                this.resolveEngagement(armyId, army, pos);
             }
         }
     }
- 
-    private executeAttack(attackerId: number, targetId: number, power: number): void {
-        const targetHealth = entityManager.getComponent<any>(targetId, 'Health');
-        if (targetHealth) {
-            targetHealth.value -= power;
-            
-            eventBus.emit({
-                type: Events.COMBAT_UNIT_DAMAGED,
-                entityId: targetId,
-                timestamp: Date.now(),
-                data: { attackerId, damage: power, newHealth: targetHealth.value }
-            });
- 
-            if (targetHealth.value <= 0) {
-                eventBus.emit({
-                    type: Events.COMBAT_UNIT_DESTROYED,
-                    entityId: targetId,
-                    timestamp: Date.now(),
-                    data: { attackerId }
-                });
+
+    private resolveEngagement(armyId: number, army: ArmyComponent, pos: any): void {
+        // Localizar Vilas ou Unidades no mesmo tile
+        const targets = entityManager.getEntitiesWith(['Village', 'GridPosition']);
+        
+        for (const targetId of targets) {
+            const targetPos = entityManager.getComponent<any>(targetId, 'GridPosition');
+            const village = entityManager.getComponent<VillageComponent>(targetId, 'Village');
+
+            if (targetPos && village && targetPos.x === pos.x && targetPos.y === pos.y) {
+                // Evitar fogo amigo
+                if (village.ownerId === army.ownerId) continue;
+
+                this.executeRaid(armyId, army, targetId, village);
+                break;
             }
         }
     }
- 
+
+    private executeRaid(armyId: number, army: ArmyComponent, targetId: number, village: VillageComponent): void {
+        console.log(`[COMBAT] Army ${armyId} raiding Village ${targetId}`);
+
+        // Saque: 30% dos recursos da vila
+        const lootedWood = Math.floor(village.resources.wood * 0.3);
+        const lootedStone = Math.floor(village.resources.stone * 0.3);
+        const lootedIron = Math.floor(village.resources.iron * 0.3);
+
+        village.resources.wood -= lootedWood;
+        village.resources.stone -= lootedStone;
+        village.resources.iron -= lootedIron;
+
+        eventBus.emit(Events.ATTACK_ARRIVED, {
+            entityId: armyId,
+            data: {
+                result: 'VICTORY',
+                looted: { wood: lootedWood, stone: lootedStone, iron: lootedIron }
+            }
+        });
+
+        // O exÃ©rcito entra em "modo retorno" ou Ã© destruÃ­do (simplificado: auto-destruição apÃ³s saque por agora)
+        entityManager.removeEntity(armyId);
+    }
+
+    public preUpdate(deltaTime: number): void {}
     public postUpdate(deltaTime: number): void {}
- 
+
     public destroy(): void {
-        console.log('[SYSTEM] CombatSystem - Engagement Suspended.');
+        console.log('[SYSTEM] CombatSystem - Engagement Protocols OFFLINE.');
     }
 }
- 
+
 export const combatSystem = new CombatSystem();

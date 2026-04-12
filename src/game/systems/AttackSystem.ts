@@ -1,114 +1,53 @@
-/**
- * src/game/systems/AttackSystem.ts
- * GestÃ£o de Ciclo de Guerra: Marcha, Combate e Saque.
- */
 import { entityManager } from '../../core/EntityManager';
 import { eventBus, Events } from '../../core/EventBus';
 import { GameSystem } from './types';
-import { AttackMarchComponent, MarchState } from '../components/AttackMarchComponent';
+import { ArmyComponent } from '../components/ArmyComponent';
+import { GridPositionComponent } from '../components/GridPositionComponent';
+import { VelocityComponent } from '../components/Velocity';
+import { Pathfinding } from '../../utils/Pathfinding';
+import { RenderableComponent } from '../components/RenderableComponent';
 
 export class AttackSystem implements GameSystem {
     public init(): void {
-        console.log('[SYSTEM] AttackSystem - Frontline Deployment Operational.');
+        console.log('[SYSTEM] AttackSystem - War Room Operational.');
         
-        // Subscrever Ã  pulsaÃ§Ã£o do tempo para processar marchas
-        eventBus.subscribe('GAME:TICK', () => {
-            this.processMarches();
+        // Subscrever à ordem de lançamento de expedição
+        eventBus.subscribe(Events.ATTACK_LAUNCH, (payload) => {
+            this.launchAttack(payload.data);
         });
     }
 
-    private processMarches(): void {
-        const marchIds = entityManager.getEntitiesWith(['AttackMarch']);
+    private launchAttack(data: any): void {
+        const { originX, originY, targetX, targetY, ownerId, troops } = data;
 
-        for (const id of marchIds) {
-            const march = entityManager.getComponent<AttackMarchComponent>(id, 'AttackMarch');
-            if (!march) continue;
+        const armyId = entityManager.createEntity();
+        
+        // 1. Definir Identidade e Composição
+        entityManager.addComponent(armyId, new ArmyComponent(ownerId, troops));
+        
+        // 2. Definir Posição Geográfica
+        entityManager.addComponent(armyId, {
+            type: 'GridPosition',
+            x: originX,
+            y: originY
+        } as GridPositionComponent);
 
-            // Reduzir tempo de viagem
-            march.remainingTime -= 1;
+        // 3. Configurar Cinética e Trajetória
+        const path = Pathfinding.findPath(
+            { x: originX, y: originY },
+            { x: targetX, y: targetY },
+            () => true // Caminho livre por agora
+        );
 
-            if (march.remainingTime <= 0) {
-                this.handleMarchArrival(id, march);
-            }
-        }
-    }
+        entityManager.addComponent(armyId, new VelocityComponent(0, 0, targetX, targetY, true, path || []));
 
-    private handleMarchArrival(id: number, march: AttackMarchComponent): void {
-        if (march.state === 'GOING') {
-            console.log(`[WAR] Attack arrived at [${march.targetX}:${march.targetY}]`);
-            this.resolveCombat(id, march);
-        } else if (march.state === 'RETURNING') {
-            console.log(`[WAR] Attack returned to origin ${march.originId}`);
-            this.concludeMarch(id, march);
-        }
-    }
+        // 4. Visualização Táctica
+        entityManager.addComponent(armyId, {
+            type: 'Renderable',
+            renderType: 'unit'
+        } as RenderableComponent);
 
-    private resolveCombat(id: number, march: AttackMarchComponent): void {
-        // Localizar alvo por coordenadas
-        const targets = entityManager.getEntitiesWith(['Position', 'Resource']);
-        let targetId: number | null = null;
-
-        for (const tid of targets) {
-            const pos = entityManager.getComponent<any>(tid, 'Position');
-            if (Math.round(pos.x) === march.targetX && Math.round(pos.y) === march.targetY) {
-                targetId = tid;
-                break;
-            }
-        }
-
-        if (targetId !== null) {
-            const targetRes = entityManager.getComponent<any>(targetId, 'Resource');
-            
-            // VitÃ³ria AutomÃ¡tica (Fase 4 - ResoluÃ§Ã£o Simples)
-            // Saque de 50% dos recursos
-            march.loot.wood = Math.floor(targetRes.wood * 0.5);
-            march.loot.stone = Math.floor(targetRes.stone * 0.5);
-            march.loot.iron = Math.floor(targetRes.iron * 0.5);
-
-            // Subtrair do alvo
-            targetRes.wood -= march.loot.wood;
-            targetRes.stone -= march.loot.stone;
-            targetRes.iron -= march.loot.iron;
-
-            eventBus.emit({
-                type: Events.ATTACK_ARRIVED,
-                entityId: id,
-                timestamp: Date.now(),
-                data: { result: 'VICTORY', loot: march.loot, targetId }
-            });
-        } else {
-            // Nenhum alvo encontrado nas coordenadas (Deserto)
-            eventBus.emit({
-                type: Events.ATTACK_ARRIVED,
-                entityId: id,
-                timestamp: Date.now(),
-                data: { result: 'EMPTY_TARGET', loot: march.loot }
-            });
-        }
-
-        // Iniciar Retorno
-        march.state = 'RETURNING';
-        march.remainingTime = march.totalTime; // Mesma duraÃ§Ã£o para voltar
-    }
-
-    private concludeMarch(id: number, march: AttackMarchComponent): void {
-        // Repatriar Recursos
-        const originRes = entityManager.getComponent<any>(march.originId, 'Resource');
-        if (originRes) {
-            originRes.wood += march.loot.wood;
-            originRes.stone += march.loot.stone;
-            originRes.iron += march.loot.iron;
-        }
-
-        eventBus.emit({
-            type: Events.ATTACK_RETURNED,
-            entityId: id,
-            timestamp: Date.now(),
-            data: { originId: march.originId, finalLoot: march.loot }
-        });
-
-        // AutodestruiÃ§Ã£o da entidade de marcha (missÃ£o cumprida)
-        entityManager.removeEntity(id);
+        console.log(`[WAR] Army ${armyId} launched from (${originX},${originY}) to (${targetX},${targetY})`);
     }
 
     public preUpdate(deltaTime: number): void {}
@@ -116,7 +55,7 @@ export class AttackSystem implements GameSystem {
     public postUpdate(deltaTime: number): void {}
 
     public destroy(): void {
-        console.log('[SYSTEM] AttackSystem - Frontline Deployment Offline.');
+        console.log('[SYSTEM] AttackSystem - War Room Offline.');
     }
 }
 
