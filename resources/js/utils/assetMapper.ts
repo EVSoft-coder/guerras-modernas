@@ -8,7 +8,7 @@ export const getBuildingAsset = (type: string, level: number = 1): string => {
     const t = type.toLowerCase();
     
     // Lista de edifícios que ainda dependem de placeholders
-    const placeholders = ['parlamento', 'factory', 'solar'];
+    const placeholders: string[] = []; // Todos agora possuem arte final
     
     if (placeholders.includes(t)) {
         return `/assets/placeholders/building_${t}.svg`;
@@ -23,7 +23,7 @@ export const getUnitAsset = (type: string): string => {
     const t = type.toLowerCase();
     
     // Lista de unidades que ainda dependem de placeholders
-    const placeholders = ['politico', 'helicoptero_ataque', 'drone_recon'];
+    const placeholders: string[] = []; // Todos agora possuem arte final
     
     if (placeholders.includes(t)) {
         return `/assets/placeholders/unit_${t}.svg`;
