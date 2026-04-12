@@ -137,14 +137,14 @@
     --chart-3: hsl(30, 80%, 55%);
     --chart-4: hsl(280, 65%, 60%);
     --chart-5: hsl(340, 75%, 55%);
-    --sidebar-background: hsl(0, 0%, 7%);
-    --sidebar-foreground: hsl(0, 0%, 80%);
-    --sidebar-primary: hsl(360, 100%, 100%);
+    --sidebar-background: hsl(240, 10%, 4%);
+    --sidebar-foreground: hsl(240, 5%, 90%);
+    --sidebar-primary: hsl(200, 100%, 50%);
     --sidebar-primary-foreground: hsl(0, 0%, 100%);
-    --sidebar-accent: hsl(0, 0%, 15.9%);
-    --sidebar-accent-foreground: hsl(240, 4.8%, 95.9%);
-    --sidebar-border: hsl(0, 0%, 15.9%);
-    --sidebar-ring: hsl(217.2, 91.2%, 59.8%);
+    --sidebar-accent: hsl(240, 10%, 15%);
+    --sidebar-accent-foreground: hsl(200, 100%, 60%);
+    --sidebar-border: hsl(240, 5%, 12%);
+    --sidebar-ring: hsl(200, 100%, 50%);
 }
 
 @layer base {
@@ -171,4 +171,20 @@
 
 #MAIN_MENU, #PAUSE_SCREEN {
     pointer-events: auto !important; /* Menus precisam de clique */
+}
+
+/* MILITARY UI UTILITIES */
+@layer utilities {
+    .sidebar-tactical-item {
+        @apply transition-all duration-300 border-l-2 border-transparent;
+    }
+    .sidebar-tactical-item:hover {
+        @apply border-sky-500 bg-linear-to-r from-sky-500/10 to-transparent shadow-[0_0_15px_-5px_rgba(14,165,233,0.4)];
+    }
+    .sidebar-tactical-item[data-active="true"] {
+        @apply border-sky-400 bg-linear-to-r from-sky-500/20 to-transparent;
+    }
+    .military-text-glitch {
+        text-shadow: 0 0 5px rgba(14, 165, 233, 0.5);
+    }
 }

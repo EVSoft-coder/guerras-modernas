@@ -57,19 +57,31 @@ export function AppSidebar() {
                 <NavMain items={mainNavItems} />
 
                 {/* GAME CONTROLS */}
-                <SidebarGroup>
-                    <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Operações</SidebarGroupLabel>
+                <SidebarGroup className="px-2 py-4">
+                    <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2 px-3">Protocolos de Operação</SidebarGroupLabel>
                     <SidebarMenu>
                         <SidebarMenuItem>
-                            <SidebarMenuButton onClick={() => changeMode('VILLAGE')} className="group">
-                                <Home className="text-neutral-500 group-hover:text-sky-500" />
-                                <span className="font-bold uppercase tracking-tighter">Minha Base</span>
+                            <SidebarMenuButton 
+                                onClick={() => changeMode('VILLAGE')} 
+                                className="sidebar-tactical-item h-11 px-3 group"
+                            >
+                                <Home className="text-neutral-500 group-hover:text-sky-400 transition-colors" />
+                                <span className="font-bold uppercase tracking-tighter text-neutral-400 group-hover:text-white">Zona de Base</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <SidebarMenuButton onClick={() => changeMode('WORLD_MAP')} className="group">
-                                <MapIcon className="text-neutral-500 group-hover:text-red-500" />
-                                <span className="font-bold uppercase tracking-tighter">Mapa Mundial</span>
+                            <SidebarMenuButton 
+                                onClick={() => changeMode('WORLD_MAP')} 
+                                className="sidebar-tactical-item h-11 px-3 group"
+                            >
+                                <MapIcon className="text-neutral-500 group-hover:text-red-500 transition-colors" />
+                                <span className="font-bold uppercase tracking-tighter text-neutral-400 group-hover:text-white">Mapa Mundial</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton className="sidebar-tactical-item h-11 px-3 group opacity-50 cursor-not-allowed">
+                                <Target className="text-neutral-500" />
+                                <span className="font-bold uppercase tracking-tighter text-neutral-400">Objetivos</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>

@@ -5,15 +5,19 @@ import { Link, usePage } from '@inertiajs/react';
 export function NavMain({ items = [] }: { items: NavItem[] }) {
     const page = usePage();
     return (
-        <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroup className="px-2 py-4">
+            <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2 px-3">Comando Central</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={item.url === page.url}>
+                        <SidebarMenuButton 
+                            asChild 
+                            isActive={item.url === page.url}
+                            className="sidebar-tactical-item h-11 px-3"
+                        >
                             <Link href={item.url} prefetch>
-                                {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                {item.icon && <item.icon className={item.url === page.url ? 'text-sky-400' : 'text-neutral-500'} />}
+                                <span className={`font-bold uppercase tracking-tighter ${item.url === page.url ? 'text-white' : 'text-neutral-400'}`}>{item.title}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
