@@ -49,7 +49,8 @@ export class WorldMapView {
     }
 
     public show(): void {
-        if (this.container) this.container.style.display = 'block';
+        // Desativado: Interface React/Dashboard assume controlo total do mapa
+        // if (this.container) this.container.style.display = 'block';
     }
 
     public hide(): void {

@@ -50,6 +50,8 @@ export class RenderSystem implements GameSystem {
     }
  
     private createCanvas(): void {
+        // Desativado: Interface React assume controlo da renderizaÃ§Ã£o de unidades
+        /*
         const canvas = document.createElement('canvas');
         canvas.id = 'battle-canvas';
         canvas.style.position = 'fixed';
@@ -64,6 +66,7 @@ export class RenderSystem implements GameSystem {
         document.body.appendChild(canvas);
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+        */
     }
  
     private drawEntity(pos: any, sprite: any, health: any, isSelected: any, entityId: number): void {

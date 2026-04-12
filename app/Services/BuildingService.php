@@ -42,6 +42,7 @@ class BuildingService
             return Construcao::create([
                 'base_id' => $base->id,
                 'edificio_tipo' => $tipo,
+                'nivel_destino' => $nivelAtual + 1,
                 'completado_em' => now()->addSeconds($tempo),
             ]);
         });

@@ -170,10 +170,10 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                         top: y * 64,
                                         width: 64,
                                         height: 64,
-                                        border: "1px solid #33333333"
+                                        border: "1px solid rgba(255, 255, 255, 0.08)"
                                     }}
                                 >
-                                    <span className="absolute top-1 left-1 text-[6px] text-neutral-800 font-mono">
+                                    <span className="absolute top-1 left-1 text-[7px] text-neutral-500 font-mono">
                                         {x}:{y}
                                     </span>
                                 </div>
