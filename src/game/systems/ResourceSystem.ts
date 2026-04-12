@@ -17,52 +17,78 @@ export class ResourceSystem implements GameSystem {
     }
 
     private processLogistics(deltaTime: number): void {
-        const entities = entityManager.getEntitiesWith(['Village', 'Resource']);
+        const villages = entityManager.getEntitiesWith(['Village', 'Resource']);
+        const buildings = entityManager.getEntitiesWith(['Building', 'Production']);
 
-        for (const id of entities) {
-            const res = entityManager.getComponent<any>(id, 'Resource');
-            const prod = entityManager.getComponent<any>(id, 'Production');
-            const army = entityManager.getComponent<ArmyComponent>(id, 'Army');
-            const village = entityManager.getComponent<VillageComponent>(id, 'Village');
+        // 1. Resetar taxas temporárias ou acumular produção de edifícios
+        const villageProduction = new Map<number, Record<string, number>>();
+
+        for (const bId of buildings) {
+            const building = entityManager.getComponent<any>(bId, 'Building');
+            const prod = entityManager.getComponent<any>(bId, 'Production');
+            
+            if (building && building.villageId !== undefined && prod) {
+                if (!villageProduction.has(building.villageId)) {
+                    villageProduction.set(building.villageId, {
+                        suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0, pessoal: 0
+                    });
+                }
+                
+                const rates = villageProduction.get(building.villageId)!;
+                const amount = prod.ratePerSecond * deltaTime;
+                
+                if (prod.resourceType === 'all') {
+                    Object.keys(rates).forEach(k => rates[k] += amount);
+                } else if (rates[prod.resourceType] !== undefined) {
+                    rates[prod.resourceType] += amount;
+                }
+            }
+        }
+
+        // 2. Aplicar Produção e Consumo nas Vilas
+        for (const vId of villages) {
+            const res = entityManager.getComponent<any>(vId, 'Resource');
+            const army = entityManager.getComponent<ArmyComponent>(vId, 'Army');
+            const village = entityManager.getComponent<VillageComponent>(vId, 'Village');
 
             if (!res) continue;
 
-            // A. PRODUÇÃO PASSIVA (ENTRADAS)
-            if (prod) {
-                const amount = prod.ratePerSecond * deltaTime;
-                if (prod.resourceType === 'all') {
-                    this.addResource(res, 'suprimentos', amount);
-                    this.addResource(res, 'combustivel', amount);
-                    this.addResource(res, 'municoes', amount);
-                    this.addResource(res, 'metal', amount);
-                    this.addResource(res, 'energia', amount);
-                    this.addResource(res, 'pessoal', amount);
+            // A. APLICAR PRODUÇÃO ACUMULADA
+            const rates = villageProduction.get(vId);
+            if (rates) {
+                Object.keys(rates).forEach(type => {
+                    this.addResource(res, type, rates[type]);
+                });
+            }
+
+            // B. PRODUÇÃO NATIVA DA VILA (Legacy/Base)
+            const nativeProd = entityManager.getComponent<any>(vId, 'Production');
+            if (nativeProd) {
+                const amount = nativeProd.ratePerSecond * deltaTime;
+                if (nativeProd.resourceType === 'all') {
+                    ['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'].forEach(r => this.addResource(res, r, amount));
                 } else {
-                    this.addResource(res, prod.resourceType, amount);
+                    this.addResource(res, nativeProd.resourceType, amount);
                 }
             }
 
-            // B. CONSUMO DE MANUTENÇÃO (UPKEEP / SAÍDAS)
+            // C. CONSUMO DE MANUTENÇÃO (UPKEEP)
             let totalUpkeepFood = 0;
             let totalUpkeepFuel = 0;
             let totalEnergyDemand = 0;
 
-            // 1. Manutenção de Tropas (Unidades consomem comida e combustível)
             if (army) {
                 const units = army.units;
-                totalUpkeepFood += (units['infantaria'] || 0) * 0.01;      // 100 soldados = 1 unid/s
-                totalUpkeepFuel += (units['blindado_apc'] || 0) * 0.05;    // Veículos consomem mais
+                totalUpkeepFood += (units['infantaria'] || 0) * 0.01;
+                totalUpkeepFuel += (units['blindado_apc'] || 0) * 0.05;
                 totalUpkeepFuel += (units['tanque_combate'] || 0) * 0.1;
                 totalUpkeepFuel += (units['helicoptero_ataque'] || 0) * 0.2;
             }
 
-            // 2. Demanda Energética de Edifícios
             if (village) {
-                // Edifícios avançados consomem energia passivamente
-                totalEnergyDemand += village.level * 0.5; // Custo base por nível de setor
+                totalEnergyDemand += village.level * 0.5;
             }
 
-            // Aplicar Consumo (deltaTime)
             this.consumeResource(res, 'suprimentos', totalUpkeepFood * deltaTime);
             this.consumeResource(res, 'combustivel', totalUpkeepFuel * deltaTime);
             this.consumeResource(res, 'energia', totalEnergyDemand * deltaTime);

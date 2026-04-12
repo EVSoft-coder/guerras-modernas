@@ -4,6 +4,7 @@ export class BuildingComponent implements Component {
     public readonly type = 'Building';
     constructor(
         public buildingType: string,
-        public level: number = 1
+        public level: number = 1,
+        public villageId?: number
     ) {}
 }

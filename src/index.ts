@@ -17,6 +17,7 @@ import {
     AIComponent,
     SpriteComponent 
 } from './game/components/BaseComponents';
+import { ProductionComponent } from './game/components/ProductionComponent';
 import { PlayerComponent } from './game/components/PlayerComponent';
 import { ResourceComponent } from './game/components/ResourceComponent';
 import { VillageComponent } from './game/components/VillageComponent';
@@ -45,6 +46,7 @@ entityManager.addComponent(villageEntity, new VillageComponent(
     { suprimentos: 5000, combustivel: 5000, municoes: 5000, pessoal: 100, metal: 5000, energia: 5000 }, 
     'Vila Alfa'
 ));
+entityManager.addComponent(villageEntity, new ResourceComponent(5000, 5000, 5000, 5000, 5000, 100, 20000));
 entityManager.addComponent(villageEntity, new VisionComponent(5));
 entityManager.addComponent(villageEntity, new GridPositionComponent(5, 5));
 entityManager.addComponent(villageEntity, {
@@ -59,6 +61,7 @@ entityManager.addComponent(villageBeta, new VillageComponent(
     { suprimentos: 2000, combustivel: 2000, municoes: 2000, pessoal: 50, metal: 2000, energia: 2000 }, 
     'Base Beta'
 ));
+entityManager.addComponent(villageBeta, new ResourceComponent(2000, 2000, 2000, 2000, 2000, 50, 10000));
 entityManager.addComponent(villageBeta, new VisionComponent(5));
 entityManager.addComponent(villageBeta, new GridPositionComponent(15, 10));
 entityManager.addComponent(villageBeta, {
@@ -83,11 +86,20 @@ entityManager.addComponent(playerUnit, {
     renderType: "unit"
 } as RenderableComponent);
 const qg = entityManager.createEntity();
-entityManager.addComponent(qg, new BuildingComponent('HQ', 1));
+entityManager.addComponent(qg, new BuildingComponent('HQ', 1, villageEntity));
 
-const mina = entityManager.createEntity();
-entityManager.addComponent(mina, new BuildingComponent('MINE', 1));
- 
+const minaMetal = entityManager.createEntity();
+entityManager.addComponent(minaMetal, new BuildingComponent('mina_metal', 1, villageEntity));
+entityManager.addComponent(minaMetal, new ProductionComponent('metal', 5)); // 5 metal/s
+
+const centralEnergia = entityManager.createEntity();
+entityManager.addComponent(centralEnergia, new BuildingComponent('central_energia', 1, villageEntity));
+entityManager.addComponent(centralEnergia, new ProductionComponent('energia', 10)); // 10 energia/s
+
+const minaSuprimentos = entityManager.createEntity();
+entityManager.addComponent(minaSuprimentos, new BuildingComponent('mina_suprimentos', 1, villageEntity));
+entityManager.addComponent(minaSuprimentos, new ProductionComponent('suprimentos', 20));
+
 console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Spatial Village infrastructure.`);
  
 // 3.1. MOBILIZAÃ‡ÃƒO TESTE (UNIDADE ALPHA-ZERO)
