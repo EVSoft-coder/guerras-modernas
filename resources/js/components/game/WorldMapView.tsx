@@ -31,7 +31,6 @@ interface WorldMapViewProps {
 
 export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapViewProps) {
     const [center, setCenter] = useState({ x: playerBase?.coordenada_x || 500, y: playerBase?.coordenada_y || 500 });
-    const [bases, setBases] = useState<BaseMap[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: BaseMap } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
@@ -54,11 +53,17 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
 
     const RAIO = 5; // Visualizar 11x11
     
-    const fetchMapData = async (cx: number, cy: number) => {
+    const CHUNK_SIZE = 50;
+    const [loadedChunks, setLoadedChunks] = useState<Record<string, BaseMap[]>>({});
+    
+    const fetchChunkData = async (cx: number, cy: number) => {
+        const key = `${cx}-${cy}`;
+        if (loadedChunks[key] || loading) return;
+
         setLoading(true);
         try {
-            const response = await axios.get(`/api/mapa/data?x=${cx}&y=${cy}&raio=${RAIO + 2}`);
-            setBases(response.data.bases);
+            const response = await axios.get(`/api/mapa/chunk/${cx}/${cy}`);
+            setLoadedChunks(prev => ({ ...prev, [key]: response.data.bases }));
         } catch (error) {
             console.error("Erro ao carregar mapa tático:", error);
             toast.error("Falha na sincronização de satélite.");
@@ -68,26 +73,42 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     };
 
     useEffect(() => {
-        fetchMapData(center.x, center.y);
+        const chunkX = Math.floor(center.x / CHUNK_SIZE);
+        const chunkY = Math.floor(center.y / CHUNK_SIZE);
+        fetchChunkData(chunkX, chunkY);
+        
+        // Pré-carregar adjacentes para transição suave
+        const neighbors = [[-1,0],[1,0],[0,-1],[0,1]];
+        neighbors.forEach(([dx, dy]) => {
+            const nx = chunkX + dx;
+            const ny = chunkY + dy;
+            if (nx >= 0 && nx < 20 && ny >= 0 && ny < 20) {
+                fetchChunkData(nx, ny);
+            }
+        });
     }, [center]);
+
+    const visibleBases = useMemo(() => {
+        return Object.values(loadedChunks).flat();
+    }, [loadedChunks]);
 
     const sectors = useMemo(() => {
         const items = [];
         for (let y = center.y - RAIO; y <= center.y + RAIO; y++) {
             for (let x = center.x - RAIO; x <= center.x + RAIO; x++) {
-                const baseAt = bases.find(b => b.coordenada_x === x && b.coordenada_y === y);
+                const baseAt = visibleBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
                 items.push({ x, y, base: baseAt });
             }
         }
         return items;
-    }, [center, bases]);
+    }, [center, visibleBases]);
 
     const handleSearch = () => {
         const nx = parseInt(searchCoords.x);
         const ny = parseInt(searchCoords.y);
         if (!isNaN(nx) && !isNaN(ny)) {
             setCenter({ x: nx, y: ny });
-            setSelectedSector({ x: nx, y: ny, base: bases.find(b => b.coordenada_x === nx && b.coordenada_y === ny) });
+            setSelectedSector({ x: nx, y: ny, base: visibleBases.find(b => b.coordenada_x === nx && b.coordenada_y === ny) });
         }
     };
 
@@ -161,7 +182,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                     key={`${x}-${y}`}
                                     className="absolute border border-white/[0.03] transition-colors hover:bg-sky-500/[0.02] cursor-crosshair group/cell"
                                     onClick={() => {
-                                        setSelectedSector({ x, y, base: bases.find(b => b.coordenada_x === x && b.coordenada_y === y) });
+                                        setSelectedSector({ x, y, base: visibleBases.find(b => b.coordenada_x === x && b.coordenada_y === y) });
                                         if (selectedUnit) {
                                             (window as any).eventBus.emit("UNIT:MOVE", {
                                                 timestamp: Date.now(),

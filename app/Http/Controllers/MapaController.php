@@ -63,4 +63,26 @@ class MapaController extends Controller
             'bases' => $bases
         ]);
     }
+
+    /**
+     * API para buscar dados de um chunk específico (50x50).
+     */
+    public function apiChunk(int $cx, int $cy)
+    {
+        $size = 50;
+        $minX = $cx * $size;
+        $maxX = $minX + $size - 1;
+        $minY = $cy * $size;
+        $maxY = $minY + $size - 1;
+
+        $bases = Base::with('jogador:id,username')
+            ->whereBetween('coordenada_x', [$minX, $maxX])
+            ->whereBetween('coordenada_y', [$minY, $maxY])
+            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel']);
+
+        return response()->json([
+            'chunk' => ['x' => $cx, 'y' => $cy],
+            'bases' => $bases
+        ]);
+    }
 }
