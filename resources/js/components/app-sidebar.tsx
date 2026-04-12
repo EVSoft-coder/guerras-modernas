@@ -63,7 +63,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <SidebarMenuButton 
                                 onClick={() => changeMode('VILLAGE')} 
-                                className="sidebar-tactical-item h-11 px-3 group"
+                                className="sidebar-tactical-item h-11 px-3 group transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 <Home className="text-neutral-500 group-hover:text-sky-400 transition-colors" />
                                 <span className="font-bold uppercase tracking-tighter text-neutral-400 group-hover:text-white">Zona de Base</span>
@@ -72,7 +72,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <SidebarMenuButton 
                                 onClick={() => changeMode('WORLD_MAP')} 
-                                className="sidebar-tactical-item h-11 px-3 group"
+                                className="sidebar-tactical-item h-11 px-3 group transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 <MapIcon className="text-neutral-500 group-hover:text-red-500 transition-colors" />
                                 <span className="font-bold uppercase tracking-tighter text-neutral-400 group-hover:text-white">Mapa Mundial</span>

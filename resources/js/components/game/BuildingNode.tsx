@@ -27,13 +27,20 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, g
             whileHover={{ scale: 1.05, zIndex: 50 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClick}
-            className="relative flex flex-col items-center justify-center p-2"
+            className="relative flex flex-col items-center justify-center p-2 group"
         >
-            {/* TAG SUPERIOR (NOME) */}
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
-                <div className="bg-black/80 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full shadow-2xl">
-                    <span className="text-[10px] font-black uppercase text-white tracking-widest whitespace-nowrap">{nome}</span>
+            {/* TACTICAL TOOLTIP */}
+            <div className="absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 z-50 pointer-events-none scale-90 group-hover:scale-100 translate-y-2 group-hover:translate-y-0">
+                <div className="bg-neutral-900/95 backdrop-blur-xl border border-sky-500/30 px-4 py-2 rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] flex flex-col items-center min-w-[140px]">
+                    <div className="w-full flex justify-between items-center mb-1.5 pb-1 border-b border-white/5">
+                        <span className="text-[8px] font-black text-sky-500 uppercase tracking-widest">Unit_Intel</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                    </div>
+                    <span className="text-[10px] font-black uppercase text-white tracking-widest leading-none">{nome}</span>
+                    <span className="text-[7px] text-neutral-500 font-bold uppercase tracking-[0.2em] mt-1.5">Nível de Acesso: {nivel}</span>
                 </div>
+                {/* Arrow */}
+                <div className="w-2 h-2 bg-neutral-900/95 border-r border-b border-sky-500/30 rotate-45 -mt-1 mx-auto relative z-10"></div>
             </div>
 
             {/* CONTAINER DO EDIFÍCIO */}

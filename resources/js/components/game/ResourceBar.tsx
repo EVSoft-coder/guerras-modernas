@@ -72,6 +72,21 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
 const ResourceItem = ({ icon, label, value, rate, color, accentColor, isStatic = false }: any) => {
     return (
         <div className="flex flex-col items-center justify-center border-r border-white/5 last:border-0 px-4 group cursor-help transition-all duration-500 hover:bg-white/[0.03] py-3 relative">
+            {/* TACTICAL TOOLTIP */}
+            <div className="absolute -top-20 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 z-50 pointer-events-none scale-95 group-hover:scale-100 translate-y-4 group-hover:translate-y-0">
+                <div className="bg-neutral-900/95 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] flex flex-col items-center min-w-[180px]">
+                    <div className="w-full flex justify-between items-center mb-2 pb-1.5 border-b border-white/5">
+                        <span className="text-[7px] font-black text-neutral-500 uppercase tracking-widest">Resource_Node</span>
+                        <div className={`w-1 h-1 rounded-full ${accentColor} shadow-[0_0_5px_currentColor]`}></div>
+                    </div>
+                    <span className="text-[10px] font-black uppercase text-white tracking-[0.2em]">{label}</span>
+                    <div className="text-[7px] text-neutral-500 mt-2 font-mono uppercase tracking-tighter text-center leading-relaxed">
+                         Monitorização em tempo real de fluxos logísticos e reservas estratégicas do setor operacional
+                    </div>
+                </div>
+                <div className="w-2.5 h-2.5 bg-neutral-900 border-r border-b border-white/10 rotate-45 -mt-1.5 mx-auto relative z-10"></div>
+            </div>
+
             <div className="flex items-center gap-2 mb-2 opacity-60 group-hover:opacity-100 transition-opacity">
                 {icon}
                 <span className="text-[9px] uppercase font-black tracking-[0.2em] text-neutral-400">{label}</span>

@@ -13,7 +13,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                         <SidebarMenuButton 
                             asChild 
                             isActive={item.url === page.url}
-                            className="sidebar-tactical-item h-11 px-3"
+                            className="sidebar-tactical-item h-11 px-3 transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
                         >
                             <Link href={item.url} prefetch>
                                 {item.icon && <item.icon className={item.url === page.url ? 'text-sky-400' : 'text-neutral-500'} />}

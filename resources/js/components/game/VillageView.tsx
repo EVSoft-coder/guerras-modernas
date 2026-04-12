@@ -42,7 +42,14 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick 
             {/* Overlay de Scanline e Vinheta */}
             <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black pointer-events-none z-10"></div>
             
-            {/* Edifícios Interativos (Absolute Grid) */}
+            {/* Scanline CRT Effect */}
+            <div className="absolute inset-0 scanline-overlay opacity-[0.15] z-10 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-sky-500/5 to-transparent h-20 animate-scanline z-10 pointer-events-none"></div>
+            
+            {/* Radar Sweep Effect (Discreto) */}
+            <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden rounded-[2.5rem]">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square bg-[conic-gradient(from_0deg,transparent_0deg,rgba(14,165,233,0.05)_90deg,transparent_90deg)] animate-spin-slow origin-center opacity-40"></div>
+            </div>
             <div className="absolute inset-2 z-20 grid grid-cols-5 grid-rows-5">
                 {/* Renderizar QG */}
                 <BuildingNode 
