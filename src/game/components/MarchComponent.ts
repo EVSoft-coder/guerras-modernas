@@ -14,6 +14,8 @@ export class MarchComponent implements Component {
         public arrivalTime: number,
         public returnTime: number,
         public status: "going" | "returning" | "completed",
+        public missionType: string = 'ataque',
+        public ownerId: number = 0,
         public loot: Record<string, number> = {}
     ) {}
 }

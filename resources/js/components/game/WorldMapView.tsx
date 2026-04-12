@@ -16,7 +16,10 @@ interface BaseMap {
     nome: string;
     coordenada_x: number;
     coordenada_y: number;
-    jogador_id: number;
+    loyalty?: number;
+    is_protected?: boolean;
+    protection_until?: string;
+    jogador_id: number | null;
     nivel?: number;
     jogador?: {
         id: number;
@@ -179,7 +182,8 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                 Array.from({ length: 20 }).map((_, x) => {
                                     const baseAt = visibleBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
                                     const isSelected = selectedSector?.x === x && selectedSector?.y === y;
-                                    const isEnemy = baseAt && baseAt.jogador_id !== playerBase?.jogador_id;
+                                    const isRebel = baseAt && !baseAt.jogador_id;
+                                    const isEnemy = baseAt && baseAt.jogador_id && baseAt.jogador_id !== playerBase?.jogador_id;
                                     const isPlayerBase = baseAt && baseAt.jogador_id === playerBase?.jogador_id;
 
                                     return (
@@ -190,6 +194,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                         ${isSelected ? 'border-orange-500 z-10 bg-orange-500/5 shadow-[0_0_20px_rgba(249,115,22,0.2)]' : 'hover:bg-white/5'}
                                                         ${isPlayerBase ? 'bg-sky-500/5' : ''}
                                                         ${isEnemy ? 'bg-red-500/5' : ''}
+                                                        ${isRebel ? 'bg-amber-500/5' : ''}
                                                     `}
                                                     onClick={() => setSelectedSector({ x, y, base: baseAt })}
                                                     style={{ left: x * 80, top: y * 80, width: 80, height: 80 }}
@@ -203,7 +208,9 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                             animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
                                                             transition={{ repeat: Infinity, duration: 2 }}
                                                             className={`p-3 rounded-xl border-2 shadow-2xl
-                                                                ${isPlayerBase ? 'bg-sky-500/20 text-sky-400 border-sky-500/40' : 'bg-red-500/20 text-red-400 border-red-500/40'}
+                                                                ${isPlayerBase ? 'bg-sky-500/20 text-sky-400 border-sky-500/40' : ''}
+                                                                ${isEnemy ? 'bg-red-500/20 text-red-400 border-red-500/40' : ''}
+                                                                ${isRebel ? 'bg-amber-500/20 text-amber-500 border-amber-500/40' : ''}
                                                             `}
                                                         >
                                                             <Home size={24} />
@@ -214,12 +221,18 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                             <TooltipContent className="bg-black/90 border-white/10 p-4 rounded-2xl shadow-2xl side-top">
                                                 <div className="space-y-2">
                                                     <div className="flex items-center gap-2">
-                                                        <Target size={12} className={isEnemy ? 'text-red-500' : 'text-sky-500'} />
-                                                        <span className="text-[10px] font-black uppercase text-white">{baseAt?.nome || 'Sector Neutro'}</span>
+                                                        <Target size={12} className={isEnemy ? 'text-red-500' : (isRebel ? 'text-amber-500' : 'text-sky-500')} />
+                                                        <span className="text-[10px] font-black uppercase text-white">
+                                                            {isRebel ? `Rebeldes (Nível ${baseAt.nivel || 1})` : (baseAt?.nome || 'Sector Neutro')}
+                                                        </span>
                                                     </div>
                                                     <div className="flex justify-between gap-4 text-[8px] font-mono text-neutral-500">
                                                         <span>COORD: {x}:{y}</span>
-                                                        <span>OWNER: {baseAt?.jogador?.username || 'NONE'}</span>
+                                                        <span>LOYALTY: {baseAt?.loyalty ?? 100}%</span>
+                                                        {baseAt?.is_protected && (
+                                                            <span className="text-yellow-400 font-black animate-pulse">UNDER_PROTECTION</span>
+                                                        )}
+                                                        <span>OWNER: {isRebel ? 'NEUTRAL_INSURGENT' : (baseAt?.jogador?.username || 'NONE')}</span>
                                                     </div>
                                                 </div>
                                             </TooltipContent>
@@ -296,17 +309,59 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                         <div className="flex-1 space-y-8 overflow-auto custom-scrollbar">
                             {selectedSector.base ? (
                                 <div className="space-y-8">
+                                    {/* LOYALTY TRACKER */}
+                                    <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[10px] text-neutral-500 uppercase font-black tracking-widest">Territorial_Loyalty</span>
+                                            <span className={`text-xs font-black ${(selectedSector.base?.loyalty ?? 100) < 30 ? 'text-red-500' : 'text-sky-400'}`}>
+                                                {selectedSector.base?.loyalty ?? 100}%
+                                            </span>
+                                        </div>
+                                        <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                            <motion.div 
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${selectedSector.base?.loyalty ?? 100}%` }}
+                                                className={`h-full transition-all duration-1000 ${
+                                                    (selectedSector.base?.loyalty ?? 100) < 30 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 
+                                                    (selectedSector.base?.loyalty ?? 100) < 60 ? 'bg-amber-500' : 'bg-sky-500'
+                                                }`}
+                                            />
+                                        </div>
+                                        <p className="text-[8px] text-neutral-500 font-mono leading-tight">
+                                            { (selectedSector.base?.loyalty ?? 100) < 30 
+                                                ? 'CRITICAL_INSTABILITY: High risk of capitulation detected.' 
+                                                : 'Sovereignty status within operational parameters.' 
+                                            }
+                                        </p>
+                                    </div>
+
                                     <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5">
                                         <span className="text-[10px] text-neutral-500 uppercase font-black block tracking-widest">Commanding_Officer</span>
-                                        <span className="text-xl font-black text-white tracking-tight">{selectedSector.base.jogador?.username}</span>
+                                        <span className="text-xl font-black text-white tracking-tight">{selectedSector.base.jogador?.username || 'NEUTRAL_INSURGENT'}</span>
                                     </div>
-                                    {selectedSector.base.jogador_id !== playerBase?.jogador_id && (
+                                    {selectedSector.base?.is_protected && selectedSector.base.protection_until && new Date(selectedSector.base.protection_until) > new Date() ? (
+                                        <div className="py-8 text-center border-2 border-dashed border-yellow-500/30 rounded-3xl bg-yellow-500/5">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <Shield className="text-yellow-500 animate-pulse" size={32} />
+                                                <span className="text-xs font-black text-yellow-500 uppercase tracking-widest">TACTICAL_TRUCE_ACTIVE</span>
+                                                {selectedSector.base.protection_until && (
+                                                    <span className="text-[10px] font-mono text-neutral-500 uppercase">
+                                                        Remains: {new Date(selectedSector.base.protection_until).toLocaleTimeString()}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ) : (!selectedSector.base?.jogador_id || selectedSector.base.jogador_id !== playerBase?.jogador_id) ? (
                                         <Button 
-                                            className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-3xl"
+                                            className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-3xl shadow-xl shadow-red-600/20 active:scale-95 transition-all text-xs"
                                             onClick={() => setIsAttackModalOpen(true)}
                                         >
-                                            ENGAGE_COMBAT
+                                            ENGAGE_COMBAT_SEQUENCE
                                         </Button>
+                                    ) : (
+                                        <div className="py-6 text-center border-2 border-dashed border-sky-500/20 rounded-3xl bg-sky-500/5">
+                                            <span className="text-xs font-black text-sky-400 uppercase tracking-widest">Friendly_Fire_Restricted</span>
+                                        </div>
                                     )}
                                 </div>
                             ) : (

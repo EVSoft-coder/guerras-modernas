@@ -34,7 +34,7 @@ class RelatorioController extends Controller
     {
         $validated = $request->validate([
             'atacante_id' => 'required|exists:jogadores,id',
-            'defensor_id' => 'required|exists:jogadores,id',
+            'defensor_id' => 'nullable|exists:jogadores,id',
             'vitoria' => 'required|boolean',
             'dados' => 'required|array'
         ]);

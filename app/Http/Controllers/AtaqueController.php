@@ -41,6 +41,11 @@ class AtaqueController extends Controller
             $baseDestino = null;
         } else {
             $baseDestino = Base::findOrFail($request->destino_id);
+            
+            // Validação de Proteção Pós-Conquista
+            if ($baseDestino->is_protected && $baseDestino->protection_until && now()->lt($baseDestino->protection_until)) {
+                return redirect()->back()->withErrors(['error' => "ALVO SOB PROTEÇÃO: O sector {$baseDestino->nome} está em trégua diplomática até " . $baseDestino->protection_until->format('H:i:s') . "."]);
+            }
         }
  
         try {

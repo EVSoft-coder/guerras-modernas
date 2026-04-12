@@ -20,6 +20,15 @@ class Base extends Model
         'qg_nivel',
         'muralha_nivel',
         'ultimo_update',
+        'is_protected',
+        'protection_until',
+        'loyalty'
+    ];
+
+    protected $casts = [
+        'is_protected' => 'boolean',
+        'protection_until' => 'datetime',
+        'loyalty' => 'integer'
     ];
 
     public function jogador()

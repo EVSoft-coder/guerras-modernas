@@ -11,8 +11,10 @@ export interface VillageResources {
 
 export class VillageComponent implements Component {
     public readonly type = 'Village';
+    public ownerId: number | null;
+
     constructor(
-        public ownerId: number,
+        ownerId: number | null,
         public level: number = 1,
         public resources: VillageResources = { 
             suprimentos: 0, 
@@ -22,6 +24,13 @@ export class VillageComponent implements Component {
             metal: 0, 
             energia: 0 
         },
-        public name: string = 'Base_Outpost'
-    ) {}
+        public name: string = 'Base_Outpost',
+        public isRebel: boolean = false,
+        public loyalty: number = 100,
+        public isProtected: boolean = false,
+        public protectionUntil: number = 0
+    ) {
+        // Regra: isRebel = true -> ownerId = null
+        this.ownerId = isRebel ? null : ownerId;
+    }
 }

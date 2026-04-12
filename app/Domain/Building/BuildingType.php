@@ -14,6 +14,7 @@ class BuildingType
     const AERODROMO = 'aerodromo';
     const RADAR_ESTRATEGICO = 'radar_estrategico';
     const CENTRO_PESQUISA = 'centro_pesquisa';
+    const PARLAMENTO = 'parlamento';
     const FACTORY = 'factory';
     const SOLAR = 'solar';
  
@@ -31,6 +32,7 @@ class BuildingType
             'fabrica_municoes' => self::FABRICA_MUNICOES,
             'mina_suprimentos' => self::MINA_SUPRIMENTOS,
             'mina' => self::MINA_SUPRIMENTOS,
+            'parlamento' => self::PARLAMENTO,
             'refinaria' => self::REFINARIA,
             'aerodromo' => self::AERODROMO,
             'heliponto' => self::AERODROMO,

@@ -65,10 +65,19 @@ export class CombatSystem implements GameSystem {
             }
         }
 
-        // 2. Determinar Vencedor (Defesa baseada no nível da base)
-        const totalDefense = (village.level * 200) + 500;
-        const attackerWins = totalAttack > totalDefense;
+        // 2. Determinar Vencedor (Defesa baseada no nível da base + guarnição)
+        let totalDefense = (village.level * 200) + 500;
+        
+        // Adicionar defesa das tropas presentes na vila
+        const villageArmy = entityManager.getComponent<ArmyComponent>(targetId, 'Army');
+        if (villageArmy) {
+            for (const [type, qty] of Object.entries(villageArmy.units)) {
+                const stats = unitStats[type];
+                if (stats) totalDefense += stats.defense * qty;
+            }
+        }
 
+        const attackerWins = totalAttack > totalDefense;
         console.log(`[COMBAT] FORCES: ATK(${totalAttack}) vs DEF(${totalDefense}) | Success: ${attackerWins}`);
 
         // 3. Aplicar Perdas (Percentagem de baixas)
@@ -114,6 +123,34 @@ export class CombatSystem implements GameSystem {
                 units_at_impact: army.units,
                 base_target_id: targetId
             });
+
+            // 4.2 LÓGICA DE LEALDADE E CONQUISTA
+            if (marchComp.missionType === 'conquista') {
+                const hasPolitico = army.units['politico'] && army.units['politico'] > 0;
+                
+                if (hasPolitico) {
+                    // Redução dinâmica entre 20 e 35
+                    const reduction = Math.floor(Math.random() * (35 - 20 + 1)) + 20;
+                    
+                    eventBus.emit('VILLAGE:LOYALTY_REDUCE', {
+                        targetId: targetId,
+                        amount: reduction,
+                        attackerId: army.ownerId
+                    });
+
+                    console.log(`[COMBAT] POLITICAL SUBVERSION: Base ${targetId} being influenced by Politico. Expected reduction: ${reduction}%`);
+                } else {
+                    console.log(`[COMBAT] CONQUEST ATTEMPT FAILED: No Politico unit present in expedition.`);
+                }
+
+                // A transição de posse será agora gerida pelo StateManager ao ouvir o evento acima
+            }
+
+            // 4.3 SE FOR REBELDE (E NÃO CONQUISTADO AGORA): Destruir posto avançado (Respawn System)
+            if (village.isRebel && marchComp.missionType !== 'conquista') {
+                console.log(`[COMBAT] REBEL OUTPOST NEUTRALIZED: Entity ${targetId} removed from world.`);
+                entityManager.removeEntity(targetId);
+            }
         } else if (marchComp) {
             // DERROTA: Arquivar mesmo assim
              this.saveBattleReport(army.ownerId, village.ownerId, false, {
@@ -146,7 +183,7 @@ export class CombatSystem implements GameSystem {
         }
     }
 
-    private saveBattleReport(attacker: number, defender: number, vitoria: boolean, dados: any): void {
+    private saveBattleReport(attacker: number, defender: number | null, vitoria: boolean, dados: any): void {
         const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
         
         fetch('/api/relatorios/store', {

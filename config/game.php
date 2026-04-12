@@ -105,6 +105,12 @@ return [
             'cost' => ['suprimentos' => 300, 'metal' => 200, 'pessoal' => 10],
             'time_base' => 120,
         ],
+        'parlamento' => [
+            'name' => 'Parlamento & Diplomacia',
+            'cost' => ['suprimentos' => 3000, 'metal' => 2000, 'pessoal' => 10, 'energia' => 500],
+            'time_base' => 1800,
+            'requires' => ['qg' => 10]
+        ],
     ],
 
     /*
@@ -174,6 +180,18 @@ return [
             'speed' => 120,
             'capacity' => 0,
             'is_drone' => true,
+        ],
+        'politico' => [
+            'name' => 'Comissário Político',
+            'cost' => ['suprimentos' => 2000, 'municoes' => 100, 'pessoal' => 5],
+            'time' => 1200,
+            'attack' => 1,
+            'defense_general' => 2,
+            'defense_armored' => 0,
+            'speed' => 5,
+            'capacity' => 0,
+            'requires' => ['parlamento' => 1],
+            'can_conquer' => true
         ],
     ],
 

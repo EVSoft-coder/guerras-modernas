@@ -3,7 +3,8 @@
  * Gestor tático de alta autoridade para estados globais (FSM).
  */
 import { eventBus, Events } from './EventBus';
- 
+import { entityManager } from './EntityManager';
+
 export enum GameState {
     MENU = 'MENU',
     PLAYING = 'PLAYING',
@@ -79,6 +80,50 @@ class StateManager {
     public getPaused(): boolean {
         return this.isPaused;
     }
+
+    /**
+     * Sistema de Subversão e Conquista (Autoridade de Estado).
+     */
+    public initConquestProcedures(): void {
+        eventBus.subscribe('VILLAGE:LOYALTY_REDUCE', (payload: any) => {
+            const { targetId, amount, attackerId } = payload;
+            const village = entityManager.getComponent<any>(targetId, 'Village');
+            
+            if (village) {
+                village.loyalty = Math.max(0, village.loyalty - amount);
+                console.log(`[STATE] Sovereignty at risk in Sector ${targetId}. Loyalty: ${village.loyalty}%`);
+                
+                if (village.loyalty <= 0) {
+                    this.executeConquest(targetId, attackerId);
+                }
+            }
+        });
+    }
+
+    private executeConquest(villageId: number, conquerorId: number): void {
+        const village = entityManager.getComponent<any>(villageId, 'Village');
+        const army = entityManager.getComponent<any>(villageId, 'Army');
+        
+        if (village) {
+            console.log(`[STATE] TERRITORY ANNEXED: Sector ${villageId} now under command of Player ${conquerorId}`);
+            village.ownerId = conquerorId;
+            village.loyalty = 100; // Reset total pós-conquista
+            village.isRebel = false;
+
+            // Ativar Proteção Pós-Conquista (15 minutos)
+            village.isProtected = true;
+            village.protectionUntil = Date.now() + (15 * 60 * 1000);
+        }
+        
+        if (army) {
+            army.units = {}; // Desmilitarização do sector ocupado
+        }
+
+        // Sinalização Global da Mudança de Soberania
+        eventBus.emit('VILLAGE:CONQUERED', { villageId, ownerId: conquerorId });
+        eventBus.emit('VILLAGE:UPDATE', { villageId });
+    }
 }
  
 export const stateManager = new StateManager();
+stateManager.initConquestProcedures();

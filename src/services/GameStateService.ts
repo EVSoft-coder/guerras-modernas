@@ -13,6 +13,7 @@ export interface EntitySnapshot {
     y: number;
     sprite?: string;
     health?: { current: number; max: number };
+    loyalty?: number;
     isSelected?: boolean;
     status?: "going" | "returning" | "completed";
     resources?: { wood: number; stone: number; iron: number };
@@ -79,6 +80,7 @@ class GameStateService {
                 y: gridPos ? gridPos.y : 0,
                 sprite: sprite?.imagePath,
                 health: health ? { current: health.value, max: health.max } : undefined,
+                loyalty: village ? village.loyalty : undefined,
                 isSelected: !!selection,
                 status: march?.status,
                 resources: res ? { wood: res.wood, stone: res.stone, iron: res.iron } : undefined,

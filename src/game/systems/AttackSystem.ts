@@ -89,7 +89,7 @@ export class AttackSystem implements GameSystem {
     }
 
     private launchAttack(data: any): void {
-        const { originX, originY, targetX, targetY, ownerId, troops } = data;
+        const { originX, originY, targetX, targetY, ownerId, troops, tipo } = data;
 
         // Gerar ID único de missão
         const missionId = `MSN_${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
@@ -122,7 +122,9 @@ export class AttackSystem implements GameSystem {
             Date.now(),
             Date.now() + travelTimeMs,
             Date.now() + (travelTimeMs * 2), // Estimativa de retorno
-            'going'
+            'going',
+            tipo || 'ataque',
+            ownerId
         ));
 
         // 4. Marcação de Tipo para o Satélite
