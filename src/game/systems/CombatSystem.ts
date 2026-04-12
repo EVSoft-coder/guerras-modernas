@@ -97,7 +97,7 @@ export class CombatSystem implements GameSystem {
             // 4. Executar Pilhagem (min(target.resources, carryCapacity))
             const loot: Record<string, number> = {};
             let totalLooted = 0;
-            const resourceOrder = ['suprimentos', 'combustivel', 'metal', 'municoes'];
+            const resourceOrder = ['suprimentos', 'combustivel', 'metal', 'municoes', 'energia', 'pessoal'];
             
             for (const res of resourceOrder) {
                 if (totalLooted >= carryCapacity) break;

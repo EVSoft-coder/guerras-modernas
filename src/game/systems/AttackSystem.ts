@@ -61,11 +61,17 @@ export class AttackSystem implements GameSystem {
 
         if (originId) {
             const village = entityManager.getComponent<VillageComponent>(originId, 'Village');
-            if (village) {
+            const resources = entityManager.getComponent<any>(originId, 'Resource');
+
+            if (village && resources) {
                 // Reintegrar Recursos (Loot)
                 for (const [res, qty] of Object.entries(march.loot || {})) {
-                    if ((village.resources as any)[res] !== undefined) {
-                        (village.resources as any)[res] += qty;
+                    if (resources[res] !== undefined) {
+                        resources[res] += qty;
+                        // Sincronizar também com o componente Village para persistência se necessário
+                        if (village.resources && (village.resources as any)[res] !== undefined) {
+                            (village.resources as any)[res] += qty;
+                        }
                     }
                 }
 
