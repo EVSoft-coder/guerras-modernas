@@ -101,11 +101,21 @@ const ResourceItem = ({ icon, label, value, rate, cap, color, accentColor, isSta
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             
             {/* TACTICAL TOOLTIP */}
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 z-50 pointer-events-none scale-90 group-hover:scale-100 translate-y-4 group-hover:translate-y-0">
-                <div className="bg-neutral-900 border border-white/10 px-5 py-4 rounded-3xl shadow-[0_40px_80px_rgba(0,0,0,1)] flex flex-col items-center min-w-[200px]">
+            <div className="absolute -top-28 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 z-50 pointer-events-none scale-90 group-hover:scale-100 translate-y-4 group-hover:translate-y-0">
+                <div className="bg-neutral-900 border border-white/10 px-5 py-4 rounded-3xl shadow-[0_40px_80px_rgba(0,0,0,1)] flex flex-col items-center min-w-[220px]">
                     <span className="text-[10px] font-black uppercase text-white tracking-[0.3em] mb-2">{label}</span>
-                    <div className="text-[8px] text-neutral-500 font-mono uppercase tracking-tighter text-center leading-relaxed">
-                         Monitorização em tempo real de fluxos e reservas estratégicas
+                    <div className="flex flex-col gap-1 w-full text-[9px] font-mono uppercase text-neutral-400">
+                        <div className="flex justify-between">
+                            <span>Fluxo/Hora:</span>
+                            <span className="text-emerald-400 font-black">+{(rate * 3600).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between border-t border-white/5 pt-1 mt-1">
+                            <span>Eficiência:</span>
+                            <span className="text-sky-400 font-black">{Math.min(100, (value / cap) * 100).toFixed(1)}%</span>
+                        </div>
+                        <div className="text-[7px] text-neutral-600 mt-2 text-center italic">
+                             Sensor ótico de monitorização estratégica ativado
+                        </div>
                     </div>
                 </div>
             </div>

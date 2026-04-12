@@ -259,19 +259,37 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                     className="flex items-center justify-center"
                                 >
                                     <div className="relative group cursor-pointer" onClick={() => setSelectedUnit(e.id)}>
-                                        <div className={`
-                                            relative w-10 h-10 rounded-xl border-2 rotate-45 flex items-center justify-center transition-all
-                                            ${e.type === 'Army' ? 'border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)]' : 'border-sky-500/50 shadow-xl'}
-                                            ${selectedUnit === e.id ? 'bg-orange-500 border-white' : 'bg-black/80 hover:border-sky-400'}
-                                        `}>
-                                            <div className="-rotate-45">
-                                                {e.type === 'Army' ? (
-                                                    <Navigation size={18} className={`${selectedUnit === e.id ? 'text-black' : 'text-orange-400'} ${e.status === 'returning' ? 'rotate-180' : ''}`} />
-                                                ) : (
-                                                    <Target size={18} className={selectedUnit === e.id ? 'text-black' : 'text-sky-400'} />
-                                                )}
-                                            </div>
-                                        </div>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <div className={`
+                                                    relative w-10 h-10 rounded-xl border-2 rotate-45 flex items-center justify-center transition-all
+                                                    ${e.type === 'Army' ? 'border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)]' : 'border-sky-500/50 shadow-xl'}
+                                                    ${selectedUnit === e.id ? 'bg-orange-500 border-white' : 'bg-black/80 hover:border-sky-400'}
+                                                `}>
+                                                    <div className="-rotate-45">
+                                                        {e.type === 'Army' ? (
+                                                            <Navigation size={18} className={`${selectedUnit === e.id ? 'text-black' : 'text-orange-400'} ${e.status === 'returning' ? 'rotate-180' : ''}`} />
+                                                        ) : (
+                                                            <Target size={18} className={selectedUnit === e.id ? 'text-black' : 'text-sky-400'} />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent className="bg-black/90 border-white/10 p-3 rounded-xl shadow-2xl z-[100]">
+                                                <div className="space-y-1">
+                                                    <div className="text-[9px] font-black uppercase text-white flex items-center gap-2">
+                                                        <Navigation size={10} className="text-orange-400" /> 
+                                                        EXPE_ID: {e.id} | {e.status?.toUpperCase() || 'OPERACIONAL'}
+                                                    </div>
+                                                    {e.march && (
+                                                        <div className="text-[8px] font-mono text-neutral-500">
+                                                            ETA: {Math.max(0, Math.floor(e.march.remainingTime))}s |
+                                                            DEST: {e.march.target.x}:{e.march.target.y}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TooltipContent>
+                                        </Tooltip>
                                     </div>
                                 </motion.div>
                             ))}
