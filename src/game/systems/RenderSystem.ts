@@ -20,15 +20,20 @@ export class RenderSystem implements GameSystem {
     public update(deltaTime: number): void {
         if (!this.ctx || !this.canvas) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        const entities = entityManager.getEntitiesWith(['Position', 'Sprite']);
- 
-        for (const entityId of entities) {
-            const pos = entityManager.getComponent<any>(entityId, 'Position');
+        
+        // Protocolo ECS: Obter todas as entidades com coordenadas
+        const entities = entityManager.getEntitiesWith(['Position']);
+
+        entities.forEach(entityId => {
+            const pos = entityManager.getComponent<any>(entityId, "Position");
+            console.log("RENDER ENTITY:", pos);
+
             const sprite = entityManager.getComponent<any>(entityId, 'Sprite');
             const health = entityManager.getComponent<any>(entityId, 'Health');
             const isSelected = entityManager.getComponent<any>(entityId, 'Selection');
+            
             this.drawEntity(pos, sprite, health, isSelected, entityId);
-        }
+        });
     }
  
     private createCanvas(): void {
