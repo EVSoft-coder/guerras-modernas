@@ -44,8 +44,8 @@ if (rootElement) {
             console.log("UI MOUNTED");
 
             // MOTOR ECS: Só carrega se estiver autenticado no Dashboard
-            const isAuth = (props.initialPage.props as any).auth?.user;
-            const isDashboard = props.initialPage.component.toLowerCase().includes('dashboard');
+            const isAuth = (props?.initialPage?.props as any)?.auth?.user;
+            const isDashboard = props?.initialPage?.component?.toLowerCase()?.includes('dashboard');
 
             if (isAuth && isDashboard) {
                 console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");

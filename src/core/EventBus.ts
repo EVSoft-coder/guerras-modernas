@@ -14,13 +14,22 @@ class EventBus {
  
     /**
      * Subscreve um manipulador. O eventType deve ser NAMESPACE:ACTION.
+     * Retorna uma função de limpeza (unsubscribe).
      */
-    public subscribe(eventType: string, handler: TacticalHandler): void {
+    public subscribe(eventType: string, handler: TacticalHandler): () => void {
         const type = eventType.toUpperCase();
         if (!this.handlers.has(type)) {
             this.handlers.set(type, []);
         }
         this.handlers.get(type)!.push(handler);
+
+        // Retorna a função de limpeza
+        return () => {
+            const currentHandlers = this.handlers.get(type);
+            if (currentHandlers) {
+                this.handlers.set(type, currentHandlers.filter(h => h !== handler));
+            }
+        };
     }
  
     /**

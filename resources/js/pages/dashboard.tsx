@@ -25,7 +25,11 @@ export default function Dashboard(props: DashboardProps) {
         return (
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title="Mapa Mundial TÃ¡ctico" />
-                <WorldMapView />
+                <WorldMapView 
+                    playerBase={props.base} 
+                    troops={props.base?.tropas} 
+                    gameConfig={props.gameConfig} 
+                />
             </AppLayout>
         );
     }
