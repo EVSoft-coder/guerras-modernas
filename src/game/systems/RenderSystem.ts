@@ -25,18 +25,39 @@ export class RenderSystem implements GameSystem {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.frameCount++;
         
+        const now = Date.now();
+        
         // Protocolo ECS: Obter todas as entidades em grelha
         const entities = entityManager.getEntitiesWith(['GridPosition']);
 
-        if (this.debug && this.frameCount % 60 === 0) {
-            console.log("Entities Rendered (Grid):", entities.length);
-        }
-
         entities.forEach(entityId => {
             const gridPos = entityManager.getComponent<any>(entityId, "GridPosition");
-            if (!gridPos) return;
+            const march = entityManager.getComponent<any>(entityId, "March");
             
-            // Converter para coordenadas de píxeis
+            if (!gridPos) return;
+
+            // 1. Interpolação Táctica para Marchas (Animação de Movimento Digital)
+            if (march && march.status !== 'completed') {
+                const now = Date.now();
+                
+                if (march.status === "going") {
+                    const duration = march.arrivalTime - march.startTime;
+                    if (duration > 0) {
+                        const progress = Math.min(1, Math.max(0, (now - march.startTime) / duration));
+                        gridPos.x = march.originX + (march.targetX - march.originX) * progress;
+                        gridPos.y = march.originY + (march.targetY - march.originY) * progress;
+                    }
+                } else if (march.status === "returning") {
+                    const duration = march.returnTime - march.arrivalTime;
+                    if (duration > 0) {
+                        const progress = Math.min(1, Math.max(0, (now - march.arrivalTime) / duration));
+                        gridPos.x = march.targetX + (march.originX - march.targetX) * progress;
+                        gridPos.y = march.targetY + (march.originY - march.targetY) * progress;
+                    }
+                }
+            }
+            
+            // Converter para coordenadas de píxeis (Para renderização interna se ativa)
             const pos = {
                 x: gridPos.x * this.TILE_SIZE + this.TILE_SIZE / 2,
                 y: gridPos.y * this.TILE_SIZE + this.TILE_SIZE / 2

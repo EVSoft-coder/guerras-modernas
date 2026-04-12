@@ -242,10 +242,18 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                         {/* Unit Icon Wrapper */}
                                         <div className={`
                                             relative w-10 h-10 rounded-xl border-2 rotate-45 flex items-center justify-center transition-all
-                                            ${selectedUnit === e.id ? 'bg-yellow-500 border-white shadow-[0_0_20px_rgba(234,179,8,0.6)]' : 'bg-black/80 border-sky-500/50 hover:border-sky-400 shadow-xl'}
+                                            ${e.type === 'Army' ? 'border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)]' : 'border-sky-500/50 shadow-xl'}
+                                            ${selectedUnit === e.id ? 'bg-orange-500 border-white shadow-[0_0_20px_rgba(249,115,22,0.6)]' : 'bg-black/80 hover:border-sky-400'}
                                         `}>
                                             <div className="-rotate-45">
-                                                <Target size={18} className={selectedUnit === e.id ? 'text-black' : 'text-sky-400'} />
+                                                {e.type === 'Army' ? (
+                                                    <Navigation 
+                                                        size={18} 
+                                                        className={`${selectedUnit === e.id ? 'text-black' : 'text-orange-400'} ${e.status === 'returning' ? 'rotate-180' : ''} transition-transform`} 
+                                                    />
+                                                ) : (
+                                                    <Target size={18} className={selectedUnit === e.id ? 'text-black' : 'text-sky-400'} />
+                                                )}
                                             </div>
                                         </div>
 
