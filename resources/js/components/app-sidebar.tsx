@@ -33,8 +33,7 @@ export function AppSidebar() {
     const changeMode = (mode: 'VILLAGE' | 'WORLD_MAP') => {
         if (mode === 'WORLD_MAP') console.log("CLICK MAPA");
         console.log("CLICK MUDANÇA DE MODO:", mode);
-        eventBus.emit({
-            type: Events.GAME_CHANGE_MODE,
+        (window as any).eventBus.emit("GAME:CHANGE_MODE", {
             timestamp: Date.now(),
             data: { mode }
         });
