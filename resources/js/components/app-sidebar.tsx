@@ -58,8 +58,8 @@ export function AppSidebar() {
 
                 {/* GAME CONTROLS */}
                 <SidebarGroup className="px-2 py-4">
-                    <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.4em] text-sky-500/50 mb-4 px-4 flex items-center gap-2">
-                        <div className="w-1 h-1 bg-sky-500 rounded-full animate-pulse" />
+                    <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.4em] text-sky-400 mb-4 px-4 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-sky-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.5)]" />
                         COMMAND_PROTOCOLS
                     </SidebarGroupLabel>
                     <SidebarMenu className="gap-2">

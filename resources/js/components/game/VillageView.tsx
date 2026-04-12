@@ -11,13 +11,14 @@ interface VillageViewProps {
 export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig }) => {
     // Mapeamento de posições fixas táticas para os tipos de edifícios
     const buildingPositions: Record<string, { x: number, y: number }> = {
-        'quartel': { x: 2, y: 1 },
-        'mina_suprimentos': { x: 0, y: 2 },
-        'refinaria': { x: 4, y: 2 },
+        'quartel': { x: 3, y: 1 },
+        'mina_suprimentos': { x: 0, y: 3 },
+        'refinaria': { x: 4, y: 3 },
         'fabrica_municoes': { x: 1, y: 4 },
         'posto_recrutamento': { x: 3, y: 4 },
-        'aerodromo': { x: 4, y: 0 },
-        'centro_pesquisa': { x: 0, y: 0 },
+        'aerodromo': { x: 4, y: 1 },
+        'radar_estrategico': { x: 0, y: 1 },
+        'centro_pesquisa': { x: 1, y: 0 },
         'muralha': { x: 2, y: 4 }
     };
 
@@ -28,6 +29,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
         'fabrica_municoes': 'Arsenal de Munições',
         'posto_recrutamento': 'Gabinete de Recrutamento',
         'aerodromo': 'Base Aérea / Heliponto',
+        'radar_estrategico': 'Radar de Varredura Estratégico',
         'centro_pesquisa': 'Laboratório de I&D',
         'muralha': 'Perímetro Defensivo'
     };
