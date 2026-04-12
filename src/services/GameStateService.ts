@@ -8,6 +8,7 @@ import { AttackMarchComponent } from '../game/components/AttackMarchComponent';
 
 export interface EntitySnapshot {
     id: number;
+    type?: string;
     x: number;
     y: number;
     sprite?: string;
@@ -66,9 +67,12 @@ class GameStateService {
             const selection = entityManager.getComponent<any>(id, 'Selection');
             const res = entityManager.getComponent<any>(id, 'Resource');
             const march = entityManager.getComponent<any>(id, 'AttackMarch');
+            const building = entityManager.getComponent<any>(id, 'Building');
+            const village = entityManager.getComponent<any>(id, 'Village');
 
             newSnapshots.push({
                 id,
+                type: building?.buildingType || (village ? 'VILLAGE' : (march ? 'MARCH' : undefined)),
                 x: gridPos ? gridPos.x : 0,
                 y: gridPos ? gridPos.y : 0,
                 sprite: sprite?.imagePath,
