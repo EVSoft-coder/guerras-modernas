@@ -72,15 +72,18 @@ class GameStateService {
      * Captures current state of all relevant entities.
      */
     public snap(): void {
-        const entities = entityManager.getEntitiesWith(['Position']);
+        const entities = entityManager.getEntitiesWith(['GridPosition']);
         const marches = entityManager.getEntitiesWith(['AttackMarch']);
         const newSnapshots: EntitySnapshot[] = [];
+
+        // TILE_SIZE constante para conversão de projeção
+        const TILE_SIZE = 64;
 
         // Combine IDs
         const allIds = Array.from(new Set([...entities, ...marches]));
 
         for (const id of allIds) {
-            const pos = entityManager.getComponent<any>(id, 'Position');
+            const gridPos = entityManager.getComponent<any>(id, 'GridPosition');
             const sprite = entityManager.getComponent<any>(id, 'Sprite');
             const health = entityManager.getComponent<any>(id, 'Health');
             const selection = entityManager.getComponent<any>(id, 'Selection');
@@ -89,8 +92,8 @@ class GameStateService {
 
             newSnapshots.push({
                 id,
-                x: pos ? pos.x : 0,
-                y: pos ? pos.y : 0,
+                x: gridPos ? gridPos.x * TILE_SIZE : 0,
+                y: gridPos ? gridPos.y * TILE_SIZE : 0,
                 sprite: sprite?.imagePath,
                 health: health ? { current: health.value, max: health.max } : undefined,
                 isSelected: !!selection,

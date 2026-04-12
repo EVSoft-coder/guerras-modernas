@@ -37,17 +37,17 @@ entityManager.addComponent(playerUnit, new PlayerComponent());
 entityManager.addComponent(playerUnit, new ResourceComponent(5000, 5000, 5000));
 entityManager.addComponent(playerUnit, new BuildQueueComponent());
 entityManager.addComponent(playerUnit, new VillageComponent('Vila Alfa'));
-entityManager.addComponent(playerUnit, new PositionComponent(100, 200));
+// entityManager.addComponent(playerUnit, new PositionComponent(100, 200)); // Deprecado
 entityManager.addComponent(playerUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(playerUnit, new HealthComponent(1000, 1000));
 entityManager.addComponent(playerUnit, new AttackComponent(50, 150, 1)); 
 entityManager.addComponent(playerUnit, new SpriteComponent('/images/unidades/blindado_apc.png')); 
 
-// Componentes Visuais (Doutrina Requisitada)
+// Componentes Tácticos de Grelha (Doutrina Requisitada)
 entityManager.addComponent(playerUnit, {
-    type: "Position",
-    x: 100,
-    y: 100
+    type: "GridPosition",
+    x: 5,
+    y: 5
 } as any);
 
 entityManager.addComponent(playerUnit, {
@@ -83,9 +83,9 @@ console.log(`[BOOT] Enemy Unit Omega (ID: ${enemyUnit}) detected with Main Battl
 
 // Componentes Visuais Inimigo (Doutrina Requisitada)
 entityManager.addComponent(enemyUnit, {
-    type: "Position",
-    x: 500,
-    y: 200
+    type: "GridPosition",
+    x: 10,
+    y: 10
 } as any);
 
 entityManager.addComponent(enemyUnit, {

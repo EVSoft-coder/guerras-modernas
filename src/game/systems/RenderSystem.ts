@@ -11,6 +11,7 @@ export class RenderSystem implements GameSystem {
     private images: Map<string, HTMLImageElement> = new Map();
     private frameCount: number = 0;
     private debug: boolean = true; // Ativar para monitorização
+    private TILE_SIZE: number = 64;
  
     public init(): void {
         console.log('[SYSTEM] RenderSystem - Initializing Visual Canvas...');
@@ -24,15 +25,21 @@ export class RenderSystem implements GameSystem {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.frameCount++;
         
-        // Protocolo ECS: Obter todas as entidades com coordenadas
-        const entities = entityManager.getEntitiesWith(['Position']);
+        // Protocolo ECS: Obter todas as entidades em grelha
+        const entities = entityManager.getEntitiesWith(['GridPosition']);
 
         if (this.debug && this.frameCount % 60 === 0) {
-            console.log("Entities Rendered:", entities.length);
+            console.log("Entities Rendered (Grid):", entities.length);
         }
 
         entities.forEach(entityId => {
-            const pos = entityManager.getComponent<any>(entityId, "Position");
+            const gridPos = entityManager.getComponent<any>(entityId, "GridPosition");
+            
+            // Converter para coordenadas de píxeis
+            const pos = {
+                x: gridPos.x * this.TILE_SIZE + this.TILE_SIZE / 2,
+                y: gridPos.y * this.TILE_SIZE + this.TILE_SIZE / 2
+            };
 
             const sprite = entityManager.getComponent<any>(entityId, 'Sprite');
             const health = entityManager.getComponent<any>(entityId, 'Health');
