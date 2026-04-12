@@ -69,10 +69,11 @@ class GameStateService {
             const march = entityManager.getComponent<any>(id, 'AttackMarch');
             const building = entityManager.getComponent<any>(id, 'Building');
             const village = entityManager.getComponent<any>(id, 'Village');
+            const unit = entityManager.getComponent<any>(id, 'Unit');
 
             newSnapshots.push({
                 id,
-                type: building?.buildingType || (village ? 'VILLAGE' : (march ? 'MARCH' : undefined)),
+                type: building?.buildingType || unit?.unitCategory || (village ? 'VILLAGE' : (march ? 'MARCH' : undefined)),
                 x: gridPos ? gridPos.x : 0,
                 y: gridPos ? gridPos.y : 0,
                 sprite: sprite?.imagePath,

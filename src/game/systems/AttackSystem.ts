@@ -6,6 +6,7 @@ import { GridPositionComponent } from '../components/GridPositionComponent';
 import { VelocityComponent } from '../components/Velocity';
 import { Pathfinding } from '../../utils/Pathfinding';
 import { RenderableComponent } from '../components/RenderableComponent';
+import { UnitComponent } from '../components/UnitComponent';
 
 export class AttackSystem implements GameSystem {
     public init(): void {
@@ -47,7 +48,19 @@ export class AttackSystem implements GameSystem {
             renderType: 'unit'
         } as RenderableComponent);
 
-        console.log(`[WAR] Army ${armyId} launched from (${originX},${originY}) to (${targetX},${targetY})`);
+        // 5. Atributos de Combate Modernos (UnitComponent)
+        const unitType = Object.keys(troops).includes('tanque_combate') ? 'tank' : 
+                         Object.keys(troops).includes('helicoptero_ataque') ? 'drone' : 'infantry';
+
+        entityManager.addComponent(armyId, new UnitComponent(
+            unitType,
+            120,    // Attack
+            80,     // Defense
+            25,     // Speed
+            5000    // Capacity
+        ));
+
+        console.log(`[WAR] Army ${armyId} launched with UnitComponent(${unitType})`);
     }
 
     public preUpdate(deltaTime: number): void {}
