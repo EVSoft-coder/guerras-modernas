@@ -16,6 +16,33 @@ export class SyncSystem implements GameSystem {
         eventBus.subscribe(Events.LARAVEL_SYNC_ATTACKS, (p) => {
             this.syncLaravelAttacks(p.data.attacks);
         });
+
+        // Capturar resultados de combate para persistência de relatórios
+        eventBus.subscribe(Events.ATTACK_ARRIVED, (ev) => {
+            if (ev.data.report) {
+                this.persistReport(ev.data.report);
+            }
+        });
+    }
+
+    private async persistReport(report: any): Promise<void> {
+        try {
+            await fetch('/api/relatorios/store', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
+                },
+                body: JSON.stringify({
+                    titulo: `OPERATIONAL REPORT: ${report.resultado}`,
+                    detalhes: report,
+                    vencedor_id: report.vencedor === 'ATACANTE' ? 1 : 2 // Mock IDs por agora
+                })
+            });
+            console.log('[SYNC] Battle report uploaded to Central Command.');
+        } catch (err) {
+            console.error('[SYNC] Failed to transmit battle report:', err);
+        }
     }
 
     private syncLaravelAttacks(attacks: any[]): void {

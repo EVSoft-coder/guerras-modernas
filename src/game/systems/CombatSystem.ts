@@ -68,12 +68,14 @@ export class CombatSystem implements GameSystem {
         const attackerLossPercent = attackerWins ? 0.2 : 0.8; // Se vencer perde 20%, se perder perde 80%
         const defenderLossPercent = attackerWins ? 0.5 : 0.1; // Se perder (vila) perde 50% eficiência? (Aqui perdemos recursos)
 
+        const attackerQtyBefore = Object.values(army.units).reduce((a, b) => a + b, 0);
         for (const type in army.units) {
             army.units[type] = Math.floor(army.units[type] * (1 - attackerLossPercent));
         }
+        const lossesQty = attackerQtyBefore - Object.values(army.units).reduce((a, b) => a + b, 0);
 
         if (attackerWins) {
-            // 5. Sistema de Saque com Limite de Capacidade
+            // ... [Lógica de saque mantida] ...
             const totalCapacity = (attackerUnit?.capacity || 1000) * attackerQty;
             
             let possibleWood = Math.floor(village.resources.wood * 0.3);
@@ -98,21 +100,40 @@ export class CombatSystem implements GameSystem {
             army.loot.stone += possibleStone;
             army.loot.iron += possibleIron;
 
+            const reportData = {
+                vencedor: 'ATACANTE',
+                resultado: 'VICTORY',
+                perdas_atacante: lossesQty,
+                perdas_defensor: 0,
+                loot: { wood: possibleWood, stone: possibleStone, iron: possibleIron }
+            };
+
             eventBus.emit(Events.ATTACK_ARRIVED, {
                 entityId: armyId,
                 data: {
                     result: 'VICTORY',
-                    looted: { wood: possibleWood, stone: possibleStone, iron: possibleIron }
+                    looted: reportData.loot,
+                    report: reportData
                 }
             });
             
             console.log(`[COMBAT] VICTORY: Resources captured and casualties reported.`);
         } else {
+            // DERROTA DO ATACANTE
+            const reportData = {
+                vencedor: 'DEFENSOR',
+                resultado: 'DEFEAT',
+                perdas_atacante: lossesQty,
+                perdas_defensor: 0,
+                loot: null
+            };
+
             eventBus.emit(Events.ATTACK_ARRIVED, {
                 entityId: armyId,
                 data: {
                     result: 'DEFEAT',
-                    looted: { wood: 0, stone: 0, iron: 0 }
+                    looted: { wood: 0, stone: 0, iron: 0 },
+                    report: reportData
                 }
             });
             console.log(`[COMBAT] DEFEAT: Attack repelled. High casualties sustained.`);

@@ -22,4 +22,13 @@ class RelatorioController extends Controller
 
         return view('relatorio', compact('relatorio'));
     }
+
+    /**
+     * Exibe os detalhes de um relatório de batalha.
+     */
+    public function store(Request $request)
+    {
+        $report = Relatorio::create($request->all());
+        return response()->json(['status' => 'SUCCESS', 'id' => $report->id]);
+    }
 }
