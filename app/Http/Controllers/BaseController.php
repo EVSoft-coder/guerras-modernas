@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
  
 use App\Models\Base;
-use App\Services\BuildingService;
-use App\Services\UnitService;
-use App\Services\EconomyService;
+use App\Services\GameService;
 use App\Http\Requests\BuildingUpgradeRequest;
 use App\Http\Requests\TreinarRequest;
 use Illuminate\Http\Request;
@@ -13,18 +11,11 @@ use Illuminate\Support\Facades\Auth;
  
 class BaseController extends Controller
 {
-    protected $buildingService;
-    protected $unitService;
-    protected $economyService;
- 
-    public function __construct(
-        BuildingService $buildingService, 
-        UnitService $unitService,
-        EconomyService $economyService
-    ) {
-        $this->buildingService = $buildingService;
-        $this->unitService = $unitService;
-        $this->economyService = $economyService;
+    protected $gameService;
+
+    public function __construct(GameService $gameService) 
+    {
+        $this->gameService = $gameService;
     }
  
     /**
@@ -36,7 +27,7 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
  
         try {
-            $this->buildingService->upgrade($base, $request->tipo);
+            $this->gameService->iniciarUpgrade($base, $request->tipo);
             return redirect()->back()->with('success', "ORDEM DE ENGENHARIA: Upgrade de " . strtoupper($request->tipo) . " iniciado.");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
@@ -52,7 +43,7 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
  
         try {
-            $this->unitService->treinar($base, $request->unidade, $request->quantidade);
+            $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
             return redirect()->back()->with('success', "ORDEM DE RECRUTAMENTO: {$request->quantidade}x " . strtoupper($request->unidade) . " em alistamento.");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
@@ -84,11 +75,10 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
  
         try {
-            // Lógica de mercado movida para o EconomyService
             $custo = 300;
             $ganho = 100;
             
-            if ($this->economyService->consumir($base, [$request->oferece => $custo])) {
+            if ($this->gameService->consumirRecursos($base, [$request->oferece => $custo])) {
                 $base->recursos->increment($request->recebe, $ganho);
                 return redirect()->back()->with('success', 'TRANSAÇÃO NO MERCADO NEGRO: Recursos trocados com sucesso.');
             }

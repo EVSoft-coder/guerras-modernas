@@ -25,7 +25,7 @@ class ProcessarCron extends Command
                 $gameService->atualizarRecursos($base);
 
                 // 2. Processar Fila de Construção e Treino
-                $gameService->processarFila($base);
+                $gameService->processarFilas($base);
 
                 $this->info("Base [ID: {$base->id}] processada.");
             } catch (\Exception $e) {
