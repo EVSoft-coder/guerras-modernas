@@ -23,4 +23,8 @@ export default defineConfig({
     esbuild: {
         jsx: 'automatic',
     },
+    build: {
+        minify: false,
+        sourcemap: true,
+    },
 });
