@@ -6,17 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 
 class Relatorio extends Model
 {
+    protected $table = 'relatorios';
+
     protected $fillable = [
-        'vencedor_id',
-        'titulo',
-        'origem_nome',
-        'destino_nome',
-        'detalhes',
         'atacante_id',
         'defensor_id',
+        'vitoria',
+        'dados',
     ];
 
     protected $casts = [
-        'detalhes' => 'array',
+        'dados' => 'array',
+        'vitoria' => 'boolean',
     ];
+
+    public function atacante()
+    {
+        return $this->belongsTo(Jogador::class, 'atacante_id');
+    }
+
+    public function defensor()
+    {
+        return $this->belongsTo(Jogador::class, 'defensor_id');
+    }
 }

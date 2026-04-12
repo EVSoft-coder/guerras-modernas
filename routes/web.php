@@ -105,6 +105,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Informação e Inteligência
+    Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index');
     Route::get('/relatorios/{id}', [RelatorioController::class, 'show'])->name('relatorio.show');
     Route::post('/api/relatorios/store', [RelatorioController::class, 'store'])->name('relatorio.store');
     Route::get('/mensagens', [ChatController::class, 'pessoais'])->name('mensagens.index');

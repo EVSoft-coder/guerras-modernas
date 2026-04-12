@@ -23,19 +23,67 @@ export class AttackSystem implements GameSystem {
 
         for (const armyId of marches) {
             const march = entityManager.getComponent<any>(armyId, 'March');
+            if (!march) continue;
             
-            if (march && march.status === 'going' && now >= march.arrivalTime) {
+            // A. GATILHO DE COMBATE (Chegada ao Alvo)
+            if (march.status === 'going' && now >= march.arrivalTime) {
                 console.log(`[WAR] CONTACT: Army ${armyId} reached objective at ${march.targetX}:${march.targetY}`);
                 
-                // Disparar resolução de combate
                 eventBus.emit('ATTACK:RESOLVE', {
                     entityId: armyId,
                     timestamp: now,
                     data: { march }
                 });
 
-                // Mudar estado para evitar múltiplos disparos no mesmo frame
-                march.status = 'completed'; // Será processado pelo CombatSystem para 'returning' ou 'destroyed'
+                march.status = 'completed'; 
+            }
+
+            // B. GATILHO DE REINTEGRAÇÃO (Chegada à Origem)
+            if (march.status === 'returning' && now >= march.returnTime) {
+                console.log(`[WAR] RECOVERY: Army ${armyId} returned to base at ${march.originX}:${march.originY}`);
+                
+                this.reintegrateTroops(armyId, march);
+                
+                // Remover entidade de marcha do motor
+                entityManager.removeEntity(armyId);
+            }
+        }
+    }
+
+    /**
+     * Reintegra sobreviventes e espólio na vila de origem.
+     */
+    private reintegrateTroops(armyId: number, march: any): void {
+        const army = entityManager.getComponent<ArmyComponent>(armyId, 'Army');
+        if (!army) return;
+
+        // Localizar vila de origem (por coordenadas)
+        const villages = entityManager.getEntitiesWith(['Village', 'GridPosition']);
+        let originId: number | null = null;
+
+        for (const vId of villages) {
+            const pos = entityManager.getComponent<any>(vId, 'GridPosition');
+            if (pos && pos.x === march.originX && pos.y === march.originY) {
+                originId = vId;
+                break;
+            }
+        }
+
+        if (originId) {
+            const village = entityManager.getComponent<VillageComponent>(originId, 'Village');
+            if (village) {
+                // 1. Reintegrar Recursos (Loot)
+                for (const [res, qty] of Object.entries(march.loot || {})) {
+                    if ((village.resources as any)[res] !== undefined) {
+                        (village.resources as any)[res] += qty;
+                    }
+                }
+
+                // 2. Reintegrar Tropas (No backend real isto seria sincronizado via API)
+                console.log(`[WAR] SUCCESS: ${armyId} reintegrated at ${originId}.`);
+                
+                // Emitir evento de atualização para a UI refletir os novos recursos e tropas
+                eventBus.emit('VILLAGE:UPDATE', { villageId: originId });
             }
         }
     }

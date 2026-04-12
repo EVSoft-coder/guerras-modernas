@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Zap, Box, Crosshair, Target, Map as MapIcon, ChevronRight } from 'lucide-react';
+import { ActiveMovements } from './ActiveMovements';
 
 interface StrategyHUDProps {
     resources: { wood: number, stone: number, iron: number };
@@ -48,6 +48,9 @@ export const StrategyHUD: React.FC<StrategyHUDProps> = ({
                             ))}
                         </div>
                     </div>
+
+                    {/* MOVIMENTOS ATIVOS (Radar Militar) */}
+                    <ActiveMovements />
                 </div>
 
                 {/* RECURSOS: CENTRADO E PREMIUM */}

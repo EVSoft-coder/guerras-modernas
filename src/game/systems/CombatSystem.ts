@@ -12,7 +12,9 @@ export class CombatSystem implements GameSystem {
         // Subscrever à resolução tática de ataque
         eventBus.subscribe('ATTACK:RESOLVE', (payload) => {
             const { entityId, data } = payload;
-            this.handleAttackResolve(entityId, data.march);
+            if (entityId !== undefined) {
+                this.handleAttackResolve(entityId, data.march);
+            }
         });
     }
 
@@ -104,6 +106,22 @@ export class CombatSystem implements GameSystem {
             marchComp.loot = loot;
             army.loot = { ...army.loot, ...loot };
             console.log(`[COMBAT] VICTORY! Resources captured: ${totalLooted} units. Losses: ${lossesQty}`);
+
+            // 4.1 ARQUIVAR RELATÓRIO NO BACKEND (MANTIDO)
+            this.saveBattleReport(army.ownerId, village.ownerId, attackerWins, {
+                losses: lossesQty,
+                loot: loot,
+                units_at_impact: army.units,
+                base_target_id: targetId
+            });
+        } else if (marchComp) {
+            // DERROTA: Arquivar mesmo assim
+             this.saveBattleReport(army.ownerId, village.ownerId, false, {
+                losses: lossesQty,
+                loot: {},
+                units_at_impact: army.units,
+                base_target_id: targetId
+            });
         }
 
         // 5. Iniciar Protocolo de Regresso
@@ -126,6 +144,27 @@ export class CombatSystem implements GameSystem {
                 console.log(`[COMBAT] RETREAT: Survivors returning to origin. ETA: ${(tripDuration / 1000).toFixed(1)}s`);
             }
         }
+    }
+
+    private saveBattleReport(attacker: number, defender: number, vitoria: boolean, dados: any): void {
+        const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
+        
+        fetch('/api/relatorios/store', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken || ''
+            },
+            body: JSON.stringify({
+                atacante_id: attacker,
+                defensor_id: defender,
+                vitoria: vitoria,
+                dados: dados
+            })
+        })
+        .then(res => res.json())
+        .then(data => console.log('[INTEL] Battle Report Archived:', data.id))
+        .catch(err => console.error('[INTEL] Failed to archive battle report:', err));
     }
 
     public preUpdate(deltaTime: number): void {}
