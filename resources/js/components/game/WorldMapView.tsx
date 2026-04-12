@@ -36,6 +36,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
     const [isAttackModalOpen, setIsAttackModalOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
+    const [selectedUnit, setSelectedUnit] = useState<number | null>(null);
     const gameEntities = useGameEntities();
 
     const handleWheel = (e: React.WheelEvent) => {
@@ -177,16 +178,24 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                     key={`entity-${e.id}`}
                                     initial={{ opacity: 0, scale: 0 }}
                                     animate={{ opacity: 1, scale: 1 }}
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        setSelectedUnit(e.id);
+                                        console.log("SELECTED:", e.id);
+                                    }}
                                     style={{
                                         position: "absolute",
                                         left: e.x * 64,
                                         top: e.y * 64,
                                         width: 64,
-                                        height: 64
+                                        height: 64,
+                                        border: selectedUnit === e.id ? "2px solid yellow" : "none",
+                                        cursor: "pointer",
+                                        pointerEvents: "auto" // Habilitar clicks explícitos
                                     }}
-                                    className="unit flex items-center justify-center"
+                                    className="unit flex items-center justify-center rounded-lg transition-all"
                                 >
-                                    <div className="w-3 h-3 bg-sky-500 rounded-full shadow-[0_0_15px_rgba(14,165,233,0.8)] border border-white/50 animate-pulse" />
+                                    <div className={`w-3 h-3 ${selectedUnit === e.id ? 'bg-yellow-400 scale-125' : 'bg-sky-500'} rounded-full shadow-[0_0_15px_rgba(14,165,233,0.8)] border border-white/50 animate-pulse`} />
                                 </motion.div>
                             ))}
                         </div>
