@@ -90,7 +90,8 @@ export class VillageView {
     }
 
     private update(): void {
-        if (!this.container) return;
+        try {
+            if (!this.container) return;
 
         const buildingEntities = entityManager.getEntitiesWith(['Building']);
         
@@ -110,9 +111,11 @@ export class VillageView {
 
         buildingEntities.forEach(id => {
             const b = entityManager.getComponent<BuildingComponent>(id, 'Building');
-            if (b) {
-                const x = b.position.x * this.CELL_SIZE;
-                const y = b.position.y * this.CELL_SIZE;
+            const gp = entityManager.getComponent<any>(id, 'GridPosition');
+
+            if (b && gp) {
+                const x = gp.x * this.CELL_SIZE;
+                const y = gp.y * this.CELL_SIZE;
                 const isSelected = this.selectedBuildingId === id;
                 
                 gridHtml += `
@@ -194,6 +197,9 @@ export class VillageView {
         }
 
         this.container.innerHTML = gridHtml + panelHtml;
+        } catch (e) {
+            console.error("[UI_VILLAGE_ERROR] Interface update failure:", e);
+        }
     }
 }
 
