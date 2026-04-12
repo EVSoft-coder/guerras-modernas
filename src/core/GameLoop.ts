@@ -37,8 +37,16 @@ class GameLoop {
      */
     private loop(currentTime: number): void {
         if (!this.running) return;
- 
-        const deltaTime = (currentTime - this.lastTime) / 1000;
+
+        const deltaTimeMillis = currentTime - this.lastTime;
+        
+        // Barreira Táctica: Limitar a ~60 FPS para estabilidade de física e lógica
+        if (deltaTimeMillis < 16) {
+            this.frameId = requestAnimationFrame(this.loop.bind(this));
+            return;
+        }
+
+        const deltaTime = deltaTimeMillis / 1000;
         this.lastTime = currentTime;
  
         // Orquestração de fases táticas
