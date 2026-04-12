@@ -6,7 +6,7 @@ import { eventBus, Events } from '../../../src/core/EventBus';
  * Hook para subscrever ao modo de jogo ECS.
  */
 export function useGameMode() {
-    const [mode, setMode] = useState(gameStateService.getGameMode());
+    const [mode, setMode] = useState(gameStateService.getMode());
     
     useEffect(() => {
         const unsub = eventBus.subscribe(Events.GAMEMODE_CHANGED, (p) => {

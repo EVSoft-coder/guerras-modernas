@@ -161,6 +161,10 @@ class GameStateService {
     public getGameMode(): GameMode {
         return stateManager.getMode();
     }
+
+    public getMode(): GameMode {
+        return this.getGameMode();
+    }
 }
 
 export const gameStateService = new GameStateService();
