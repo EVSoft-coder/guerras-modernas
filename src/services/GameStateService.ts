@@ -4,6 +4,7 @@
  */
 import { entityManager } from '../core/EntityManager';
 import { stateManager, GameMode } from '../core/StateManager';
+import { AttackMarchComponent } from '../game/components/AttackMarchComponent';
 
 export interface EntitySnapshot {
     id: number;
@@ -52,22 +53,16 @@ class GameStateService {
                 const remaining = Math.round((arrival - now) / 1000);
 
                 if (remaining > 0) {
-                    // Note: Dynamic loading to avoid circular dependencies
-                    try {
-                        const { AttackMarchComponent } = require('../game/components/AttackMarchComponent');
-                        entityManager.createEntity(eId);
-                        entityManager.addComponent(eId, new AttackMarchComponent(
-                            atk.origem_base_id,
-                            atk.destino_x || 0,
-                            atk.destino_y || 0,
-                            atk.tropas || {},
-                            total,
-                            remaining,
-                            'GOING'
-                        ));
-                    } catch (e) {
-                        console.error("Failed to load AttackMarchComponent:", e);
-                    }
+                    entityManager.createEntity(eId);
+                    entityManager.addComponent(eId, new AttackMarchComponent(
+                        atk.origem_base_id,
+                        atk.destino_x || 0,
+                        atk.destino_y || 0,
+                        atk.tropas || {},
+                        total,
+                        remaining,
+                        'GOING'
+                    ));
                 }
             }
         });
