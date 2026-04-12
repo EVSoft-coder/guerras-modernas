@@ -138,7 +138,7 @@ export class VillageView {
                         ${isSelected ? 'box-shadow: 0 0 15px #fff;' : ''}
                     ">
                         <div style="font-size: 9px; opacity: 0.7; color: #00ff00;">[[${b.buildingType}]]</div>
-                        <div style="font-size: 11px; margin: 8px 0; font-weight: bold; color: #00ff00;">${b.name.toUpperCase()}</div>
+                        <div style="font-size: 11px; margin: 8px 0; font-weight: bold; color: #00ff00;">${b.buildingType.toUpperCase()}</div>
                         <div style="color: #000; background: #00ff00; padding: 1px 6px; font-size: 10px; font-weight: bold;">LV ${b.level}</div>
                     </div>
                 `;
@@ -166,7 +166,7 @@ export class VillageView {
                         
                         <div>
                             <div style="font-size: 10px; color: #666;">OPERATION_TYPE</div>
-                            <div style="font-size: 18px; color: #fff;">${b.name}</div>
+                            <div style="font-size: 18px; color: #fff;">${b.buildingType}</div>
                         </div>
 
                         <div>
