@@ -7,20 +7,20 @@ import { GameSystem } from './types';
 import { TileComponent } from '../components/TileComponent';
 
 export class WorldSystem implements GameSystem {
-    public readonly WORLD_SIZE = 1000; // Grid 1000x1000
+    public readonly WORLD_SIZE = 100; // Grid 100x100
     private chunkLoaded: Set<string> = new Set();
 
     public init(): void {
         console.log(`[SYSTEM] WorldSystem - Global Grid Initialized (${this.WORLD_SIZE}x${this.WORLD_SIZE}).`);
         
-        // Inicializar tiles CrÃ­ticos (Vilas Iniciais por exemplo)
+        // Inicializar tiles Críticos (Vilas Iniciais por exemplo)
         this.generateEssentialSectors();
     }
 
     private generateEssentialSectors(): void {
-        // Exemplo: Criar um setor de recursos na origem
-        this.createTile(500, 500, 'village');
-        this.createTile(505, 505, 'resource');
+        // Exemplo: Criar um setor de recursos
+        this.createTile(50, 50, 'resource');
+        this.createTile(52, 52, 'resource');
     }
 
     public createTile(x: number, y: number, type: any): void {

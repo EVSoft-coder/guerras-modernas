@@ -13,7 +13,7 @@ export class RebelGeneratorSystem implements GameSystem {
     private progressionInterval: number = 300000; // 5 minutos entre evoluções
     private regenInterval: number = 10000; // 10 segundos entre regenerações
     private maxRebels: number = 15;
-    private mapSize: number = 20;
+    private mapSize: number = 100; // Escala unificada 100x100
 
     public init(): void {
         console.log('[SYSTEM] RebelGeneratorSystem - Evolution Protocols ACTIVE.');
@@ -21,9 +21,10 @@ export class RebelGeneratorSystem implements GameSystem {
         this.lastProgressionTime = Date.now();
         this.lastRegenTime = Date.now();
 
-        // DEBUG: Force spawn rebel near player for verification
-        console.log('[DEBUG] FORCING MANUAL REBEL SPAWN AT 505, 505');
-        this.spawnManualRebel(505, 505);
+        // Geração inicial garantida de rebeldes em posições seguras
+        for (let i = 0; i < 5; i++) {
+            this.spawnRebel();
+        }
     }
 
     private spawnManualRebel(x: number, y: number): void {
@@ -203,7 +204,7 @@ export class RebelGeneratorSystem implements GameSystem {
             const pos = entityManager.getComponent<GridPositionComponent>(id, 'GridPosition');
             if (pos) occupied.add(`${pos.x},${pos.y}`);
         }
-        for (let attempts = 0; attempts < 50; attempts++) {
+        for (let attempts = 0; attempts < 100; attempts++) {
             const rx = Math.floor(Math.random() * this.mapSize);
             const ry = Math.floor(Math.random() * this.mapSize);
             if (!occupied.has(`${rx},${ry}`)) return { x: rx, y: ry };
