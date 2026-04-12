@@ -7,6 +7,7 @@ import axios from 'axios';
 import { AttackModal } from './AttackModal';
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
+import { useGameEntities } from '@/hooks/use-game-entities';
 
 interface BaseMap {
     id: number;
@@ -34,6 +35,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: BaseMap } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
     const [isAttackModalOpen, setIsAttackModalOpen] = useState(false);
+    const gameEntities = useGameEntities();
 
     const RAIO = 5; // Visualizar 11x11
     
@@ -168,6 +170,26 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                             )}
                         </motion.div>
                     ))}
+
+                    {/* ECS Entity Layer (Mobile Units) */}
+                    <div className="absolute inset-0 pointer-events-none z-30">
+                        {gameEntities.map(e => (
+                            <motion.div 
+                                key={`entity-${e.id}`}
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                style={{
+                                    position: "absolute",
+                                    left: e.x,
+                                    top: e.y,
+                                    transform: 'translate(-50%, -50%)'
+                                }}
+                                className="text-sky-400 drop-shadow-[0_0_5px_rgba(14,165,233,0.8)]"
+                            >
+                                ●
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Info Bar Bottom */}
