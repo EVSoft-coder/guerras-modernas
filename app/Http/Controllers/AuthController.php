@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
  
 use App\Models\Jogador;
 use App\Models\Base;
-use App\Services\EconomyService;
-use App\Services\BuildingService;
-use App\Services\UnitService;
+use App\Services\GameService;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
