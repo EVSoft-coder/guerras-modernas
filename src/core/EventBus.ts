@@ -49,6 +49,7 @@ class EventBus {
         }
 
         const type = payload.type.toUpperCase();
+        console.log("EVENT EMITTED:", type);
         
         // Registo Táctico (Silencioso para alta frequência)
         Logger.event(type, payload);
@@ -60,6 +61,10 @@ class EventBus {
         }
  
         const callbacks = this.handlers.get(type);
+        if (!callbacks || callbacks.length === 0) {
+            console.warn(`[EVENT_BUS_WARNING] Event [${type}] has ZERO subscribers! Dead signal detected.`);
+        }
+
         if (callbacks) {
             callbacks.forEach(cb => cb(payload));
         }
