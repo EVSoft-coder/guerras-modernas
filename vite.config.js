@@ -1,15 +1,14 @@
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
-import {
-    defineConfig
-} from 'vite';
+import { defineConfig } from 'vite';
 import tailwindcss from "@tailwindcss/vite";
+import path from 'path';
 
 export default defineConfig({
     resolve: {
         alias: {
-            '@': '/resources/js',
-            '@src': '/src',
+            '@': path.resolve(__dirname, './resources/js'),
+            '@src': path.resolve(__dirname, './src'),
         },
     },
     plugins: [

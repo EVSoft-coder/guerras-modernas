@@ -176,13 +176,13 @@
 /* MILITARY UI UTILITIES */
 @layer utilities {
     .sidebar-tactical-item {
-        @apply transition-all duration-300 border-l-[3px] border-transparent;
+        @apply transition-all duration-300 border-l-[4px] border-transparent;
     }
     .sidebar-tactical-item:hover {
-        @apply border-sky-400 bg-linear-to-r from-sky-400/15 to-transparent shadow-[0_0_20px_-5px_rgba(56,189,248,0.4)];
+        @apply border-sky-400 bg-linear-to-r from-sky-400/20 to-transparent shadow-[0_10px_30px_-5px_rgba(56,189,248,0.3)];
     }
     .sidebar-tactical-item[data-active="true"] {
-        @apply border-sky-400 bg-linear-to-r from-sky-400/25 to-transparent shadow-[inset_0_0_15px_rgba(56,189,248,0.1)];
+        @apply border-sky-400 bg-linear-to-r from-sky-400/30 to-transparent shadow-[inset_0_0_20px_rgba(56,189,248,0.1)];
     }
     .military-text-glitch {
         text-shadow: 0 0 5px rgba(14, 165, 233, 0.5);

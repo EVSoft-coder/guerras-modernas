@@ -16,8 +16,8 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                             className="sidebar-tactical-item h-11 px-3 transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] group/nav"
                         >
                             <Link href={item.url} prefetch>
-                                {item.icon && <item.icon className={item.url === page.url ? 'text-sky-400' : 'text-neutral-400 group-hover/nav:text-sky-300 transition-colors'} />}
-                                <span className={`font-black uppercase tracking-wider text-[11px] transition-colors ${item.url === page.url ? 'text-white' : 'text-neutral-300 group-hover/nav:text-white'}`}>{item.title}</span>
+                                {item.icon && <item.icon className={item.url === page.url ? 'text-sky-400' : 'text-neutral-300 group-hover/nav:text-sky-300 transition-colors'} />}
+                                <span className={`font-black uppercase tracking-wider text-[11px] transition-colors ${item.url === page.url ? 'text-white' : 'text-neutral-100 group-hover/nav:text-white'}`}>{item.title}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

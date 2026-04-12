@@ -89,6 +89,8 @@ export interface DashboardProps {
     bases: Base[];
     relatorios: any[];
     relatoriosGlobal: any[];
+    ataquesEnviados: any[];
+    ataquesRecebidos: any[];
     taxas: Record<string, number>;
     taxasPerSecond: Record<string, number>;
     intelLevel: number;
