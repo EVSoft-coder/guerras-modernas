@@ -1,0 +1,59 @@
+/**
+ * src/game/systems/SyncSystem.ts
+ * Orquestrador de SincronizaÃ§Ã£o: Laravel -> ECS e ECS -> UI.
+ */
+import { entityManager } from '../../core/EntityManager';
+import { eventBus, Events } from '../../core/EventBus';
+import { GameSystem } from './types';
+import { AttackMarchComponent } from '../components/AttackMarchComponent';
+import { gameStateService } from '../../services/GameStateService';
+
+export class SyncSystem implements GameSystem {
+    public init(): void {
+        console.log('[SYSTEM] SyncSystem - Uplink Established.');
+        
+        // Subscrever a eventos de sincronização externa
+        eventBus.subscribe(Events.LARAVEL_SYNC_ATTACKS, (p) => {
+            this.syncLaravelAttacks(p.data.attacks);
+        });
+    }
+
+    private syncLaravelAttacks(attacks: any[]): void {
+        attacks.forEach(atk => {
+            const eId = 10000 + atk.id; // Namespace para entidades de ataque
+            if (!entityManager.getEntitiesWith(['AttackMarch']).includes(eId)) {
+                const now = Date.now();
+                const arrival = new Date(atk.chegada_em).getTime();
+                const total = Math.round((arrival - new Date(atk.created_at).getTime()) / 1000);
+                const remaining = Math.round((arrival - now) / 1000);
+
+                if (remaining > 0) {
+                    entityManager.createEntity(eId);
+                    entityManager.addComponent(eId, new AttackMarchComponent(
+                        atk.origem_base_id,
+                        atk.destino_x || 0,
+                        atk.destino_y || 0,
+                        atk.tropas || {},
+                        total,
+                        remaining,
+                        'GOING'
+                    ));
+                }
+            }
+        });
+    }
+
+    public preUpdate(deltaTime: number): void {}
+    public update(deltaTime: number): void {}
+
+    public postUpdate(deltaTime: number): void {
+        // Capturar snapshot para a UI no final de cada frame
+        gameStateService.snap();
+    }
+
+    public destroy(): void {
+        console.log('[SYSTEM] SyncSystem - Uplink Terminated.');
+    }
+}
+
+export const syncSystem = new SyncSystem();

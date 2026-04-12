@@ -26,8 +26,8 @@ export function VillageDashboard({
 
     useEffect(() => {
         if (!base) return;
-        if (ataquesEnviados) gameStateService.syncAttacks(ataquesEnviados);
-        if (ataquesRecebidos) gameStateService.syncAttacks(ataquesRecebidos);
+        if (ataquesEnviados) eventBus.emit(Events.LARAVEL_SYNC_ATTACKS, { data: { attacks: ataquesEnviados } });
+        if (ataquesRecebidos) eventBus.emit(Events.LARAVEL_SYNC_ATTACKS, { data: { attacks: ataquesRecebidos } });
 
         const unsubArrived = eventBus.subscribe(Events.ATTACK_ARRIVED, (ev) => {
             const res = ev.data.result === 'VICTORY' ? 'VITÓRIA' : 'OPERACIONAL';

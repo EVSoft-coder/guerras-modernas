@@ -13,6 +13,7 @@ import { movementSystem } from './MovementSystem';
 import { combatSystem } from './CombatSystem';
 import { attackSystem } from './AttackSystem';
 import { renderSystem } from './RenderSystem';
+import { syncSystem } from './SyncSystem';
 
 import { GameSystem } from './types';
 
@@ -30,5 +31,6 @@ export const systemsRegistry: ReadonlyArray<GameSystem> = [
     movementSystem,
     combatSystem,
     attackSystem,
-    renderSystem
+    renderSystem,
+    syncSystem
 ];

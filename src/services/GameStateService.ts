@@ -41,35 +41,8 @@ class GameStateService {
     private listeners: Array<() => void> = [];
 
     /**
-     * Synchronizes Laravel attacks with ECS motor.
-     */
-    public syncAttacks(attacks: any[]): void {
-        attacks.forEach(atk => {
-            const eId = 10000 + atk.id; // Namespace for attack entities
-            if (!entityManager.getEntitiesWith(['AttackMarch']).includes(eId)) {
-                const now = Date.now();
-                const arrival = new Date(atk.chegada_em).getTime();
-                const total = Math.round((arrival - new Date(atk.created_at).getTime()) / 1000);
-                const remaining = Math.round((arrival - now) / 1000);
-
-                if (remaining > 0) {
-                    entityManager.createEntity(eId);
-                    entityManager.addComponent(eId, new AttackMarchComponent(
-                        atk.origem_base_id,
-                        atk.destino_x || 0,
-                        atk.destino_y || 0,
-                        atk.tropas || {},
-                        total,
-                        remaining,
-                        'GOING'
-                    ));
-                }
-            }
-        });
-    }
-
-    /**
-     * Captures current state of all relevant entities.
+     * Captures current state of all relevant entities from ECS.
+     * Called by SyncSystem at the end of every frame.
      */
     public snap(): void {
         const entities = entityManager.getEntitiesWith(['GridPosition']);

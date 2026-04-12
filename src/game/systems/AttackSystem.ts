@@ -108,7 +108,7 @@ export class AttackSystem implements GameSystem {
         });
 
         // AutodestruiÃ§Ã£o da entidade de marcha (missÃ£o cumprida)
-        entityManager.destroyEntity(id);
+        entityManager.removeEntity(id);
     }
 
     public preUpdate(deltaTime: number): void {}

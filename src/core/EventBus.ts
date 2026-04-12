@@ -102,5 +102,8 @@ export const Events = {
     // Operações de Guerra
     ATTACK_STARTED: 'ATTACK:STARTED',
     ATTACK_ARRIVED: 'ATTACK:ARRIVED',
-    ATTACK_RETURNED: 'ATTACK:RETURNED'
+    ATTACK_RETURNED: 'ATTACK:RETURNED',
+
+    // Sincronização Externa
+    LARAVEL_SYNC_ATTACKS: 'LARAVEL:SYNC_ATTACKS'
 };
