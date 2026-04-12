@@ -15,9 +15,9 @@ import { eventBus, Events } from '@src/core/EventBus';
 import { WorldMapView } from '@/components/game/WorldMapView';
 
 export function VillageDashboard({ 
-    jogador, base, taxasPerSecond, gameConfig, 
+    jogador, base, bases = [], taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal 
-}: DashboardProps) {
+}: DashboardProps & { bases: any[] }) {
     const { addToast } = useToasts();
     const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
     const [selectedBuildingType, setSelectedBuildingType] = useState<string | null>(null);
@@ -137,10 +137,27 @@ export function VillageDashboard({
                             <h2 className="text-2xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
                                 <Target className="text-orange-500 animate-pulse" size={28} />
                                 CENTRAL: {base?.nome ?? 'Desconhecido'}
+                                
+                                {bases.length > 1 && (
+                                    <div className="flex gap-2 ml-4 self-center">
+                                        {bases.map(b => (
+                                            <button 
+                                                key={b.id}
+                                                onClick={() => b.id !== base.id && router.get(`/base/switch/${b.id}`)}
+                                                className={`
+                                                    px-4 py-1.5 rounded-sm text-[8px] font-black uppercase tracking-widest border transition-all
+                                                    ${b.id === base.id ? 'bg-orange-500 border-orange-400 text-black shadow-[0_0_15px_rgba(249,115,22,0.4)]' : 'bg-black/40 border-white/10 text-neutral-500 hover:border-white/30 hover:text-white'}
+                                                `}
+                                            >
+                                                {b.nome}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </h2>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">Sistemas On-line / Encriptação Ativa</span>
+                                <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">Sistemas On-line / Comando {bases.length > 1 ? 'Múltiplo' : 'Único'} Ativo</span>
                             </div>
                          </div>
                          <div className="text-[10px] text-neutral-700 font-mono bg-white/5 px-3 py-1 rounded-full border border-white/5">
