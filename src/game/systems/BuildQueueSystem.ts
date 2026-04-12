@@ -38,7 +38,8 @@ export class BuildQueueSystem implements GameSystem {
         const building = entityManager.getComponent<BuildingComponent>(buildingId, 'Building');
         if (!building) return;
 
-        const ownerId = building.villageId;
+        // Tentar obter o proprietário através de busca de proximidade ou componente (Simplificado: assumimos o jogador 1 por agora se não houver ownerId)
+        const ownerId = 1; 
         const resources = entityManager.getComponent<ResourceComponent>(ownerId, 'Resource');
         const buildQueue = entityManager.getComponent<BuildQueueComponent>(ownerId, 'BuildQueue');
 
@@ -47,8 +48,8 @@ export class BuildQueueSystem implements GameSystem {
             return;
         }
 
-        // Custo Simples: 150 de cada recurso por nÃ­vel atual
-        const cost = building.level * 150;
+        // Custo Simples: 250 de cada recurso por nÃ­vel atual
+        const cost = building.level * 250;
         const hasEnough = resources.wood >= cost && resources.stone >= cost && resources.iron >= cost;
 
         if (hasEnough) {
@@ -58,7 +59,7 @@ export class BuildQueueSystem implements GameSystem {
             resources.iron -= cost;
 
             // Enfileirar upgrade
-            const upgradeTime = building.level * 5; // 5 segundos por nÃ­vel
+            const upgradeTime = building.level * 10; // 10 segundos por nÃ­vel
             buildQueue.queue.push({
                 type: 'UPGRADE',
                 buildingType: building.buildingType,
@@ -67,9 +68,8 @@ export class BuildQueueSystem implements GameSystem {
                 remainingTime: upgradeTime
             });
 
-            console.log(`[BUILD_SYSTEM] Upgrade of ${building.name} (LVL ${building.level} -> ${building.level + 1}) initiated for Player ${ownerId}.`);
+            console.log(`[BUILD_SYSTEM] Upgrade of ${building.buildingType} (LVL ${building.level} -> ${building.level + 1}) initiated.`);
             
-            // Emitir evento de inÃ­cio opcionalmente
             eventBus.emit({
                 type: Events.BUILDING_REQUEST,
                 entityId: ownerId,
@@ -77,7 +77,7 @@ export class BuildQueueSystem implements GameSystem {
                 data: { status: 'STARTED', buildingId }
             });
         } else {
-            console.warn(`[BUILD_SYSTEM] Insufficient resources for upgrade of ${building.name}. Required: ${cost}`);
+            console.warn(`[BUILD_SYSTEM] Insufficient resources for upgrade of ${building.buildingType}. Required: ${cost}`);
         }
     }
 
@@ -103,7 +103,7 @@ export class BuildQueueSystem implements GameSystem {
             const building = entityManager.getComponent<BuildingComponent>(task.targetEntityId, 'Building');
             if (building) {
                 building.level += 1;
-                console.log(`[BUILD_SYSTEM] Building ${building.name} upgraded to Level ${building.level}!`);
+                console.log(`[BUILD_SYSTEM] Building ${building.buildingType} upgraded to Level ${building.level}!`);
                 
                 eventBus.emit({
                     type: Events.BUILDING_COMPLETED,

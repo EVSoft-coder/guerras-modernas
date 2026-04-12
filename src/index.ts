@@ -74,10 +74,10 @@ entityManager.addComponent(playerUnit, {
     renderType: "unit"
 } as RenderableComponent);
 const qg = entityManager.createEntity();
-entityManager.addComponent(qg, new BuildingComponent('Quartel General', 'HQ', 1, { x: 0, y: 0 }, playerUnit));
+entityManager.addComponent(qg, new BuildingComponent('HQ', 1));
 
 const mina = entityManager.createEntity();
-entityManager.addComponent(mina, new BuildingComponent('Mina de Ferro', 'MINE', 1, { x: 1, y: 0 }, playerUnit));
+entityManager.addComponent(mina, new BuildingComponent('MINE', 1));
  
 console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Spatial Village infrastructure.`);
  
