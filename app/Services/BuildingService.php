@@ -32,7 +32,7 @@ class BuildingService
         $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
         $tempo = BuildingRules::calculateTime($tipo, $nivelAtual);
  
-        return DB::transaction(function() use ($base, $tipo, $custos, $tempo) {
+        return DB::transaction(function() use ($base, $tipo, $custos, $tempo, $nivelAtual) {
             // 3. Consumir recursos via EconomyService
             if (!$this->economyService->consumir($base, $custos)) {
                 throw new \Exception("Recursos insuficientes para expansão de " . $tipo);
