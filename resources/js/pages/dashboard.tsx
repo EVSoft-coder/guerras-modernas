@@ -5,6 +5,7 @@ import { Head, router } from '@inertiajs/react';
 import { VillageDashboard } from '@/components/game/VillageDashboard';
 import { WorldMapView } from '@/components/game/WorldMapView';
 import { useGameMode } from '@/hooks/use-game-mode';
+import { useGameEntities } from '@/hooks/use-game-entities';
 import PollingService from '@src/services/PollingService';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -20,6 +21,8 @@ const breadcrumbs: BreadcrumbItem[] = [
  */
 export default function Dashboard(props: DashboardProps) {
     const gameMode = useGameMode();
+    const { entities } = useGameEntities();
+    const hasActiveArmy = entities.some(e => e.march);
 
     useEffect(() => {
         const handlePolling = () => {
@@ -28,7 +31,11 @@ export default function Dashboard(props: DashboardProps) {
                 return;
             }
 
-            const delay = gameMode === "WORLD_MAP" ? 5000 : 10000;
+            // Regra Adaptativa: 3s se houver movimentos actuais, senão respeita o modo.
+            let delay = gameMode === "WORLD_MAP" ? 5000 : 10000;
+            if (hasActiveArmy) {
+                delay = 3000;
+            }
 
             PollingService.start(() => {
                 router.reload({
@@ -45,7 +52,7 @@ export default function Dashboard(props: DashboardProps) {
             PollingService.stop();
             document.removeEventListener("visibilitychange", handlePolling);
         };
-    }, [gameMode]);
+    }, [gameMode, hasActiveArmy]);
 
 
     if (gameMode === "WORLD_MAP") {
