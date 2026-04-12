@@ -124,71 +124,59 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                     </Button>
                 </div>
 
-                {/* Grid */}
-                <div className="aspect-square w-full grid grid-cols-11 grid-rows-11 relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
-                    {sectors.map((sector, idx) => (
-                        <motion.div 
-                            key={`${sector.x}-${sector.y}`}
-                            whileHover={{ backgroundColor: 'rgba(56, 189, 248, 0.05)' }}
-                            className={`border-[0.5px] border-white/5 flex items-center justify-center relative cursor-crosshair transition-all duration-300
-                                ${selectedSector?.x === sector.x && selectedSector?.y === sector.y ? 'bg-sky-500/10 border-sky-500/40 ring-1 ring-inset ring-sky-500/20' : ''}
-                            `}
-                            onClick={() => setSelectedSector(sector)}
-                        >
-                            {/* Coordenadas HUD (Canto) */}
-                            {idx === 0 && (
-                                <span className="absolute top-1 left-2 text-[8px] font-mono text-neutral-600">
-                                    GRID_{sector.x}:{sector.y}
-                                </span>
-                            )}
-
-                            {/* Conteúdo do Sector */}
-                            {sector.base ? (
-                                <motion.div 
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    className={`relative p-2 rounded-xl transition-all duration-500 ${
-                                        sector.base.jogador?.id === playerBase?.jogador_id 
-                                        ? 'bg-sky-500/20 shadow-[0_0_15px_rgba(14,165,233,0.3)]' 
-                                        : 'bg-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)] hover:scale-110'
-                                    }`}
+                {/* Grid Container (Fixed 20x20 Map) */}
+                <div 
+                    className="relative overflow-auto bg-neutral-900 custom-scrollbar shadow-inner"
+                    style={{ height: '600px' }} // Altura tática fixa para scroll
+                >
+                    <div 
+                        className="relative bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"
+                        style={{ 
+                            width: `${20 * 64}px`, 
+                            height: `${20 * 64}px` 
+                        }}
+                    >
+                        {/* Renderizar Grelha Táctica (20x20) */}
+                        {Array.from({ length: 20 }).map((_, y) => (
+                            Array.from({ length: 20 }).map((_, x) => (
+                                <div 
+                                    key={`${x}-${y}`}
+                                    className="absolute border border-white/5 transition-colors hover:bg-sky-500/5 cursor-crosshair"
+                                    onClick={() => setSelectedSector({ x, y })}
+                                    style={{
+                                        left: x * 64,
+                                        top: y * 64,
+                                        width: 64,
+                                        height: 64,
+                                        border: "1px solid #33333333"
+                                    }}
                                 >
-                                    <Shield size={20} className={sector.base.jogador?.id === playerBase?.jogador_id ? 'text-sky-400' : 'text-red-500'} />
-                                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-neutral-900 rounded-full border border-white/20 flex items-center justify-center">
-                                        <span className="text-[7px] font-black text-white">{sector.base.qg_nivel}</span>
-                                    </div>
-                                </motion.div>
-                            ) : (
-                                <div className="w-1 h-1 bg-white/10 rounded-full" />
-                            )}
-
-                            {/* Radar Ping (Animação) */}
-                            {loading && (
-                                <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
-                                    <div className="w-full h-full bg-sky-500/5 animate-pulse" />
+                                    <span className="absolute top-1 left-1 text-[6px] text-neutral-800 font-mono">
+                                        {x}:{y}
+                                    </span>
                                 </div>
-                            )}
-                        </motion.div>
-                    ))}
-
-                    {/* ECS Entity Layer (Mobile Units) */}
-                    <div className="absolute inset-0 pointer-events-none z-30">
-                        {gameEntities.map(e => (
-                            <motion.div 
-                                key={`entity-${e.id}`}
-                                initial={{ opacity: 0, scale: 0 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                style={{
-                                    position: "absolute",
-                                    left: e.x,
-                                    top: e.y,
-                                    transform: 'translate(-50%, -50%)'
-                                }}
-                                className="text-sky-400 drop-shadow-[0_0_5px_rgba(14,165,233,0.8)]"
-                            >
-                                ●
-                            </motion.div>
+                            ))
                         ))}
+
+                        {/* ECS Entity Layer (Mobile Units) */}
+                        <div className="absolute inset-0 pointer-events-none z-30">
+                            {gameEntities.map(e => (
+                                <motion.div 
+                                    key={`entity-${e.id}`}
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    style={{
+                                        position: "absolute",
+                                        left: e.x,
+                                        top: e.y,
+                                        transform: 'translate(-50%, -50%)'
+                                    }}
+                                    className="text-sky-400 drop-shadow-[0_0_5px_rgba(14,165,233,0.8)]"
+                                >
+                                    ●
+                                </motion.div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
