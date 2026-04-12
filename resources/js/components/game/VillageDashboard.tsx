@@ -40,23 +40,15 @@ export function VillageDashboard({
             router.reload({ only: ['base'] });
         });
 
-        const hasActiveActions = 
-            (base?.construcoes?.length ?? 0) > 0 || 
-            (base?.treinos?.length ?? 0) > 0 || 
-            (ataquesEnviados?.length ?? 0) > 0 || 
-            (ataquesRecebidos?.length ?? 0) > 0;
-
-        let isSyncing = false;
-        const interval = setInterval(() => {
-            // Só sincroniza se houver ações ativas, o documento estiver visível e não houver outro sync em curso
-            if (hasActiveActions && document.visibilityState === 'visible' && !isSyncing) {
-                isSyncing = true;
+        // WEB-SOCKETS: Escuta ativa de atualizações de base (Substitui Polling)
+        const channel = (window as any).Echo.private(`base.${base.id}`)
+            .listen('.BaseUpdated', (e: any) => {
+                console.log("[WS] RECEÇÃO DE SINAL TÁTICO:", e);
                 router.reload({ 
                     only: ['base', 'ataquesEnviados', 'ataquesRecebidos', 'relatoriosGlobal'],
-                    onFinish: () => { isSyncing = false; }
+                    onSuccess: () => addToast("SINAL: Base sincronizada via Satélite.", "info")
                 });
-            }
-        }, 15000);
+            });
 
         const unsubMode = eventBus.subscribe(Events.GAME_CHANGE_MODE, (ev) => {
             console.log("MODE CHANGE RECEIVED:", ev.data.mode);
@@ -64,7 +56,7 @@ export function VillageDashboard({
         });
 
         return () => {
-            clearInterval(interval);
+            (window as any).Echo.leave(`base.${base.id}`);
             unsubArrived();
             unsubReturned();
             unsubMode();

@@ -112,9 +112,12 @@ class GameService
      */
     public function processarFilas(Base $base): void
     {
+        $mudou = false;
+
         // 1. Processar Construções
         $construcoes = $base->construcoes()->where('completado_em', '<=', now())->get();
         foreach ($construcoes as $fila) {
+            $mudou = true;
             DB::transaction(function() use ($base, $fila) {
                 $tipo = $fila->edificio_tipo;
                 if ($tipo === BuildingType::QG) {
@@ -136,6 +139,7 @@ class GameService
         // 2. Processar Treinos
         $treinos = $base->treinos()->where('completado_em', '<=', now())->get();
         foreach ($treinos as $fila) {
+            $mudou = true;
             DB::transaction(function() use ($base, $fila) {
                 $tropa = $base->tropas()->firstOrCreate(
                     ['unidade' => $fila->unidade],
@@ -144,6 +148,10 @@ class GameService
                 $tropa->increment('quantidade', $fila->quantidade);
                 $fila->delete();
             });
+        }
+
+        if ($mudou) {
+            broadcast(new \App\Events\BaseUpdated($base))->toOthers();
         }
     }
 
