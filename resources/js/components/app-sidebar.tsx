@@ -58,15 +58,18 @@ export function AppSidebar() {
 
                 {/* GAME CONTROLS */}
                 <SidebarGroup className="px-2 py-4">
-                    <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 mb-2 px-3">Protocolos de Operação</SidebarGroupLabel>
-                    <SidebarMenu>
+                    <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.4em] text-sky-500/50 mb-4 px-4 flex items-center gap-2">
+                        <div className="w-1 h-1 bg-sky-500 rounded-full animate-pulse" />
+                        COMMAND_PROTOCOLS
+                    </SidebarGroupLabel>
+                    <SidebarMenu className="gap-2">
                         <SidebarMenuItem>
                             <SidebarMenuButton 
                                 onClick={() => changeMode('VILLAGE')} 
-                                className="sidebar-tactical-item h-11 px-3 group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                                className="sidebar-tactical-item h-12 px-4 group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] border-r-2 border-transparent hover:border-sky-500"
                             >
-                                <Home className="text-neutral-300 group-hover:text-sky-400 transition-colors" />
-                                <span className="font-black uppercase tracking-widest text-[11px] text-white group-hover:text-white transition-colors">Zona de Base</span>
+                                <Home className="text-neutral-400 group-hover:text-sky-400 transition-colors" />
+                                <span className="font-black uppercase tracking-widest text-[11px] text-white/90 group-hover:text-white transition-colors">Sector_Alfa (Base)</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
@@ -77,25 +80,27 @@ export function AppSidebar() {
                                         data: { mode: "WORLD_MAP" }
                                     });
                                 }}
-                                className="sidebar-tactical-item h-11 px-3 group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                                className="sidebar-tactical-item h-12 px-4 group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] border-r-2 border-transparent hover:border-red-500"
                             >
-                                <MapIcon className="text-neutral-300 group-hover:text-red-400 transition-colors" />
-                                <span className="font-black uppercase tracking-widest text-[11px] text-white group-hover:text-white transition-colors">Mapa Mundial</span>
+                                <MapIcon className="text-neutral-400 group-hover:text-red-500 transition-colors" />
+                                <span className="font-black uppercase tracking-widest text-[11px] text-white/90 group-hover:text-white transition-colors">Globo_Tático (Mapa)</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <SidebarMenuButton className="sidebar-tactical-item h-11 px-3 group opacity-30 cursor-not-allowed">
+                            <SidebarMenuButton className="sidebar-tactical-item h-12 px-4 group opacity-20 cursor-not-allowed">
                                 <Target className="text-neutral-600" />
-                                <span className="font-black uppercase tracking-wider text-[11px] text-neutral-500">Objetivos</span>
+                                <span className="font-black uppercase tracking-widest text-[11px] text-neutral-500">Obj_Primários</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter>
+            <SidebarFooter className="border-t border-white/5 bg-black/20 pb-4">
                 <NavFooter items={footerNavItems} className="mt-auto" />
-                <NavUser />
+                <div className="px-4">
+                    <NavUser />
+                </div>
             </SidebarFooter>
         </Sidebar>
     );
