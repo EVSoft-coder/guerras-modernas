@@ -65,15 +65,17 @@ export class AttackSystem implements GameSystem {
         } as RenderableComponent);
 
         // 6. Atributos de Combate Modernos (UnitComponent)
+        const isDrone = Object.keys(troops).some(t => t.includes('drone') || t.includes('helicoptero'));
         const unitType = Object.keys(troops).includes('tanque_combate') ? 'tank' : 
-                         Object.keys(troops).includes('helicoptero_ataque') ? 'drone' : 'infantry';
+                         isDrone ? 'drone' : 'infantry';
 
         entityManager.addComponent(armyId, new UnitComponent(
             unitType,
             120,    // Attack
             80,     // Defense
             25,     // Speed
-            5000    // Capacity
+            5000,   // Capacity
+            isDrone ? 10 : 3 // Drones têm alcance de visão tática superior
         ));
 
         console.log(`[WAR] Army ${armyId} launched with MarchComponent. Arrival in ${travelTimeSeconds.toFixed(1)}s`);

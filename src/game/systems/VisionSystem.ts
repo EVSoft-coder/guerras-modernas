@@ -28,8 +28,16 @@ export class VisionSystem implements GameSystem {
         for (const viewerId of visionEntities) {
             const viewerPos = entityManager.getComponent<any>(viewerId, 'GridPosition');
             const vision = entityManager.getComponent<VisionComponent>(viewerId, 'Vision');
+            const unit = entityManager.getComponent<any>(viewerId, 'Unit');
 
-            if (viewerPos && vision) {
+            if (viewerPos && (vision || unit)) {
+                let range = vision?.range || unit?.intelRange || 3;
+                
+                // DRONE RECONNAISSANCE: Alcance superior (3x bónus aéreo)
+                if (unit?.unitCategory === 'drone') {
+                    range *= 3;
+                }
+
                 for (const targetId of allEntities) {
                     const targetPos = entityManager.getComponent<any>(targetId, 'GridPosition');
                     if (!targetPos) continue;
@@ -38,7 +46,7 @@ export class VisionSystem implements GameSystem {
                     const dy = targetPos.y - viewerPos.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
-                    if (distance <= vision.range) {
+                    if (distance <= range) {
                         targetPos.isVisible = true;
                     }
                 }

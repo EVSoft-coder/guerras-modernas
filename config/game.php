@@ -164,6 +164,17 @@ return [
             'capacity' => 0,
             'is_spy' => true,
         ],
+        'drone_recon' => [
+            'name' => 'Drone de Reconhecimento',
+            'cost' => ['suprimentos' => 400, 'combustivel' => 200, 'pessoal' => 1],
+            'time' => 300,
+            'attack' => 0,
+            'defense_general' => 5,
+            'defense_armored' => 2,
+            'speed' => 120,
+            'capacity' => 0,
+            'is_drone' => true,
+        ],
     ],
 
     /*

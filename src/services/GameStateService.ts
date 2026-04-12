@@ -29,6 +29,7 @@ export interface GlobalGameState {
     villages: Array<{ id: number, name: string; x: number, y: number }>;
     resources: { wood: number; stone: number; iron: number };
     buildings: Array<{ type: string; level: number }>;
+    revealedTiles?: string[];
 }
 
 class GameStateService {
@@ -139,6 +140,10 @@ class GameStateService {
 
     public getGlobalState(): GlobalGameState {
         return this.globalState;
+    }
+
+    public updateGlobalState(data: Partial<GlobalGameState>): void {
+        this.globalState = { ...this.globalState, ...data };
     }
 
     public getGameMode(): GameMode {

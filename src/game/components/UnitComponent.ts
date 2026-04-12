@@ -10,6 +10,7 @@ export class UnitComponent implements Component {
         public attack: number,
         public defense: number,
         public speed: number,
-        public capacity: number
+        public capacity: number,
+        public intelRange: number = 2
     ) {}
 }

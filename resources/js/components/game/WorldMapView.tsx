@@ -180,7 +180,11 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                             Array.from({ length: 20 }).map((_, x) => (
                                 <div 
                                     key={`${x}-${y}`}
-                                    className="absolute border border-white/[0.03] transition-colors hover:bg-sky-500/[0.02] cursor-crosshair group/cell"
+                                    className={`absolute border border-white/[0.03] transition-all duration-1000 cursor-crosshair group/cell ${
+                                        (globalState as any).revealedTiles?.includes(`${x},${y}`) 
+                                            ? 'opacity-100 bg-sky-500/[0.02]' 
+                                            : 'opacity-20 grayscale brightness-50'
+                                    }`}
                                     onClick={() => {
                                         setSelectedSector({ x, y, base: visibleBases.find(b => b.coordenada_x === x && b.coordenada_y === y) });
                                         if (selectedUnit) {
@@ -197,9 +201,11 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                         height: 80
                                     }}
                                 >
-                                    <span className="absolute top-1 left-1 text-[8px] text-neutral-800 font-mono group-hover/cell:text-neutral-500">
-                                        {x.toString().padStart(2, '0')}:{y.toString().padStart(2, '0')}
-                                    </span>
+                                    {(globalState as any).revealedTiles?.includes(`${x},${y}`) && (
+                                        <span className="absolute top-1 left-1 text-[8px] text-neutral-800 font-mono group-hover/cell:text-neutral-500">
+                                            {x.toString().padStart(2, '0')}:{y.toString().padStart(2, '0')}
+                                        </span>
+                                    )}
                                 </div>
                             ))
                         ))}
