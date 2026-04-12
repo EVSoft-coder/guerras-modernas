@@ -18,7 +18,10 @@ import { ResearchSystem } from './ResearchSystem';
 import { renderSystem } from './RenderSystem';
 import { RebelGeneratorSystem } from './RebelGeneratorSystem';
 import { syncSystem } from './SyncSystem';
+import { IntelSystem } from './IntelSystem';
 import { systemIntegrityCheck } from './SystemIntegrityCheck';
+
+const intelSystem = new IntelSystem();
 
 import { GameSystem } from './types';
 
@@ -31,6 +34,7 @@ export const systemsRegistry: ReadonlyArray<GameSystem> = [
     gameModeSystem,
     timeSystem,
     worldSystem,
+    intelSystem,
     resourceSystem,
     buildQueueSystem,
     orderSystem,

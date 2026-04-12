@@ -64,6 +64,17 @@ class EventBus {
             callbacks.forEach(cb => cb(payload));
         }
     }
+
+    /**
+     * Retorna informação sobre os handlers registados (para auditoria de integridade).
+     */
+    public getHandlersInfo(): Map<string, number> {
+        const info = new Map<string, number>();
+        this.handlers.forEach((handlers, type) => {
+            info.set(type, handlers.length);
+        });
+        return info;
+    }
 }
  
 export const eventBus = new EventBus();
