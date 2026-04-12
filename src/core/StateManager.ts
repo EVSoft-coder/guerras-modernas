@@ -90,8 +90,13 @@ class StateManager {
             const village = entityManager.getComponent<any>(targetId, 'Village');
             
             if (village) {
-                village.loyalty = Math.max(0, village.loyalty - amount);
-                console.log(`[STATE] Sovereignty at risk in Sector ${targetId}. Loyalty: ${village.loyalty}%`);
+                const oldLoyalty = village.loyalty;
+                village.loyalty = Math.min(100, Math.max(0, village.loyalty - amount));
+                
+                if (oldLoyalty !== village.loyalty) {
+                    console.log(`[STATE] Sovereignty at risk in Sector ${targetId}. Loyalty: ${village.loyalty}%`);
+                    eventBus.emit('VILLAGE:UPDATE', { villageId: targetId });
+                }
                 
                 if (village.loyalty <= 0) {
                     this.executeConquest(targetId, attackerId);
