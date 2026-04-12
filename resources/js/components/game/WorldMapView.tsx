@@ -146,23 +146,22 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                     onWheel={handleWheel}
                 >
                     <div 
-                        className="relative bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] transition-transform duration-200 ease-out"
+                        className="relative bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] transition-transform duration-200 ease-out"
                         style={{ 
-                            width: `${20 * 64}px`, 
-                            height: `${20 * 64}px`,
+                            width: `${20 * 80}px`, 
+                            height: `${20 * 80}px`,
                             transform: `scale(${zoom})`,
                             transformOrigin: 'top left'
                         }}
                     >
-                        {/* Renderizar Grelha Táctica (20x20) */}
+                        {/* Renderizar Grelha Táctica Profissional (20x20) */}
                         {Array.from({ length: 20 }).map((_, y) => (
                             Array.from({ length: 20 }).map((_, x) => (
                                 <div 
                                     key={`${x}-${y}`}
-                                    className="absolute border border-white/5 transition-colors hover:bg-sky-500/5 cursor-crosshair"
+                                    className="absolute border border-white/[0.03] transition-colors hover:bg-sky-500/[0.02] cursor-crosshair group/cell"
                                     onClick={() => {
-                                        setSelectedSector({ x, y });
-                                        // Emitir ordem de movimento se houver unidade seleccionada
+                                        setSelectedSector({ x, y, base: bases.find(b => b.coordenada_x === x && b.coordenada_y === y) });
                                         if (selectedUnit) {
                                             (window as any).eventBus.emit("UNIT:MOVE", {
                                                 timestamp: Date.now(),
@@ -171,45 +170,63 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                         }
                                     }}
                                     style={{
-                                        left: x * 64,
-                                        top: y * 64,
-                                        width: 64,
-                                        height: 64,
-                                        border: "1px solid rgba(255, 255, 255, 0.08)"
+                                        left: x * 80,
+                                        top: y * 80,
+                                        width: 80,
+                                        height: 80
                                     }}
                                 >
-                                    <span className="absolute top-1 left-1 text-[7px] text-neutral-500 font-mono">
-                                        {x}:{y}
+                                    <span className="absolute top-1 left-1 text-[8px] text-neutral-800 font-mono group-hover/cell:text-neutral-500">
+                                        {x.toString().padStart(2, '0')}:{y.toString().padStart(2, '0')}
                                     </span>
                                 </div>
                             ))
                         ))}
 
-                        {/* ECS Entity Layer (Mobile Units) - Alinhadas à Grelha */}
+                        {/* ECS Entity Layer (Mobile Units) */}
                         <div className="absolute inset-0 pointer-events-none z-30">
                             {gameEntities.map(e => (
                                 <motion.div 
                                     key={`entity-${e.id}`}
-                                    initial={{ opacity: 0, scale: 0 }}
-                                    animate={{ opacity: 1, scale: 1 }}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
                                     onClick={(event) => {
                                         event.stopPropagation();
                                         setSelectedUnit(e.id);
-                                        console.log("SELECTED:", e.id);
                                     }}
                                     style={{
                                         position: "absolute",
-                                        left: e.x * 64,
-                                        top: e.y * 64,
-                                        width: 64,
-                                        height: 64,
-                                        border: selectedUnit === e.id ? "2px solid yellow" : "none",
-                                        cursor: "pointer",
-                                        pointerEvents: "auto" // Habilitar clicks explícitos
+                                        left: e.x * 80,
+                                        top: e.y * 80,
+                                        width: 80,
+                                        height: 80,
+                                        pointerEvents: "auto"
                                     }}
-                                    className="unit flex items-center justify-center rounded-lg transition-all"
+                                    className="flex items-center justify-center"
                                 >
-                                    <div className={`w-3 h-3 ${selectedUnit === e.id ? 'bg-yellow-400 scale-125' : 'bg-sky-500'} rounded-full shadow-[0_0_15px_rgba(14,165,233,0.8)] border border-white/50 animate-pulse`} />
+                                    <div className="relative group cursor-pointer">
+                                        {/* Unit Halo */}
+                                        <motion.div 
+                                            animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
+                                            transition={{ repeat: Infinity, duration: 2 }}
+                                            className={`absolute -inset-2 rounded-full ${selectedUnit === e.id ? 'bg-yellow-500/30' : 'bg-sky-500/20'}`}
+                                        />
+                                        
+                                        {/* Unit Icon Wrapper */}
+                                        <div className={`
+                                            relative w-10 h-10 rounded-xl border-2 rotate-45 flex items-center justify-center transition-all
+                                            ${selectedUnit === e.id ? 'bg-yellow-500 border-white shadow-[0_0_20px_rgba(234,179,8,0.6)]' : 'bg-black/80 border-sky-500/50 hover:border-sky-400 shadow-xl'}
+                                        `}>
+                                            <div className="-rotate-45">
+                                                <Target size={18} className={selectedUnit === e.id ? 'text-black' : 'text-sky-400'} />
+                                            </div>
+                                        </div>
+
+                                        {/* Name Tag */}
+                                        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-black/80 px-2 py-0.5 rounded border border-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <span className="text-[7px] text-white font-black uppercase whitespace-nowrap tracking-widest">{e.type || 'STRIKER_V1'}</span>
+                                        </div>
+                                    </div>
                                 </motion.div>
                             ))}
                         </div>
@@ -229,112 +246,117 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                 </div>
             </div>
 
-            {/* PAINEL DE INTELIGÊNCIA (DIREITA) */}
-            <div className="w-full lg:w-80 space-y-4">
-                <AnimatePresence mode="wait">
-                    {selectedSector ? (
-                        <motion.div 
-                            key="selected"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 20 }}
-                            className="bg-neutral-900 rounded-[2rem] border border-white/10 p-6 shadow-xl relative overflow-hidden"
-                        >
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <Target size={80} className="text-red-500" />
+            {/* PAINEL DE INTELIGÊNCIA FLUTUANTE (DIREITA) */}
+            <AnimatePresence>
+                {selectedSector && (
+                    <motion.div 
+                        initial={{ opacity: 0, x: 100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 100 }}
+                        className="fixed right-10 top-32 bottom-32 w-96 bg-neutral-950/90 backdrop-blur-2xl rounded-[3rem] border-2 border-white/5 p-8 shadow-2xl z-40 overflow-hidden flex flex-col"
+                    >
+                        <div className="absolute top-0 right-0 p-8 opacity-[0.03]">
+                            <Target size={200} className="text-white" />
+                        </div>
+
+                        <header className="mb-8 relative z-10">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                <span className="text-[10px] font-black text-red-500 uppercase tracking-[0.4em]">Sector_Inteligence</span>
                             </div>
+                            <h3 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2">
+                                {selectedSector.base?.nome || 'Sector Vazio'}
+                            </h3>
+                            <div className="flex items-center gap-2 text-neutral-500 font-mono text-sm">
+                                <Crosshair size={14} /> <span className="text-sky-500">[{selectedSector.x.toString().padStart(3,'0')}:{selectedSector.y.toString().padStart(3,'0')}]</span>
+                            </div>
+                        </header>
 
-                            <header className="mb-6">
-                                <span className="text-[10px] font-black text-sky-500 uppercase tracking-widest mb-1 block">Sector Seleccionado</span>
-                                <h3 className="text-2xl font-black text-white uppercase tracking-tighter">
-                                    {selectedSector.base?.nome || 'Sector Vazio'}
-                                </h3>
-                                <div className="flex items-center gap-2 text-neutral-500 font-mono text-xs mt-1">
-                                    <Crosshair size={12} /> [{selectedSector.x}:{selectedSector.y}]
-                                </div>
-                            </header>
-
+                        <div className="flex-1 space-y-8 relative z-10 overflow-auto custom-scrollbar pr-2">
                             {selectedSector.base ? (
-                                <div className="space-y-6">
-                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <div className="p-2 bg-white/10 rounded-lg">
-                                                <User size={16} className="text-white" />
+                                <div className="space-y-8">
+                                    <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 shadow-inner">
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="w-12 h-12 bg-sky-500/10 rounded-2xl flex items-center justify-center border border-sky-500/20">
+                                                <User size={20} className="text-sky-400" />
                                             </div>
                                             <div>
-                                                <span className="text-[10px] text-neutral-500 uppercase font-bold block">Comandante</span>
-                                                <span className="text-sm font-black text-white">{selectedSector.base.jogador?.username}</span>
+                                                <span className="text-[10px] text-neutral-500 uppercase font-black block tracking-widest">Commanding_Officer</span>
+                                                <span className="text-xl font-black text-white tracking-tight">{selectedSector.base.jogador?.username}</span>
                                             </div>
                                         </div>
                                         {selectedSector.base.jogador?.alianca && (
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[10px] text-neutral-500 font-black">ALI</span>
-                                                <span className="text-[10px] font-black text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
-                                                    {selectedSector.base.jogador.alianca.tag}
+                                            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/5">
+                                                <Shield size={14} className="text-neutral-600" />
+                                                <span className="text-[11px] font-black text-sky-400 uppercase tracking-tighter">
+                                                    Allied_Command: {selectedSector.base.jogador.alianca.tag}
                                                 </span>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                                            <span className="text-[8px] text-neutral-500 uppercase font-black block mb-1">Defesa</span>
-                                            <div className="flex items-center gap-2 text-red-500">
-                                                <Shield size={12} />
-                                                <span className="font-mono text-xs">DETECTADA</span>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-4 bg-red-500/5 rounded-2xl border border-red-500/10 group">
+                                            <span className="text-[9px] text-neutral-600 uppercase font-black block mb-2">Defense_Protocols</span>
+                                            <div className="flex items-center gap-2 text-red-500 group-hover:scale-105 transition-transform">
+                                                <Shield size={14} />
+                                                <span className="font-black text-xs">HARDENED</span>
                                             </div>
                                         </div>
-                                        <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                                            <span className="text-[8px] text-neutral-500 uppercase font-black block mb-1">Recursos</span>
-                                            <div className="flex items-center gap-2 text-emerald-500">
-                                                <Zap size={12} />
-                                                <span className="font-mono text-xs">VULNERÁVEL</span>
+                                        <div className="p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 group">
+                                            <span className="text-[9px] text-neutral-600 uppercase font-black block mb-2">Resource_Yield</span>
+                                            <div className="flex items-center gap-2 text-emerald-500 group-hover:scale-105 transition-transform">
+                                                <Zap size={14} />
+                                                <span className="font-black text-xs">HARVESTABLE</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     {selectedSector.base.jogador?.id !== playerBase?.jogador_id ? (
                                         <Button 
-                                            className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-widest py-6 rounded-2xl group"
+                                            className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-3xl shadow-xl shadow-red-600/20 active:scale-95 transition-all text-xs"
                                             onClick={() => setIsAttackModalOpen(true)}
                                         >
-                                            ORDEM DE ATAQUE <Sword size={16} className="ml-2 group-hover:rotate-12 transition-transform" />
+                                            ENGAGE_COMBAT_SEQUENCE
                                         </Button>
                                     ) : (
-                                        <div className="py-4 text-center border border-dashed border-sky-500/30 rounded-2xl bg-sky-500/5">
-                                            <span className="text-[10px] font-black text-sky-400 uppercase">Zona de Controlo Aliada</span>
+                                        <div className="py-6 text-center border-2 border-dashed border-sky-500/20 rounded-3xl bg-sky-500/5">
+                                            <span className="text-xs font-black text-sky-400 uppercase tracking-widest">Friendly_Fire_Restricted</span>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="space-y-6">
-                                    <p className="text-xs text-neutral-500 italic leading-relaxed">
-                                        Este sector não contém infraestruturas permanentes. Operações militares aqui resultariam apenas em controlo territorial sem ganho imediato de recursos.
-                                    </p>
+                                <div className="space-y-8">
+                                    <div className="relative p-6 bg-white/[0.02] rounded-3xl border border-dashed border-white/10 group hover:border-sky-500/30 transition-colors">
+                                        <p className="text-xs text-neutral-500 font-medium leading-relaxed uppercase tracking-tight">
+                                            Neutral Sector detected. Zero structural signals found. Military control recommended for territorial integrity.
+                                        </p>
+                                    </div>
                                     <Button 
                                         variant="outline"
-                                        className="w-full border-white/10 hover:bg-neutral-800 text-neutral-400 font-black uppercase tracking-widest py-6 rounded-2xl"
+                                        className="w-full border-2 border-white/5 hover:bg-white/5 text-neutral-400 hover:text-white font-black uppercase tracking-[0.2em] py-8 rounded-3xl transition-all text-xs"
                                         onClick={() => setIsAttackModalOpen(true)}
                                     >
-                                        ENVIAR RECONHECIMENTO <ChevronRight size={16} className="ml-2" />
+                                        DISPATCH_RECON_UNIT
+                                    </Button>
+                                    <Button 
+                                        variant="ghost"
+                                        size="sm"
+                                        className="w-full text-neutral-600 text-[10px] font-black uppercase hover:text-sky-500"
+                                        onClick={() => setSelectedSector(null)}
+                                    >
+                                        ABORT_INTEL_SCAN
                                     </Button>
                                 </div>
                             )}
-                        </motion.div>
-                    ) : (
-                        <motion.div 
-                            key="empty"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="h-full flex flex-col items-center justify-center p-8 bg-neutral-900/50 rounded-[2rem] border border-dashed border-white/10 text-center"
-                        >
-                            <MapIcon className="text-neutral-700 mb-4" size={48} />
-                            <h4 className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Aguardando Selecção</h4>
-                            <p className="text-[9px] text-neutral-700 uppercase mt-2">Clica numa zona do grid para obter inteligência táctica.</p>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
+                        </div>
+                        
+                        <footer className="mt-8 pt-6 border-t border-white/5 text-center">
+                            <span className="text-[8px] font-mono text-neutral-700 tracking-[0.5em]">SYSTEMS_STABLE_V3.9.2</span>
+                        </footer>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* MODAL DE ATAQUE */}
             {selectedSector && (
