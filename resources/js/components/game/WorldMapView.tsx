@@ -191,29 +191,32 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                             <TooltipTrigger asChild>
                                                 <div 
                                                     className={`absolute border border-white/[0.05] transition-all cursor-crosshair group flex items-center justify-center
-                                                        ${isSelected ? 'border-orange-500 z-10 bg-orange-500/5 shadow-[0_0_20px_rgba(249,115,22,0.2)]' : 'hover:bg-white/5'}
-                                                        ${isPlayerBase ? 'bg-sky-500/5' : ''}
-                                                        ${isEnemy ? 'bg-red-500/5' : ''}
-                                                        ${isRebel ? 'bg-amber-500/5' : ''}
+                                                        ${isSelected ? 'border-sky-500 z-10 bg-sky-500/10 shadow-[0_0_30px_rgba(14,165,233,0.4)] ring-2 ring-sky-500/50' : 'hover:bg-white/5'}
+                                                        ${isPlayerBase ? 'bg-sky-500/10 border-sky-500/20' : ''}
+                                                        ${isEnemy ? 'bg-red-500/10 border-red-500/20' : ''}
+                                                        ${isRebel ? 'bg-amber-500/10 border-amber-500/20' : ''}
                                                     `}
                                                     onClick={() => setSelectedSector({ x, y, base: baseAt })}
                                                     style={{ left: x * 80, top: y * 80, width: 80, height: 80 }}
                                                 >
-                                                    <span className="absolute top-1 left-1 text-[8px] font-mono text-neutral-800 opacity-20 group-hover:opacity-100 transition-opacity">
+                                                    <span className={`absolute top-1 left-1 text-[7px] font-mono transition-opacity ${isSelected ? 'text-sky-400 opacity-100' : 'text-neutral-700 opacity-40 group-hover:opacity-100'}`}>
                                                         {x.toString().padStart(2, '0')}:{y.toString().padStart(2, '0')}
                                                     </span>
 
                                                     {baseAt && (
                                                         <motion.div 
-                                                            animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
-                                                            transition={{ repeat: Infinity, duration: 2 }}
-                                                            className={`p-3 rounded-xl border-2 shadow-2xl
-                                                                ${isPlayerBase ? 'bg-sky-500/20 text-sky-400 border-sky-500/40' : ''}
-                                                                ${isEnemy ? 'bg-red-500/20 text-red-400 border-red-500/40' : ''}
-                                                                ${isRebel ? 'bg-amber-500/20 text-amber-500 border-amber-500/40' : ''}
+                                                            animate={isSelected ? { scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] } : {}}
+                                                            transition={{ repeat: Infinity, duration: 3 }}
+                                                            className={`p-3 rounded-xl border-2 shadow-2xl relative
+                                                                ${isPlayerBase ? 'bg-sky-500/20 text-sky-400 border-sky-500/40 shadow-sky-500/20' : ''}
+                                                                ${isEnemy ? 'bg-red-500/20 text-red-400 border-red-500/40 shadow-red-500/20' : ''}
+                                                                ${isRebel ? 'bg-amber-500/20 text-amber-500 border-amber-500/40 shadow-amber-500/20' : ''}
                                                             `}
                                                         >
                                                             <Home size={24} />
+                                                            {isSelected && (
+                                                                <div className="absolute -inset-2 bg-sky-500/20 blur-xl rounded-full -z-10 animate-pulse" />
+                                                            )}
                                                         </motion.div>
                                                     )}
                                                 </div>

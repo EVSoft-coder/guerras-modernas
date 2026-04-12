@@ -16,6 +16,7 @@ export interface EntitySnapshot {
     loyalty?: number;
     isSelected?: boolean;
     status?: "going" | "returning" | "completed";
+    ownerId?: number | null;
     resources?: { suprimentos: number; combustivel: number; municoes: number; metal: number; energia: number; pessoal: number };
     march?: {
         state: string;
@@ -72,6 +73,7 @@ class GameStateService {
             const building = entityManager.getComponent<any>(id, 'Building');
             const village = entityManager.getComponent<any>(id, 'Village');
             const unit = entityManager.getComponent<any>(id, 'Unit');
+            const player = entityManager.getComponent<any>(id, 'Player');
 
             newSnapshots.push({
                 id,
@@ -83,6 +85,7 @@ class GameStateService {
                 loyalty: village ? village.loyalty : undefined,
                 isSelected: !!selection,
                 status: march?.status,
+                ownerId: village?.ownerId ?? army?.ownerId ?? march?.ownerId ?? (player ? id : undefined),
                 resources: res ? { 
                     suprimentos: res.suprimentos, 
                     combustivel: res.combustivel, 
