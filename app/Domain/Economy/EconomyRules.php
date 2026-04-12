@@ -13,10 +13,11 @@ class EconomyRules
     {
         $baseProd = config("game.production.{$resource}", 10);
         $speed = config('game.speed.resources', 1);
-        $scaling = config('game.scaling', 1.5);
- 
-        // Formula: (BasePerHour * Speed) * (1 + Level * Scaling)
-        $porHora = ($baseProd * $speed) * (1 + ($buildingLevel * $scaling));
+
+        if ($buildingLevel <= 0) return 0;
+
+        // Formula: base * level^1.2 (Implementação Escalável)
+        $porHora = ($baseProd * $speed) * pow($buildingLevel, 1.2);
         
         return $porHora / 60;
     }
