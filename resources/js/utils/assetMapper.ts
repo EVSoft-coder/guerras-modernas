@@ -4,7 +4,7 @@
  */
 
 export const getBuildingAsset = (type: string, level: number = 1): string => {
-    // Normalização para evitar problemas de case
+    if (!type) return '/assets/placeholders/building_unknown.svg';
     const t = type.toLowerCase();
     
     // Lista de edifícios que ainda dependem de placeholders
@@ -19,6 +19,7 @@ export const getBuildingAsset = (type: string, level: number = 1): string => {
 };
 
 export const getUnitAsset = (type: string): string => {
+    if (!type) return '/assets/placeholders/unit_unknown.svg';
     const t = type.toLowerCase();
     
     // Lista de unidades que ainda dependem de placeholders
@@ -33,6 +34,7 @@ export const getUnitAsset = (type: string): string => {
 };
 
 export const getResourceAsset = (type: string): string => {
+    if (!type) return '/assets/placeholders/resource_unknown.svg';
     const t = type.toLowerCase();
     return `/assets/placeholders/resource_${t}.svg` || `/images/recursos/${t}.png`;
 };
