@@ -374,7 +374,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                             {isUpgrading 
                                                 ? 'AUTORIZANDO...' 
                                                 : (canAfford 
-                                                    ? (building.nivel === 0 ? 'CONSTRUIR' : 'UPGRADE') 
+                                                    ? (building.nivel === 0 ? 'CONSTRUIR' : `UPGRADE PARA NÍVEL ${building.nivel + 1}`) 
                                                     : 'RECURSOS INSUFICIENTES'
                                                   )
                                             }
