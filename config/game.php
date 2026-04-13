@@ -105,7 +105,7 @@ return [
             'cost' => ['suprimentos' => 200, 'pessoal' => 5],
             'time_base' => 90,
         ],
-        'complexo_residencial' => [
+        'housing' => [
             'name' => 'Complexo Residencial (Habitação)',
             'cost' => ['suprimentos' => 150, 'pessoal' => 0],
             'time_base' => 60,

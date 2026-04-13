@@ -17,7 +17,7 @@ enum BuildingType: string
     case FACTORY = 'factory';
     case SOLAR = 'solar';
     case PARLAMENTO = 'parlamento';
-    case COMPLEXO_RESIDENCIAL = 'complexo_residencial';
+    case HOUSING = 'housing';
  
     public function label(): string
     {
@@ -35,7 +35,7 @@ enum BuildingType: string
             self::FACTORY => 'Mina de Metal Industrial',
             self::SOLAR => 'Central de Energia Solar',
             self::PARLAMENTO => 'Sede do Parlamento',
-            self::COMPLEXO_RESIDENCIAL => 'Complexo Residencial (Habitação)',
+            self::HOUSING => 'Complexo Residencial (Habitação)',
         };
     }
 

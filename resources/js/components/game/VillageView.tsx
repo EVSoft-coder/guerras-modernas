@@ -13,7 +13,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
     // Mapeamento de posições fixas táticas para os tipos de edifícios (Grid 5x5: 0 a 4)
     const buildingPositions: Record<string, { x: number, y: number }> = {
         'parlamento': { x: 0, y: 0 },
-        'complexo_residencial': { x: 2, y: 0 },
+        'housing': { x: 2, y: 0 },
         'centro_pesquisa': { x: 1, y: 0 },
         'aerodromo': { x: 3, y: 0 },
         'radar_estrategico': { x: 1, y: 1 },

@@ -92,8 +92,8 @@ export const buildingConfigs: Record<string, BuildingDefinition> = {
         cost: { suprimentos: 200, pessoal: 5 },
         timeBase: 90,
     },
-    complexo_residencial: {
-        id: 'complexo_residencial',
+    housing: {
+        id: 'housing',
         name: 'Complexo Residencial (Habitação)',
         cost: { suprimentos: 150, pessoal: 0 },
         timeBase: 60,
