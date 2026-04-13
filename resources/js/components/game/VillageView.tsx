@@ -23,8 +23,8 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
         'fabrica_municoes': { x: 4, y: 4 },
         'posto_recrutamento': { x: 0, y: 4 },
         'muralha': { x: 2, y: 4 },
-        'mina_metal': { x: 1, y: 4 },
-        'central_energia': { x: 3, y: 4 }
+        'factory': { x: 1, y: 4 },
+        'solar': { x: 3, y: 4 }
     };
 
     const bConfigs = Object.values(buildingConfigs);
@@ -37,9 +37,6 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                 return t !== 'qg' && t !== 'muralha';
             }).map(eb => {
                 let type = eb.tipo?.toLowerCase();
-                // Normalização de aliases para match com front
-                if (type === 'factory') type = 'mina_metal';
-                if (type === 'solar') type = 'central_energia';
                 return { type, level: eb.nivel };
             }) || [])
         ];

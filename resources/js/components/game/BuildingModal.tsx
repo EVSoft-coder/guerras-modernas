@@ -98,7 +98,9 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
             'mina_suprimentos': 'suprimentos',
             'refinaria': 'combustivel',
             'fabrica_municoes': 'municoes',
-            'posto_recrutamento': 'pessoal'
+            'posto_recrutamento': 'pessoal',
+            'factory': 'metal',
+            'solar': 'energia'
         }[building.tipo as string];
 
         if (!resKey) return null;

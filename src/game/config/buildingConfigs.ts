@@ -80,14 +80,14 @@ export const buildingConfigs: Record<string, BuildingDefinition> = {
         cost: { suprimentos: 2000, combustivel: 1000, municoes: 1000, pessoal: 40 },
         timeBase: 1200,
     },
-    mina_metal: {
-        id: 'mina_metal',
+    factory: {
+        id: 'factory',
         name: 'Mina de Metal Industrial',
         cost: { suprimentos: 500, combustivel: 300, pessoal: 20 },
         timeBase: 180,
     },
-    central_energia: {
-        id: 'central_energia',
+    solar: {
+        id: 'solar',
         name: 'Central de Energia Termoelétrica',
         cost: { suprimentos: 300, metal: 200, pessoal: 10 },
         timeBase: 120,
