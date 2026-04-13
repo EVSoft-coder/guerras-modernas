@@ -304,7 +304,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                     </div>
                     <div className="w-px h-3 bg-white/20" />
                     <div className="font-mono text-[10px] text-sky-400 tracking-tighter">
-                        COORD_X: {center.x} | COORD_Y: {center.y} | BASES: {visibleBases.length} | REBELDES: {rebelBasesCount}
+                        COORD_X: {center.x} | COORD_Y: {center.y} | BASES: {allBases.length} | REBELDES: {rebelBasesCount}
                     </div>
                 </div>
             </div>
