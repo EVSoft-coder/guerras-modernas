@@ -226,7 +226,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                         ${isSelected ? 'border-sky-500 z-10 bg-sky-500/10 shadow-[0_0_30px_rgba(14,165,233,0.4)] ring-2 ring-sky-500/50' : 'hover:bg-white/5'}
                                                         ${isPlayer ? 'bg-sky-500/10 border-sky-500/20' : ''}
                                                         ${isEnemy ? 'bg-red-500/10 border-red-500/20' : ''}
-                                                        ${isRebel ? 'bg-red-600/20 border-red-600/40' : ''}
+                                                        ${isRebel ? 'bg-red-600/20 border-red-600/40 z-[1000] opacity-100' : ''}
                                                     `}
                                                     onClick={() => setSelectedSector({ x, y, base: baseAt })}
                                                     style={{ left: ix * 80, top: iy * 80, width: 80, height: 80 }}
