@@ -233,7 +233,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                         {x.toString().padStart(2, '0')}:{y.toString().padStart(2, '0')}
                                                     </span>
 
-                                                    {baseAt && (isPlayer || isRebel || isEnemy) && (
+                                                    {baseAt && (
                                                         <motion.div 
                                                             animate={isSelected ? { scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] } : {}}
                                                             transition={{ repeat: Infinity, duration: 3 }}
