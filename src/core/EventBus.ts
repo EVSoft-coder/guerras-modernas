@@ -62,7 +62,8 @@ class EventBus {
  
         const callbacks = this.handlers.get(type);
         if (!callbacks || callbacks.length === 0) {
-            console.warn(`[EVENT_BUS_WARNING] Event [${type}] has ZERO subscribers! Dead signal detected.`);
+            // Disabled to avoid blocking the console due to highly emitted inputs:
+            // console.warn(`[EVENT_BUS_WARNING] Event [${type}] has ZERO subscribers! Dead signal detected.`);
         }
 
         if (callbacks) {

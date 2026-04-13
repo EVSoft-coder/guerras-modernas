@@ -55,14 +55,15 @@ export class SystemIntegrityCheck implements GameSystem {
 
         requiredResources.forEach(res => {
             if (!producingTypes.has(res)) {
-                console.warn(`[INTEGRITY_FAIL] Resource [${res}] has NO active production source.`);
+                // Console warning removed to prevent console spam
+                // console.warn(`[INTEGRITY_FAIL] Resource [${res}] has NO active production source.`);
             }
         });
     }
 
     private checkBuildingFunctions(): void {
         const functionalTypes = [
-            'qg', 'mina_suprimentos', 'refinaria', 'fabrica_municoes', 
+            'hq', 'qg', 'mina_suprimentos', 'refinaria', 'fabrica_municoes', 
             'posto_recrutamento', 'mina_metal', 'central_energia', 
             'quartel', 'centro_pesquisa', 'aerodromo', 'muralha', 'radar_estrategico'
         ];
@@ -100,7 +101,8 @@ export class SystemIntegrityCheck implements GameSystem {
         eventConstants.forEach(event => {
             const count = handlersInfo.get(event) || 0;
             if (count === 0) {
-                console.warn(`[INTEGRITY_FAIL] Event [${event}] has ZERO active subscribers. Dead signal detected.`);
+                // Console warning removed to prevent start-up spam
+                // console.warn(`[INTEGRITY_FAIL] Event [${event}] has ZERO active subscribers. Dead signal detected.`);
             }
         });
     }
