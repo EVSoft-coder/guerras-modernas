@@ -80,6 +80,7 @@ export function VillageDashboard({
     
     if (selectedBuildingType) {
         const buildDef = (gameConfig?.buildings || {})[selectedBuildingType];
+        console.log("RESOLVING_BUILDING:", selectedBuildingType, "FOUND_IN_CONFIG:", !!buildDef, "FOUND_IN_DB:", !!foundBuilding);
         
         if (selectedBuildingType === 'qg') {
             currentBuilding = { tipo: 'qg', nome: 'Quartel General', nivel: Number(base.qg_nivel), base: base };
@@ -95,11 +96,20 @@ export function VillageDashboard({
                 nivel: 0, 
                 base: base 
             };
+        } else {
+            console.warn("TELEMETRY_FAILURE: Modal could not resolve building type:", selectedBuildingType);
+            // Fallback para evitar modal invisível
+            currentBuilding = {
+                tipo: selectedBuildingType,
+                nome: 'Estrutura em Scanner',
+                nivel: 0,
+                base: base
+            };
         }
     }
 
     const handleBuildingClick = (building: any) => {
-        console.log("CLICK_CAPTURE:", building.tipo, "LVL:", building.nivel);
+        console.log("TACTICAL_CLICK_EVENT:", building.tipo, "RAW_DATA:", building);
         setSelectedBuildingId(building.id || null);
         setSelectedBuildingType(building.tipo || null);
     };
