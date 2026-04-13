@@ -107,30 +107,19 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     const { post, processing } = useForm();
 
     const handleSendAttack = (params: any) => {
-        if ((window as any).eventBus) {
-            (window as any).eventBus.emit("ATTACK:LAUNCH", {
-                timestamp: Date.now(),
-                data: {
-                    originX: playerBase.coordenada_x,
-                    originY: playerBase.coordenada_y,
-                    targetX: params.destino_x,
-                    targetY: params.destino_y,
-                    ownerId: playerBase.jogador_id,
-                    troops: params.tropas
-                }
-            });
-        }
-
-        post((window as any).route('base.atacar', { ...params, origem_id: playerBase.id }), {
-            onSuccess: () => {
-                setIsAttackModalOpen(false);
-                setSelectedSector(null);
-                toast.success("Expedição Militar Lançada com Sucesso!");
-            },
-            onError: (errors: any) => {
-                toast.error(Object.values(errors)[0] as string);
-            }
+        eventBus.emit(Events.ATTACK_LAUNCH, {
+            originX: playerBase.coordenada_x,
+            originY: playerBase.coordenada_y,
+            targetX: params.destino_x,
+            targetY: params.destino_y,
+            ownerId: playerBase.jogador_id,
+            troops: params.tropas,
+            backendParams: { ...params, origem_id: playerBase.id } // Pass meta for processing
         });
+        
+        setIsAttackModalOpen(false);
+        setSelectedSector(null);
+        toast.success("Ordem de ataque enviada ao Centro de Operações.");
     };
 
     return (

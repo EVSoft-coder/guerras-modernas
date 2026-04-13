@@ -90,33 +90,21 @@ export function VillageDashboard({
     };
 
     const handleUpgrade = (tipo: string) => {
-        setIsUpgrading(true);
-        router.post('/base/upgrade', { base_id: base.id, tipo: tipo }, {
-            onSuccess: () => {
-                addToast(`ORDEM DE ENGENHARIA CONFIRMADA: Upgrade de ${tipo.replace(/_/g, ' ')} iniciado.`, 'success');
-                setIsUpgrading(false);
-            },
-            onError: (errors: any) => {
-                const errorMsg = Object.values(errors).flat().join(' | ');
-                addToast(`FALHA NA TRANSMISSÃO: ${errorMsg || 'Erro estrutural detetado.'}`, 'error');
-                setIsUpgrading(false);
-            }
+        eventBus.emit(Events.BUILDING_UPGRADE_REQUEST, {
+            base_id: base.id,
+            tipo
         });
+        setSelectedBuildingId(null);
+        addToast('Pedido de atualização estrutural enviado ao Comando.', 'info');
     };
 
     const handleTrain = (unidade: string, quantidade: number) => {
-        setIsTraining(true);
-        router.post('/base/treinar', { base_id: base.id, unidade, quantidade }, {
-            onSuccess: () => {
-                addToast(`MOBILIZAÇÃO INICIADA: Recrutamento de ${quantidade}x ${unidade.replace(/_/g, ' ')} em curso.`, 'military');
-                setIsTraining(false);
-            },
-            onError: (errors: any) => {
-                const errorMsg = Object.values(errors).flat().join(' | ');
-                addToast(`FALHA NO RECRUTAMENTO: ${errorMsg || 'Candidatos insuficientes.'}`, 'error');
-                setIsTraining(false);
-            }
+        eventBus.emit(Events.UNIT_TRAIN_REQUEST, {
+            base_id: base.id,
+            unidade,
+            quantidade
         });
+        addToast('Ordem de mobilização transmitida aos quartéis.', 'military' as any);
     };
 
     return (

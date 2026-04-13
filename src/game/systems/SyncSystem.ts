@@ -23,6 +23,77 @@ export class SyncSystem implements GameSystem {
                 this.persistReport(ev.data.report);
             }
         });
+
+        // ACTIONS: Player Intent Handlers
+        eventBus.subscribe(Events.BUILDING_UPGRADE_REQUEST, (ev) => this.handleBuildingUpgrade(ev.data));
+        eventBus.subscribe(Events.UNIT_TRAIN_REQUEST, (ev) => this.handleUnitTraining(ev.data));
+        eventBus.subscribe(Events.ATTACK_LAUNCH, (ev) => this.handleAttackLaunch(ev.data));
+    }
+
+    private async handleBuildingUpgrade(data: any): Promise<void> {
+        try {
+            console.log('[ACTION] Authorizing Building Upgrade...', data);
+            const response = await fetch('/base/upgrade', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
+                },
+                body: JSON.stringify({ base_id: data.base_id, tipo: data.tipo })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.message || 'Operation Denied');
+            }
+            console.log('[ACTION] Structural upgrade authorized by Central Command.');
+        } catch (err) {
+            console.error('[ACTION_FAILURE] Building upgrade aborted:', err);
+        }
+    }
+
+    private async handleUnitTraining(data: any): Promise<void> {
+        try {
+            console.log('[ACTION] Initiating Unit Recruitment...', data);
+            const response = await fetch('/base/treinar', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
+                },
+                body: JSON.stringify({ base_id: data.base_id, unidade: data.unidade, quantidade: data.quantidade })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.message || 'Recruitment Failed');
+            }
+            console.log('[ACTION] Recruitment procedures online.');
+        } catch (err) {
+            console.error('[ACTION_FAILURE] Recruitment aborted:', err);
+        }
+    }
+
+    private async handleAttackLaunch(data: any): Promise<void> {
+        try {
+            console.log('[ACTION] Launching Military Expedition...', data);
+            
+            // Logic handled by Laravel route (inertia approach or direct API)
+            // Note: Since we are in ECS, we use fetch to keep it non-blocking for UI
+            const response = await fetch('/base/atacar', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
+                },
+                body: JSON.stringify(data.backendParams)
+            });
+
+            if (!response.ok) throw new Error('Expedition Aborted by Tactical HQ');
+            console.log('[ACTION] Expedition is en-route.');
+        } catch (err) {
+            console.error('[ACTION_FAILURE] Military operation failed:', err);
+        }
     }
 
     private async persistReport(report: any): Promise<void> {
