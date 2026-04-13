@@ -28,8 +28,14 @@ class BaseController extends Controller
  
         try {
             $this->gameService->iniciarUpgrade($base, $request->tipo);
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'success', 'message' => "Upgrade de " . strtoupper($request->tipo) . " iniciado."]);
+            }
             return redirect()->back()->with('success', "ORDEM DE ENGENHARIA: Upgrade de " . strtoupper($request->tipo) . " iniciado.");
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+            }
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
@@ -44,8 +50,14 @@ class BaseController extends Controller
  
         try {
             $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'success', 'message' => "{$request->quantidade}x " . strtoupper($request->unidade) . " em alistamento."]);
+            }
             return redirect()->back()->with('success', "ORDEM DE RECRUTAMENTO: {$request->quantidade}x " . strtoupper($request->unidade) . " em alistamento.");
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+            }
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }

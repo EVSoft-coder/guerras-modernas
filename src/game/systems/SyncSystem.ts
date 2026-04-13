@@ -37,6 +37,7 @@ export class SyncSystem implements GameSystem {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
                 },
                 body: JSON.stringify({ base_id: data.base_id, tipo: data.tipo })
@@ -59,6 +60,7 @@ export class SyncSystem implements GameSystem {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
                 },
                 body: JSON.stringify({ base_id: data.base_id, unidade: data.unidade, quantidade: data.quantidade })
@@ -84,6 +86,7 @@ export class SyncSystem implements GameSystem {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
                 },
                 body: JSON.stringify(data.backendParams)
@@ -102,6 +105,7 @@ export class SyncSystem implements GameSystem {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
                 },
                 body: JSON.stringify({
