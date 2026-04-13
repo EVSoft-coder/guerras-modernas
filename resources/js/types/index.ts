@@ -99,6 +99,8 @@ export interface DashboardProps {
     capTotal: number;
     popPercent: number;
     gameConfig: any;
+    ataquesRecebidos: any[];
+    ataquesEnviados: any[];
     gameData?: {
         resources: Recurso;
         units: any[];
