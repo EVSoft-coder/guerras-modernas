@@ -14,6 +14,8 @@ class Recurso extends Model
         'combustivel',
         'municoes',
         'pessoal',
+        'metal',
+        'energia',
     ];
 
     public function base()

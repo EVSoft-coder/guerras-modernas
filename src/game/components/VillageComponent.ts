@@ -5,6 +5,8 @@ export interface VillageResources {
     combustivel: number;
     municoes: number;
     pessoal: number;
+    metal: number;
+    energia: number;
 }
 
 export class VillageComponent implements Component {
@@ -18,7 +20,9 @@ export class VillageComponent implements Component {
             suprimentos: 0, 
             combustivel: 0, 
             municoes: 0, 
-            pessoal: 0
+            pessoal: 0, 
+            metal: 0, 
+            energia: 0 
         },
         public name: string = 'Base_Outpost',
         public isRebel: boolean = false,

@@ -15,6 +15,8 @@ export const globalSettings = {
         combustivel: 40,
         municoes: 30,
         pessoal: 20,
+        metal: 15,
+        energia: 10,
     },
     scaling: 1.5,
     radarRange: 15,

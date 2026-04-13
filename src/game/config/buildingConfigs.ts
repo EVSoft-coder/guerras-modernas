@@ -6,6 +6,8 @@ export interface ResourceCost {
     suprimentos?: number;
     combustivel?: number;
     municoes?: number;
+    metal?: number;
+    energia?: number;
     pessoal?: number;
 }
 
@@ -87,13 +89,13 @@ export const buildingConfigs: Record<string, BuildingDefinition> = {
     central_energia: {
         id: 'central_energia',
         name: 'Central de Energia Termoelétrica',
-        cost: { suprimentos: 300, combustivel: 200, pessoal: 10 },
+        cost: { suprimentos: 300, metal: 200, pessoal: 10 },
         timeBase: 120,
     },
     parlamento: {
         id: 'parlamento',
         name: 'Parlamento & Diplomacia',
-        cost: { suprimentos: 3000, municoes: 2000, pessoal: 10, combustivel: 500 },
+        cost: { suprimentos: 3000, metal: 2000, pessoal: 10, energia: 500 },
         timeBase: 1800,
         requires: { qg: 10 }
     },
