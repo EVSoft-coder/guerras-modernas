@@ -65,8 +65,10 @@ class AuthController extends Controller
             $base->refresh();
             $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
  
-            // 4. Preparação de Dados para o HUD
             $taxas = $this->gameService->obterTaxasProducao($base);
+
+            // Filtragem de Soberania: Apenas edifícios com nível > 0 são transmitidos pelo backend
+            $base->setRelation('edificios', $base->edificios->filter(fn($e) => $e->nivel > 0));
         }
  
         // 5. Garantir Subsistência Rebelde (Mínimo 5)
