@@ -15,6 +15,7 @@ import { eventBus, Events } from '@src/core/EventBus';
 import { WorldMapView } from '@/components/game/WorldMapView';
 
 import { useGameEntities } from '@/hooks/use-game-entities';
+import { GLOBAL_BUILDINGS } from '@src/game/config/buildings';
 
 export function VillageDashboard({ 
     jogador, base: initialBase, bases: backendBases = [], taxasPerSecond, gameConfig, 
