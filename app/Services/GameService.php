@@ -53,10 +53,10 @@ class GameService
             'municoes' => EconomyRules::calculateProductionPerMinute('municoes', $this->obterNivelEdificio($base, BuildingType::FABRICA_MUNICOES)),
             'pessoal' => EconomyRules::calculateProductionPerMinute('pessoal', 
                 $this->obterNivelEdificio($base, BuildingType::POSTO_RECRUTAMENTO) + 
-                $this->obterNivelEdificio($base, BuildingType::COMPLEXO_RESIDENCIAL)
+                $this->obterNivelEdificio($base, BuildingType::HOUSING)
             ),
-            'metal' => EconomyRules::calculateProductionPerMinute('metal', $this->obterNivelEdificio($base, BuildingType::FACTORY)),
-            'energia' => EconomyRules::calculateProductionPerMinute('energia', $this->obterNivelEdificio($base, BuildingType::SOLAR)),
+            'metal' => EconomyRules::calculateProductionPerMinute('metal', $this->obterNivelEdificio($base, BuildingType::MINA_METAL)),
+            'energia' => EconomyRules::calculateProductionPerMinute('energia', $this->obterNivelEdificio($base, BuildingType::CENTRAL_ENERGIA)),
         ];
     }
 

@@ -24,8 +24,8 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
         'fabrica_municoes': { x: 4, y: 4 },
         'posto_recrutamento': { x: 0, y: 4 },
         'muralha': { x: 2, y: 4 },
-        'factory': { x: 1, y: 4 },
-        'solar': { x: 3, y: 4 }
+        'mina_metal': { x: 4, y: 1 },
+        'central_energia': { x: 3, y: 1 }
     };
 
     const bConfigs = Object.values(buildingConfigs);

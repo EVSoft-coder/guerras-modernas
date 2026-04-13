@@ -13,7 +13,6 @@ return new class extends Migration
     public function up(): void
     {
         $renames = [
-            'complexo_residencial' => 'housing',
             'factory' => 'mina_metal',
             'solar' => 'central_energia'
         ];
@@ -25,7 +24,7 @@ return new class extends Migration
             }
         }
 
-        // 2. Atualizar Tabela de Construções (construcoes ou construcaos)
+        // 2. Atualizar Tabela de Construções
         $table = Schema::hasTable('construcoes') ? 'construcoes' : (Schema::hasTable('construcaos') ? 'construcaos' : null);
         if ($table) {
             $column = Schema::hasColumn($table, 'edificio_tipo') ? 'edificio_tipo' : (Schema::hasColumn($table, 'tipo') ? 'tipo' : null);
@@ -43,7 +42,6 @@ return new class extends Migration
     public function down(): void
     {
         $renames = [
-            'housing' => 'complexo_residencial',
             'mina_metal' => 'factory',
             'central_energia' => 'solar'
         ];

@@ -15,10 +15,10 @@ class BuildingType
     const RADAR_ESTRATEGICO = 'radar_estrategico';
     const CENTRO_PESQUISA = 'centro_pesquisa';
     const PARLAMENTO = 'parlamento';
-    const FACTORY = 'factory';
-    const SOLAR = 'solar';
-    const MINA_METAL = 'factory'; 
-    const CENTRAL_ENERGIA = 'solar';
+    const FACTORY = 'mina_metal';
+    const SOLAR = 'central_energia';
+    const MINA_METAL = 'mina_metal'; 
+    const CENTRAL_ENERGIA = 'central_energia';
     const HOUSING = 'housing';
  
     /**
@@ -64,7 +64,7 @@ class BuildingType
     public static function all(): array
     {
         return [
-            self::PARLAMENTO, self::FACTORY, self::SOLAR, self::HOUSING
+            self::PARLAMENTO, self::MINA_METAL, self::CENTRAL_ENERGIA, self::HOUSING
         ];
     }
 }

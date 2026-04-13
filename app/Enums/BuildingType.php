@@ -14,8 +14,8 @@ enum BuildingType: string
     case AERODROMO = 'aerodromo';
     case RADAR_ESTRATEGICO = 'radar_estrategico';
     case CENTRO_PESQUISA = 'centro_pesquisa';
-    case FACTORY = 'factory';
-    case SOLAR = 'solar';
+    case MINA_METAL = 'mina_metal';
+    case CENTRAL_ENERGIA = 'central_energia';
     case PARLAMENTO = 'parlamento';
     case HOUSING = 'housing';
  
@@ -32,8 +32,8 @@ enum BuildingType: string
             self::AERODROMO => 'Aeródromo Militar',
             self::RADAR_ESTRATEGICO => 'Radar de Longo Alcance',
             self::CENTRO_PESQUISA => 'Centro de Pesquisa & I&D',
-            self::FACTORY => 'Mina de Metal Industrial',
-            self::SOLAR => 'Central de Energia Solar',
+            self::MINA_METAL => 'Mina de Metal',
+            self::CENTRAL_ENERGIA => 'Central de Energia',
             self::PARLAMENTO => 'Sede do Parlamento',
             self::HOUSING => 'Complexo Residencial (Habitação)',
         };
