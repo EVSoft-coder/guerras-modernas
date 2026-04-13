@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('bases', function (Blueprint $table) {
-            $table->boolean('is_protected')->default(false);
-            $table->timestamp('protection_until')->nullable();
+            if (!Schema::hasColumn('bases', 'is_protected')) {
+                $table->boolean('is_protected')->default(false);
+            }
+            if (!Schema::hasColumn('bases', 'protection_until')) {
+                $table->timestamp('protection_until')->nullable();
+            }
         });
     }
 

@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('recursos', function (Blueprint $table) {
-            $table->integer('cap')->default(10000)->after('energia');
+            if (!Schema::hasColumn('recursos', 'cap')) {
+                $table->integer('cap')->default(10000)->after('energia');
+            }
         });
     }
 
