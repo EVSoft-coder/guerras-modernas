@@ -31,7 +31,10 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
     const playerBuildings = [
         { type: 'qg', level: base.qg_nivel ?? 1 },
         { type: 'muralha', level: base.muralha_nivel ?? 1 },
-        ...(base.edificios?.map(eb => {
+        ...(base.edificios?.filter(eb => {
+            const t = eb.tipo?.toLowerCase();
+            return t !== 'qg' && t !== 'muralha';
+        }).map(eb => {
             let type = eb.tipo?.toLowerCase();
             // Normalização de aliases para match com front
             if (type === 'factory') type = 'mina_metal';
