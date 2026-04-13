@@ -15,47 +15,25 @@ import { eventBus, Events } from '@src/core/EventBus';
 import { WorldMapView } from '@/components/game/WorldMapView';
 
 import { useGameEntities } from '@/hooks/use-game-entities';
-import { GLOBAL_BUILDINGS } from '@src/game/config/buildings';
 
 export function VillageDashboard({ 
     jogador, base: initialBase, bases: backendBases = [], taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal 
 }: DashboardProps & { bases: any[] }) {
-    // 0. ECS ENGINE INTEGRATION
+    // 0. ECS ENGINE INTEGRATION - BARKING STATE
     const { globalState } = useGameEntities();
 
-    // 1. HIDRATAÇÃO DE ESTADO... (manter lógica de hidratação mas usar recursos do ECS)
-    const base = React.useMemo(() => {
-        if (!initialBase) return initialBase;
-        
-        const currentEdificios = initialBase.edificios || [];
-        const missingBuildings = GLOBAL_BUILDINGS
-            .filter(def => def.type !== 'qg' && def.type !== 'muralha') // QG/Muralha são especiais no DB
-            .filter(def => !currentEdificios.some(e => e.tipo?.toLowerCase() === def.type.toLowerCase()))
-            .map(def => ({
-                id: -(Math.random() * 1000000), // ID negativo para não colidir com DB
-                tipo: def.type,
-                nivel: 0,
-                base_id: initialBase.id
-            }));
-
-        return {
-            ...initialBase,
-            edificios: [...currentEdificios, ...missingBuildings],
-            // Merge resources: DB fields (id, base_id, cap) + ECS real-time updates
-            recursos: {
-                ...initialBase.recursos,
-                ...(globalState.resources || {})
-            }
-        };
-    }, [initialBase, globalState.resources]);
+    // 1. DATA PROJECTOR (Business logic moved to GameStateService)
+    const base = React.useMemo(() => ({
+        ...initialBase,
+        edificios: globalState.buildings as any[],
+        recursos: { ...initialBase.recursos, ...globalState.resources }
+    }), [initialBase, globalState.buildings, globalState.resources]);
 
     // Use logic villages from ECS instead of backend props for switcher
-    const ecsVillages = globalState.villages || [];
-    const displayBases = (ecsVillages.length > 0 ? ecsVillages : backendBases).map(v => ({
-        id: v.id,
-        nome: (v as any).nome || (v as any).name || 'Base'
-    }));
+    const displayBases = globalState.worldMapBases.length > 0 
+        ? globalState.worldMapBases 
+        : backendBases.map(b => ({ id: b.id, nome: b.nome }));
 
     const { addToast } = useToasts();
     const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);

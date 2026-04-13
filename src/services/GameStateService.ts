@@ -5,6 +5,7 @@
 import { entityManager } from '../core/EntityManager';
 import { stateManager, GameMode } from '../core/StateManager';
 import { AttackMarchComponent } from '../game/components/AttackMarchComponent';
+import { GLOBAL_BUILDINGS } from '../game/config/buildings';
 
 export interface EntitySnapshot {
     id: number;
@@ -34,7 +35,9 @@ export interface GlobalGameState {
     player: { name: string; id: number };
     villages: Array<{ id: number; name: string; x: number; y: number }>;
     resources: { suprimentos: number; combustivel: number; municoes: number; metal: number; energia: number; pessoal: number };
-    buildings: Array<{ type: string; level: number }>;
+    buildings: Array<{ type: string; level: number; id?: number }>;
+    worldMapBases: Array<any>;
+    rebelCount: number;
     revealedTiles?: string[];
     research?: Record<string, number>;
 }
@@ -45,7 +48,9 @@ class GameStateService {
         player: { name: 'OPERATIVE', id: 1 },
         villages: [],
         resources: { suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0, pessoal: 0 },
-        buildings: []
+        buildings: [],
+        worldMapBases: [],
+        rebelCount: 0
     };
     private listeners: Array<() => void> = [];
 
@@ -153,18 +158,47 @@ class GameStateService {
             return { id, name: v?.name || 'OUTPOST', x: p?.x || 0, y: p?.y || 0 };
         });
         
-        // Gather Buildings
-        const buildingList = buildingEntities.map(id => {
+        // Gather and Hydrate Buildings (Include Level 0)
+        const existingBuildings = buildingEntities.map(id => {
             const b = entityManager.getComponent<any>(id, 'Building');
-            return { type: b?.buildingType || 'STRUCTURE', level: b?.level || 1 };
+            return { type: b?.buildingType || 'STRUCTURE', level: b?.level || 1, id };
         });
+
+        const hydratedBuildings = GLOBAL_BUILDINGS.map(def => {
+            const existing = existingBuildings.find(eb => eb.type.toLowerCase() === def.type.toLowerCase());
+            return {
+                type: def.type,
+                level: existing ? existing.level : 0,
+                id: existing ? existing.id : -(Math.random() * 1000)
+            };
+        });
+
+        // Bake World Map Bases
+        const worldMapBases = villageEntities.map(id => {
+            const v = entityManager.getComponent<any>(id, 'Village');
+            const p = entityManager.getComponent<any>(id, 'GridPosition');
+            return {
+                id,
+                nome: v?.name || 'Setor Hostil',
+                coordenada_x: Math.round(p?.x || 0),
+                coordenada_y: Math.round(p?.y || 0),
+                loyalty: v?.loyalty || 100,
+                jogador_id: v?.ownerId || null,
+                is_protected: v?.isProtected || false,
+                protection_until: v?.protectionUntil || 0
+            };
+        });
+
+        const rebelCount = worldMapBases.filter(b => !b.jogador_id).length;
 
         // Ensure defaults and update
         this.globalState = {
             player: this.globalState?.player ?? { name: 'OPERATIVE', id: 1 },
             villages: villageList,
             resources: totalRes,
-            buildings: buildingList
+            buildings: hydratedBuildings,
+            worldMapBases,
+            rebelCount
         };
     }
 
