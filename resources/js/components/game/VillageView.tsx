@@ -48,13 +48,16 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
     const buildings = GLOBAL_BUILDINGS.filter(b => b.type !== 'qg').map((b) => {
         const existing = (base.edificios || []).find(eb => eb.tipo?.toLowerCase() === b.type.toLowerCase());
         const tipo = b.type.toLowerCase();
+        const isLocked = b.requiredLevel && base.qg_nivel < b.requiredLevel;
+        
         return {
             ...b,
             id: existing?.id,
-            level: existing ? existing.level : 0,
+            level: existing ? existing.nivel : 0,
             tipo: tipo,
-            nome: buildingDisplayNames[tipo] || b.nome,
-            gridPos: buildingPositions[tipo] || { x: 0, y: 0 }
+            nome: isLocked ? `[BLOQUEADO] LVL ${b.requiredLevel}` : (buildingDisplayNames[tipo] || b.nome),
+            gridPos: buildingPositions[tipo] || { x: 0, y: 0 },
+            isLocked: isLocked
         };
     });
 
@@ -93,9 +96,10 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                     <BuildingNode 
                         key={b.id || `ghost-${b.tipo}`}
                         tipo={b.tipo}
-                        nome={b.level === 0 ? `[CONSTRUIR] ${b.nome}` : b.nome}
+                        nome={b.nome}
                         nivel={b.level}
                         gridPos={b.gridPos}
+                        isLocked={b.isLocked}
                         onClick={() => onBuildingClick({ 
                             ...b,
                             base: base 
