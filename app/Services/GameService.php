@@ -72,6 +72,14 @@ class GameService
         $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
         $tempo = BuildingRules::calculateTime($tipo, $nivelAtual);
 
+        // 1. Validar Cap de População (Se o edifício consome slots)
+        $stats = $this->obterEstatisticasPopulacao($base);
+        $popRequerida = config("game.buildings.{$tipo}.cost.pessoal") ?? 0;
+
+        if ($stats['available'] < $popRequerida) {
+            throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente para suportar esta expansão estrutural. Melhore o Complexo Residencial.");
+        }
+
         return DB::transaction(function() use ($base, $tipo, $custos, $tempo, $nivelAtual) {
             if (!$this->consumirRecursos($base, $custos)) {
                 throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
@@ -212,7 +220,7 @@ class GameService
      */
     public function obterEstatisticasPopulacao(Base $base): array
     {
-        $complexoLevel = $this->obterNivelEdificio($base, BuildingType::COMPLEXO_RESIDENCIAL);
+        $complexoLevel = $this->obterNivelEdificio($base, BuildingType::HOUSING);
         $total = EconomyRules::calculatePopulationCapacity($complexoLevel);
         
         $configs = config('game.buildings');
