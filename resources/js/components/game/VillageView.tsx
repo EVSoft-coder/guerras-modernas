@@ -12,20 +12,19 @@ interface VillageViewProps {
 export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig }) => {
     // Mapeamento de posições fixas táticas para os tipos de edifícios (Grid 5x5: 0 a 4)
     const buildingPositions: Record<string, { x: number, y: number }> = {
+        'parlamento': { x: 0, y: 0 },
         'centro_pesquisa': { x: 1, y: 0 },
         'aerodromo': { x: 3, y: 0 },
         'radar_estrategico': { x: 1, y: 1 },
         'quartel': { x: 3, y: 1 },
-        'mina_suprimentos': { x: 0, y: 3 },
-        'refinaria': { x: 4, y: 3 },
-        'fabrica_municoes': { x: 3, y: 4 },
-        'posto_recrutamento': { x: 1, y: 4 },
+        'qg': { x: 2, y: 2 },
+        'mina_suprimentos': { x: 0, y: 2 },
+        'refinaria': { x: 4, y: 2 },
+        'fabrica_municoes': { x: 4, y: 4 },
+        'posto_recrutamento': { x: 0, y: 4 },
         'muralha': { x: 2, y: 4 },
-        'parlamento': { x: 0, y: 0 },
-        'factory': { x: 4, y: 0 },
-        'solar': { x: 2, y: 0 },
-        'mina_metal': { x: 0, y: 4 },
-        'central_energia': { x: 4, y: 4 }
+        'mina_metal': { x: 1, y: 4 },
+        'central_energia': { x: 3, y: 4 }
     };
 
     const bConfigs = Object.values(buildingConfigs);
@@ -77,7 +76,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                             nome={b.name}
                             nivel={b.level}
                             gridPos={pos}
-                            onClick={() => onBuildingClick({ ...b, type: b.id })}
+                            onClick={() => onBuildingClick({ ...b, tipo: b.id })}
                         />
                     );
                 })}
