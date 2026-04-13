@@ -35,8 +35,7 @@ class EconomyRules
      */
     public static function calculatePopulationCapacity(int $complexoLevel): int
     {
-        // Base de 500 slots por nível de Complexo Residencial
-        if ($complexoLevel <= 0) return 200; // Base inicial de logística
-        return 200 + ($complexoLevel * 500);
+        $baseLogistica = 100; // Capacidade mínima inicial de comando
+        return $baseLogistica + ($complexoLevel * 50);
     }
 }
