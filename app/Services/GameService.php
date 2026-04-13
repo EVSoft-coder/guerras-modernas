@@ -66,6 +66,9 @@ class GameService
      */
     public function iniciarUpgrade(Base $base, string $tipoRaw): ?Construcao
     {
+        // 0. Sincronizar economia antes de qualquer dedução
+        $this->atualizarRecursos($base);
+
         $tipo = BuildingType::normalize($tipoRaw);
         $nivelAtual = $this->obterNivelEdificio($base, $tipo);
         
@@ -117,6 +120,9 @@ class GameService
      */
     public function iniciarTreino(Base $base, string $unidade, int $quantidade): Treino
     {
+        // 0. Sincronizar economia antes de qualquer dedução
+        $this->atualizarRecursos($base);
+
         $custos = UnitRules::calculateCost($unidade, $quantidade);
         $tempo = UnitRules::calculateTime($unidade, $quantidade);
 
