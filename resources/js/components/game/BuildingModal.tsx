@@ -345,7 +345,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                             <>
                                                 <div className="flex items-center justify-between border-b border-white/10 pb-2">
                                                     <h4 className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
-                                                        <Hammer size={10} md:size={12} className="text-orange-500" /> Logística de Campanha
+                                                        <Hammer className="w-2.5 h-2.5 md:w-3 md:h-3 text-orange-500" /> Logística de Campanha
                                                     </h4>
                                                     <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black text-orange-500 uppercase font-mono">
                                                         <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" /> {timeFormatted}
