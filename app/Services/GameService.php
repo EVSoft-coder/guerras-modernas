@@ -112,6 +112,14 @@ class GameService
         $custos = UnitRules::calculateCost($unidade, $quantidade);
         $tempo = UnitRules::calculateTime($unidade, $quantidade);
 
+        // 1. Validar Cap de População (Slots Habitacionais)
+        $stats = $this->obterEstatisticasPopulacao($base);
+        $popRequerida = $custos['pessoal'] ?? 0;
+
+        if ($stats['available'] < $popRequerida) {
+            throw new \Exception("LOGÍSTICA: Capacidade habitacional insuficiente para alojar novas tropas. Expanda o Complexo Residencial.");
+        }
+
         return DB::transaction(function() use ($base, $unidade, $quantidade, $custos, $tempo) {
             if (!$this->consumirRecursos($base, $custos)) {
                 throw new \Exception("Suprimentos insuficientes para mobilização de tropas.");
