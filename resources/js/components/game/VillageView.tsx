@@ -1,7 +1,7 @@
 import React from 'react';
 import { Base } from '@/types';
 import { BuildingNode } from './BuildingNode';
-import { GLOBAL_BUILDINGS } from '@src/game/config/buildings';
+import { buildingConfigs } from '@src/game/config';
 
 interface VillageViewProps {
     base: Base;
@@ -28,13 +28,14 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
         'central_energia': { x: 4, y: 4 }
     };
 
+    const bConfigs = Object.values(buildingConfigs);
     const playerBuildings = base.edificios?.map(eb => ({
         type: eb.tipo?.toLowerCase(),
         level: eb.nivel
     })) || [];
 
-    const buildings = GLOBAL_BUILDINGS.map(b => {
-        const existing = playerBuildings?.find(pb => pb.type === b.type);
+    const buildings = bConfigs.map(b => {
+        const existing = playerBuildings?.find(pb => pb.type === b.id.toLowerCase());
 
         return {
             ...b,
@@ -58,18 +59,21 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
             <div className="absolute inset-0 scanline-overlay opacity-[0.15] z-10 pointer-events-none"></div>
             <div className="absolute inset-0 bg-gradient-to-b from-sky-500/5 to-transparent h-20 animate-scanline z-10 pointer-events-none"></div>
             
-            {/* Radar Sweep Effect (Discreto) */}
-            <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden rounded-[2.5rem]">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square bg-[conic-gradient(from_0deg,transparent_0deg,rgba(14,165,233,0.05)_90deg,transparent_90deg)] animate-spin-slow origin-center opacity-40"></div>
-            </div>
-
-            <div className="absolute inset-2 z-20 flex flex-col gap-2 bg-black/80 text-white p-4 overflow-y-auto">
-                <h3 className="text-xl text-sky-500 font-black mb-4">UI VALIDAÇÃO MANUAL</h3>
-                {buildings.map(b => (
-                    <div key={b.type}>
-                        {b.nome} (Nível {b.level})
-                    </div>
-                ))}
+            {/* GRID DE EDIFÍCIOS TÁCTICO */}
+            <div className="absolute inset-0 z-20 grid grid-cols-5 grid-rows-5 p-8 md:p-12 lg:p-16 gap-2">
+                {buildings.map(b => {
+                    const pos = buildingPositions[b.id] || { x: 0, y: 0 };
+                    return (
+                        <BuildingNode
+                            key={b.id}
+                            tipo={b.id}
+                            nome={b.name}
+                            nivel={b.level}
+                            gridPos={pos}
+                            onClick={() => onBuildingClick(b)}
+                        />
+                    );
+                })}
             </div>
 
             {/* Bússola Tática / HUD sobreposto ao mapa */}
