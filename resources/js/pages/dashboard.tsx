@@ -24,40 +24,43 @@ export default function Dashboard(props: DashboardProps) {
     const { entities } = useGameEntities() || { entities: [] };
     const hasActiveArmy = entities?.some(e => e.march) ?? false;
     
-    // Semáforo de Recarga via State
-    const [isReloading, setIsReloading] = useState(false);
-    
-    // Controlo de Sincronização
+    // Semáforo de Recarga via Ref (Garante valor atualizado sem disparar re-renders)
+    const reloadingRef = useRef(false);
     const [lastSync, setLastSync] = useState<Date>(new Date());
     const [secondsSinceSync, setSecondsSinceSync] = useState(0);
 
     // Gestão de Polling Estável (Instância Única)
     useEffect(() => {
-        // Intervalo Controlado: 12 segundos (Regime 10-15s)
-        const POLL_INTERVAL = 12000;
+        // Intervalo Táctico: 15 segundos (Reduz carga no servidor e colisões)
+        const POLL_INTERVAL = 15000;
 
         PollingService.start(() => {
-            if (document.hidden || isReloading) return;
+            if (document.hidden || reloadingRef.current) return;
 
-            // Bloqueio Preventivo de Conflitos
-            setIsReloading(true);
+            // Bloqueio de Segurança Instantâneo
+            reloadingRef.current = true;
+            
             router.reload({
                 only: ["gameData", "base"],
                 onSuccess: () => {
                     setLastSync(new Date());
                 },
                 onError: (err) => {
-                    console.warn("[POLLING_WARN] Conflict detected or session expired", err);
+                    // Ignorar erros de concorrência silenciosamente para não poluir logs
+                    if (err?.message?.includes('409')) return;
+                    console.warn("[SYNC] Sincronização parcial falhou:", err);
                 },
                 onFinish: () => {
-                    // Timeout estendido para estabilização de rede
-                    setTimeout(() => setIsReloading(false), 2000);
+                    // Liberação segura após estabilização de rede
+                    setTimeout(() => {
+                        reloadingRef.current = false;
+                    }, 3000);
                 }
             });
         }, POLL_INTERVAL);
 
         return () => PollingService.stop();
-    }, [isReloading]); // Apenas re-vincula se o estado de recarga mudar drasticamente
+    }, []); // Executa apenas no mount inicial
 
     // Timer visual de sincronização
     useEffect(() => {
