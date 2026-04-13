@@ -52,7 +52,10 @@ export function VillageDashboard({
 
     // Use logic villages from ECS instead of backend props for switcher
     const ecsVillages = globalState.villages || [];
-    const displayBases = ecsVillages.length > 0 ? ecsVillages : backendBases;
+    const displayBases = (ecsVillages.length > 0 ? ecsVillages : backendBases).map(v => ({
+        id: v.id,
+        nome: (v as any).nome || (v as any).name || 'Base'
+    }));
 
     const { addToast } = useToasts();
     const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
@@ -166,7 +169,7 @@ export function VillageDashboard({
                                                     ${b.id === base.id ? 'bg-orange-500 border-orange-400 text-black shadow-[0_0_15px_rgba(249,115,22,0.4)]' : 'bg-black/40 border-white/10 text-neutral-500 hover:border-white/30 hover:text-white'}
                                                 `}
                                             >
-                                                {b.nome || b.name}
+                                                {b.nome}
                                             </button>
                                         ))}
                                     </div>
