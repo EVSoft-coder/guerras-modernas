@@ -40,7 +40,6 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                 return { type, level: eb.nivel };
             }) || [])
         ];
-        console.log("PLAYER BUILDINGS RAW:", list);
         return list;
     }, [base.qg_nivel, base.muralha_nivel, base.edificios]);
 

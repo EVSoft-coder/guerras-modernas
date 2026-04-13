@@ -95,12 +95,12 @@ return [
             'cost' => ['suprimentos' => 2000, 'combustivel' => 1000, 'municoes' => 1000, 'pessoal' => 40],
             'time_base' => 1200,
         ],
-        'mina_metal' => [
+        'factory' => [
             'name' => 'Mina de Metal Industrial',
             'cost' => ['suprimentos' => 500, 'combustivel' => 300, 'pessoal' => 20],
             'time_base' => 180,
         ],
-        'central_energia' => [
+        'solar' => [
             'name' => 'Central de Energia Termoelétrica',
             'cost' => ['suprimentos' => 300, 'metal' => 200, 'pessoal' => 10],
             'time_base' => 120,
