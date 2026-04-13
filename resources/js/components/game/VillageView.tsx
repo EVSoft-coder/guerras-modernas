@@ -43,11 +43,14 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
     console.log("PLAYER BUILDINGS RAW:", playerBuildings);
 
     const buildings = bConfigs.map(b => {
-        const existing = playerBuildings?.find(pb => pb.type.toLowerCase() === b.id.toLowerCase());
+        const existing = playerBuildings?.find(pb => 
+            pb.type.toLowerCase() === b.id.toLowerCase()
+        );
 
         return {
             ...b,
-            level: existing ? existing.level : 0
+            level: existing ? existing.level : 0,
+            isBuilt: !!existing
         };
     });
 
