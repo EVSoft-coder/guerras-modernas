@@ -1,6 +1,7 @@
 import React from 'react';
 import { Base } from '@/types';
 import { BuildingNode } from './BuildingNode';
+import { GLOBAL_BUILDINGS } from '@src/game/config/buildings';
 
 interface VillageViewProps {
     base: Base;
@@ -22,7 +23,9 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
         'muralha': { x: 2, y: 4 },
         'parlamento': { x: 0, y: 0 },
         'factory': { x: 4, y: 0 },
-        'solar': { x: 2, y: 0 }
+        'solar': { x: 2, y: 0 },
+        'mina_metal': { x: 0, y: 4 },
+        'central_energia': { x: 4, y: 4 }
     };
 
     const buildingDisplayNames: Record<string, string> = {
@@ -37,7 +40,9 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
         'muralha': 'Perímetro Defensivo',
         'parlamento': 'Parlamento / Centro de Soberania',
         'factory': 'Fábrica Metalúrgica de Grande Porte',
-        'solar': 'Planta de Energia Solar Térmica'
+        'solar': 'Planta de Energia Solar Térmica',
+        'mina_metal': 'Complexo de Extração de Metal',
+        'central_energia': 'Central de Fusão de Energia'
     };
 
     return (
@@ -59,6 +64,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
             <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden rounded-[2.5rem]">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square bg-[conic-gradient(from_0deg,transparent_0deg,rgba(14,165,233,0.05)_90deg,transparent_90deg)] animate-spin-slow origin-center opacity-40"></div>
             </div>
+
             <div className="absolute inset-2 z-20 grid grid-cols-5 grid-rows-5">
                 {/* 1. Renderizar QG (Ponto de Ancoragem Central) */}
                 <BuildingNode 
@@ -69,12 +75,12 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                     onClick={() => onBuildingClick({ tipo: 'qg', nome: 'Quartel General', nivel: base.qg_nivel, base: base })}
                 />
 
-                {/* 2. Mapeamento Integral de Slotes Tácticos */}
-                {Object.entries(buildingPositions).map(([tipo, pos]) => {
-                    // Localizar se o edifício já existe na base
-                    const existingBuilding = (base.edificios || []).find(b => b.tipo?.toLowerCase() === tipo.toLowerCase());
-                    const tipoNormalizado = tipo.toLowerCase();
-                    const nomeStr = buildingDisplayNames[tipoNormalizado] || tipo;
+                {/* 2. Mapeamento Integral via GLOBAL_BUILDINGS (Sem Filtros) */}
+                {GLOBAL_BUILDINGS.filter(b => b.type !== 'qg').map((def) => {
+                    const tipo = def.type.toLowerCase();
+                    const existingBuilding = (base.edificios || []).find(eb => eb.tipo?.toLowerCase() === tipo);
+                    const pos = buildingPositions[tipo] || { x: 0, y: 0 };
+                    const nomeStr = buildingDisplayNames[tipo] || def.name;
 
                     if (existingBuilding) {
                         return (
@@ -89,7 +95,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                         );
                     }
 
-                    // Se não existe, renderizar como Lote Disponível (Nível 0)
+                    // Se não existe na DB -> Mostrar como Nível 0 (Lote disponível para construção)
                     return (
                         <BuildingNode 
                             key={`ghost-${tipo}`}
