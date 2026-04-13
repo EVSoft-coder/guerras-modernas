@@ -34,9 +34,9 @@ export function VillageDashboard({
     }, [initialBase, globalState.resources]);
 
     // Use logic villages from ECS instead of backend props for switcher
-    const displayBases = globalState.worldMapBases.length > 0 
-        ? globalState.worldMapBases 
-        : backendBases.map(b => ({ id: b.id, nome: b.nome }));
+    const displayBases = (globalState.worldMapBases.length > 0 
+        ? globalState.worldMapBases.filter(b => b.ownerId === jogador.id)
+        : backendBases.map(b => ({ id: b.id, nome: b.nome }))) || [];
 
     const { addToast } = useToasts();
     const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);

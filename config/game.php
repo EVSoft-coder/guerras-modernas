@@ -25,7 +25,7 @@ return [
         'suprimentos' => 50,
         'combustivel' => 40,
         'municoes' => 30,
-        'pessoal' => 20,
+        'pessoal' => 100,
         'metal' => 15,
         'energia' => 10,
     ],
@@ -97,13 +97,18 @@ return [
         ],
         'factory' => [
             'name' => 'Mina de Metal Industrial',
-            'cost' => ['suprimentos' => 500, 'combustivel' => 300, 'pessoal' => 20],
-            'time_base' => 180,
+            'cost' => ['suprimentos' => 300, 'combustivel' => 100, 'pessoal' => 10],
+            'time_base' => 120,
         ],
         'solar' => [
             'name' => 'Central de Energia Termoelétrica',
-            'cost' => ['suprimentos' => 300, 'metal' => 200, 'pessoal' => 10],
-            'time_base' => 120,
+            'cost' => ['suprimentos' => 200, 'pessoal' => 5],
+            'time_base' => 90,
+        ],
+        'complexo_residencial' => [
+            'name' => 'Complexo Residencial (Habitação)',
+            'cost' => ['suprimentos' => 150, 'pessoal' => 0],
+            'time_base' => 60,
         ],
         'parlamento' => [
             'name' => 'Parlamento & Diplomacia',
