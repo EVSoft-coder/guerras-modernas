@@ -29,10 +29,17 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
     };
 
     const bConfigs = Object.values(buildingConfigs);
-    const playerBuildings = base.edificios?.map(eb => ({
-        type: eb.tipo?.toLowerCase(),
-        level: eb.nivel
-    })) || [];
+    const playerBuildings = [
+        { type: 'qg', level: base.qg_nivel ?? 1 },
+        { type: 'muralha', level: base.muralha_nivel ?? 1 },
+        ...(base.edificios?.map(eb => {
+            let type = eb.tipo?.toLowerCase();
+            // Normalização de aliases para match com front
+            if (type === 'factory') type = 'mina_metal';
+            if (type === 'solar') type = 'central_energia';
+            return { type, level: eb.nivel };
+        }) || [])
+    ];
 
     const buildings = bConfigs.map(b => {
         const existing = playerBuildings?.find(pb => pb.type === b.id.toLowerCase());
@@ -70,7 +77,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                             nome={b.name}
                             nivel={b.level}
                             gridPos={pos}
-                            onClick={() => onBuildingClick(b)}
+                            onClick={() => onBuildingClick({ ...b, type: b.id })}
                         />
                     );
                 })}
