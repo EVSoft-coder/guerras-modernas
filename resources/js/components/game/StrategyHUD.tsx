@@ -4,11 +4,18 @@
  */
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Zap, Box, Crosshair, Target, Map as MapIcon, ChevronRight } from 'lucide-react';
+import { Shield, Zap, Boxes, Crosshair, Target, Map as MapIcon, Fuel, Rocket } from 'lucide-react';
 import { ActiveMovements } from './ActiveMovements';
 
 interface StrategyHUDProps {
-    resources: { wood: number, stone: number, iron: number };
+    resources: { 
+        suprimentos: number, 
+        combustivel: number, 
+        municoes: number, 
+        metal: number, 
+        energia: number,
+        pessoal: number 
+    };
     coordinates: { x: number, y: number };
     selectedEntity?: any;
     miniMapData: any[];
@@ -54,11 +61,13 @@ export const StrategyHUD: React.FC<StrategyHUDProps> = ({
                     <ActiveMovements />
                 </div>
 
-                {/* RECURSOS: CENTRADO E PREMIUM */}
-                <div className="flex gap-2 pointer-events-auto bg-black/40 backdrop-blur-xl border border-white/5 p-1.5 rounded-3xl shadow-2xl">
-                    <ResourceNode icon={<Box size={14} />} label="WOOD" value={resources.wood} color="text-amber-400" />
-                    <ResourceNode icon={<Shield size={14} />} label="STONE" value={resources.stone} color="text-slate-400" />
-                    <ResourceNode icon={<Zap size={14} />} label="IRON" value={resources.iron} color="text-sky-400" />
+                {/* RECURSOS: CENTRADO E PREMIUM (MODERN WARFARE SPECTRUM) */}
+                <div className="flex gap-2 pointer-events-auto bg-black/40 backdrop-blur-xl border border-white/10 p-2 rounded-[2rem] shadow-2xl">
+                    <ResourceNode icon={<Shield size={14} />} label="SUP" value={resources.suprimentos} color="text-sky-400" />
+                    <ResourceNode icon={<Fuel size={14} />} label="COMB" value={resources.combustivel} color="text-orange-400" />
+                    <ResourceNode icon={<Boxes size={14} />} label="MET" value={resources.metal} color="text-zinc-400" />
+                    <ResourceNode icon={<Rocket size={14} />} label="MUN" value={resources.municoes} color="text-red-400" />
+                    <ResourceNode icon={<Zap size={14} />} label="ENE" value={resources.energia} color="text-yellow-400" />
                 </div>
 
                 {/* STATUS DE COORDENADAS: TOP RIGHT */}
