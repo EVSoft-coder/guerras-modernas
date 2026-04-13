@@ -28,22 +28,24 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
     };
 
     const bConfigs = Object.values(buildingConfigs);
-    const playerBuildings = [
-        { type: 'qg', level: base.qg_nivel ?? 1 },
-        { type: 'muralha', level: base.muralha_nivel ?? 1 },
-        ...(base.edificios?.filter(eb => {
-            const t = eb.tipo?.toLowerCase();
-            return t !== 'qg' && t !== 'muralha';
-        }).map(eb => {
-            let type = eb.tipo?.toLowerCase();
-            // Normalização de aliases para match com front
-            if (type === 'factory') type = 'mina_metal';
-            if (type === 'solar') type = 'central_energia';
-            return { type, level: eb.nivel };
-        }) || [])
-    ];
-
-    console.log("PLAYER BUILDINGS RAW:", playerBuildings);
+    const playerBuildings = React.useMemo(() => {
+        const list = [
+            { type: 'qg', level: base.qg_nivel ?? 1 },
+            { type: 'muralha', level: base.muralha_nivel ?? 1 },
+            ...(base.edificios?.filter(eb => {
+                const t = eb.tipo?.toLowerCase();
+                return t !== 'qg' && t !== 'muralha';
+            }).map(eb => {
+                let type = eb.tipo?.toLowerCase();
+                // Normalização de aliases para match com front
+                if (type === 'factory') type = 'mina_metal';
+                if (type === 'solar') type = 'central_energia';
+                return { type, level: eb.nivel };
+            }) || [])
+        ];
+        console.log("PLAYER BUILDINGS RAW:", list);
+        return list;
+    }, [base.qg_nivel, base.muralha_nivel, base.edificios]);
 
     const buildings = bConfigs.map(b => {
         const existing = playerBuildings?.find(pb => 
