@@ -24,7 +24,7 @@ DB::transaction(function() {
         if ($offsetX == 0 && $offsetY == 0) $offsetX = 1;
         
         $base = Base::firstOrCreate(['nome' => 'Base Inimiga #' . $i], [
-            'jogador_id' => $jogador->id,
+            'ownerId' => $jogador->id,
             'coordenada_x' => 500 + $offsetX,
             'coordenada_y' => 500 + $offsetY,
             'qg_nivel' => 1,

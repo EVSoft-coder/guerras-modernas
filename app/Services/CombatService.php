@@ -73,7 +73,7 @@ class CombatService
             // Caso de Sector Vazio (sem base)
             if (!$destino) {
                 Relatorio::create([
-                    'atacante_id' => $origem->jogador_id,
+                    'atacante_id' => $origem->ownerId,
                     'defensor_id' => null,
                     'vitoria' => true,
                     'dados' => [
@@ -141,8 +141,8 @@ class CombatService
 
             // Gerar Relatório Tático
             Relatorio::create([
-                'atacante_id' => $origem->jogador_id,
-                'defensor_id' => $destino->jogador_id,
+                'atacante_id' => $origem->ownerId,
+                'defensor_id' => $destino->ownerId,
                 'vitoria' => $vitoria,
                 'dados' => [
                     'tropa_ataque' => $ataque->tropas,

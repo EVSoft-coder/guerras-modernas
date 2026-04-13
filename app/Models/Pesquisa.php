@@ -10,7 +10,7 @@ class Pesquisa extends Model
     use HasFactory;
 
     protected $fillable = [
-        'jogador_id',
+        'ownerId',
         'tipo',
         'nivel',
         'completado_em'

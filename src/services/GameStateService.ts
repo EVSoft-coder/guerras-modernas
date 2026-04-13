@@ -183,13 +183,13 @@ class GameStateService {
                 coordenada_x: Math.round(p?.x || 0),
                 coordenada_y: Math.round(p?.y || 0),
                 loyalty: v?.loyalty || 100,
-                jogador_id: v?.ownerId || null,
+                ownerId: v?.ownerId || null,
                 is_protected: v?.isProtected || false,
                 protection_until: v?.protectionUntil || 0
             };
         });
 
-        const rebelCount = worldMapBases.filter(b => !b.jogador_id).length;
+        const rebelCount = worldMapBases.filter(b => !b.ownerId).length;
 
         // Ensure defaults and update
         this.globalState = {

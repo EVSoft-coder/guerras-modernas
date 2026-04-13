@@ -1,9 +1,9 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="container py-4">
     <div class="row">
-        <!-- INFO GERAL DA ALIANÃ‡A -->
+        <!-- INFO GERAL DA ALIANÇA -->
         <div class="col-md-4">
             <div class="card bg-dark border-info/30 rounded-4 shadow-lg glassmorphism mb-4">
                 <div class="card-body text-center p-5">
@@ -11,7 +11,7 @@
                         <span class="badge bg-info text-dark display-6 p-3 rounded-4 shadow-sm fw-bold">[{{ $alianca->tag }}]</span>
                     </div>
                     <h2 class="text-white fw-bold mb-1">{{ $alianca->nome }}</h2>
-                    <p class="text-muted small text-uppercase ls-1">Comando Coligado de OperaÃ§Ãµes</p>
+                    <p class="text-muted small text-uppercase ls-1">Comando Coligado de Operações</p>
                     
                     <div class="mt-4 p-3 rounded bg-white/5 border border-white/10 text-start">
                         <div class="d-flex justify-content-between mb-2">
@@ -29,9 +29,9 @@
                     </div>
 
                     <div class="mt-5">
-                        <form action="{{ route('alianca.sair') }}" method="POST" onsubmit="return confirm('Tem a certeza que deseja sair desta alianÃ§a militar?')">
+                        <form action="{{ route('alianca.sair') }}" method="POST" onsubmit="return confirm('Tem a certeza que deseja sair desta aliança militar?')">
                             @csrf
-                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-4">Sair da AlianÃ§a</button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-4">Sair da Aliança</button>
                         </form>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
                                 <thead class="small text-muted text-uppercase fw-bold border-bottom border-white/5">
                                     <tr>
                                         <th class="px-4 py-3">Candidato</th>
-                                        <th class="px-4 py-3 text-end">AÃ§Ã£o DiplomÃ¡tica</th>
+                                        <th class="px-4 py-3 text-end">Ação Diplomática</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -80,15 +80,15 @@
 
             <div class="card bg-dark border-secondary rounded-4 shadow-lg glassmorphism h-100">
                 <div class="card-header bg-black/20 border-bottom border-white/5 py-3">
-                    <h5 class="mb-0 text-white fw-bold"><i class="bi bi-people-fill text-info me-2"></i> Pessoal da AlianÃ§a (Aliados)</h5>
+                    <h5 class="mb-0 text-white fw-bold"><i class="bi bi-people-fill text-info me-2"></i> Pessoal da Aliança (Aliados)</h5>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-dark table-hover mb-0 align-middle">
                             <thead class="bg-black/40 text-muted x-small text-uppercase fw-bold border-bottom border-white/5">
                                 <tr>
-                                    <th class="px-4 py-3">CÃ¢mbio de Comando</th>
-                                    <th class="px-4 py-3">FunÃ§Ã£o</th>
+                                    <th class="px-4 py-3">Câmbio de Comando</th>
+                                    <th class="px-4 py-3">Função</th>
                                     <th class="px-4 py-3 text-end">Ingressou em</th>
                                 </tr>
                             </thead>
@@ -125,19 +125,19 @@
             </div>
         </div>
     <div class="row mt-4">
-        <!-- CANAL DE COMUNICAÃ‡Ã•ES DA ALIANÃ‡A -->
+        <!-- CANAL DE COMUNICAÇÕES DA ALIANÇA -->
         <div class="col-12">
             <div class="card glassmorphism border-info/20 shadow-2xl rounded-5 overflow-hidden">
                 <div class="card-header bg-info/10 border-bottom border-white/5 py-4 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 text-white fw-black text-uppercase ls-1">ðŸ“¡ FrequÃªncia de Comando da ColigaÃ§Ã£o</h5>
-                    <span class="badge bg-info/20 text-info border border-info/40 px-3 py-2 animate-glow">CONEXÃƒO SEGURA ðŸ”’</span>
+                    <h5 class="mb-0 text-white fw-black text-uppercase ls-1">📡 Frequência de Comando da Coligação</h5>
+                    <span class="badge bg-info/20 text-info border border-info/40 px-3 py-2 animate-glow">CONEXÃO SEGURA 🔒</span>
                 </div>
                 <div class="card-body p-0">
-                    <!-- ÃREA DE MENSAGENS -->
+                    <!-- ÁREA DE MENSAGENS -->
                     <div id="chatFeed" class="p-4" style="height: 450px; overflow-y: auto; background: rgba(0,0,0,0.2);">
                         @forelse($mensagens as $msg)
-                            <div class="mb-4 d-flex {{ $msg->jogador_id === Auth::id() ? 'justify-content-end' : 'justify-content-start' }}">
-                                <div class="p-3 rounded-4 shadow-sm border {{ $msg->jogador_id === Auth::id() ? 'bg-info/10 border-info/30 text-end' : 'bg-white/5 border-white/10' }}" style="max-width: 70%;">
+                            <div class="mb-4 d-flex {{ $msg->ownerId === Auth::id() ? 'justify-content-end' : 'justify-content-start' }}">
+                                <div class="p-3 rounded-4 shadow-sm border {{ $msg->ownerId === Auth::id() ? 'bg-info/10 border-info/30 text-end' : 'bg-white/5 border-white/10' }}" style="max-width: 70%;">
                                     <div class="d-flex justify-content-between align-items-center mb-1 gap-3">
                                         <small class="fw-black text-info text-uppercase ls-1" style="font-size: 0.65rem;">{{ $msg->jogador->username }}</small>
                                         <small class="text-muted" style="font-size: 0.6rem;">{{ $msg->created_at->format('H:i') }}</small>
@@ -148,16 +148,16 @@
                         @empty
                             <div class="h-100 d-flex flex-column align-items-center justify-content-center text-muted">
                                 <i class="bi bi-chat-dots display-3 opacity-10 mb-3"></i>
-                                <p class="small text-uppercase ls-1">SilÃªncio de RÃ¡dio. Sem comunicaÃ§Ãµes registadas.</p>
+                                <p class="small text-uppercase ls-1">Silêncio de Rádio. Sem comunicações registadas.</p>
                             </div>
                         @endforelse
                     </div>
 
-                    <!-- FORMULÃRIO DE ENVIO TÃTICO -->
+                    <!-- FORMULÁRIO DE ENVIO TÁTICO -->
                     <div class="p-4 bg-black/30 border-top border-white/5">
                         <form id="chatForm" class="d-flex gap-3">
                             @csrf
-                            <input type="text" id="chatInput" placeholder="Digite ordens ou relatÃ³rios de inteligÃªncia..." 
+                            <input type="text" id="chatInput" placeholder="Digite ordens ou relatórios de inteligência..." 
                                    class="form-control form-control-lg bg-white/5 border-white/10 text-white placeholder-white/30 rounded-4 px-4 py-3" required>
                             <button type="submit" class="btn btn-info rounded-4 px-5 fw-black text-uppercase ls-1">ENVIAR</button>
                         </form>
@@ -194,7 +194,7 @@
                 if (messages.length > 0) {
                     const feed = document.getElementById('chatFeed');
                     messages.forEach(msg => {
-                        const isMe = msg.jogador_id == {{ Auth::id() }};
+                        const isMe = msg.ownerId == {{ Auth::id() }};
                         const row = document.createElement('div');
                         row.className = `mb-4 d-flex ${isMe ? 'justify-content-end' : 'justify-content-start'}`;
                         row.innerHTML = `
@@ -229,7 +229,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         const feed = document.getElementById('chatFeed');
-        feed.scrollTop = feed.scrollHeight; // Scroll até ao fundo
+        feed.scrollTop = feed.scrollHeight; // Scroll at� ao fundo
     });
 
     document.getElementById('chatForm').addEventListener('submit', function(e) {

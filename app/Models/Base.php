@@ -13,7 +13,7 @@ class Base extends Model
     protected $table = 'bases';
 
     protected $fillable = [
-        'jogador_id',
+        'ownerId',
         'nome',
         'coordenada_x',
         'coordenada_y',

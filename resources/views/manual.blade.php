@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="row g-4">
@@ -8,15 +8,15 @@
             <img src="{{ asset('modern_warfare_manual_hero_1775689703097.png') }}" class="w-100 h-100 object-fit-cover opacity-60" style="filter: hue-rotate(180deg) brightness(0.8);">
             <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient-to-t from-black via-transparent to-transparent"></div>
             <div class="position-absolute bottom-0 start-0 p-5 w-100">
-                <span class="badge bg-info text-dark text-uppercase fw-black ls-1 mb-2 px-3 py-2">Diretiva de Inteligência #001</span>
+                <span class="badge bg-info text-dark text-uppercase fw-black ls-1 mb-2 px-3 py-2">Diretiva de Intelig�ncia #001</span>
                 <h1 class="text-white fw-black display-4 mb-0" style="letter-spacing: -2px;">MANUAL DO COMANDANTE</h1>
-                <p class="text-info/80 fw-bold fs-5 mb-0">EspecificaÃ§Ãµes TÃ©cnicas e Protocolos de Combate</p>
+                <p class="text-info/80 fw-bold fs-5 mb-0">Especificações Técnicas e Protocolos de Combate</p>
             </div>
             <div class="scanner-line"></div>
         </div>
     </div>
 
-    <!-- NAVEGAÃ‡ÃƒO INTERNA -->
+    <!-- NAVEGAÇÃO INTERNA -->
     <div class="col-12 px-4">
         <ul class="nav nav-pills gap-3 bg-black/40 p-2 rounded-pill border border-white/5 d-inline-flex" id="manualTabs">
             <li class="nav-item">
@@ -59,15 +59,15 @@
                                         </div>
                                     </div>
                                     <p class="text-white/70 small line-height-base mb-4">
-                                        @if($key == 'infantaria') Unidade básica de infantaria, ideal para defesa de perímetro e incursÃµes rápidas.
-                                        @elseif($key == 'blindado_apc') Veículo blindado de transporte que serve como suporte tático e logística.
-                                        @elseif($key == 'tanque_combate') ForÃ§a bruta do exÃ©rcito. Dano massivo e alta resistência blindada.
-                                        @elseif($key == 'helicoptero_ataque') Domínio aÃ©reo. Extremamente rápido e mortal contra blindados terrestres.
-                                        @elseif($key == 'agente_espiao') Invisível ao radar padrÃ£o. Usado para infiltrar bases e roubar inteligência.
-                                        @else Unidade militar de elite treinada para operaÃ§Ãµes de alta intensidade.
+                                        @if($key == 'infantaria') Unidade b�sica de infantaria, ideal para defesa de per�metro e incursões r�pidas.
+                                        @elseif($key == 'blindado_apc') Ve�culo blindado de transporte que serve como suporte t�tico e log�stica.
+                                        @elseif($key == 'tanque_combate') Força bruta do exército. Dano massivo e alta resist�ncia blindada.
+                                        @elseif($key == 'helicoptero_ataque') Dom�nio aéreo. Extremamente r�pido e mortal contra blindados terrestres.
+                                        @elseif($key == 'agente_espiao') Invis�vel ao radar padrão. Usado para infiltrar bases e roubar intelig�ncia.
+                                        @else Unidade militar de elite treinada para operações de alta intensidade.
                                         @endif
                                     </p>
-                                    <div class="separator-text x-small text-muted mb-3 text-uppercase">Logística de MobilizaÃ§Ã£o</div>
+                                    <div class="separator-text x-small text-muted mb-3 text-uppercase">Log�stica de Mobilização</div>
                                     <div class="d-flex flex-wrap gap-2">
                                         @foreach($u['cost'] as $res => $amt)
                                             <span class="badge bg-white/5 border border-white/10 p-2 text-white/80">
@@ -93,15 +93,15 @@
                                 </div>
                                 <div class="card-body">
                                     <p class="text-white/70 small italic mb-4">
-                                        @if($key == 'qg') Central de comando da base. Desbloqueia novas tecnologias e aumenta eficiência.
-                                        @elseif($key == 'posto_recrutamento') Aumenta a capacidade de populaÃ§Ã£o e velocidade de treino.
-                                        @elseif($key == 'radar_estrategico') Fornece inteligência avanÃ§ada sobre movimentos inimigos próximos.
-                                        @elseif(strpos($key, 'mina') !== false || strpos($key, 'fabrica') !== false || strpos($key, 'refinaria') !== false) Essencial para a produÃ§Ã£o sustentada de recursos táticos.
-                                        @else Infraestrutura crítica para o desenvolvimento e projeÃ§Ã£o de poder.
+                                        @if($key == 'qg') Central de comando da base. Desbloqueia novas tecnologias e aumenta efici�ncia.
+                                        @elseif($key == 'posto_recrutamento') Aumenta a capacidade de população e velocidade de treino.
+                                        @elseif($key == 'radar_estrategico') Fornece intelig�ncia avançada sobre movimentos inimigos pr�ximos.
+                                        @elseif(strpos($key, 'mina') !== false || strpos($key, 'fabrica') !== false || strpos($key, 'refinaria') !== false) Essencial para a produção sustentada de recursos t�ticos.
+                                        @else Infraestrutura cr�tica para o desenvolvimento e projeção de poder.
                                         @endif
                                     </p>
                                     <div class="bg-black/40 p-3 rounded-4 border border-white/5">
-                                        <div class="text-primary small fw-black mb-2 text-uppercase ls-1">Velocidade de ConstruÃ§Ã£o</div>
+                                        <div class="text-primary small fw-black mb-2 text-uppercase ls-1">Velocidade de Construção</div>
                                         <div class="d-flex align-items-center">
                                             <div class="flex-grow-1 progress bg-white/5" style="height: 8px;">
                                                 <div class="progress-bar bg-primary" style="width: {{ 100 - ($b['time_base'] / 10) }}%"></div>
@@ -122,19 +122,19 @@
                     <h3 class="text-white fw-black mb-4">PROTOCOLOS DE ENGAJAMENTO</h3>
                     <div class="row g-5">
                         <div class="col-md-6">
-                            <h5 class="text-info fw-bold mb-3"><i class="bi bi-shield-lock me-2"></i> ProteÃ§Ã£o de Iniciante</h5>
-                            <p class="text-white/70">Novos comandantes têm 24 horas de imunidade total. Ataques lanÃ§ados contra ou por você cancelarÃ£o esta proteÃ§Ã£o imediatamente.</p>
+                            <h5 class="text-info fw-bold mb-3"><i class="bi bi-shield-lock me-2"></i> Proteção de Iniciante</h5>
+                            <p class="text-white/70">Novos comandantes t�m 24 horas de imunidade total. Ataques lançados contra ou por voc� cancelarão esta proteção imediatamente.</p>
                             
-                            <h5 class="text-info fw-bold mb-3 mt-5"><i class="bi bi-crosshair me-2"></i> MecÃ¢nica de Saque</h5>
-                            <p class="text-white/70">Ataques vitoriosos confiscam atÃ© 50% dos recursos desprotegidos da base alvo, dependendo da capacidade de carga das tropas sobreviventes.</p>
+                            <h5 class="text-info fw-bold mb-3 mt-5"><i class="bi bi-crosshair me-2"></i> Mecânica de Saque</h5>
+                            <p class="text-white/70">Ataques vitoriosos confiscam até 50% dos recursos desprotegidos da base alvo, dependendo da capacidade de carga das tropas sobreviventes.</p>
                         </div>
                         <div class="col-md-6">
                             <h5 class="text-danger fw-bold mb-3"><i class="bi bi-flag-fill me-2"></i> Conquista de Base</h5>
-                            <h6 class="text-white small fw-bold">Requisito: Helicópteros de Ataque</h6>
-                            <p class="text-white/70">Para capturar uma base, você deve vencer a batalha e ter helicópteros na forÃ§a de ataque. Cada vitória reduz a lealdade da base atÃ© 0, momento em que ela passa para seu controle.</p>
+                            <h6 class="text-white small fw-bold">Requisito: Helic�pteros de Ataque</h6>
+                            <p class="text-white/70">Para capturar uma base, voc� deve vencer a batalha e ter helic�pteros na força de ataque. Cada vit�ria reduz a lealdade da base até 0, momento em que ela passa para seu controle.</p>
                             
                             <div class="alert bg-info/10 border-info/30 text-info mt-4 rounded-4">
-                                <i class="bi bi-info-circle-fill me-2"></i> <strong>Dica Tática:</strong> Use Agentes EspiÃµes para identificar a guarniÃ§Ã£o inimiga antes de lanÃ§ar ataques de larga escala.
+                                <i class="bi bi-info-circle-fill me-2"></i> <strong>Dica T�tica:</strong> Use Agentes Espiões para identificar a guarnição inimiga antes de lançar ataques de larga escala.
                             </div>
                         </div>
                     </div>

@@ -73,7 +73,7 @@ export interface FilaConstrucao {
 
 export interface Base {
     id: number;
-    jogador_id: number;
+    ownerId: number;
     nome: string;
     coordenada_x: number;
     coordenada_y: number;

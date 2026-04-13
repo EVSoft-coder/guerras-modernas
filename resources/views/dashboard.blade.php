@@ -484,7 +484,7 @@
             <div class="card-body p-0">
                 @php 
                     $lab = $base->edificios->where('tipo', 'centro_pesquisa')->first();
-                    $pesquisasEmCurso = \App\Models\Pesquisa::where('jogador_id', Auth::id())->where('completado_em', '>', now())->get();
+                    $pesquisasEmCurso = \App\Models\Pesquisa::where('ownerId', Auth::id())->where('completado_em', '>', now())->get();
                 @endphp
 
                 @if(!$lab || $lab->nivel < 1)

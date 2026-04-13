@@ -128,11 +128,11 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                                     <div 
                                         key={`${cell.x}-${cell.y}`}
                                         onClick={() => {
-                                            if (cell.base && cell.base.jogador_id === origemBase?.jogador_id) return;
+                                            if (cell.base && cell.base.ownerId === origemBase?.ownerId) return;
                                             setSelectedTarget(cell.base || { nome: `Setor [${cell.x}:${cell.y}]`, coordenada_x: cell.x, coordenada_y: cell.y, id: null });
                                         }}
                                         className={`w-12 h-12 md:w-16 md:h-16 border rounded flex flex-col items-center justify-center relative transition-all duration-300 group cursor-pointer
-                                            ${cell.base ? (cell.base.jogador_id === origemBase?.jogador_id ? 'bg-green-500/20 border-green-500/40 hover:bg-green-500/40' : 'bg-red-500/10 border-red-500/40 hover:bg-red-500/30 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]') : 'bg-white/5 border-white/5 hover:border-white/20'}
+                                            ${cell.base ? (cell.base.ownerId === origemBase?.ownerId ? 'bg-green-500/20 border-green-500/40 hover:bg-green-500/40' : 'bg-red-500/10 border-red-500/40 hover:bg-red-500/30 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]') : 'bg-white/5 border-white/5 hover:border-white/20'}
                                             ${cell.x === x && cell.y === y ? 'border-orange-500/60 ring-1 ring-orange-500/40' : ''}
                                             ${selectedTarget?.coordenada_x === cell.x && selectedTarget?.coordenada_y === cell.y ? 'ring-2 ring-sky-500 border-sky-500 shadow-[0_0_15px_rgba(14,165,233,0.5)]' : ''}
                                         `}
@@ -140,7 +140,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                                         <span className="text-[8px] text-neutral-600 absolute top-1 left-1">{cell.x}:{cell.y}</span>
                                         {cell.base ? (
                                             <div className="flex flex-col items-center gap-1 group-hover:scale-110 transition-transform">
-                                                <Radio size={16} className={cell.base.jogador_id === 1 ? 'text-green-500' : 'text-red-500'} />
+                                                <Radio size={16} className={cell.base.ownerId === 1 ? 'text-green-500' : 'text-red-500'} />
                                                 <span className="text-[8px] font-bold uppercase truncate w-full text-center px-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 absolute -bottom-8 rounded z-10">
                                                     {cell.base.nome}
                                                 </span>

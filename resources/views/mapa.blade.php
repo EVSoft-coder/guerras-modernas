@@ -37,7 +37,7 @@
                             $aliancaId = Auth::user()->alianca_id;
                             $tipoIcone = 'enemy';
                             if ($baseAqui) {
-                                if ($baseAqui->jogador_id == Auth::id()) $tipoIcone = 'owner';
+                                if ($baseAqui->ownerId == Auth::id()) $tipoIcone = 'owner';
                                 elseif ($aliancaId && $baseAqui->jogador->alianca_id == $aliancaId) $tipoIcone = 'ally';
                             }
                         @endphp

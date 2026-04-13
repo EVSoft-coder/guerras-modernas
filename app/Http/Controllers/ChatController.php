@@ -23,7 +23,7 @@ class ChatController extends Controller
 
         $msg = MensagemAlianca::create([
             'alianca_id' => $jogador->alianca_id,
-            'jogador_id' => $jogador->id,
+            'ownerId' => $jogador->id,
             'mensagem' => $request->mensagem
         ]);
 
@@ -51,7 +51,7 @@ class ChatController extends Controller
                 return [
                     'id' => $msg->id,
                     'jogador' => $msg->jogador->username ?? $msg->jogador->name,
-                    'jogador_id' => $msg->jogador_id,
+                    'ownerId' => $msg->ownerId,
                     'mensagem' => $msg->mensagem,
                     'data' => $msg->created_at->format('H:i')
                 ];

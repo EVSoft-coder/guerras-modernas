@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class MensagemAlianca extends Model
 {
-    protected $fillable = ['alianca_id', 'jogador_id', 'mensagem'];
+    protected $fillable = ['alianca_id', 'ownerId', 'mensagem'];
 
     public function jogador()
     {
-        return $this->belongsTo(Jogador::class, 'jogador_id');
+        return $this->belongsTo(Jogador::class, 'ownerId');
     }
 
     public function alianca()

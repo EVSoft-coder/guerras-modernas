@@ -9,14 +9,14 @@ class PedidoAlianca extends Model
     protected $table = 'pedido_aliancas';
 
     protected $fillable = [
-        'jogador_id',
+        'ownerId',
         'alianca_id',
         'status',
     ];
 
     public function jogador()
     {
-        return $this->belongsTo(Jogador::class, 'jogador_id');
+        return $this->belongsTo(Jogador::class, 'ownerId');
     }
 
     public function alianca()

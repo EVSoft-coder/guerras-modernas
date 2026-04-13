@@ -32,7 +32,7 @@ class ResearchService
             }
  
             return Pesquisa::create([
-                'jogador_id' => $jogador->id,
+                'ownerId' => $jogador->id,
                 'tech' => $tech,
                 'nivel' => $currentLevel + 1,
                 'completado_em' => now()->addSeconds($tempo),

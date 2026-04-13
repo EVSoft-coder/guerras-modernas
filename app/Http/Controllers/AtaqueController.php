@@ -32,7 +32,7 @@ class AtaqueController extends Controller
         ]);
  
         $baseOrigem = Base::findOrFail($request->origem_id);
-        if ($baseOrigem->jogador_id !== Auth::id()) abort(403);
+        if ($baseOrigem->ownerId !== Auth::id()) abort(403);
  
         // Destino pode ser uma base ou coordenadas directas
         $coords = null;
@@ -65,7 +65,7 @@ class AtaqueController extends Controller
         $ataque = Ataque::findOrFail($id);
         $baseOrigem = $ataque->origem;
  
-        if ($baseOrigem->jogador_id !== Auth::id()) abort(403);
+        if ($baseOrigem->ownerId !== Auth::id()) abort(403);
         if ($ataque->processado) return redirect()->back()->withErrors(['error' => 'A missão já atingiu o alvo.']);
  
         try {

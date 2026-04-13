@@ -19,7 +19,7 @@ interface BaseMap {
     loyalty?: number;
     is_protected?: boolean;
     protection_until?: string;
-    jogador_id: number | null;
+    ownerId: number | null;
     nivel?: number;
     jogador?: {
         id: number;
@@ -113,7 +113,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
             originY: playerBase.coordenada_y,
             targetX: params.destino_x,
             targetY: params.destino_y,
-            ownerId: playerBase.jogador_id,
+            ownerId: playerBase.ownerId,
             troops: params.tropas,
             backendParams: { ...params, origem_id: playerBase.id } // Pass meta for processing
         });
@@ -171,9 +171,9 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                     const baseAt = allBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
                                     const isSelected = selectedSector?.x === x && selectedSector?.y === y;
                                     
-                                    const isPlayer = baseAt?.jogador_id === playerBase?.jogador_id;
-                                    const isRebel = baseAt && !baseAt.jogador_id;
-                                    const isEnemy = baseAt && baseAt.jogador_id && baseAt.jogador_id !== playerBase?.jogador_id;
+                                    const isPlayer = baseAt?.ownerId === playerBase?.ownerId;
+                                    const isRebel = baseAt && !baseAt.ownerId;
+                                    const isEnemy = baseAt && baseAt.ownerId && baseAt.ownerId !== playerBase?.ownerId;
 
                                     return (
                                         <Tooltip key={`${x}-${y}`}>
@@ -361,7 +361,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                 )}
                                             </div>
                                         </div>
-                                    ) : (!selectedSector.base?.jogador_id || selectedSector.base.jogador_id !== playerBase?.jogador_id) ? (
+                                    ) : (!selectedSector.base?.ownerId || selectedSector.base.ownerId !== playerBase?.ownerId) ? (
                                         <Button 
                                             className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-3xl shadow-xl shadow-red-600/20 active:scale-95 transition-all text-xs"
                                             onClick={() => setIsAttackModalOpen(true)}

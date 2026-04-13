@@ -24,7 +24,7 @@ class BaseController extends Controller
     public function upgrade(BuildingUpgradeRequest $request)
     {
         $base = Base::findOrFail($request->base_id);
-        if ($base->jogador_id !== Auth::id()) abort(403);
+        if ($base->ownerId !== Auth::id()) abort(403);
  
         try {
             $this->gameService->iniciarUpgrade($base, $request->tipo);
@@ -40,7 +40,7 @@ class BaseController extends Controller
     public function treinar(TreinarRequest $request)
     {
         $base = Base::findOrFail($request->base_id);
-        if ($base->jogador_id !== Auth::id()) abort(403);
+        if ($base->ownerId !== Auth::id()) abort(403);
  
         try {
             $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
@@ -55,7 +55,7 @@ class BaseController extends Controller
      */
     public function switchBase($id)
     {
-        $base = Base::where('id', $id)->where('jogador_id', Auth::id())->firstOrFail();
+        $base = Base::where('id', $id)->where('ownerId', Auth::id())->firstOrFail();
         session(['selected_base_id' => $base->id]);
         return redirect()->route('dashboard')->with('success', "Comando transferido para {$base->nome}!");
     }
@@ -72,7 +72,7 @@ class BaseController extends Controller
         ]);
  
         $base = Base::findOrFail($request->base_id);
-        if ($base->jogador_id !== Auth::id()) abort(403);
+        if ($base->ownerId !== Auth::id()) abort(403);
  
         try {
             $custo = 300;

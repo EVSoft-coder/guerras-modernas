@@ -56,7 +56,7 @@ class Jogador extends Authenticatable
 
     public function pedidosAlianca()
     {
-        return $this->hasMany(PedidoAlianca::class, 'jogador_id');
+        return $this->hasMany(PedidoAlianca::class, 'ownerId');
     }
 
     /**
