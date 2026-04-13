@@ -198,4 +198,44 @@ class GameService
         if ($tipo === BuildingType::MURALHA) return (int) $base->muralha_nivel;
         return (int) ($base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0);
     }
+
+    /**
+     * ESTATISTICAS DE POPULAÇÃO
+     */
+    public function obterEstatisticasPopulacao(Base $base): array
+    {
+        $complexoLevel = $this->obterNivelEdificio($base, BuildingType::COMPLEXO_RESIDENCIAL);
+        $total = EconomyRules::calculatePopulationCapacity($complexoLevel);
+        
+        $configs = config('game.buildings');
+        $usedByBuildings = 0;
+
+        // Somar ocupação de edifícios
+        foreach ($base->edificios as $edificio) {
+            $basePessoal = $configs[$edificio->tipo]['cost']['pessoal'] ?? 0;
+            $usedByBuildings += $basePessoal * $edificio->nivel;
+        }
+        $usedByBuildings += ($configs['qg']['cost']['pessoal'] ?? 0) * $base->qg_nivel;
+        $usedByBuildings += ($configs['muralha']['cost']['pessoal'] ?? 0) * $base->muralha_nivel;
+
+        // Somar ocupação de tropas
+        $unitConfigs = config('game.units');
+        $usedByTroops = 0;
+        foreach ($base->tropas as $tropa) {
+            $basePessoal = $unitConfigs[$tropa->unidade]['cost']['pessoal'] ?? 1;
+            $usedByTroops += $basePessoal * $tropa->quantidade;
+        }
+
+        $used = $usedByBuildings + $usedByTroops;
+
+        return [
+            'total' => $total,
+            'used' => $used,
+            'available' => max(0, $total - $used),
+            'details' => [
+                'buildings' => $usedByBuildings,
+                'troops' => $usedByTroops
+            ]
+        ];
+    }
 }

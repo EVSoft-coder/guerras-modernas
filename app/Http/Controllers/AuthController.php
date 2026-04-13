@@ -66,6 +66,7 @@ class AuthController extends Controller
             $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
  
             $taxas = $this->gameService->obterTaxasProducao($base);
+            $populacao = $this->gameService->obterEstatisticasPopulacao($base);
 
             // Filtragem de Soberania: Apenas edifícios com nível > 0 são transmitidos pelo backend
             $base->setRelation('edificios', $base->edificios->filter(fn($e) => $e->nivel > 0));
@@ -99,6 +100,7 @@ class AuthController extends Controller
             'bases' => $bases,
             'taxas' => $taxas ?? [],
             'taxasPerSecond' => $taxas ?? [],
+            'populacao' => $populacao ?? null,
             'relatorios' => \App\Models\Relatorio::where('atacante_id', $jogador->id)
                 ->orWhere('defensor_id', $jogador->id)
                 ->latest()->take(10)->get() ?? [],

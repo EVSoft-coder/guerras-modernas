@@ -29,4 +29,14 @@ class EconomyRules
     {
         return 1000 * pow(2, $qgLevel);
     }
+    
+    /**
+     * Calcula a capacidade total de população (slots).
+     */
+    public static function calculatePopulationCapacity(int $complexoLevel): int
+    {
+        // Base de 500 slots por nível de Complexo Residencial
+        if ($complexoLevel <= 0) return 200; // Base inicial de logística
+        return 200 + ($complexoLevel * 500);
+    }
 }
