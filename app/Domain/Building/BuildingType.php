@@ -19,6 +19,7 @@ class BuildingType
     const SOLAR = 'solar';
     const MINA_METAL = 'factory'; 
     const CENTRAL_ENERGIA = 'solar';
+    const COMPLEXO_RESIDENCIAL = 'complexo_residencial';
  
     /**
      * Aliases para compatibilidade com nomes legados ou front-end.
@@ -50,6 +51,8 @@ class BuildingType
             'mina_metal' => self::FACTORY,
             'centralenergia' => self::SOLAR,
             'central_energia' => self::SOLAR,
+            'complexo_residencial' => self::COMPLEXO_RESIDENCIAL,
+            'habitacao' => self::COMPLEXO_RESIDENCIAL,
         ];
  
         $cleaned = strtolower(str_replace([' ', '_', '-'], '', $type));
@@ -62,7 +65,7 @@ class BuildingType
             self::QG, self::MURALHA, self::MINA_SUPRIMENTOS, self::REFINARIA,
             self::FABRICA_MUNICOES, self::POSTO_RECRUTAMENTO, self::QUARTEL,
             self::AERODROMO, self::RADAR_ESTRATEGICO, self::CENTRO_PESQUISA,
-            self::PARLAMENTO, self::FACTORY, self::SOLAR
+            self::PARLAMENTO, self::FACTORY, self::SOLAR, self::COMPLEXO_RESIDENCIAL
         ];
     }
 }
