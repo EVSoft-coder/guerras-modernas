@@ -207,8 +207,10 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                         }}
                     >
                         <TooltipProvider>
-                            {Array.from({ length: 20 }).map((_, y) => (
-                                Array.from({ length: 20 }).map((_, x) => {
+                            {Array.from({ length: 20 }).map((_, iy) => {
+                                const y = center.y - 10 + iy;
+                                return Array.from({ length: 20 }).map((_, ix) => {
+                                    const x = center.x - 10 + ix;
                                     const baseAt = visibleBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
                                     const isSelected = selectedSector?.x === x && selectedSector?.y === y;
                                     
@@ -227,7 +229,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                         ${isRebel ? 'bg-red-600/20 border-red-600/40' : ''}
                                                     `}
                                                     onClick={() => setSelectedSector({ x, y, base: baseAt })}
-                                                    style={{ left: x * 80, top: y * 80, width: 80, height: 80 }}
+                                                    style={{ left: ix * 80, top: iy * 80, width: 80, height: 80 }}
                                                 >
                                                     <span className={`absolute top-1 left-1 text-[7px] font-mono transition-opacity ${isSelected ? 'text-sky-400 opacity-100' : 'text-neutral-700 opacity-40 group-hover:opacity-100'}`}>
                                                         {x.toString().padStart(2, '0')}:{y.toString().padStart(2, '0')}

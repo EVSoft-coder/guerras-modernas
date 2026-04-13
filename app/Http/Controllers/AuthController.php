@@ -71,14 +71,14 @@ class AuthController extends Controller
  
         // 5. Garantir Subsistência Rebelde (Mínimo 5)
         try {
-            $rebelCount = \App\Models\Base::whereNull('jogador_id')->count();
-            if ($rebelCount < 5) {
+            $rebelCount = Base::whereNull('jogador_id')->count();
+            if ($rebelCount < 5 && $base) {
                 for ($i = $rebelCount; $i < 5; $i++) {
-                    $rebel = \App\Models\Base::create([
+                    $rebel = Base::create([
                         'jogador_id' => null,
                         'nome' => 'Reduto Insurgente ' . chr(65 + $i),
-                        'coordenada_x' => rand(1, 19), // Coordenadas próximas do jogador no mapa 20x20
-                        'coordenada_y' => rand(1, 19),
+                        'coordenada_x' => $base->coordenada_x + rand(-5, 5),
+                        'coordenada_y' => $base->coordenada_y + rand(-5, 5),
                         'qg_nivel' => rand(1, 5),
                         'muralha_nivel' => rand(1, 3),
                     ]);
@@ -110,7 +110,7 @@ class AuthController extends Controller
                     'sent' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get() ?? [],
                     'received' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get() ?? [],
                 ],
-                'rebels' => \App\Models\Base::whereNull('jogador_id')->get() ?? [],
+                'rebels' => Base::whereNull('jogador_id')->get() ?? [],
             ]
         ]);
     }
