@@ -12,6 +12,11 @@ export interface EntitySnapshot {
     type?: string;
     x: number;
     y: number;
+    status?: string;
+    march?: {
+        target: { x: number; y: number };
+        remainingTime: number;
+    };
 }
 
 export interface GlobalGameState {
@@ -58,6 +63,7 @@ class GameStateService {
             let x = gridPos ? gridPos.x : 0;
             let y = gridPos ? gridPos.y : 0;
 
+            let marchData = undefined;
             if (march) {
                 const now = Date.now();
                 const total = march.arrivalTime - march.startTime;
@@ -65,13 +71,20 @@ class GameStateService {
                 const progress = Math.min(1, Math.max(0, elapsed / (total || 1)));
                 x = march.originX + (march.targetX - march.originX) * progress;
                 y = march.originY + (march.targetY - march.originY) * progress;
+                
+                marchData = {
+                    target: { x: march.targetX, y: march.targetY },
+                    remainingTime: Math.max(0, (march.arrivalTime - now) / 1000)
+                };
             }
 
             newSnapshots.push({
                 id,
                 type: army ? 'Army' : (unit?.unitCategory || (village ? 'VILLAGE' : (march ? 'MARCH' : undefined))),
                 x,
-                y
+                y,
+                status: army?.status || (march ? 'em marcha' : 'operacional'),
+                march: marchData
             });
         }
 
