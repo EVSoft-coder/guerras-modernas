@@ -60,7 +60,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square bg-[conic-gradient(from_0deg,transparent_0deg,rgba(14,165,233,0.05)_90deg,transparent_90deg)] animate-spin-slow origin-center opacity-40"></div>
             </div>
             <div className="absolute inset-2 z-20 grid grid-cols-5 grid-rows-5">
-                {/* Renderizar QG */}
+                {/* 1. Renderizar QG (Ponto de Ancoragem Central) */}
                 <BuildingNode 
                     tipo="qg" 
                     nome="Quartel General" 
@@ -69,19 +69,35 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                     onClick={() => onBuildingClick({ tipo: 'qg', nome: 'Quartel General', nivel: base.qg_nivel, base: base })}
                 />
 
-                {/* Renderizar Edifícios da tabela edificios (excluindo QG e Muralha que são renderizados explicitamente ou HUD) */}
-                {(base.edificios || []).filter(b => b.tipo?.toLowerCase() !== 'qg' && b.tipo?.toLowerCase() !== 'muralha').map(b => {
-                    const tipoNormalizado = b.tipo?.toLowerCase();
-                    const pos = buildingPositions[tipoNormalizado] || { x: 0, y: 2 }; 
-                    
+                {/* 2. Mapeamento Integral de Slotes Tácticos */}
+                {Object.entries(buildingPositions).map(([tipo, pos]) => {
+                    // Localizar se o edifício já existe na base
+                    const existingBuilding = (base.edificios || []).find(b => b.tipo?.toLowerCase() === tipo.toLowerCase());
+                    const tipoNormalizado = tipo.toLowerCase();
+                    const nomeStr = buildingDisplayNames[tipoNormalizado] || tipo;
+
+                    if (existingBuilding) {
+                        return (
+                            <BuildingNode 
+                                key={existingBuilding.id}
+                                tipo={existingBuilding.tipo}
+                                nome={nomeStr}
+                                nivel={existingBuilding.nivel}
+                                gridPos={pos}
+                                onClick={() => onBuildingClick({ ...existingBuilding, id: existingBuilding.id, nome: nomeStr, base: base })}
+                            />
+                        );
+                    }
+
+                    // Se não existe, renderizar como Lote Disponível (Nível 0)
                     return (
                         <BuildingNode 
-                            key={b.id}
-                            tipo={b.tipo}
-                            nome={buildingDisplayNames[tipoNormalizado] || b.tipo}
-                            nivel={b.nivel}
+                            key={`ghost-${tipo}`}
+                            tipo={tipo}
+                            nome={`[CONSTRUIR] ${nomeStr}`}
+                            nivel={0}
                             gridPos={pos}
-                            onClick={() => onBuildingClick({ ...b, id: b.id, nome: buildingDisplayNames[tipoNormalizado] || b.tipo, base: base })}
+                            onClick={() => onBuildingClick({ tipo: tipo, nome: nomeStr, nivel: 0, base: base })}
                         />
                     );
                 })}
