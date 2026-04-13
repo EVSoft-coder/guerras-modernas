@@ -224,7 +224,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                         ${isSelected ? 'border-sky-500 z-10 bg-sky-500/10 shadow-[0_0_30px_rgba(14,165,233,0.4)] ring-2 ring-sky-500/50' : 'hover:bg-white/5'}
                                                         ${isPlayer ? 'bg-sky-500/10 border-sky-500/20' : ''}
                                                         ${isEnemy ? 'bg-red-500/10 border-red-500/20' : ''}
-                                                        ${isRebel ? 'bg-amber-500/10 border-amber-500/20' : ''}
+                                                        ${isRebel ? 'bg-red-600/20 border-red-600/40' : ''}
                                                     `}
                                                     onClick={() => setSelectedSector({ x, y, base: baseAt })}
                                                     style={{ left: x * 80, top: y * 80, width: 80, height: 80 }}
@@ -238,9 +238,9 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                             animate={isSelected ? { scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] } : {}}
                                                             transition={{ repeat: Infinity, duration: 3 }}
                                                             className={`p-3 rounded-xl border-2 shadow-2xl relative
-                                                                ${isPlayerBase ? 'bg-sky-500/20 text-sky-400 border-sky-500/40 shadow-sky-500/20' : ''}
+                                                                ${isPlayer ? 'bg-sky-500/20 text-sky-400 border-sky-500/40 shadow-sky-500/20' : ''}
                                                                 ${isEnemy ? 'bg-red-500/20 text-red-400 border-red-500/40 shadow-red-500/20' : ''}
-                                                                ${isRebel ? 'bg-amber-500/20 text-amber-500 border-amber-500/40 shadow-amber-500/20' : ''}
+                                                                ${isRebel ? 'bg-red-600/40 text-red-100 border-red-600/60 shadow-red-600/40' : ''}
                                                             `}
                                                         >
                                                             <Home size={24} />
@@ -256,7 +256,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                     <div className="flex items-center gap-2">
                                                         <Target size={12} className={isEnemy ? 'text-red-500' : (isRebel ? 'text-amber-500' : 'text-sky-500')} />
                                                         <span className="text-[10px] font-black uppercase text-white">
-                                                            {isRebel ? `Rebeldes (Nível ${baseAt.nivel || 1})` : (baseAt?.nome || 'Sector Neutro')}
+                                                            {isRebel ? 'REBELDE' : (baseAt?.nome || 'Sector Neutro')}
                                                         </span>
                                                     </div>
                                                     <div className="flex justify-between gap-4 text-[8px] font-mono text-neutral-500">
