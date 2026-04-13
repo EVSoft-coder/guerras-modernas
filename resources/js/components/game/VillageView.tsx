@@ -28,38 +28,21 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
         'central_energia': { x: 4, y: 4 }
     };
 
-    const buildingDisplayNames: Record<string, string> = {
-        'quartel': 'Campo de Treino / Quartel',
-        'mina_suprimentos': 'Centro de Logística / Mantimentos',
-        'refinaria': 'Refinaria de Combustível',
-        'fabrica_municoes': 'Arsenal de Munições',
-        'posto_recrutamento': 'Gabinete de Recrutamento',
-        'aerodromo': 'Base Aérea / Heliponto',
-        'radar_estrategico': 'Radar de Varredura Estratégico',
-        'centro_pesquisa': 'Laboratório de I&D',
-        'muralha': 'Perímetro Defensivo',
-        'parlamento': 'Parlamento / Centro de Soberania',
-        'factory': 'Fábrica Metalúrgica de Grande Porte',
-        'solar': 'Planta de Energia Solar Térmica',
-        'mina_metal': 'Complexo de Extração de Metal',
-        'central_energia': 'Central de Fusão de Energia'
-    };
+    const playerBuildings = base.edificios?.map(eb => ({
+        type: eb.tipo?.toLowerCase(),
+        level: eb.nivel
+    })) || [];
 
-    const buildings = GLOBAL_BUILDINGS.filter(b => b.type !== 'qg').map((b) => {
-        const existing = (base.edificios || []).find(eb => eb.tipo?.toLowerCase() === b.type.toLowerCase());
-        const tipo = b.type.toLowerCase();
-        const isLocked = b.requiredLevel && base.qg_nivel < b.requiredLevel;
-        
+    const buildings = GLOBAL_BUILDINGS.map(b => {
+        const existing = playerBuildings?.find(pb => pb.type === b.type);
+
         return {
             ...b,
-            id: existing?.id,
-            level: existing ? existing.nivel : 0,
-            tipo: tipo,
-            nome: isLocked ? `[BLOQUEADO] LVL ${b.requiredLevel}` : (buildingDisplayNames[tipo] || b.nome),
-            gridPos: buildingPositions[tipo] || { x: 0, y: 0 },
-            isLocked: isLocked
+            level: existing ? existing.level : 0
         };
     });
+
+    console.log("BUILDINGS FINAL:", buildings);
 
     return (
         <div className="relative w-full aspect-video bg-black rounded-[2.5rem] overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.9)] border border-white/5 group">
@@ -81,30 +64,12 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square bg-[conic-gradient(from_0deg,transparent_0deg,rgba(14,165,233,0.05)_90deg,transparent_90deg)] animate-spin-slow origin-center opacity-40"></div>
             </div>
 
-            <div className="absolute inset-2 z-20 grid grid-cols-5 grid-rows-5">
-                {/* 1. Renderizar QG (Ponto de Ancoragem Central) */}
-                <BuildingNode 
-                    tipo="qg" 
-                    nome="Quartel General" 
-                    nivel={base.qg_nivel} 
-                    gridPos={{ x: 2, y: 2 }} 
-                    onClick={() => onBuildingClick({ tipo: 'qg', nome: 'Quartel General', nivel: base.qg_nivel, base: base })}
-                />
-
-                {/* 2. Mapeamento Integral via GLOBAL_BUILDINGS (Sem Filtros) */}
-                {buildings.map((b) => (
-                    <BuildingNode 
-                        key={b.id || `ghost-${b.tipo}`}
-                        tipo={b.tipo}
-                        nome={b.nome}
-                        nivel={b.level}
-                        gridPos={b.gridPos}
-                        isLocked={b.isLocked}
-                        onClick={() => onBuildingClick({ 
-                            ...b,
-                            base: base 
-                        })}
-                    />
+            <div className="absolute inset-2 z-20 flex flex-col gap-2 bg-black/80 text-white p-4 overflow-y-auto">
+                <h3 className="text-xl text-sky-500 font-black mb-4">UI VALIDAÇÃO MANUAL</h3>
+                {buildings.map(b => (
+                    <div key={b.type}>
+                        {b.nome} (Nível {b.level})
+                    </div>
                 ))}
             </div>
 

@@ -42,7 +42,6 @@ export default function Dashboard(props: DashboardProps) {
             setIsReloading(true);
             router.reload({
                 only: ["gameData"],
-                preserveState: true,
                 onSuccess: () => {
                     setLastSync(new Date());
                 },

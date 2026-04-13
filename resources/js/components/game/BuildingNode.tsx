@@ -57,7 +57,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, g
             {/* NOME (SÓ APARECE NO HOVER OU MUITO PEQUENO) */}
             <div className={`mt-1 flex flex-col items-center bg-black/40 px-2 py-0.5 rounded border border-white/5 backdrop-blur-sm ${!isLocked ? 'opacity-60 group-hover:opacity-100' : 'opacity-40'} transition-opacity`}>
                 <span className="text-[7px] font-black uppercase text-neutral-300 tracking-tighter whitespace-nowrap">
-                    {nome?.split?.(' / ')?.[0] ?? 'UNKNOWN'}
+                    {nome ?? 'UNKNOWN'}
                 </span>
             </div>
         </motion.div>
