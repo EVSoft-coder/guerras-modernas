@@ -127,6 +127,35 @@ entityManager.addComponent(enemyUnit, {
     type: "Renderable",
     renderType: "unit"
 } as RenderableComponent);
+
+// 5. MOBILIZAÇÃO DE REDUTOS REBELDES (Operação Alpha-Rebel)
+const rebelCoords = [
+    { x: 7, y: 5, name: 'Reduto Insurgente A' },
+    { x: 5, y: 7, name: 'Célula de Resistência B' },
+    { x: 3, y: 5, name: 'Posto Rebelde Gamma' },
+    { x: 5, y: 3, name: 'Depósito Insurgente Delta' },
+    { x: 7, y: 7, name: 'Base Terrorista Epsilon' }
+];
+
+rebelCoords.forEach((coord, index) => {
+    const rebelVillage = entityManager.createEntity();
+    entityManager.addComponent(rebelVillage, new VillageComponent(
+        null, 
+        Math.floor(Math.random() * 3) + 1, // Nível 1 a 3
+        { suprimentos: 1000, combustivel: 1000, municoes: 1000, pessoal: 20, metal: 1000, energia: 1000 }, 
+        coord.name,
+        true // isRebel = true
+    ));
+    entityManager.addComponent(rebelVillage, new ResourceComponent(1000, 1000, 1000, 1000, 1000, 20, 5000));
+    entityManager.addComponent(rebelVillage, new GridPositionComponent(coord.x, coord.y));
+    entityManager.addComponent(rebelVillage, {
+        type: "Renderable",
+        renderType: "building"
+    } as RenderableComponent);
+    
+    console.log(`[BOOT] Rebel Cell ${index + 1} (${coord.name}) deployed at ${coord.x}:${coord.y}.`);
+});
+
 stateManager.setState(GameState.PLAYING);
 
  
