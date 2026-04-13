@@ -22,10 +22,12 @@ export class RebelGeneratorSystem implements GameSystem {
         this.lastProgressionTime = Date.now();
         this.lastRegenTime = Date.now();
 
-        // Geração inicial garantida de rebeldes em posições seguras
-        for (let i = 0; i < 5; i++) {
+        // ECS_MANDATE: Inicialização garantida de células insurrectas.
+        // Requisito: PositionComponent + VillageComponent (isRebel: true)
+        for (let i = 0; i < 10; i++) {
             this.spawnRebel();
         }
+        console.log(`[SYSTEM] RebelGeneratorSystem - ${entityManager.getEntitiesWith(['Village']).length} total sectors identified in geology.`);
     }
 
     private spawnManualRebel(x: number, y: number): void {
