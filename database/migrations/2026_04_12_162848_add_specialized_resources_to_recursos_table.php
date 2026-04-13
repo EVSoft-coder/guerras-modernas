@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('recursos', function (Blueprint $table) {
-            $table->integer('metal')->default(1000)->after('pessoal');
-            $table->integer('energia')->default(500)->after('metal');
+            if (!Schema::hasColumn('recursos', 'metal')) {
+                $table->integer('metal')->default(1000)->after('pessoal');
+            }
+            if (!Schema::hasColumn('recursos', 'energia')) {
+                $table->integer('energia')->default(500)->after('metal');
+            }
         });
     }
 
