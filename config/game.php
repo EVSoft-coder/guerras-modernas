@@ -125,7 +125,7 @@ return [
     */
     'units' => [
         'infantaria' => [
-            'name' => 'Infantaria de Assalto',
+            'name' => 'Soldado de Infantaria',
             'cost' => ['suprimentos' => 100, 'municoes' => 20, 'pessoal' => 1],
             'time' => 30, // segundos base
             'attack' => 10,
@@ -146,7 +146,7 @@ return [
         ],
         'tanque_combate' => [
             'name' => 'Tanque de Combate (MBT)',
-            'cost' => ['suprimentos' => 800, 'combustivel' => 300, 'municoes' => 200, 'pessoal' => 4],
+            'cost' => ['suprimentos' => 800, 'combustivel' => 300, 'municoes' => 200, 'pessoal' => 5],
             'time' => 600,
             'attack' => 150,
             'defense_general' => 100,
