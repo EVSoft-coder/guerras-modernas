@@ -87,19 +87,24 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
         }
     }, [center]);
 
-    // SINGLE SOURCE OF TRUTH: All villages come from Entity Component System
+    // ECS SOVEREIGNTY: Only render entities that exist in the ECS State machine
     const visibleBases = useMemo(() => {
-        return gameEntities.filter(e => e.type === 'VILLAGE' || e.type === 'village').map(e => ({
-            id: e.id,
-            nome: e.name || 'Setor Hostil',
-            coordenada_x: e.x,
-            coordenada_y: e.y,
-            loyalty: e.loyalty,
-            jogador_id: e.ownerId,
-            is_protected: e.isProtected,
-            protection_until: e.protectionUntil ? new Date(e.protectionUntil).toISOString() : undefined,
-            jogador: e.ownerId ? { id: e.ownerId, username: e.ownerId === playerBase?.jogador_id ? 'VOCÊ' : `COMANDANTE_${e.ownerId}` } : undefined
-        }));
+        return gameEntities
+            .filter(e => e.type === 'VILLAGE')
+            .map(e => ({
+                id: e.id,
+                nome: e.name || 'Setor Hostil',
+                coordenada_x: Math.round(e.x),
+                coordenada_y: Math.round(e.y),
+                loyalty: e.loyalty,
+                jogador_id: e.ownerId,
+                is_protected: e.isProtected,
+                protection_until: e.protectionUntil ? new Date(e.protectionUntil).toISOString() : undefined,
+                jogador: e.ownerId ? { 
+                    id: e.ownerId, 
+                    username: e.ownerId === playerBase?.jogador_id ? 'VOCÊ' : `COMANDANTE_${e.ownerId}` 
+                } : undefined
+            }));
     }, [gameEntities, playerBase]);
 
     const rebelBasesCount = useMemo(() => {
@@ -148,32 +153,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
         });
     };
 
-    const debugRebels = [
-        { 
-            id: 9991, 
-            coordenada_x: (playerBase?.coordenada_x || center.x) + 2, 
-            coordenada_y: (playerBase?.coordenada_y || center.y) + 2, 
-            jogador_id: null, 
-            nome: 'REBELDE_A',
-            is_protected: false,
-            protection_until: undefined,
-            loyalty: 100,
-            jogador: undefined
-        },
-        { 
-            id: 9992, 
-            coordenada_x: (playerBase?.coordenada_x || center.x) - 2, 
-            coordenada_y: (playerBase?.coordenada_y || center.y) - 1, 
-            jogador_id: null, 
-            nome: 'REBELDE_B',
-            is_protected: false,
-            protection_until: undefined,
-            loyalty: 100,
-            jogador: undefined
-        }
-    ];
-
-    const allBases = [...visibleBases, ...debugRebels];
+    const allBases = visibleBases;
 
     return (
         <div className="flex flex-col lg:flex-row gap-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-700 h-full overflow-hidden">
