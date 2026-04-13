@@ -14,10 +14,33 @@ import { gameStateService } from '@src/services/GameStateService';
 import { eventBus, Events } from '@src/core/EventBus';
 import { WorldMapView } from '@/components/game/WorldMapView';
 
+import { GLOBAL_BUILDINGS } from '@src/game/config/buildings';
+
 export function VillageDashboard({ 
-    jogador, base, bases = [], taxasPerSecond, gameConfig, 
+    jogador, base: initialBase, bases = [], taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal 
 }: DashboardProps & { bases: any[] }) {
+    // 1. HIDRATAÇÃO DE ESTADO: Garantir que todos os edifícios do registry existem (Nível 0 se ausentes)
+    const base = React.useMemo(() => {
+        if (!initialBase) return initialBase;
+        
+        const currentEdificios = initialBase.edificios || [];
+        const missingBuildings = GLOBAL_BUILDINGS
+            .filter(def => def.type !== 'qg' && def.type !== 'muralha') // QG/Muralha são especiais no DB
+            .filter(def => !currentEdificios.some(e => e.tipo?.toLowerCase() === def.type.toLowerCase()))
+            .map(def => ({
+                id: -(Math.random() * 1000000), // ID negativo para não colidir com DB
+                tipo: def.type,
+                nivel: 0,
+                base_id: initialBase.id
+            }));
+
+        return {
+            ...initialBase,
+            edificios: [...currentEdificios, ...missingBuildings]
+        };
+    }, [initialBase]);
+
     const { addToast } = useToasts();
     const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
     const [selectedBuildingType, setSelectedBuildingType] = useState<string | null>(null);
