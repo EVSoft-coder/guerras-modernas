@@ -39,15 +39,19 @@ export default function Dashboard(props: DashboardProps) {
         PollingService.start(() => {
             if (document.hidden || isReloading) return;
 
+            // Bloqueio Preventivo de Conflitos
             setIsReloading(true);
             router.reload({
-                only: ["gameData"],
+                only: ["gameData", "base"],
                 onSuccess: () => {
                     setLastSync(new Date());
                 },
+                onError: (err) => {
+                    console.warn("[POLLING_WARN] Conflict detected or session expired", err);
+                },
                 onFinish: () => {
-                    // Protecção de Concorrência
-                    setTimeout(() => setIsReloading(false), 1000);
+                    // Timeout estendido para estabilização de rede
+                    setTimeout(() => setIsReloading(false), 2000);
                 }
             });
         }, POLL_INTERVAL);
