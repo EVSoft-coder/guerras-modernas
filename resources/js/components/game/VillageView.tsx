@@ -45,6 +45,19 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
         'central_energia': 'Central de Fusão de Energia'
     };
 
+    const buildings = GLOBAL_BUILDINGS.filter(b => b.type !== 'qg').map((b) => {
+        const existing = (base.edificios || []).find(eb => eb.tipo?.toLowerCase() === b.type.toLowerCase());
+        const tipo = b.type.toLowerCase();
+        return {
+            ...b,
+            id: existing?.id,
+            level: existing ? existing.level : 0,
+            tipo: tipo,
+            nome: buildingDisplayNames[tipo] || b.nome,
+            gridPos: buildingPositions[tipo] || { x: 0, y: 0 }
+        };
+    });
+
     return (
         <div className="relative w-full aspect-video bg-black rounded-[2.5rem] overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.9)] border border-white/5 group">
             {/* Background Map com Grid Tática */}
@@ -76,37 +89,19 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                 />
 
                 {/* 2. Mapeamento Integral via GLOBAL_BUILDINGS (Sem Filtros) */}
-                {GLOBAL_BUILDINGS.filter(b => b.type !== 'qg').map((def) => {
-                    const tipo = def.type.toLowerCase();
-                    const existingBuilding = (base.edificios || []).find(eb => eb.tipo?.toLowerCase() === tipo);
-                    const pos = buildingPositions[tipo] || { x: 0, y: 0 };
-                    const nomeStr = buildingDisplayNames[tipo] || def.name;
-
-                    if (existingBuilding) {
-                        return (
-                            <BuildingNode 
-                                key={existingBuilding.id}
-                                tipo={existingBuilding.tipo}
-                                nome={nomeStr}
-                                nivel={existingBuilding.nivel}
-                                gridPos={pos}
-                                onClick={() => onBuildingClick({ ...existingBuilding, id: existingBuilding.id, nome: nomeStr, base: base })}
-                            />
-                        );
-                    }
-
-                    // Se não existe na DB -> Mostrar como Nível 0 (Lote disponível para construção)
-                    return (
-                        <BuildingNode 
-                            key={`ghost-${tipo}`}
-                            tipo={tipo}
-                            nome={`[CONSTRUIR] ${nomeStr}`}
-                            nivel={0}
-                            gridPos={pos}
-                            onClick={() => onBuildingClick({ tipo: tipo, nome: nomeStr, nivel: 0, base: base })}
-                        />
-                    );
-                })}
+                {buildings.map((b) => (
+                    <BuildingNode 
+                        key={b.id || `ghost-${b.tipo}`}
+                        tipo={b.tipo}
+                        nome={b.level === 0 ? `[CONSTRUIR] ${b.nome}` : b.nome}
+                        nivel={b.level}
+                        gridPos={b.gridPos}
+                        onClick={() => onBuildingClick({ 
+                            ...b,
+                            base: base 
+                        })}
+                    />
+                ))}
             </div>
 
             {/* Bússola Tática / HUD sobreposto ao mapa */}
