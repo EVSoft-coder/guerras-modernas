@@ -97,7 +97,8 @@ export class ResourceSystem implements GameSystem {
 
     private addResource(res: any, type: string, amount: number): void {
         if (res[type] !== undefined) {
-            res[type] = Math.min(res.cap, res[type] + amount);
+            const limit = res.cap ? res.cap : 9999999;
+            res[type] = Math.min(limit, res[type] + amount);
         }
     }
 
