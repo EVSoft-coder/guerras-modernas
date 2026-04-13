@@ -13,9 +13,14 @@ export const getBuildingAsset = (type: string, level: number = 1): string => {
     if (placeholders.includes(t)) {
         return `/assets/placeholders/building_${t}.svg`;
     }
+
+    // Normalização de nomes para pastas de assets reais
+    let assetFolder = t;
+    if (t === 'mina_metal') assetFolder = 'factory';
+    if (t === 'central_energia') assetFolder = 'solar';
     
     // Caminho padrão para edifícios com arte final
-    return `/images/edificios/${t}/lvl_${level}.png`;
+    return `/images/edificios/${assetFolder}/lvl_${level}.png`;
 };
 
 export const getUnitAsset = (type: string): string => {

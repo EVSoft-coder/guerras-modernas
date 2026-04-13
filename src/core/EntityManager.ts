@@ -25,6 +25,13 @@ class EntityManager {
     }
 
     /**
+     * Verifica se uma entidade existe no sistema.
+     */
+    public hasEntity(entityId: EntityId): boolean {
+        return this.entities.has(entityId);
+    }
+
+    /**
      * Remove uma entidade e todos os seus componentes do sistema.
      */
     public removeEntity(entityId: EntityId): void {
@@ -75,6 +82,14 @@ class EntityManager {
         const entityComponents = this.entities.get(entityId);
         if (!entityComponents) return undefined;
         return entityComponents.get(type) as T;
+    }
+
+    /**
+     * Verifica se uma entidade possui um componente específico.
+     */
+    public hasComponent(entityId: EntityId, type: string): boolean {
+        const entityComponents = this.entities.get(entityId);
+        return entityComponents ? entityComponents.has(type) : false;
     }
 }
  
