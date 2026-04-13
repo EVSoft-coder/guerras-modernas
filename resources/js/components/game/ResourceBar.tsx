@@ -8,7 +8,7 @@ interface ResourceBarProps {
     taxasPerSecond: Record<string, number>;
 }
 
-export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSecond }) => {
+export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ recursos, taxasPerSecond, populacao }) => {
     const [current, setCurrent] = useState({
         suprimentos: recursos?.suprimentos ?? 0,
         combustivel: recursos?.combustivel ?? 0,
@@ -86,8 +86,9 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 icon={<Users className="text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.5)]" size={24} />} 
                 label="Guarnição" 
                 value={current.pessoal} 
+                customValue={populacao ? `${Math.floor(populacao.used)} / ${populacao.total}` : null}
                 rate={taxasPerSecond?.pessoal ?? 0}
-                cap={recursos?.cap ?? 10000}
+                cap={populacao?.total ?? recursos?.cap ?? 10000}
                 color="text-white"
                 accentColor="bg-emerald-500"
             />
@@ -95,7 +96,7 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
     );
 };
 
-const ResourceItem = ({ icon, label, value, rate, cap, color, accentColor, isStatic = false }: any) => {
+const ResourceItem = ({ icon, label, value, rate, cap, color, accentColor, isStatic = false, customValue }: any) => {
     return (
         <div className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-3xl p-6 rounded-[2.5rem] border border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.6)] group cursor-help transition-all duration-500 hover:bg-white/[0.05] hover:border-white/10 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -111,7 +112,7 @@ const ResourceItem = ({ icon, label, value, rate, cap, color, accentColor, isSta
                         </div>
                         <div className="flex justify-between border-t border-white/5 pt-1 mt-1">
                             <span>Eficiência:</span>
-                            <span className="text-sky-400 font-black">{Math.min(100, (value / cap) * 100).toFixed(1)}%</span>
+                            <span className="text-sky-400 font-black">{Math.min(100, (Number(value) / cap) * 100).toFixed(1)}%</span>
                         </div>
                         <div className="text-[7px] text-neutral-600 mt-2 text-center italic">
                              Sensor ótico de monitorização estratégica ativado
@@ -129,7 +130,7 @@ const ResourceItem = ({ icon, label, value, rate, cap, color, accentColor, isSta
                 key={value}
                 className={`text-4xl font-black font-mono tracking-tighter ${color} drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]`}
             >
-                <AnimatedNumber value={value} />
+                <AnimatedNumber value={value} customValue={customValue} />
             </motion.div>
 
             <div className="mt-3 w-full">
@@ -165,7 +166,8 @@ const ResourceItem = ({ icon, label, value, rate, cap, color, accentColor, isSta
     );
 };
 
-const AnimatedNumber = ({ value }: { value: number }) => {
+const AnimatedNumber = ({ value, customValue }: { value: number, customValue?: string }) => {
+    if (customValue) return <span>{customValue}</span>;
     const [displayValue, setDisplayValue] = useState(value);
 
     useEffect(() => {

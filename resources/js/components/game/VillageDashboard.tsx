@@ -18,8 +18,8 @@ import { useGameEntities } from '@/hooks/use-game-entities';
 
 export function VillageDashboard({ 
     jogador, base: initialBase, bases: backendBases = [], taxasPerSecond, gameConfig, 
-    ataquesRecebidos, ataquesEnviados, relatoriosGlobal 
-}: DashboardProps & { bases: any[] }) {
+    ataquesRecebidos, ataquesEnviados, relatoriosGlobal, populacao 
+}: DashboardProps & { bases: any[], populacao?: any }) {
     // 0. ECS ENGINE INTEGRATION - BARKING STATE
     const { globalState } = useGameEntities();
 
@@ -136,7 +136,7 @@ export function VillageDashboard({
             <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-orange-500/5 blur-[150px] pointer-events-none"></div>
 
             <Head title="Centro de Comando Tático" />
-            <ResourceBar recursos={base?.recursos ?? {}} taxasPerSecond={taxasPerSecond ?? {}} />
+            <ResourceBar recursos={base?.recursos ?? {}} taxasPerSecond={taxasPerSecond ?? {}} populacao={populacao} />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 flex-1 relative z-10">
                 <div className="lg:col-span-8 flex flex-col gap-6">
