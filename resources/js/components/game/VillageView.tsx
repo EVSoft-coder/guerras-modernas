@@ -42,7 +42,6 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
         };
     });
 
-    console.log("BUILDINGS FINAL:", buildings);
 
     return (
         <div className="relative w-full aspect-video bg-black rounded-[2.5rem] overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.9)] border border-white/5 group">
