@@ -15,8 +15,8 @@ class MapaController extends Controller
      */
     public function index(Request $request)
     {
-        $x = (int) $request->get('x', 500);
-        $y = (int) $request->get('y', 500);
+        $x = (int) $request->input('x', 500);
+        $y = (int) $request->input('y', 500);
         
         $x = max(0, min(1000, $x));
         $y = max(0, min(1000, $y));
@@ -49,9 +49,9 @@ class MapaController extends Controller
      */
     public function apiData(Request $request)
     {
-        $x = $request->get('x', 500);
-        $y = $request->get('y', 500);
-        $raio = $request->get('raio', 15);
+        $x = $request->input('x', 500);
+        $y = $request->input('y', 500);
+        $raio = $request->input('raio', 15);
  
         $bases = Base::with('jogador:id,username')
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])

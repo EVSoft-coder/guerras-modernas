@@ -5,7 +5,7 @@
 import { entityManager, EntityId } from '../../core/EntityManager';
 import { MarchComponent } from '../components/MarchComponent';
 import { GridPositionComponent } from '../components/GridPositionComponent';
-import { unitStats } from '../config/unitStats';
+import { unitConfigs } from '../config';
 
 export class MarchFactory {
     /**
@@ -30,7 +30,8 @@ export class MarchFactory {
         let slowestSpeed = Infinity;
         for (const [unitType, count] of Object.entries(data.units)) {
             if (count > 0) {
-                const speed = unitStats[unitType]?.speed || 10;
+                const stats = unitConfigs[unitType];
+                const speed = stats?.speed || 10;
                 if (speed < slowestSpeed) slowestSpeed = speed;
             }
         }

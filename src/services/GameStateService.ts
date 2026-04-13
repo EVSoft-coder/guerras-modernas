@@ -5,7 +5,7 @@
 import { entityManager } from '../core/EntityManager';
 import { stateManager, GameMode } from '../core/StateManager';
 import { AttackMarchComponent } from '../game/components/AttackMarchComponent';
-import { GLOBAL_BUILDINGS } from '../game/config/buildings';
+import { buildingConfigs } from '../game/config';
 
 export interface EntitySnapshot {
     id: number;
@@ -164,10 +164,10 @@ class GameStateService {
             return { type: b?.buildingType || 'STRUCTURE', level: b?.level || 1, id };
         });
 
-        const hydratedBuildings = GLOBAL_BUILDINGS.map(def => {
-            const existing = existingBuildings.find(eb => eb.type.toLowerCase() === def.type.toLowerCase());
+        const hydratedBuildings = Object.values(buildingConfigs).map(def => {
+            const existing = existingBuildings.find(eb => eb.type.toLowerCase() === def.id.toLowerCase());
             return {
-                type: def.type,
+                type: def.id,
                 level: existing ? existing.level : 0,
                 id: existing ? existing.id : -(Math.random() * 1000)
             };

@@ -4,7 +4,7 @@ import { Logger } from '../../core/Logger';
 import { GameSystem } from './types';
 import { VillageComponent } from '../components/VillageComponent';
 import { ArmyComponent } from '../components/ArmyComponent';
-import { unitStats } from '../config/unitStats';
+import { unitConfigs } from '../config';
 
 export class CombatSystem implements GameSystem {
     public init(): void {
@@ -59,7 +59,7 @@ export class CombatSystem implements GameSystem {
         let totalAttack = 0;
         let carryCapacity = 0;
         for (const [unitType, qty] of Object.entries(army.units)) {
-            const stats = unitStats[unitType];
+            const stats = unitConfigs[unitType];
             if (stats) {
                 totalAttack += stats.attack * qty;
                 carryCapacity += stats.capacity * qty;
@@ -73,8 +73,8 @@ export class CombatSystem implements GameSystem {
         const villageArmy = entityManager.getComponent<ArmyComponent>(targetId, 'Army');
         if (villageArmy) {
             for (const [type, qty] of Object.entries(villageArmy.units)) {
-                const stats = unitStats[type];
-                if (stats) totalDefense += stats.defense * qty;
+                const stats = unitConfigs[type];
+                if (stats) totalDefense += stats.defenseGeneral * qty;
             }
         }
 
