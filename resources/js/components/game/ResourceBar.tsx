@@ -27,7 +27,7 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 municoes: prev.municoes + (taxasPerSecond?.municoes ?? 0),
                 metal: prev.metal + (taxasPerSecond?.metal ?? 0),
                 energia: prev.energia + (taxasPerSecond?.energia ?? 0),
-                pessoal: prev.pessoal,
+                pessoal: prev.pessoal + (taxasPerSecond?.pessoal ?? 0),
                 cap: recursos?.cap ?? 10000
             }));
         }, 1000);
@@ -86,11 +86,10 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
                 icon={<Users className="text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.5)]" size={24} />} 
                 label="Guarnição" 
                 value={current.pessoal} 
-                rate={0}
-                cap={0}
+                rate={taxasPerSecond?.pessoal ?? 0}
+                cap={recursos?.cap ?? 10000}
                 color="text-white"
                 accentColor="bg-emerald-500"
-                isStatic
             />
         </div>
     );
