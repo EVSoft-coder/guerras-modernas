@@ -12,34 +12,14 @@ export interface EntitySnapshot {
     type?: string;
     x: number;
     y: number;
-    sprite?: string;
-    health?: { current: number; max: number };
-    name?: string;
-    loyalty?: number;
-    isProtected?: boolean;
-    protectionUntil?: number;
-    isSelected?: boolean;
-    status?: "going" | "returning" | "completed";
-    ownerId?: number | null;
-    resources?: { suprimentos: number; combustivel: number; municoes: number; metal: number; energia: number; pessoal: number };
-    march?: {
-        state: string;
-        remainingTime: number;
-        totalTime: number;
-        target: { x: number, y: number };
-        loot: any;
-    };
 }
 
 export interface GlobalGameState {
     player: { name: string; id: number };
     villages: Array<{ id: number; name: string; x: number; y: number }>;
     resources: { suprimentos: number; combustivel: number; municoes: number; metal: number; energia: number; pessoal: number };
-    buildings: Array<{ type: string; level: number; id?: number }>;
     worldMapBases: Array<any>;
     rebelCount: number;
-    revealedTiles?: string[];
-    research?: Record<string, number>;
 }
 
 class GameStateService {
@@ -48,7 +28,6 @@ class GameStateService {
         player: { name: 'OPERATIVE', id: 1 },
         villages: [],
         resources: { suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0, pessoal: 0 },
-        buildings: [],
         worldMapBases: [],
         rebelCount: 0
     };
@@ -63,22 +42,15 @@ class GameStateService {
         const marches = entityManager.getEntitiesWith(['March']);
         const newSnapshots: EntitySnapshot[] = [];
 
-        // Combine IDs
         const allIds = Array.from(new Set([...entities, ...marches]));
 
         for (const id of allIds) {
             const gridPos = entityManager.getComponent<any>(id, 'GridPosition');
-            
-            // FOG OF WAR: Se nÃ£o for visÃ­vel tactinamente, ignorar na exposiÃ§Ã£o para a UI
             if (gridPos && !gridPos.isVisible) continue;
 
-            const sprite = entityManager.getComponent<any>(id, 'Sprite');
-            const health = entityManager.getComponent<any>(id, 'Health');
-            const selection = entityManager.getComponent<any>(id, 'Selection');
             const res = entityManager.getComponent<any>(id, 'Resource');
             const march = entityManager.getComponent<any>(id, 'March');
             const army = entityManager.getComponent<any>(id, 'Army');
-            const building = entityManager.getComponent<any>(id, 'Building');
             const village = entityManager.getComponent<any>(id, 'Village');
             const unit = entityManager.getComponent<any>(id, 'Unit');
             const player = entityManager.getComponent<any>(id, 'Player');
@@ -97,33 +69,9 @@ class GameStateService {
 
             newSnapshots.push({
                 id,
-                type: army ? 'Army' : (building?.buildingType || unit?.unitCategory || (village ? 'VILLAGE' : (march ? 'MARCH' : undefined))),
+                type: army ? 'Army' : (unit?.unitCategory || (village ? 'VILLAGE' : (march ? 'MARCH' : undefined))),
                 x,
-                y,
-                sprite: sprite?.imagePath,
-                health: health ? { current: health.value, max: health.max } : undefined,
-                loyalty: village ? village.loyalty : undefined,
-                isProtected: village ? village.isProtected : undefined,
-                protectionUntil: village ? village.protectionUntil : undefined,
-                isSelected: !!selection,
-                status: march?.status,
-                ownerId: village?.ownerId ?? army?.ownerId ?? march?.ownerId ?? (player ? id : undefined),
-                name: village?.name || building?.name || (army ? `Task Force ${id}` : undefined),
-                resources: res ? { 
-                    suprimentos: res.suprimentos, 
-                    combustivel: res.combustivel, 
-                    municoes: res.municoes,
-                    metal: res.metal,
-                    energia: res.energia,
-                    pessoal: res.pessoal
-                } : undefined,
-                march: march ? {
-                    state: march.status,
-                    remainingTime: (march.arrivalTime - Date.now()) / 1000,
-                    totalTime: (march.arrivalTime - march.startTime) / 1000,
-                    target: { x: march.targetX, y: march.targetY },
-                    loot: march.units 
-                } : undefined
+                y
             });
         }
 
@@ -133,11 +81,9 @@ class GameStateService {
     }
 
     private updateGlobalSummary(): void {
-        const buildingEntities = entityManager.getEntitiesWith(['Building']);
         const resEntities = entityManager.getEntitiesWith(['Resource']);
         const villageEntities = entityManager.getEntitiesWith(['Village', 'GridPosition']);
         
-        // Aggregate Resources
         let totalRes = { suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0, pessoal: 0 };
         resEntities.forEach(id => {
             const r = entityManager.getComponent<any>(id, 'Resource');
@@ -151,29 +97,12 @@ class GameStateService {
             }
         });
 
-        // List Villages
         const villageList = villageEntities.map(id => {
             const v = entityManager.getComponent<any>(id, 'Village');
             const p = entityManager.getComponent<any>(id, 'GridPosition');
             return { id, name: v?.name || 'OUTPOST', x: p?.x || 0, y: p?.y || 0 };
         });
-        
-        // Gather and Hydrate Buildings (Include Level 0)
-        const existingBuildings = buildingEntities.map(id => {
-            const b = entityManager.getComponent<any>(id, 'Building');
-            return { type: b?.buildingType || 'STRUCTURE', level: b?.level || 1, id };
-        });
 
-        const hydratedBuildings = Object.values(buildingConfigs).map(def => {
-            const existing = existingBuildings.find(eb => eb.type.toLowerCase() === def.id.toLowerCase());
-            return {
-                type: def.id,
-                level: existing ? existing.level : 0,
-                id: existing ? existing.id : -(Math.random() * 1000)
-            };
-        });
-
-        // Bake World Map Bases
         const worldMapBases = villageEntities.map(id => {
             const v = entityManager.getComponent<any>(id, 'Village');
             const p = entityManager.getComponent<any>(id, 'GridPosition');
@@ -189,16 +118,12 @@ class GameStateService {
             };
         });
 
-        const rebelCount = worldMapBases.filter(b => !b.ownerId).length;
-
-        // Ensure defaults and update
         this.globalState = {
             player: this.globalState?.player ?? { name: 'OPERATIVE', id: 1 },
             villages: villageList,
             resources: totalRes,
-            buildings: hydratedBuildings,
             worldMapBases,
-            rebelCount
+            rebelCount: worldMapBases.filter(b => !b.ownerId).length
         };
     }
 

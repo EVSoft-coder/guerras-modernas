@@ -26,9 +26,9 @@ export function VillageDashboard({
     // 1. DATA PROJECTOR (Business logic moved to GameStateService)
     const base = React.useMemo(() => ({
         ...initialBase,
-        edificios: globalState.buildings as any[],
+        edificios: initialBase.edificios as any[],
         recursos: { ...initialBase.recursos, ...globalState.resources }
-    }), [initialBase, globalState.buildings, globalState.resources]);
+    }), [initialBase, globalState.resources]);
 
     // Use logic villages from ECS instead of backend props for switcher
     const displayBases = globalState.worldMapBases.length > 0 
