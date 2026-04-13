@@ -211,9 +211,10 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                 Array.from({ length: 20 }).map((_, x) => {
                                     const baseAt = visibleBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
                                     const isSelected = selectedSector?.x === x && selectedSector?.y === y;
+                                    
+                                    const isPlayer = baseAt?.jogador_id === playerBase?.jogador_id;
                                     const isRebel = baseAt && !baseAt.jogador_id;
                                     const isEnemy = baseAt && baseAt.jogador_id && baseAt.jogador_id !== playerBase?.jogador_id;
-                                    const isPlayerBase = baseAt && baseAt.jogador_id === playerBase?.jogador_id;
 
                                     return (
                                         <Tooltip key={`${x}-${y}`}>
@@ -221,7 +222,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                 <div 
                                                     className={`absolute border border-white/[0.05] transition-all cursor-crosshair group flex items-center justify-center
                                                         ${isSelected ? 'border-sky-500 z-10 bg-sky-500/10 shadow-[0_0_30px_rgba(14,165,233,0.4)] ring-2 ring-sky-500/50' : 'hover:bg-white/5'}
-                                                        ${isPlayerBase ? 'bg-sky-500/10 border-sky-500/20' : ''}
+                                                        ${isPlayer ? 'bg-sky-500/10 border-sky-500/20' : ''}
                                                         ${isEnemy ? 'bg-red-500/10 border-red-500/20' : ''}
                                                         ${isRebel ? 'bg-amber-500/10 border-amber-500/20' : ''}
                                                     `}
@@ -232,7 +233,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                         {x.toString().padStart(2, '0')}:{y.toString().padStart(2, '0')}
                                                     </span>
 
-                                                    {baseAt && (
+                                                    {baseAt && (isPlayer || isRebel || isEnemy) && (
                                                         <motion.div 
                                                             animate={isSelected ? { scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] } : {}}
                                                             transition={{ repeat: Infinity, duration: 3 }}
