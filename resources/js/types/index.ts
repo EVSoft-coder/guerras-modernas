@@ -51,6 +51,7 @@ export interface Recurso {
     pessoal: number;
     metal: number;
     energia: number;
+    cap: number;
     updated_at: string;
 }
 

@@ -15,7 +15,8 @@ export const ResourceBar: React.FC<ResourceBarProps> = ({ recursos, taxasPerSeco
         municoes: recursos?.municoes ?? 0,
         pessoal: recursos?.pessoal ?? 0,
         metal: recursos?.metal ?? 0,
-        energia: recursos?.energia ?? 0
+        energia: recursos?.energia ?? 0,
+        cap: recursos?.cap ?? 10000
     });
 
     useEffect(() => {
