@@ -42,8 +42,11 @@ export function VillageDashboard({
         return {
             ...initialBase,
             edificios: [...currentEdificios, ...missingBuildings],
-            // Override resources with real-time ECS data
-            recursos: globalState.resources || initialBase.recursos
+            // Merge resources: DB fields (id, base_id, cap) + ECS real-time updates
+            recursos: {
+                ...initialBase.recursos,
+                ...(globalState.resources || {})
+            }
         };
     }, [initialBase, globalState.resources]);
 
