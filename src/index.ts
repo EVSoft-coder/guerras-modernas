@@ -148,6 +148,7 @@ rebelCoords.forEach((coord, index) => {
     ));
     entityManager.addComponent(rebelVillage, new ResourceComponent(1000, 1000, 1000, 1000, 1000, 20, 5000));
     entityManager.addComponent(rebelVillage, new GridPositionComponent(coord.x, coord.y));
+    entityManager.addComponent(rebelVillage, new PositionComponent(coord.x * 80, coord.y * 80));
     entityManager.addComponent(rebelVillage, {
         type: "Renderable",
         renderType: "building"

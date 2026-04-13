@@ -4,6 +4,7 @@ import { GameSystem } from './types';
 import { VillageComponent } from '../components/VillageComponent';
 import { GridPositionComponent } from '../components/GridPositionComponent';
 import { ArmyComponent } from '../components/ArmyComponent';
+import { PositionComponent } from '../components/Position';
 
 export class RebelGeneratorSystem implements GameSystem {
     private lastSpawnTime: number = 0;
@@ -42,6 +43,7 @@ export class RebelGeneratorSystem implements GameSystem {
         const units: Record<string, number> = { 'infantaria': 150, 'blindado_apc': 10 };
         entityManager.addComponent(rebelId, new ArmyComponent(0, units));
         entityManager.addComponent(rebelId, new GridPositionComponent(x, y));
+        entityManager.addComponent(rebelId, new PositionComponent(x * 80, y * 80));
         
         console.log(`[DEBUG] MANUAL REBEL CREATED: Entity ${rebelId} at ${x}:${y}.`);
     }
@@ -193,6 +195,7 @@ export class RebelGeneratorSystem implements GameSystem {
 
         entityManager.addComponent(rebelId, new ArmyComponent(0, units));
         entityManager.addComponent(rebelId, new GridPositionComponent(coords.x, coords.y));
+        entityManager.addComponent(rebelId, new PositionComponent(coords.x * 80, coords.y * 80));
         
         console.log(`[REBEL] NEW INSURRECTION: Entity ${rebelId} spawned at ${coords.x}:${coords.y}.`);
     }
