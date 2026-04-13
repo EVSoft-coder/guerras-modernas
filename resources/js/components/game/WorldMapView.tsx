@@ -149,8 +149,28 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     };
 
     const debugRebels = [
-        { id: 9991, coordenada_x: (playerBase?.coordenada_x || center.x) + 2, coordenada_y: (playerBase?.coordenada_y || center.y) + 2, jogador_id: null, nome: 'REBELDE_A' },
-        { id: 9992, coordenada_x: (playerBase?.coordenada_x || center.x) - 2, coordenada_y: (playerBase?.coordenada_y || center.y) - 1, jogador_id: null, nome: 'REBELDE_B' }
+        { 
+            id: 9991, 
+            coordenada_x: (playerBase?.coordenada_x || center.x) + 2, 
+            coordenada_y: (playerBase?.coordenada_y || center.y) + 2, 
+            jogador_id: null, 
+            nome: 'REBELDE_A',
+            is_protected: false,
+            protection_until: undefined,
+            loyalty: 100,
+            jogador: undefined
+        },
+        { 
+            id: 9992, 
+            coordenada_x: (playerBase?.coordenada_x || center.x) - 2, 
+            coordenada_y: (playerBase?.coordenada_y || center.y) - 1, 
+            jogador_id: null, 
+            nome: 'REBELDE_B',
+            is_protected: false,
+            protection_until: undefined,
+            loyalty: 100,
+            jogador: undefined
+        }
     ];
 
     const allBases = [...visibleBases, ...debugRebels];
