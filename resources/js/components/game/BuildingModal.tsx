@@ -209,9 +209,9 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                 </button>
                                 <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
                                 
-                                <Badge className="absolute top-6 left-6 bg-sky-500/10 text-sky-400 border-sky-500/20 font-black px-4 py-1.5 rounded-full text-[10px] tracking-widest uppercase flex items-center gap-2 shadow-2xl">
-                                    <span className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></span>
-                                    STATUS: OPERACIONAL
+                                <Badge className={`absolute top-6 left-6 ${building.nivel === 0 ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-sky-500/10 text-sky-400 border-sky-500/20'} font-black px-4 py-1.5 rounded-full text-[10px] tracking-widest uppercase flex items-center gap-2 shadow-2xl`}>
+                                    <span className={`w-1.5 h-1.5 ${building.nivel === 0 ? 'bg-orange-400' : 'bg-sky-400'} rounded-full animate-pulse`}></span>
+                                    {building.nivel === 0 ? 'STATUS: EM PLANEAMENTO' : 'STATUS: OPERACIONAL'}
                                 </Badge>
 
                                 <motion.div
@@ -283,7 +283,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                             <div className="bg-sky-600/10 p-3 md:p-4 rounded-xl md:rounded-2xl border border-sky-500/30 space-y-1">
                                                 <span className="text-[8px] md:text-[9px] font-black text-sky-400 uppercase tracking-widest">Nível Seguinte</span>
                                                 <div className="text-sm md:text-xl font-mono font-black text-sky-400 flex items-center gap-1">
-                                                    <TrendingUp size={14} md:size={16} /> {nextBonus?.toLocaleString()}/h
+                                                    <TrendingUp className="w-3.5 h-3.5 md:w-4 md:h-4" /> {nextBonus?.toLocaleString()}/h
                                                 </div>
                                             </div>
                                         </div>
@@ -308,7 +308,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                             <div className="space-y-4">
                                                 <div className="flex items-center justify-between border-b border-white/10 pb-2">
                                                     <h4 className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
-                                                        <Shield size={10} md:size={12} className="text-sky-500" /> Mobilização de Tropas
+                                                        <Shield className="w-2.5 h-2.5 md:w-3 md:h-3 text-sky-500" /> Mobilização de Tropas
                                                     </h4>
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-2">
@@ -348,7 +348,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                                         <Hammer size={10} md:size={12} className="text-orange-500" /> Logística de Campanha
                                                     </h4>
                                                     <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black text-orange-500 uppercase font-mono">
-                                                        <Clock size={10} md:size={12} /> {timeFormatted}
+                                                        <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" /> {timeFormatted}
                                                     </div>
                                                 </div>
                                                 <div className="grid grid-cols-1 gap-2 md:gap-3">
@@ -365,16 +365,22 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                         disabled={isUpgrading || !canAfford}
                                         className={`w-full font-black uppercase tracking-[0.15em] md:tracking-[0.2em] py-6 md:py-8 rounded-xl md:rounded-2xl flex items-center justify-center gap-2 md:gap-3 group transition-all shadow-2xl ${
                                             canAfford 
-                                                ? 'bg-sky-600 hover:bg-sky-500 text-white border-t border-white/20 shadow-sky-900/40' 
+                                                ? (building.nivel === 0 ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-t border-white/20 shadow-emerald-900/40' : 'bg-sky-600 hover:bg-sky-500 text-white border-t border-white/20 shadow-sky-900/40') 
                                                 : 'bg-neutral-800 text-neutral-500 cursor-not-allowed border-none'
                                         }`}
                                     >
                                         <span className="text-base md:text-xl group-hover:translate-x-1 transition-transform flex items-center gap-2">
                                             {isUpgrading && <Loader2 size={20} className="animate-spin" />}
-                                            {isUpgrading ? 'AUTORIZANDO...' : (canAfford ? 'MELHORAR ESTRUTURA' : 'RECURSOS INSUFICIENTES')}
+                                            {isUpgrading 
+                                                ? 'AUTORIZANDO...' 
+                                                : (canAfford 
+                                                    ? (building.nivel === 0 ? 'CONSTRUIR' : 'MELHORAR ESTRUTURA') 
+                                                    : 'RECURSOS INSUFICIENTES'
+                                                  )
+                                            }
                                         </span>
-                                        {!isUpgrading && canAfford && <ChevronRight className="group-hover:translate-x-2 transition-transform" size={16} md:size={20} />}
-                                        {!canAfford && !isUpgrading && <AlertTriangle size={16} />}
+                                        {!isUpgrading && canAfford && <ChevronRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" />}
+                                        {!canAfford && !isUpgrading && <AlertTriangle className="w-4 h-4 md:w-5 md:h-5" />}
                                     </Button>
                                 </DialogFooter>
                             </div>
