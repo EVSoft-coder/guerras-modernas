@@ -170,6 +170,13 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
         });
     };
 
+    const debugRebels = [
+        { id: 9991, coordenada_x: (playerBase?.coordenada_x || 500) + 2, coordenada_y: (playerBase?.coordenada_y || 500) + 2, jogador_id: null, nome: 'REBELDE' },
+        { id: 9992, coordenada_x: (playerBase?.coordenada_x || 500) - 2, coordenada_y: (playerBase?.coordenada_y || 500) - 1, jogador_id: null, nome: 'REBELDE' }
+    ] as BaseMap[];
+
+    const allBases = [...visibleBases, ...debugRebels];
+
     return (
         <div className="flex flex-col lg:flex-row gap-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-700 h-full overflow-hidden">
             <div className="flex-1 bg-neutral-950 rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative h-[700px]">
@@ -215,7 +222,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                 const y = center.y - 10 + iy;
                                 return Array.from({ length: 20 }).map((_, ix) => {
                                     const x = center.x - 10 + ix;
-                                    const baseAt = visibleBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
+                                    const baseAt = allBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
                                     const isSelected = selectedSector?.x === x && selectedSector?.y === y;
                                     
                                     const isPlayer = baseAt?.jogador_id === playerBase?.jogador_id;
