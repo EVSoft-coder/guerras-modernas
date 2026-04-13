@@ -69,6 +69,28 @@ class AuthController extends Controller
             $taxas = $this->gameService->obterTaxasProducao($base);
         }
  
+        // 5. Garantir Subsistência Rebelde (Mínimo 5)
+        try {
+            $rebelCount = \App\Models\Base::whereNull('jogador_id')->count();
+            if ($rebelCount < 5) {
+                for ($i = $rebelCount; $i < 5; $i++) {
+                    $rebel = \App\Models\Base::create([
+                        'jogador_id' => null,
+                        'nome' => 'Reduto Insurgente ' . chr(65 + $i),
+                        'coordenada_x' => rand(1, 19), // Coordenadas próximas do jogador no mapa 20x20
+                        'coordenada_y' => rand(1, 19),
+                        'qg_nivel' => rand(1, 5),
+                        'muralha_nivel' => rand(1, 3),
+                    ]);
+                    $rebel->recursos()->create([
+                        'suprimentos' => 5000, 'combustivel' => 5000, 'municoes' => 5000, 'pessoal' => 1000,
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error("Falha na mobilização insurgente: " . $e->getMessage());
+        }
+
         return Inertia::render('dashboard', [
             'jogador' => $jogador,
             'base' => $base,
@@ -87,7 +109,8 @@ class AuthController extends Controller
                 'movements' => [
                     'sent' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get() ?? [],
                     'received' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get() ?? [],
-                ]
+                ],
+                'rebels' => \App\Models\Base::whereNull('jogador_id')->get() ?? [],
             ]
         ]);
     }
