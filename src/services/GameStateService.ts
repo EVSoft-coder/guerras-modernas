@@ -13,7 +13,10 @@ export interface EntitySnapshot {
     y: number;
     sprite?: string;
     health?: { current: number; max: number };
+    name?: string;
     loyalty?: number;
+    isProtected?: boolean;
+    protectionUntil?: number;
     isSelected?: boolean;
     status?: "going" | "returning" | "completed";
     ownerId?: number | null;
@@ -95,9 +98,12 @@ class GameStateService {
                 sprite: sprite?.imagePath,
                 health: health ? { current: health.value, max: health.max } : undefined,
                 loyalty: village ? village.loyalty : undefined,
+                isProtected: village ? village.isProtected : undefined,
+                protectionUntil: village ? village.protectionUntil : undefined,
                 isSelected: !!selection,
                 status: march?.status,
                 ownerId: village?.ownerId ?? army?.ownerId ?? march?.ownerId ?? (player ? id : undefined),
+                name: village?.name || building?.name || (army ? `Task Force ${id}` : undefined),
                 resources: res ? { 
                     suprimentos: res.suprimentos, 
                     combustivel: res.combustivel, 

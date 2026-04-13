@@ -14,13 +14,16 @@ import { gameStateService } from '@src/services/GameStateService';
 import { eventBus, Events } from '@src/core/EventBus';
 import { WorldMapView } from '@/components/game/WorldMapView';
 
-import { GLOBAL_BUILDINGS } from '@src/game/config/buildings';
+import { useGameEntities } from '@/hooks/use-game-entities';
 
 export function VillageDashboard({ 
-    jogador, base: initialBase, bases = [], taxasPerSecond, gameConfig, 
+    jogador, base: initialBase, bases: backendBases = [], taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal 
 }: DashboardProps & { bases: any[] }) {
-    // 1. HIDRATAÇÃO DE ESTADO: Garantir que todos os edifícios do registry existem (Nível 0 se ausentes)
+    // 0. ECS ENGINE INTEGRATION
+    const { globalState } = useGameEntities();
+
+    // 1. HIDRATAÇÃO DE ESTADO... (manter lógica de hidratação mas usar recursos do ECS)
     const base = React.useMemo(() => {
         if (!initialBase) return initialBase;
         
@@ -37,9 +40,15 @@ export function VillageDashboard({
 
         return {
             ...initialBase,
-            edificios: [...currentEdificios, ...missingBuildings]
+            edificios: [...currentEdificios, ...missingBuildings],
+            // Override resources with real-time ECS data
+            recursos: globalState.resources || initialBase.recursos
         };
-    }, [initialBase]);
+    }, [initialBase, globalState.resources]);
+
+    // Use logic villages from ECS instead of backend props for switcher
+    const ecsVillages = globalState.villages || [];
+    const displayBases = ecsVillages.length > 0 ? ecsVillages : backendBases;
 
     const { addToast } = useToasts();
     const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
@@ -142,9 +151,9 @@ export function VillageDashboard({
                                 <Target className="text-orange-500 animate-pulse" size={28} />
                                 CENTRAL: {base?.nome ?? 'Desconhecido'}
                                 
-                                {bases.length > 1 && (
+                                {displayBases.length > 1 && (
                                     <div className="flex gap-2 ml-4 self-center">
-                                        {bases.map(b => (
+                                        {displayBases.map(b => (
                                             <button 
                                                 key={b.id}
                                                 onClick={() => b.id !== base.id && router.get(`/base/switch/${b.id}`)}
@@ -153,7 +162,7 @@ export function VillageDashboard({
                                                     ${b.id === base.id ? 'bg-orange-500 border-orange-400 text-black shadow-[0_0_15px_rgba(249,115,22,0.4)]' : 'bg-black/40 border-white/10 text-neutral-500 hover:border-white/30 hover:text-white'}
                                                 `}
                                             >
-                                                {b.nome}
+                                                {b.nome || b.name}
                                             </button>
                                         ))}
                                     </div>
@@ -161,7 +170,7 @@ export function VillageDashboard({
                             </h2>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">Sistemas On-line / Comando {bases.length > 1 ? 'Múltiplo' : 'Único'} Ativo</span>
+                                <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">Sistemas On-line / Comando {displayBases.length > 1 ? 'Múltiplo' : 'Único'} Ativo</span>
                             </div>
                          </div>
                          <div className="text-[10px] text-neutral-700 font-mono bg-white/5 px-3 py-1 rounded-full border border-white/5">

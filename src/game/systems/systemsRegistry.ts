@@ -20,6 +20,7 @@ import { renderSystem } from './RenderSystem';
 import { RebelGeneratorSystem } from './RebelGeneratorSystem';
 import { syncSystem } from './SyncSystem';
 import { IntelSystem } from './IntelSystem';
+import { worldMapSyncSystem } from './WorldMapSyncSystem';
 import { systemIntegrityCheck } from './SystemIntegrityCheck';
 
 const intelSystem = new IntelSystem();
@@ -48,5 +49,6 @@ export const systemsRegistry: ReadonlyArray<GameSystem> = [
     visionSystem,
     new ResearchSystem(),
     renderSystem,
+    worldMapSyncSystem,
     syncSystem
 ];

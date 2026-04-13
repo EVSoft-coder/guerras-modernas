@@ -3,7 +3,6 @@ import { Map as MapIcon, Target, Search, Crosshair, Navigation, Shield, User, Za
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import axios from 'axios';
 import { AttackModal } from './AttackModal';
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
@@ -37,8 +36,7 @@ interface WorldMapViewProps {
 
 export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapViewProps) {
     const [center, setCenter] = useState({ x: playerBase?.coordenada_x || 500, y: playerBase?.coordenada_y || 500 });
-    const [loading, setLoading] = useState(false);
-    const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: BaseMap } | null>(null);
+    const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: any } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
     const [isAttackModalOpen, setIsAttackModalOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
@@ -50,46 +48,15 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     }, [gameEntities, selectedUnit]);
 
     const handleWheel = (e: React.WheelEvent) => {
-        // Zoom fluido e centrado
         e.preventDefault();
         const delta = e.deltaY > 0 ? -0.05 : 0.05;
         setZoom(prev => Math.min(Math.max(prev + delta, 0.4), 2.5));
     };
 
-    const CHUNK_SIZE = 50;
-    const [loadedChunks, setLoadedChunks] = useState<Record<string, BaseMap[]>>({});
+    // TACTICAL REMOVAL: Chunk loading logic removed in favor of direct ECS Observation
     
-    const fetchChunkData = async (cx: number, cy: number) => {
-        const key = `${cx}-${cy}`;
-        if (loadedChunks[key] || loading) return;
-
-        setLoading(true);
-        try {
-            const response = await axios.get(`/api/mapa/chunk/${cx}/${cy}`);
-            setLoadedChunks(prev => ({ ...prev, [key]: response.data.bases }));
-        } catch (error) {
-            console.error("Erro ao carregar mapa tático:", error);
-            toast.error("Falha na sincronização de satélite.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        const chunkX = Math.floor(center.x / CHUNK_SIZE);
-        const chunkY = Math.floor(center.y / CHUNK_SIZE);
-        fetchChunkData(chunkX, chunkY);
-        
-        const neighbors = [[-1,0],[1,0],[0,-1],[0,1]];
-        neighbors.forEach(([dx, dy]) => {
-            const nx = chunkX + dx;
-            const ny = chunkY + dy;
-            if (nx >= 0 && nx < 20 && ny >= 0 && ny < 20) {
-                fetchChunkData(nx, ny);
-            }
-        });
-
-        // 3. LISTENERS DE FEEDBACK (RADAR TÁCTICO)
+        // RADAR TÁCTICO: Listeners de eventos de combate continuam activos via EventBus
         if ((window as any).eventBus) {
             const eb = (window as any).eventBus;
             
@@ -120,9 +87,20 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
         }
     }, [center]);
 
+    // SINGLE SOURCE OF TRUTH: All villages come from Entity Component System
     const visibleBases = useMemo(() => {
-        return Object.values(loadedChunks).flat();
-    }, [loadedChunks]);
+        return gameEntities.filter(e => e.type === 'VILLAGE' || e.type === 'village').map(e => ({
+            id: e.id,
+            nome: e.name || 'Setor Hostil',
+            coordenada_x: e.x,
+            coordenada_y: e.y,
+            loyalty: e.loyalty,
+            jogador_id: e.ownerId,
+            is_protected: e.isProtected,
+            protection_until: e.protectionUntil ? new Date(e.protectionUntil).toISOString() : undefined,
+            jogador: e.ownerId ? { id: e.ownerId, username: e.ownerId === playerBase?.jogador_id ? 'VOCÊ' : `COMANDANTE_${e.ownerId}` } : undefined
+        }));
+    }, [gameEntities, playerBase]);
 
     const rebelBasesCount = useMemo(() => {
         return visibleBases.filter(b => !b.jogador_id).length;
@@ -171,9 +149,9 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     };
 
     const debugRebels = [
-        { id: 9991, coordenada_x: (playerBase?.coordenada_x || 500) + 2, coordenada_y: (playerBase?.coordenada_y || 500) + 2, jogador_id: null, nome: 'REBELDE' },
-        { id: 9992, coordenada_x: (playerBase?.coordenada_x || 500) - 2, coordenada_y: (playerBase?.coordenada_y || 500) - 1, jogador_id: null, nome: 'REBELDE' }
-    ] as BaseMap[];
+        { id: 9991, coordenada_x: (playerBase?.coordenada_x || center.x) + 2, coordenada_y: (playerBase?.coordenada_y || center.y) + 2, jogador_id: null, nome: 'REBELDE_A' },
+        { id: 9992, coordenada_x: (playerBase?.coordenada_x || center.x) - 2, coordenada_y: (playerBase?.coordenada_y || center.y) - 1, jogador_id: null, nome: 'REBELDE_B' }
+    ];
 
     const allBases = [...visibleBases, ...debugRebels];
 
