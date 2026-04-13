@@ -12,16 +12,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Update edificios table
-        DB::table('edificios')
-            ->where('tipo', 'complexo_residencial')
-            ->update(['tipo' => 'housing']);
+        // 1. Atualizar Tabela 'edificios'
+        if (Schema::hasTable('edificios')) {
+            DB::table('edificios')
+                ->where('tipo', 'complexo_residencial')
+                ->update(['tipo' => 'housing']);
+        }
 
-        // Update construcaos table
-        if (Schema::hasTable('construcaos')) {
-            DB::table('construcaos')
-                ->where('edificio_tipo', 'complexo_residencial')
-                ->update(['edificio_tipo' => 'housing']);
+        // 2. Atualizar Tabela de Construções (construcoes ou construcaos)
+        $table = Schema::hasTable('construcoes') ? 'construcoes' : (Schema::hasTable('construcaos') ? 'construcaos' : null);
+        if ($table) {
+            $column = Schema::hasColumn($table, 'edificio_tipo') ? 'edificio_tipo' : (Schema::hasColumn($table, 'tipo') ? 'tipo' : null);
+            if ($column) {
+                DB::table($table)
+                    ->where($column, 'complexo_residencial')
+                    ->update([$column => 'housing']);
+            }
         }
     }
 
@@ -30,14 +36,20 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('edificios')
-            ->where('tipo', 'housing')
-            ->update(['tipo' => 'complexo_residencial']);
+        if (Schema::hasTable('edificios')) {
+            DB::table('edificios')
+                ->where('tipo', 'housing')
+                ->update(['tipo' => 'complexo_residencial']);
+        }
 
-        if (Schema::hasTable('construcaos')) {
-            DB::table('construcaos')
-                ->where('edificio_tipo', 'housing')
-                ->update(['edificio_tipo' => 'complexo_residencial']);
+        $table = Schema::hasTable('construcoes') ? 'construcoes' : (Schema::hasTable('construcaos') ? 'construcaos' : null);
+        if ($table) {
+            $column = Schema::hasColumn($table, 'edificio_tipo') ? 'edificio_tipo' : (Schema::hasColumn($table, 'tipo') ? 'tipo' : null);
+            if ($column) {
+                DB::table($table)
+                    ->where($column, 'housing')
+                    ->update([$column => 'complexo_residencial']);
+            }
         }
     }
 };
