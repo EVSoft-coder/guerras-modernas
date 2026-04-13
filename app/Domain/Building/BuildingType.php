@@ -17,6 +17,8 @@ class BuildingType
     const PARLAMENTO = 'parlamento';
     const FACTORY = 'factory';
     const SOLAR = 'solar';
+    const MINA_METAL = 'factory'; 
+    const CENTRAL_ENERGIA = 'solar';
  
     /**
      * Aliases para compatibilidade com nomes legados ou front-end.
@@ -44,6 +46,10 @@ class BuildingType
             'fabrica' => self::FACTORY,
             'solar' => self::SOLAR,
             'planta_solar' => self::SOLAR,
+            'minametal' => self::FACTORY,
+            'mina_metal' => self::FACTORY,
+            'centralenergia' => self::SOLAR,
+            'central_energia' => self::SOLAR,
         ];
  
         $cleaned = strtolower(str_replace([' ', '_', '-'], '', $type));
@@ -55,7 +61,8 @@ class BuildingType
         return [
             self::QG, self::MURALHA, self::MINA_SUPRIMENTOS, self::REFINARIA,
             self::FABRICA_MUNICOES, self::POSTO_RECRUTAMENTO, self::QUARTEL,
-            self::AERODROMO, self::RADAR_ESTRATEGICO, self::CENTRO_PESQUISA
+            self::AERODROMO, self::RADAR_ESTRATEGICO, self::CENTRO_PESQUISA,
+            self::PARLAMENTO, self::FACTORY, self::SOLAR
         ];
     }
 }

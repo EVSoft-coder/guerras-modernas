@@ -61,7 +61,7 @@ class GameService
      * LOGICA DE CONSTRUÇÃO
      * Valida recursos e inicia o upgrade de um edifício.
      */
-    public function iniciarUpgrade(Base $base, string $tipoRaw): Construcao
+    public function iniciarUpgrade(Base $base, string $tipoRaw): ?Construcao
     {
         $tipo = BuildingType::normalize($tipoRaw);
         $nivelAtual = $this->obterNivelEdificio($base, $tipo);
@@ -72,6 +72,23 @@ class GameService
         return DB::transaction(function() use ($base, $tipo, $custos, $tempo, $nivelAtual) {
             if (!$this->consumirRecursos($base, $custos)) {
                 throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
+            }
+
+            // Se for nível 0, criamos imediatamente com nível 1 (Doutrina de Fundação Instantânea)
+            if ($nivelAtual === 0) {
+                if ($tipo === BuildingType::QG) {
+                    $base->increment('qg_nivel');
+                } elseif ($tipo === BuildingType::MURALHA) {
+                    $base->increment('muralha_nivel');
+                } else {
+                    $base->edificios()->updateOrCreate(
+                        ['tipo' => $tipo],
+                        ['nivel' => 1]
+                    );
+                }
+                
+                broadcast(new \App\Events\BaseUpdated($base))->toOthers();
+                return null;
             }
 
             return Construcao::create([
