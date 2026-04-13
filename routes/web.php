@@ -79,6 +79,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/manual', [ManualController::class, 'index'])->name('manual');
     Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
     
+    Route::post('/buildings/upgrade', [BaseController::class, 'upgrade'])->name('buildings.upgrade');
+    
     // Gestão de Base
     Route::prefix('base')->name('base.')->group(function () {
         Route::get('/switch/{id}', [BaseController::class, 'switchBase'])->name('switch');

@@ -33,7 +33,7 @@ export class SyncSystem implements GameSystem {
     private async handleBuildingUpgrade(data: any): Promise<void> {
         try {
             console.log('[ACTION] Authorizing Building Upgrade...', data);
-            const response = await fetch('/base/upgrade', {
+            const response = await fetch('/buildings/upgrade', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -43,10 +43,17 @@ export class SyncSystem implements GameSystem {
                 body: JSON.stringify({ base_id: data.base_id, tipo: data.tipo })
             });
 
+            console.log("UPGRADE RESPONSE:", response);
+
             if (!response.ok) {
                 const errData = await response.json();
                 throw new Error(errData.message || 'Operation Denied');
             }
+            
+            // Garantir que a UI reflete a nova fila de construção
+            const { router } = await import('@inertiajs/react');
+            router.reload();
+
             console.log('[ACTION] Structural upgrade authorized by Central Command.');
         } catch (err) {
             console.error('[ACTION_FAILURE] Building upgrade aborted:', err);
