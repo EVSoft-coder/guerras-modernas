@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { useGameEntities } from '@/hooks/use-game-entities';
 import { StrategyHUD } from './StrategyHUD';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { eventBus, Events } from '@src/core/EventBus';
 
 interface BaseMap {
     id: number;
