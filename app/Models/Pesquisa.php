@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Pesquisa extends Model
 {
     use HasFactory;
+    protected $appends = ['ownerId'];
 
     protected $fillable = [
-        'ownerId',
+        'jogador_id',
         'tipo',
         'nivel',
         'completado_em'
@@ -23,5 +24,10 @@ class Pesquisa extends Model
     public function jogador()
     {
         return $this->belongsTo(Jogador::class);
+    }
+
+    public function getOwnerIdAttribute()
+    {
+        return $this->attributes['jogador_id'] ?? null;
     }
 }

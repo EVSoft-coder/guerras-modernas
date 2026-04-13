@@ -29,7 +29,7 @@ class PesquisaController extends Controller
         $base = Base::findOrFail($request->base_id);
         $jogador = Auth::user();
         
-        if ($base->ownerId !== $jogador->id) abort(403);
+        if ($base->jogador_id !== $jogador->id) abort(403);
  
         try {
             $this->researchService->pesquisar($jogador, $base, $request->tech);

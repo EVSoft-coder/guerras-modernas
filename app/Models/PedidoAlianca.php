@@ -7,20 +7,26 @@ use Illuminate\Database\Eloquent\Model;
 class PedidoAlianca extends Model
 {
     protected $table = 'pedido_aliancas';
+    protected $appends = ['ownerId'];
 
     protected $fillable = [
-        'ownerId',
+        'jogador_id',
         'alianca_id',
         'status',
     ];
 
     public function jogador()
     {
-        return $this->belongsTo(Jogador::class, 'ownerId');
+        return $this->belongsTo(Jogador::class, 'jogador_id');
     }
 
     public function alianca()
     {
         return $this->belongsTo(Alianca::class, 'alianca_id');
+    }
+
+    public function getOwnerIdAttribute()
+    {
+        return $this->attributes['jogador_id'] ?? null;
     }
 }

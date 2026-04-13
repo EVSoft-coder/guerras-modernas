@@ -136,8 +136,8 @@
                     <!-- ÁREA DE MENSAGENS -->
                     <div id="chatFeed" class="p-4" style="height: 450px; overflow-y: auto; background: rgba(0,0,0,0.2);">
                         @forelse($mensagens as $msg)
-                            <div class="mb-4 d-flex {{ $msg->ownerId === Auth::id() ? 'justify-content-end' : 'justify-content-start' }}">
-                                <div class="p-3 rounded-4 shadow-sm border {{ $msg->ownerId === Auth::id() ? 'bg-info/10 border-info/30 text-end' : 'bg-white/5 border-white/10' }}" style="max-width: 70%;">
+                            <div class="mb-4 d-flex {{ $msg->jogador_id === Auth::id() ? 'justify-content-end' : 'justify-content-start' }}">
+                                <div class="p-3 rounded-4 shadow-sm border {{ $msg->jogador_id === Auth::id() ? 'bg-info/10 border-info/30 text-end' : 'bg-white/5 border-white/10' }}" style="max-width: 70%;">
                                     <div class="d-flex justify-content-between align-items-center mb-1 gap-3">
                                         <small class="fw-black text-info text-uppercase ls-1" style="font-size: 0.65rem;">{{ $msg->jogador->username }}</small>
                                         <small class="text-muted" style="font-size: 0.6rem;">{{ $msg->created_at->format('H:i') }}</small>
@@ -194,7 +194,7 @@
                 if (messages.length > 0) {
                     const feed = document.getElementById('chatFeed');
                     messages.forEach(msg => {
-                        const isMe = msg.ownerId == {{ Auth::id() }};
+                        const isMe = msg.jogador_id == {{ Auth::id() }};
                         const row = document.createElement('div');
                         row.className = `mb-4 d-flex ${isMe ? 'justify-content-end' : 'justify-content-start'}`;
                         row.innerHTML = `

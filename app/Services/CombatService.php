@@ -73,10 +73,13 @@ class CombatService
             // Caso de Sector Vazio (sem base)
             if (!$destino) {
                 Relatorio::create([
-                    'atacante_id' => $origem->ownerId,
+                    'atacante_id' => $origem->jogador_id,
                     'defensor_id' => null,
-                    'vitoria' => true,
-                    'dados' => [
+                    'vencedor_id' => $origem->jogador_id,
+                    'titulo' => "Exploração de Sector Vazio",
+                    'origem_nome' => $origem->nome,
+                    'destino_nome' => "[{$ataque->destino_x}:{$ataque->destino_y}]",
+                    'detalhes' => [
                         'message' => "Sector [{$ataque->destino_x}:{$ataque->destino_y}] desabitado. Sem resistência encontrada.",
                         'perdas_atacante' => [],
                         'saque' => []
@@ -139,12 +142,15 @@ class CombatService
                 }
             }
 
-            // Gerar Relatório Tático
+            // Gerar Relatório Tático conforme DB Schema
             Relatorio::create([
-                'atacante_id' => $origem->ownerId,
-                'defensor_id' => $destino->ownerId,
-                'vitoria' => $vitoria,
-                'dados' => [
+                'atacante_id' => $origem->jogador_id,
+                'defensor_id' => $destino->jogador_id,
+                'vencedor_id' => $vitoria ? $origem->jogador_id : $destino->jogador_id,
+                'titulo' => $vitoria ? "VITÓRIA: Missão em {$destino->nome}" : "DERROTA: Ataque Interceptado em {$destino->nome}",
+                'origem_nome' => $origem->nome,
+                'destino_nome' => $destino->nome,
+                'detalhes' => [
                     'tropa_ataque' => $ataque->tropas,
                     'tropa_defesa' => $destino->tropas->pluck('quantidade', 'unidade')->toArray(),
                     'perdas_atacante' => $perdasAtacanteTotal,

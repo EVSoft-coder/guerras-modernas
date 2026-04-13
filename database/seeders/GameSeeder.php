@@ -26,7 +26,7 @@ class GameSeeder extends Seeder
 
         // Criar Base Principal
         $base = Base::create([
-            'ownerId' => $jogador->id,
+            'jogador_id' => $jogador->id,
             'nome' => 'Fortaleza Alpha',
             'coordenada_x' => 500,
             'coordenada_y' => 500,

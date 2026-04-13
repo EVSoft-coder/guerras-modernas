@@ -30,7 +30,7 @@ class MapaController extends Controller
  
         $jogadorId = Auth::id();
         $selectedBaseId = session('selected_base_id');
-        $origemBase = Base::with('tropas')->find($selectedBaseId) ?? Base::where('ownerId', $jogadorId)->with('tropas')->first();
+        $origemBase = Base::with('tropas')->find($selectedBaseId) ?? Base::where('jogador_id', $jogadorId)->with('tropas')->first();
  
         return Inertia::render('mapa', [
             'bases' => $bases,
@@ -56,7 +56,7 @@ class MapaController extends Controller
         $bases = Base::with('jogador:id,username')
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
-            ->get(['id', 'ownerId', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel']);
+            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel']);
  
         return response()->json([
             'center' => ['x' => (int)$x, 'y' => (int)$y],
@@ -78,7 +78,7 @@ class MapaController extends Controller
         $bases = Base::with('jogador:id,username')
             ->whereBetween('coordenada_x', [$minX, $maxX])
             ->whereBetween('coordenada_y', [$minY, $maxY])
-            ->get(['id', 'ownerId', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel']);
+            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel']);
 
         return response()->json([
             'chunk' => ['x' => $cx, 'y' => $cy],

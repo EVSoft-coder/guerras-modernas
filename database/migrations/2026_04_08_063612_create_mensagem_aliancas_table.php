@@ -15,7 +15,7 @@ return new class extends Migration
             Schema::create('mensagem_aliancas', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('alianca_id')->constrained('aliancas')->onDelete('cascade');
-                $table->foreignId('ownerId')->constrained('jogadores')->onDelete('cascade');
+                $table->foreignId('jogador_id')->constrained('jogadores')->onDelete('cascade');
                 $table->text('mensagem');
                 $table->timestamps();
             });

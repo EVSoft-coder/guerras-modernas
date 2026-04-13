@@ -11,9 +11,10 @@ class Base extends Model
     use HasFactory, HasResources;
 
     protected $table = 'bases';
+    protected $appends = ['ownerId'];
 
     protected $fillable = [
-        'ownerId',
+        'jogador_id',
         'nome',
         'coordenada_x',
         'coordenada_y',
@@ -55,5 +56,11 @@ class Base extends Model
     public function treinos()
     {
         return $this->hasMany(Treino::class, 'base_id');
+    }
+
+    /* Mapeamento Táctico para ECS Interface */
+    public function getOwnerIdAttribute()
+    {
+        return $this->attributes['jogador_id'] ?? null;
     }
 }

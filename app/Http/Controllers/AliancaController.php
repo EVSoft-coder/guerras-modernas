@@ -16,7 +16,7 @@ class AliancaController extends Controller
         
         if (!$jogador->alianca) {
             $aliancas = Alianca::withCount('membros')->get();
-            $pedidoPendente = PedidoAlianca::where('ownerId', Auth::id())->where('status', 'pendente')->first();
+            $pedidoPendente = PedidoAlianca::where('jogador_id', Auth::id())->where('status', 'pendente')->first();
             return view('alianca.create', compact('aliancas', 'pedidoPendente'));
         }
 
@@ -57,12 +57,12 @@ class AliancaController extends Controller
             return redirect()->back()->withErrors(['error' => 'Já pertences a uma aliança.']);
         }
 
-        if (PedidoAlianca::where('ownerId', Auth::id())->where('status', 'pendente')->exists()) {
+        if (PedidoAlianca::where('jogador_id', Auth::id())->where('status', 'pendente')->exists()) {
             return redirect()->back()->withErrors(['error' => 'Já tens um pedido pendente.']);
         }
 
         PedidoAlianca::create([
-            'ownerId' => Auth::id(),
+            'jogador_id' => Auth::id(),
             'alianca_id' => $request->alianca_id,
             'status' => 'pendente'
         ]);
@@ -76,12 +76,12 @@ class AliancaController extends Controller
         if ($pedido->alianca->fundador_id !== Auth::id()) abort(403);
 
         if ($decisao === 'aprovar') {
-            $jogador = Jogador::find($pedido->ownerId);
+            $jogador = Jogador::find($pedido->jogador_id);
             $jogador->update(['alianca_id' => $pedido->alianca_id]);
             $pedido->update(['status' => 'aprovado']);
             
             // Limpar outros pedidos
-            PedidoAlianca::where('ownerId', $pedido->ownerId)->where('status', 'pendente')->delete();
+            PedidoAlianca::where('jogador_id', $pedido->jogador_id)->where('status', 'pendente')->delete();
         } else {
             $pedido->update(['status' => 'rejeitado']);
         }

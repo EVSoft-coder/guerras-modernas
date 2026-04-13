@@ -7,5 +7,5 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('base.{id}', function ($user, $id) {
-    return \App\Models\Base::where('id', $id)->where('ownerId', $user->id)->exists();
+    return \App\Models\Base::where('id', $id)->where('jogador_id', $user->id)->exists();
 });
