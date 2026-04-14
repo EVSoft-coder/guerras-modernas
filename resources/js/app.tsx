@@ -32,6 +32,7 @@ if (rootElement) {
     createInertiaApp({
         title: (title) => `${title} - ${appName}`,
         resolve: (name) => {
+            console.log('INERTIA LOAD:', name);
             const pages = import.meta.glob('./pages/**/*.tsx', { eager: true });
             return (pages[`./pages/${name}.tsx`] as any).default;
         },
