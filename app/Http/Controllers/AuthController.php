@@ -61,11 +61,7 @@ class AuthController extends Controller
         if (!$jogador) return redirect('/login');
  
         // 1. Obter Base Selecionada
-        $bases = $jogador->bases()->with('recursos', 'edificios', 'construcoes', 'treinos', 'tropas')->get()
-            ->map(function($b) {
-                $b->setAttribute('resources', $this->gameService->calculateResources($b));
-                return $b;
-            });
+        $bases = $jogador->bases()->with('recursos', 'edificios', 'construcoes', 'treinos', 'tropas')->get();
         $selectedBaseId = session('selected_base_id');
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
  
@@ -73,10 +69,6 @@ class AuthController extends Controller
             // 2. Orquestração via GameService (Centralizado)
             $this->gameService->atualizarRecursos($base);
             
-            // Força a atualização do timestamp para garantir sincronia absoluta no próximo tick do cliente
-            $base->ultimo_update = now();
-            $base->save();
-
             $this->gameService->processarFilas($base);
             
             // 3. Persistência de Sessão e Recarga Real
@@ -138,10 +130,11 @@ class AuthController extends Controller
                     'sent' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get() ?? [],
                     'received' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get() ?? [],
                 ],
-                'rebels' => Base::whereNull('jogador_id')->get()->map(function($b) {
-                    $b->setAttribute('resources', $this->gameService->calculateResources($b));
-                    return $b;
-                }) ?? [],
+                'rebels' => Base::whereNull('jogador_id')->with('recursos')->get()->map(function($b) {
+                    return array_merge($b->toArray(), [
+                        'calculated_resources' => $this->gameService->calculateResources($b),
+                    ]);
+                }),
             ]
         ]);
     }

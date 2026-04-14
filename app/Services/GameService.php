@@ -118,12 +118,11 @@ class GameService
         }
 
         // Atualizar timestamp na base (usar coluna que existe: ultimo_update)
+        // IMPORTANTE: Usar update() explícito para evitar guardar atributos computados (ex: 'resources')
+        DB::table('bases')->where('id', $base->id)->update([
+            'ultimo_update' => now(),
+        ]);
         $base->ultimo_update = now();
-        // Também atualizar last_update_at se a coluna existir
-        if (\Schema::hasColumn('bases', 'last_update_at')) {
-            $base->last_update_at = now();
-        }
-        $base->save();
     }
 
     public function obterTaxasProducao(Base $base): array
