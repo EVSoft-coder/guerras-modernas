@@ -58,14 +58,16 @@ export interface Recurso {
 export interface Edificio {
     id: number;
     base_id: number;
-    tipo: string;
+    tipo?: string; // deprecated
+    buildingType: string;
     nivel: number;
 }
 
 export interface FilaConstrucao {
     id: number;
     base_id: number;
-    edificio_tipo: string;
+    edificio_tipo?: string; // deprecated
+    buildingType: string;
     nivel_destino: number;
     completado_em: string;
     created_at: string;
