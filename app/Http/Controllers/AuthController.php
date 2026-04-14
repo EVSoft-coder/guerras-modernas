@@ -62,6 +62,11 @@ class AuthController extends Controller
         if ($base) {
             // 2. Orquestração via GameService (Centralizado)
             $this->gameService->atualizarRecursos($base);
+            
+            // Força a atualização do timestamp para garantir sincronia absoluta no próximo tick do cliente
+            $base->last_update_at = now();
+            $base->save();
+
             $this->gameService->processarFilas($base);
             
             // 3. Persistência de Sessão e Recarga Real
