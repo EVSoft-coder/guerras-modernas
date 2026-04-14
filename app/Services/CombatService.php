@@ -128,18 +128,18 @@ class CombatService
             if ($vitoria) {
                 // Sincronizar recursos do alvo antes de saquear
                 app(\App\Services\GameService::class)->atualizarRecursos($destino);
+                $resData = $destino->resources; // Cálculo em tempo real
 
-                $totalDisponivel = $destino->recursos_metal + $destino->recursos_energia + $destino->recursos_comida;
+                $totalDisponivel = $resData['metal'] + $resData['energia'] + $resData['comida'];
                 
                 if ($totalDisponivel > 0) {
                     $ratioSaque = min(1, $capacidadeSaqueTotal / $totalDisponivel);
                     foreach(['metal', 'energia', 'comida'] as $res) {
-                        $field = "recursos_{$res}";
-                        $fatorIndividual = ($destino->$field / max(1, $totalDisponivel));
-                        $qtdSaque = floor($capacidadeSaqueTotal * $fatorIndividual);
-                        $finalQtd = (int) min($destino->$field, $qtdSaque);
+                        $qtdSaque = floor($capacidadeSaqueTotal * ($resData[$res] / max(1, $totalDisponivel)));
+                        $finalQtd = (int) min($resData[$res], $qtdSaque);
                         
                         $saque[$res] = $finalQtd;
+                        $field = "recursos_{$res}";
                         $destino->decrement($field, $finalQtd);
                         
                         // Sincronizar legado se existir
