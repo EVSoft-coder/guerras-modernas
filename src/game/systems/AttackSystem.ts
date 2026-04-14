@@ -5,6 +5,7 @@ import { ArmyComponent } from '../components/ArmyComponent';
 import { GridPositionComponent } from '../components/GridPositionComponent';
 import { MarchComponent } from '../components/MarchComponent';
 import { VillageComponent } from '../components/VillageComponent';
+import { router } from '@inertiajs/react';
 
 export class AttackSystem implements GameSystem {
     public init(): void {
@@ -69,7 +70,6 @@ export class AttackSystem implements GameSystem {
                 // O frontend deve recarregar os dados puros via router.reload().
 
                 console.log(`[WAR] REINTEGRATION: Mission ${march.id} processed at Sector ${originId}.`);
-                const { router } = await import('@inertiajs/react');
                 router.reload({ only: ['base', 'gameData'] });
                 eventBus.emit('VILLAGE:UPDATE', { villageId: originId });
             }

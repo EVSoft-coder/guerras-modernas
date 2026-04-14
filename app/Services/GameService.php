@@ -65,12 +65,16 @@ class GameService
         $lastUpdate = $base->last_update_at ?? $base->created_at ?? $now;
         $seconds = $now->greaterThan($lastUpdate) ? $now->diffInSeconds($lastUpdate) : 0;
 
-        return [
+        $resources = [
             'metal' => max(0, (float)($base->recursos_metal ?? 0) + (max(0, (float)$base->metal_rate) * $seconds)),
             'energia' => max(0, (float)($base->recursos_energia ?? 0) + (max(0, (float)$base->energia_rate) * $seconds)),
             'comida' => max(0, (float)($base->recursos_comida ?? 0) + (max(0, (float)$base->comida_rate) * $seconds)),
             'last_update_at' => $lastUpdate,
         ];
+
+        \Illuminate\Support\Facades\Log::info("CALCULATED RESOURCES", $resources);
+
+        return $resources;
     }
     /**
      * ATUALIZAÇÃO DE RECURSOS
