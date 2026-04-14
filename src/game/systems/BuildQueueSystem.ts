@@ -53,10 +53,10 @@ export class BuildQueueSystem implements GameSystem {
         const hasEnough = resources.suprimentos >= cost && resources.metal >= cost && resources.energia >= cost;
 
         if (hasEnough) {
-            // Consumir
-            resources.suprimentos -= cost;
-            resources.metal -= cost;
-            resources.energia -= cost;
+            // Consumir (DESATIVADO - Backend é a source de verdade)
+            // resources.suprimentos -= cost;
+            // resources.metal -= cost;
+            // resources.energia -= cost;
 
             // Enfileirar upgrade
             const upgradeTime = building.level * 10; // 10 segundos por nÃ­vel
@@ -102,8 +102,8 @@ export class BuildQueueSystem implements GameSystem {
         if (task.type === 'UPGRADE' && task.targetEntityId !== undefined) {
             const building = entityManager.getComponent<BuildingComponent>(task.targetEntityId, 'Building');
             if (building) {
-                building.level += 1;
-                console.log(`[BUILD_SYSTEM] Building ${building.buildingType} upgraded to Level ${building.level}!`);
+                // building.level += 1; // DESATIVADO - O backend define o nível real
+                console.log(`[BUILD_SYSTEM] Building ${building.buildingType} upgraded logic handled by backend.`);
                 
                 eventBus.emit({
                     type: Events.BUILDING_COMPLETED,

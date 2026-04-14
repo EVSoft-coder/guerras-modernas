@@ -77,6 +77,11 @@ export class SyncSystem implements GameSystem {
                 const errData = await response.json();
                 throw new Error(errData.message || 'Recruitment Failed');
             }
+            
+            // Re-hidratar ECS com dados puros do backend (Source of Truth)
+            const { router } = await import('@inertiajs/react');
+            router.reload();
+
             console.log('[ACTION] Recruitment procedures online.');
         } catch (err) {
             console.error('[ACTION_FAILURE] Recruitment aborted:', err);
