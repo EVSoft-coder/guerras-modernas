@@ -39,11 +39,29 @@ class GameService
 
     public function calculateResources($base)
     {
+        $log = \Illuminate\Support\Facades\Log::class;
+        $log::info('=== CALC_START ===', ['base_id' => $base->id]);
+
         // Carregar relação recursos se não carregada
         if (!$base->relationLoaded('recursos')) {
             $base->load('recursos');
         }
         $rec = $base->recursos;
+
+        $log::info('CALC_STEP_1_RAW_DB', [
+            'base_id' => $base->id,
+            'rec_exists' => !!$rec,
+            'rec_id' => $rec?->id,
+            'db_suprimentos' => $rec?->suprimentos,
+            'db_combustivel' => $rec?->combustivel,
+            'db_municoes' => $rec?->municoes,
+            'db_pessoal' => $rec?->pessoal,
+            'db_metal' => $rec?->metal,
+            'db_energia' => $rec?->energia,
+            'db_cap' => $rec?->cap,
+            'ultimo_update' => $base->ultimo_update,
+            'rec_updated_at' => $rec?->updated_at,
+        ]);
 
         // Fonte de verdade: tabela `recursos` (que tem dados reais)
         $suprimentos = (float)($rec->suprimentos ?? 0);
@@ -60,6 +78,7 @@ class GameService
             ?? $base->created_at;
 
         if (!$lastUpdate) {
+            $log::warning('CALC_NO_TIMESTAMP', ['base_id' => $base->id]);
             return [
                 'suprimentos' => $suprimentos,
                 'combustivel' => $combustivel,
@@ -81,6 +100,14 @@ class GameService
         $combRatePerSec     = ($taxas['combustivel'] ?? 0) / 60;
         $municoesRatePerSec = ($taxas['municoes'] ?? 0) / 60;
 
+        $log::info('CALC_STEP_2_RATES', [
+            'base_id' => $base->id,
+            'seconds_elapsed' => $seconds,
+            'rate_sup' => $metalRatePerSec,
+            'rate_comb' => $combRatePerSec,
+            'rate_mun' => $municoesRatePerSec,
+        ]);
+
         $resources = [
             'suprimentos' => min($cap, max(0, $suprimentos + ($metalRatePerSec * $seconds))),
             'combustivel' => min($cap, max(0, $combustivel + ($combRatePerSec * $seconds))),
@@ -92,7 +119,7 @@ class GameService
             'last_update_at' => $lastUpdate->toDateTimeString(),
         ];
 
-        \Illuminate\Support\Facades\Log::info("CALCULATED RESOURCES", $resources);
+        $log::info('=== CALC_RESULT ===', ['base_id' => $base->id, 'output' => $resources]);
 
         return $resources;
     }
@@ -102,7 +129,16 @@ class GameService
      */
     public function atualizarRecursos(Base $base): void
     {
+        $log = \Illuminate\Support\Facades\Log::class;
+        $log::info('>>> UPDATE_START', ['base_id' => $base->id]);
+
         $calculated = $this->calculateResources($base);
+
+        $log::info('>>> UPDATE_WILL_WRITE', [
+            'base_id' => $base->id,
+            'rec_exists' => !!$base->recursos,
+            'values_to_write' => $calculated,
+        ]);
         
         // Persistir na tabela `recursos` (fonte de verdade)
         if ($base->recursos) {
@@ -114,14 +150,17 @@ class GameService
                 'metal'       => $calculated['metal'],
                 'energia'     => $calculated['energia'],
             ]);
+        } else {
+            $log::error('>>> UPDATE_NO_RECURSOS_RELATION', ['base_id' => $base->id]);
         }
 
         // Atualizar timestamp na base (usar coluna que existe: ultimo_update)
-        // IMPORTANTE: Usar update() explícito para evitar guardar atributos computados (ex: 'resources')
         DB::table('bases')->where('id', $base->id)->update([
             'ultimo_update' => now(),
         ]);
         $base->ultimo_update = now();
+
+        $log::info('>>> UPDATE_DONE', ['base_id' => $base->id]);
     }
 
     public function obterTaxasProducao(Base $base): array

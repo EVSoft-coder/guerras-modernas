@@ -66,8 +66,25 @@ class AuthController extends Controller
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
  
         if ($base) {
+            \Log::info('====== DASHBOARD_LOAD ======', [
+                'base_id' => $base->id,
+                'STEP_1_BEFORE_UPDATE' => [
+                    'rec_sup' => $base->recursos?->suprimentos,
+                    'rec_comb' => $base->recursos?->combustivel,
+                    'rec_mun' => $base->recursos?->municoes,
+                    'rec_pes' => $base->recursos?->pessoal,
+                    'ultimo_update' => $base->ultimo_update,
+                ],
+            ]);
+
             // 2. Orquestração via GameService (Centralizado)
             $this->gameService->atualizarRecursos($base);
+
+            \Log::info('DASHBOARD_STEP_2_AFTER_UPDATE', [
+                'base_id' => $base->id,
+                'rec_sup' => $base->recursos?->suprimentos,
+                'rec_comb' => $base->recursos?->combustivel,
+            ]);
             
             $this->gameService->processarFilas($base);
             
@@ -75,6 +92,14 @@ class AuthController extends Controller
             session(['selected_base_id' => $base->id]);
             $base->refresh();
             $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
+
+            \Log::info('DASHBOARD_STEP_3_AFTER_REFRESH', [
+                'base_id' => $base->id,
+                'rec_sup' => $base->recursos?->suprimentos,
+                'rec_comb' => $base->recursos?->combustivel,
+                'rec_mun' => $base->recursos?->municoes,
+                'rec_pes' => $base->recursos?->pessoal,
+            ]);
  
             $taxas = $this->gameService->obterTaxasProducao($base);
             $populacao = $this->gameService->obterEstatisticasPopulacao($base);
@@ -105,13 +130,19 @@ class AuthController extends Controller
             \Log::error("Falha na mobilização insurgente: " . $e->getMessage());
         }
 
+        $finalResources = $base ? $this->gameService->calculateResources($base) : [];
+        \Log::info('====== DASHBOARD_FINAL_PROPS ======', [
+            'base_id' => $base?->id,
+            'resources_to_frontend' => $finalResources,
+        ]);
+
         return Inertia::render('dashboard', [
             'jogador' => $jogador,
             'base' => $base,
             'bases' => $bases,
             'buildings' => $base?->edificios ?? [],
             'population' => $populacao ?? null,
-            'resources' => $base ? $this->gameService->calculateResources($base) : [],
+            'resources' => $finalResources,
             'taxas' => $taxas ?? [],
             'taxasPerSecond' => $taxas ?? [],
             'populacao' => $populacao ?? null,
