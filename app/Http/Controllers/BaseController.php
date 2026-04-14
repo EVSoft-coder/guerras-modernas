@@ -97,21 +97,8 @@ class BaseController extends Controller
             $ganho = 100;
             
             \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request, $custo, $ganho) {
-                // Mapeamento de chaves
-                $map = [
-                    'suprimentos' => 'recursos_metal',
-                    'combustivel' => 'recursos_energia',
-                    'municoes' => 'recursos_comida',
-                    'metal' => 'recursos_metal',
-                    'energia' => 'recursos_energia',
-                    'comida' => 'recursos_comida',
-                ];
-
                 if ($this->gameService->consumirRecursos($base, [$request->oferece => $custo])) {
-                    $fieldRec = $map[$request->recebe] ?? $request->recebe;
-                    $base->increment($fieldRec, $ganho);
-                    
-                    // Sincronizar legado se existir
+                    // Adicionar recurso recebido directamente na tabela recursos
                     if ($base->recursos) {
                         $base->recursos->increment($request->recebe, $ganho);
                     }

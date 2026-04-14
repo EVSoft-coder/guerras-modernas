@@ -28,7 +28,7 @@ class GameService
         return [
             'base' => $base,
             'resources' => $this->calculateResources($base),
-            'last_update_at' => $base->last_update_at
+            'ultimo_update' => $base->ultimo_update
         ];
     }
 
@@ -55,8 +55,7 @@ class GameService
         $cap         = (int)($rec->cap ?? 10000);
 
         // Timestamp de referência: ultimo_update na base ou updated_at nos recursos
-        $lastUpdate = $base->last_update_at 
-            ?? $base->ultimo_update 
+        $lastUpdate = $base->ultimo_update 
             ?? ($rec ? $rec->updated_at : null) 
             ?? $base->created_at;
 

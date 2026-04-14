@@ -158,10 +158,17 @@ class AuthController extends Controller
                     'coordenada_y' => rand(100, 900),
                     'qg_nivel' => 1,
                     'muralha_nivel' => 1,
-                    'recursos_metal' => 1000,
-                    'recursos_energia' => 800,
-                    'recursos_comida' => 500,
-                    'last_update_at' => now(),
+                    'ultimo_update' => now(),
+                ]);
+
+                // Criar recursos iniciais na tabela recursos (fonte de verdade)
+                $base->recursos()->create([
+                    'suprimentos' => 1000,
+                    'combustivel' => 800,
+                    'municoes' => 500,
+                    'pessoal' => 500,
+                    'metal' => 0,
+                    'energia' => 0,
                 ]);
  
                 Auth::login($jogador);
