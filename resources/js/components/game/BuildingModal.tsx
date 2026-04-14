@@ -233,12 +233,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                         className="w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(14,165,233,0.5)]" 
                                         alt="Preview"
                                         onError={() => {
-                                            if (usePlaceholder) return;
-                                            
-                                            // Fallback Seguro
-                                            if (currentTryLevel > 1) {
-                                                setCurrentTryLevel(1);
-                                            } else {
+                                            if (!usePlaceholder) {
                                                 setUsePlaceholder(true);
                                             }
                                         }}
