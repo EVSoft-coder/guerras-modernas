@@ -32,22 +32,8 @@ if (rootElement) {
     createInertiaApp({
         title: (title) => `${title} - ${appName}`,
         resolve: (name) => {
-            const pages = import.meta.glob('./pages/**/*.tsx');
-            const path = `./pages/${name}.tsx`;
-            
-            if (!name || name === 'undefined') {
-                if (name === 'undefined') {
-                    console.warn(`[REDE_DE_SEGURANCA] Intercepção de rota 'undefined'. Redirecionando para Dashboard.`);
-                }
-                return resolvePageComponent(`./pages/dashboard.tsx`, pages);
-            }
-
-            if (!pages[path]) {
-                console.error(`[INTERCEPTOR] Componente não encontrado: ${path}. Ativando protocolo de contingência.`);
-                return resolvePageComponent(`./pages/dashboard.tsx`, pages);
-            }
-
-            return resolvePageComponent(path, pages);
+            const pages = import.meta.glob('./pages/**/*.tsx', { eager: true });
+            return (pages[`./pages/${name}.tsx`] as any).default;
         },
         setup({ el, App, props }) {
             console.log("UI MOUNTED");
