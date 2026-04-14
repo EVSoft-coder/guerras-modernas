@@ -27,7 +27,9 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
  
         try {
-            $this->gameService->iniciarUpgrade($base, $request->tipo);
+            \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request) {
+                $this->gameService->iniciarUpgrade($base, $request->tipo);
+            });
             if ($request->wantsJson()) {
                 return response()->json(['status' => 'success', 'message' => "Upgrade de " . strtoupper($request->tipo) . " iniciado."]);
             }
@@ -49,7 +51,9 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
  
         try {
-            $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
+            \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request) {
+                $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
+            });
             if ($request->wantsJson()) {
                 return response()->json(['status' => 'success', 'message' => "{$request->quantidade}x " . strtoupper($request->unidade) . " em alistamento."]);
             }
@@ -92,12 +96,14 @@ class BaseController extends Controller
             $custo = 300;
             $ganho = 100;
             
-            if ($this->gameService->consumirRecursos($base, [$request->oferece => $custo])) {
-                $base->recursos->increment($request->recebe, $ganho);
-                return redirect()->back()->with('success', 'TRANSAÇÃO NO MERCADO NEGRO: Recursos trocados com sucesso.');
-            }
- 
-            return redirect()->back()->withErrors(['error' => 'Recursos insuficientes para a troca.']);
+            \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request, $custo, $ganho) {
+                if ($this->gameService->consumirRecursos($base, [$request->oferece => $custo])) {
+                    $base->recursos->increment($request->recebe, $ganho);
+                } else {
+                    throw new \Exception('Recursos insuficientes para a troca no Mercado Negro.');
+                }
+            });
+            return redirect()->back()->with('success', 'TRANSAÇÃO NO MERCADO NEGRO: Recursos trocados com sucesso.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
