@@ -168,17 +168,9 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                                     X: <span className="text-white">{Math.round(ent.x)}</span> | 
                                     Y: <span className="text-white">{Math.round(ent.y)}</span>
                                 </div>
-                                {ent.resources && (
-                                    <div className="flex gap-2 mt-1 text-[8px] font-bold">
-                                        <span className="text-amber-500">S: {ent.resources.suprimentos}</span>
-                                        <span className="text-neutral-400">M: {ent.resources.metal}</span>
-                                        <span className="text-sky-400">E: {ent.resources.energia}</span>
-                                    </div>
-                                )}
                                 <button 
                                     onClick={() => {
-                                        eventBus.emit({
-                                            type: Events.BUILDING_REQUEST,
+                                        eventBus.emit(Events.BUILD_REQUEST as any, {
                                             entityId: ent.id,
                                             timestamp: Date.now(),
                                             data: { buildingType: 'MINE' }
@@ -191,14 +183,8 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                                 {ent.march && (
                                     <div className="mt-2 bg-red-500/10 p-1 border border-red-500/20 rounded">
                                         <div className="flex justify-between items-center text-[7px] font-black uppercase">
-                                            <span className="text-red-400">{ent.march.state}</span>
-                                            <span className="text-white">{ent.march.remainingTime}s</span>
-                                        </div>
-                                        <div className="w-full h-1 bg-white/5 mt-1 overflow-hidden">
-                                            <div 
-                                                className="h-full bg-red-500 transition-all duration-1000" 
-                                                style={{ width: `${(1 - ent.march.remainingTime / ent.march.totalTime) * 100}%` }}
-                                            />
+                                            <span className="text-red-400">EM MOVIMENTO</span>
+                                            <span className="text-white">{Math.round(ent.march.remainingTime)}s</span>
                                         </div>
                                     </div>
                                 )}
