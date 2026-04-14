@@ -3,6 +3,7 @@
  * Gestor de Interfaces Sincronizado com Doutrina v1.2.
  */
 import { eventBus, Events, EventPayload } from '../core/EventBus';
+import { Logger } from '../core/Logger';
 import { hud } from './hud/HUD';
 import { villageView } from './village/VillageView';
 import { worldMapView } from './map/WorldMapView';
@@ -12,7 +13,7 @@ class UIManager {
     private screens: Map<GameState, HTMLElement> = new Map();
  
     public initialize(): void {
-        console.log('[UI_MGR] Commands Interfaces NORMALIZING.');
+        Logger.info('[UI_MGR] Commands Interfaces NORMALIZING.');
         
         hud.initialize();
         villageView.initialize();
@@ -49,7 +50,7 @@ class UIManager {
                     hud.hide();
                     villageView.hide();
                 }
-                console.log(`[UI] Telemetry ${hudVisible ? 'ENABLED' : 'DISABLED'}`);
+                Logger.info(`[UI] Telemetry ${hudVisible ? 'ENABLED' : 'DISABLED'}`);
             }
         });
 
@@ -57,7 +58,7 @@ class UIManager {
     }
 
     private handleModeChange(mode: GameMode): void {
-        console.log("CURRENT MODE:", mode);
+        Logger.info(`CURRENT MODE: ${mode}`);
         if (mode === GameMode.WORLD_MAP) {
             villageView.hide();
             worldMapView.show();

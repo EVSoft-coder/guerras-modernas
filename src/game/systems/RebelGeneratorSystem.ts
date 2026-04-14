@@ -5,6 +5,7 @@ import { VillageComponent } from '../components/VillageComponent';
 import { GridPositionComponent } from '../components/GridPositionComponent';
 import { ArmyComponent } from '../components/ArmyComponent';
 import { PositionComponent } from '../components/Position';
+import { Logger } from '../../core/Logger';
 
 export class RebelGeneratorSystem implements GameSystem {
     private lastSpawnTime: number = 0;
@@ -17,17 +18,16 @@ export class RebelGeneratorSystem implements GameSystem {
     private mapSize: number = 100; // Escala unificada 100x100
 
     public init(): void {
-        console.log('[SYSTEM] RebelGeneratorSystem - Evolution Protocols ACTIVE.');
+        Logger.info('[SYSTEM] RebelGeneratorSystem - Evolution Protocols ACTIVE.');
         this.lastSpawnTime = Date.now();
         this.lastProgressionTime = Date.now();
         this.lastRegenTime = Date.now();
 
         // ECS_MANDATE: Inicialização garantida de células insurrectas.
-        // Requisito: PositionComponent + VillageComponent (isRebel: true)
         for (let i = 0; i < 10; i++) {
             this.spawnRebel();
         }
-        console.log(`[SYSTEM] RebelGeneratorSystem - ${entityManager.getEntitiesWith(['Village']).length} total sectors identified in geology.`);
+        Logger.info(`[SYSTEM] RebelGeneratorSystem - ${entityManager.getEntitiesWith(['Village']).length} total sectors identified in geology.`);
     }
 
     private spawnManualRebel(x: number, y: number): void {
@@ -47,7 +47,7 @@ export class RebelGeneratorSystem implements GameSystem {
         entityManager.addComponent(rebelId, new GridPositionComponent(x, y));
         entityManager.addComponent(rebelId, new PositionComponent(x * 80, y * 80));
         
-        console.log(`[DEBUG] MANUAL REBEL CREATED: Entity ${rebelId} at ${x}:${y}.`);
+        Logger.building('MANUAL_REBEL_CREATED', { id: rebelId, x, y });
     }
 
     public preUpdate(deltaTime: number): void {}
@@ -55,19 +55,16 @@ export class RebelGeneratorSystem implements GameSystem {
     public update(deltaTime: number): void {
         const now = Date.now();
         
-        // A. Geração de novos rebeldes
         if (now - this.lastSpawnTime >= this.spawnInterval) {
             this.lastSpawnTime = now;
             this.processGeneration();
         }
 
-        // B. Evolução dos rebeldes existentes
         if (now - this.lastProgressionTime >= this.progressionInterval) {
             this.lastProgressionTime = now;
             this.processProgression();
         }
 
-        // C. Regeneração de guarnição (Reposição de baixas)
         if (now - this.lastRegenTime >= this.regenInterval) {
             this.lastRegenTime = now;
             this.processRegeneration();
@@ -78,7 +75,7 @@ export class RebelGeneratorSystem implements GameSystem {
 
     private processRegeneration(): void {
         const entities = entityManager.getEntitiesWith(['Village']);
-        const regenRatePerLevel = 1; // 1 soldado por nível a cada 10 segundos
+        const regenRatePerLevel = 1;
         
         for (const id of entities) {
             const village = entityManager.getComponent<VillageComponent>(id, 'Village');
@@ -93,7 +90,7 @@ export class RebelGeneratorSystem implements GameSystem {
                         army.units['infantaria'] = currentInfantry + amount;
                         
                         if (amount > 0) {
-                            console.log(`[REBEL_REGEN] Sector ${id} reinforced (${currentInfantry} -> ${army.units['infantaria']})`);
+                            Logger.building('REBEL_REGEN', { id, infantry: army.units['infantaria'] });
                         }
                     }
                 }
@@ -109,32 +106,23 @@ export class RebelGeneratorSystem implements GameSystem {
             if (village && village.isRebel && village.level < 10) {
                 village.level++;
                 
-                // 1. Aumentar Recursos (Logística Interna)
                 const bonus = 100;
                 (village.resources as any).suprimentos += bonus;
                 (village.resources as any).combustivel += bonus;
                 (village.resources as any).metal += bonus;
                 (village.resources as any).municoes += bonus;
-
-                // 2. Fortificação de Guarnição (Recrutamento Rebelde)
+ 
                 const army = entityManager.getComponent<ArmyComponent>(id, 'Army');
                 if (army) {
                     army.units['infantaria'] = (army.units['infantaria'] || 0) + 120;
-                    
-                    if (village.level >= 3) {
-                        army.units['blindado_apc'] = (army.units['blindado_apc'] || 0) + 20;
-                    }
-                    
-                    if (village.level >= 5) {
-                        army.units['tanque_combate'] = (army.units['tanque_combate'] || 0) + 5;
-                    }
+                    if (village.level >= 3) army.units['blindado_apc'] = (army.units['blindado_apc'] || 0) + 20;
+                    if (village.level >= 5) army.units['tanque_combate'] = (army.units['tanque_combate'] || 0) + 5;
                 }
                 
-                console.log(`[REBEL_EVOLUTION] Sector ${id} escalated to Level ${village.level}. Resources and garrison UPGRADED.`);
+                Logger.building('REBEL_EVOLUTION', { id, level: village.level });
             }
         }
         
-        // Sincronizar UI se necessário
         eventBus.emit('MAPA:FORCE_REFRESH', {});
     }
 
@@ -146,7 +134,7 @@ export class RebelGeneratorSystem implements GameSystem {
         }).length;
 
         if (rebelCount < this.maxRebels) {
-            console.log(`[REBEL] Under-limit detected (${rebelCount}/${this.maxRebels}). Generating reinforcements...`);
+            Logger.info(`[REBEL] Under-limit detected (${rebelCount}/${this.maxRebels}). Generating reinforcements...`);
             this.spawnRebel();
         }
     }
@@ -155,11 +143,8 @@ export class RebelGeneratorSystem implements GameSystem {
         const coords = this.findFreeCoords();
         if (!coords) return;
 
-        console.log("SPAWNING REBEL:", coords);
-
         const level = Math.floor(Math.random() * 5) + 1;
         const rebelId = entityManager.createEntity();
-        console.log("ENTITY CREATED:", rebelId);
         
         entityManager.addComponent(rebelId, new VillageComponent(
             null, 
@@ -176,30 +161,17 @@ export class RebelGeneratorSystem implements GameSystem {
             true
         ));
 
-        // Verificação imediata de conformidade
-        const checkVillage = entityManager.getComponent<VillageComponent>(rebelId, 'Village');
-        console.log(`VERIFICATION: VillageComponent exists? ${!!checkVillage}, isRebel? ${checkVillage?.isRebel}`);
-
         const units: Record<string, number> = {};
         units['infantaria'] = level === 1 ? 20 : (level * 120); 
-        
-        if (level >= 3) {
-            units['blindado_apc'] = (level - 2) * 20;
-        }
-        
-        if (level === 5) {
-            units['tanque_combate'] = 15;
-        }
-
-        if (level >= 4) {
-            units['politico'] = 1; // Liderança ideológica rebelde
-        }
+        if (level >= 3) units['blindado_apc'] = (level - 2) * 20;
+        if (level === 5) units['tanque_combate'] = 15;
+        if (level >= 4) units['politico'] = 1;
 
         entityManager.addComponent(rebelId, new ArmyComponent(0, units));
         entityManager.addComponent(rebelId, new GridPositionComponent(coords.x, coords.y));
         entityManager.addComponent(rebelId, new PositionComponent(coords.x * 80, coords.y * 80));
         
-        console.log(`[REBEL] NEW INSURRECTION: Entity ${rebelId} spawned at ${coords.x}:${coords.y}.`);
+        Logger.building('REBEL_SPAWN', { id: rebelId, x: coords.x, y: coords.y, level });
     }
 
     private findFreeCoords(): { x: number, y: number } | null {
@@ -218,6 +190,6 @@ export class RebelGeneratorSystem implements GameSystem {
     }
 
     public destroy(): void {
-        console.log('[SYSTEM] RebelGeneratorSystem - Insurrection monitor OFFLINE.');
+        Logger.info('[SYSTEM] RebelGeneratorSystem - Insurrection monitor OFFLINE.');
     }
 }

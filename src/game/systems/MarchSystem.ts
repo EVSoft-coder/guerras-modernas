@@ -4,10 +4,11 @@ import { GameSystem } from './types';
 import { MarchComponent } from '../components/MarchComponent';
 import { GridPositionComponent } from '../components/GridPositionComponent';
 import { ArmyComponent } from '../components/ArmyComponent';
+import { Logger } from '../../core/Logger';
 
 export class MarchSystem implements GameSystem {
     public init(): void {
-        console.log('[SYSTEM] MarchSystem - Logistics Engine ONLINE.');
+        Logger.info('[SYSTEM] MarchSystem - Logistics Engine ONLINE.');
         
         // Listen for attack launches to create new marches
         eventBus.subscribe(Events.ATTACK_LAUNCH, (payload) => {
@@ -25,7 +26,7 @@ export class MarchSystem implements GameSystem {
 
             // 1. ARRIVAL LOGIC
             if (march.status === 'going' && now >= march.arrivalTime) {
-                console.log(`[MARCH] ARRIVED: Entity ${entityId} reached target ${march.targetX}:${march.targetY}`);
+                Logger.building('MARCH_ARRIVAL', { id: entityId, target: `${march.targetX}:${march.targetY}` });
                 
                 // Transfer responsibility to combat/resolution systems
                 eventBus.emit(Events.ATTACK_ARRIVED, {
@@ -40,7 +41,7 @@ export class MarchSystem implements GameSystem {
 
             // 2. RETURN LOGIC
             if (march.status === 'returning' && now >= march.returnTime) {
-                console.log(`[MARCH] RETURNED: Entity ${entityId} reached origin ${march.originX}:${march.originY}`);
+                Logger.building('MARCH_RETURNED', { id: entityId, origin: `${march.originX}:${march.originY}` });
                 
                 eventBus.emit(Events.ATTACK_RETURNED, {
                     entityId: entityId,
@@ -96,7 +97,7 @@ export class MarchSystem implements GameSystem {
         // 4. Type Tagging
         entityManager.addComponent(entityId, { type: 'Army' });
 
-        console.log(`[MARCH] DEPLOYED: Mission ${missionId} for Entity ${entityId}. ETA: ${((travelTimeMs || 5000) / 1000).toFixed(1)}s`);
+        Logger.info(`[MARCH] DEPLOYED: Mission ${missionId} for Entity ${entityId}. ETA: ${((travelTimeMs || 5000) / 1000).toFixed(1)}s`);
     }
 
     public preUpdate(deltaTime: number): void {}

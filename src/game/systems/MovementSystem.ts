@@ -6,12 +6,13 @@ import { entityManager } from '../../core/EntityManager';
 import { eventBus, EventPayload } from '../../core/EventBus';
 import { GameSystem } from './types';
 import { Pathfinding } from '../../utils/Pathfinding';
+import { Logger } from '../../core/Logger';
  
 export class MovementSystem implements GameSystem {
     private speed: number = 3.0; // Velocidade tÃ¡ctica
 
     public init(): void {
-        console.log('[SYSTEM] MovementSystem - Tactical Navigation (A*) ONLINE.');
+        Logger.info('[SYSTEM] MovementSystem - Tactical Navigation (A*) ONLINE.');
         
         // Subscrever à ordem de deslocamento tático
         eventBus.subscribe('UNIT:MOVE', (payload: EventPayload) => {
@@ -50,9 +51,9 @@ export class MovementSystem implements GameSystem {
                 if (path && path.length > 0) {
                     vel.path = path;
                     vel.isMoving = true;
-                    console.log(`Unit ${id} path calculated: ${path.length} waypoints.`);
+                    Logger.info(`Unit ${id} path calculated: ${path.length} waypoints.`);
                 } else {
-                    console.warn(`Unit ${id} could not find path to ${targetX}:${targetY}`);
+                    Logger.warn(`Unit ${id} could not find path to ${targetX}:${targetY}`);
                 }
             }
         });
@@ -146,7 +147,7 @@ export class MovementSystem implements GameSystem {
     public postUpdate(deltaTime: number): void {}
 
     public destroy(): void {
-        console.log('[SYSTEM] MovementSystem - Tactical Navigation OFFLINE.');
+        Logger.info('[SYSTEM] MovementSystem - Tactical Navigation OFFLINE.');
     }
 }
  

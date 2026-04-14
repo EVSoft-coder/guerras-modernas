@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRight, X, Loader2, Target as Sword } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Logger } from '../../../../src/core/Logger';
 import { getEvolutionLevelAsset, calculateBuildingCost, calculateConstructionTime, calculateResourceProduction, parseResourceValue } from '@/lib/game-utils';
 import { getBuildingAsset } from '@/utils/assetMapper';
 
@@ -48,7 +49,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     // Reset de estado quando o edifício muda
     useEffect(() => {
         if (building) {
-            console.log("TACTICAL_MODAL_SCAN:", building);
+            Logger.building('MODAL_OPEN', building);
             setTrainQty(1);
             setSelectedUnit(null);
         }

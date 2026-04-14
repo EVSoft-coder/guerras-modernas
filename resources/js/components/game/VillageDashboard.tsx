@@ -13,6 +13,7 @@ import { ArmyMovementPanel } from '@/components/game/ArmyMovementPanel';
 import { gameStateService } from '@src/services/GameStateService';
 import { eventBus, Events } from '@src/core/EventBus';
 import { WorldMapView } from '@/components/game/WorldMapView';
+import { Logger } from '@src/core/Logger';
 
 import { useGameEntities } from '@/hooks/use-game-entities';
 
@@ -67,7 +68,7 @@ export function VillageDashboard({
         });
 
         const unsubMode = eventBus.subscribe(Events.GAME_CHANGE_MODE, (ev) => {
-            console.log("MODE CHANGE RECEIVED:", ev.data.mode);
+            Logger.info(`MODE CHANGE [UI_SYNC]: ${ev.data.mode}`);
             setGameMode(ev.data.mode);
         });
 

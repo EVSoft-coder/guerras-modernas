@@ -6,11 +6,11 @@ import { entityManager } from '../../core/EntityManager';
 import { eventBus, Events } from '../../core/EventBus';
 import { GameSystem } from './types';
 import { AttackMarchComponent } from '../components/AttackMarchComponent';
-import { gameStateService } from '../../services/GameStateService';
+import { Logger } from '../../core/Logger';
 
 export class SyncSystem implements GameSystem {
     public init(): void {
-        console.log('[SYSTEM] SyncSystem - Uplink Established.');
+        Logger.info('[SYSTEM] SyncSystem - Uplink Established.');
         
         // Subscrever a eventos de sincronização externa
         eventBus.subscribe(Events.LARAVEL_SYNC_ATTACKS, (p) => {
@@ -32,7 +32,7 @@ export class SyncSystem implements GameSystem {
 
     private async handleBuildingUpgrade(data: any): Promise<void> {
         try {
-            console.log('[ACTION] Authorizing Building Upgrade...', data);
+            Logger.building('UPGRADE_REQUEST', data);
             const response = await fetch('/buildings/upgrade', {
                 method: 'POST',
                 headers: { 
@@ -43,26 +43,26 @@ export class SyncSystem implements GameSystem {
                 body: JSON.stringify({ base_id: data.base_id, tipo: data.tipo })
             });
 
-            console.log("UPGRADE RESPONSE:", response);
+            const resData = await response.json();
+            Logger.backend('UPGRADE_RESPONSE', { status: response.status, data: resData });
 
             if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.message || 'Operation Denied');
+                throw new Error(resData.message || 'Operation Denied');
             }
             
             // Garantir que a UI reflete a nova fila de construção
             const { router } = await import('@inertiajs/react');
             router.reload();
 
-            console.log('[ACTION] Structural upgrade authorized by Central Command.');
+            Logger.info('[ACTION] Structural upgrade authorized by Central Command.');
         } catch (err) {
-            console.error('[ACTION_FAILURE] Building upgrade aborted:', err);
+            Logger.error('[ACTION_FAILURE] Building upgrade aborted', err);
         }
     }
 
     private async handleUnitTraining(data: any): Promise<void> {
         try {
-            console.log('[ACTION] Initiating Unit Recruitment...', data);
+            Logger.building('TRAINING_REQUEST', data);
             const response = await fetch('/base/treinar', {
                 method: 'POST',
                 headers: { 
@@ -73,27 +73,27 @@ export class SyncSystem implements GameSystem {
                 body: JSON.stringify({ base_id: data.base_id, unidade: data.unidade, quantidade: data.quantidade })
             });
 
+            const resData = await response.json();
+            Logger.backend('TRAINING_RESPONSE', { status: response.status, data: resData });
+
             if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.message || 'Recruitment Failed');
+                throw new Error(resData.message || 'Recruitment Failed');
             }
             
             // Re-hidratar ECS com dados puros do backend (Source of Truth)
             const { router } = await import('@inertiajs/react');
             router.reload();
 
-            console.log('[ACTION] Recruitment procedures online.');
+            Logger.info('[ACTION] Recruitment procedures online.');
         } catch (err) {
-            console.error('[ACTION_FAILURE] Recruitment aborted:', err);
+            Logger.error('[ACTION_FAILURE] Recruitment aborted', err);
         }
     }
 
     private async handleAttackLaunch(data: any): Promise<void> {
         try {
-            console.log('[ACTION] Launching Military Expedition...', data);
+            Logger.info('[ACTION] Launching Military Expedition...');
             
-            // Logic handled by Laravel route (inertia approach or direct API)
-            // Note: Since we are in ECS, we use fetch to keep it non-blocking for UI
             const response = await fetch('/base/atacar', {
                 method: 'POST',
                 headers: { 
@@ -104,10 +104,13 @@ export class SyncSystem implements GameSystem {
                 body: JSON.stringify(data.backendParams)
             });
 
+            const resData = await response.json();
+            Logger.backend('ATTACK_RESPONSE', { status: response.status, data: resData });
+
             if (!response.ok) throw new Error('Expedition Aborted by Tactical HQ');
-            console.log('[ACTION] Expedition is en-route.');
+            Logger.info('[ACTION] Expedition is en-route.');
         } catch (err) {
-            console.error('[ACTION_FAILURE] Military operation failed:', err);
+            Logger.error('[ACTION_FAILURE] Military operation failed', err);
         }
     }
 
@@ -126,9 +129,9 @@ export class SyncSystem implements GameSystem {
                     vencedor_id: report.vencedor === 'ATACANTE' ? 1 : 2 // Mock IDs por agora
                 })
             });
-            console.log('[SYNC] Battle report uploaded to Central Command.');
+            Logger.info('[SYNC] Battle report uploaded to Central Command.');
         } catch (err) {
-            console.error('[SYNC] Failed to transmit battle report:', err);
+            Logger.error('[SYNC] Failed to transmit battle report', err);
         }
     }
 
@@ -166,7 +169,7 @@ export class SyncSystem implements GameSystem {
     }
 
     public destroy(): void {
-        console.log('[SYSTEM] SyncSystem - Uplink Terminated.');
+        Logger.info('[SYSTEM] SyncSystem - Uplink Terminated.');
     }
 }
 

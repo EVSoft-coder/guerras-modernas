@@ -3,6 +3,7 @@
  * ECS State Exposure for UI Layer (ReadOnly).
  */
 import { entityManager } from '../core/EntityManager';
+import { Logger } from '../core/Logger';
 import { stateManager, GameMode } from '../core/StateManager';
 import { AttackMarchComponent } from '../game/components/AttackMarchComponent';
 import { buildingConfigs } from '../game/config';
@@ -165,7 +166,7 @@ class GameStateService {
 
     public syncAttacks(attacks: any[]): void {
         // Implementação de sincronização (placeholder por agora para satisfazer o TS)
-        console.log(`[SYNC] Military Command: Synchronizing ${attacks.length} operations.`);
+        Logger.info(`[SYNC] Military Command: Synchronizing ${attacks.length} operations.`);
     }
 }
 

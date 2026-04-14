@@ -1,8 +1,4 @@
-console.log("APP START");
-/**
- * src/index.ts
- * Ponto de entrada e SimulaÃ§Ã£o de Engajamento COM IMAGENS.
- */
+import { Logger } from './core/Logger';
 import { gameLoop } from './core/GameLoop';
 import { inputSystem } from './game/systems/InputSystem';
 import { uiManager } from './ui/UIManager';
@@ -27,7 +23,7 @@ import { BuildQueueComponent } from './game/systems/BuildQueueSystem';
 import { systemsRegistry } from './game/systems/systemsRegistry';
 import { stateManager, GameState } from './core/StateManager';
  
-console.log("BEFORE GAMELOOP");
+Logger.info("BEFORE GAMELOOP");
 // 1. INICIALIZAÇÃO CORE (Sequência de Ignição)
 // Nota: gameLoop.start() já orquestra a inicialização de todos os sistemas registrados.
 gameLoop.start();
@@ -100,14 +96,14 @@ const minaSuprimentos = entityManager.createEntity();
 entityManager.addComponent(minaSuprimentos, new BuildingComponent('mina_suprimentos', 1, villageEntity));
 entityManager.addComponent(minaSuprimentos, new ProductionComponent('suprimentos', 20));
 
-console.log(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Spatial Village infrastructure.`);
+Logger.info(`[BOOT] Player Unit Alpha (ID: ${playerUnit}) deployed with Spatial Village infrastructure.`);
  
 // 3.1. MOBILIZAÃ‡ÃƒO TESTE (UNIDADE ALPHA-ZERO)
 const testUnit = entityManager.createEntity();
 entityManager.addComponent(testUnit, new PlayerComponent());
 entityManager.addComponent(testUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(testUnit, new SpriteComponent('/images/unidades/agente_espiao.png')); 
-console.log(`[BOOT] Test Unit Alpha-Zero (ID: ${testUnit}) deployed at ORIGIN.`);
+Logger.info(`[BOOT] Test Unit Alpha-Zero (ID: ${testUnit}) deployed at ORIGIN.`);
  
 // 4. MOBILIZAÃ‡ÃƒO IA INIMIGA (UNIDADE OMEGA)
 const enemyUnit = entityManager.createEntity();
@@ -118,7 +114,7 @@ entityManager.addComponent(enemyUnit, new AttackComponent(100, 200, 3));
 entityManager.addComponent(enemyUnit, new AIComponent('AGGRESSIVE')); 
 entityManager.addComponent(enemyUnit, new SpriteComponent('/images/unidades/tanque_combate.png'));
  
-console.log(`[BOOT] Enemy Unit Omega (ID: ${enemyUnit}) detected with Main Battle Tank.`);
+Logger.info(`[BOOT] Enemy Unit Omega (ID: ${enemyUnit}) detected with Main Battle Tank.`);
 
 // Componentes Visuais Inimigo (Doutrina Requisitada)
 entityManager.addComponent(enemyUnit, new GridPositionComponent(10, 10));
@@ -154,10 +150,10 @@ rebelCoords.forEach((coord, index) => {
         renderType: "building"
     } as RenderableComponent);
     
-    console.log(`[BOOT] Rebel Cell ${index + 1} (${coord.name}) deployed at ${coord.x}:${coord.y}.`);
+    Logger.info(`[BOOT] Rebel Cell ${index + 1} (${coord.name}) deployed at ${coord.x}:${coord.y}.`);
 });
 
 stateManager.setState(GameState.PLAYING);
 
  
-console.log('--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---');
+Logger.info('--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---');
