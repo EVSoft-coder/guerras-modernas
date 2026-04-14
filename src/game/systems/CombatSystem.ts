@@ -108,7 +108,6 @@ export class CombatSystem implements GameSystem {
                 
                 if (canTake > 0) {
                     loot[res] = Math.floor(canTake);
-                    (village.resources as any)[res] -= canTake;
                     totalLooted += canTake;
                 }
             }

@@ -20,6 +20,23 @@ use Carbon\Carbon;
  */
 class GameService
 {
+    /**
+     * Retorna o estado completo da base (Snapshot)
+     */
+    public function snap(Base $base): array
+    {
+        return [
+            'base' => $base,
+            'resources' => $this->calculateResources($base),
+            'last_update_at' => $base->last_update_at
+        ];
+    }
+
+    public function getState(Base $base): array
+    {
+        return $this->snap($base);
+    }
+
     public function calculateResources($base)
     {
         // 1. Migração Transparente: Se as novas colunas estiverem a zero e houver legado, recuperar dados.

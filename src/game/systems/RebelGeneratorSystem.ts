@@ -106,12 +106,6 @@ export class RebelGeneratorSystem implements GameSystem {
             if (village && village.isRebel && village.level < 10) {
                 village.level++;
                 
-                const bonus = 100;
-                (village.resources as any).suprimentos += bonus;
-                (village.resources as any).combustivel += bonus;
-                (village.resources as any).metal += bonus;
-                (village.resources as any).municoes += bonus;
- 
                 const army = entityManager.getComponent<ArmyComponent>(id, 'Army');
                 if (army) {
                     army.units['infantaria'] = (army.units['infantaria'] || 0) + 120;

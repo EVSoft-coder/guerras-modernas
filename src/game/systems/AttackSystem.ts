@@ -64,18 +64,13 @@ export class AttackSystem implements GameSystem {
             const resources = entityManager.getComponent<any>(originId, 'Resource');
 
             if (village && resources) {
-                // Reintegrar Recursos (Loot)
-                for (const [res, qty] of Object.entries(march.loot || {})) {
-                    if (resources[res] !== undefined) {
-                        resources[res] += qty;
-                        // Sincronizar também com o componente Village para persistência se necessário
-                        if (village.resources && (village.resources as any)[res] !== undefined) {
-                            (village.resources as any)[res] += qty;
-                        }
-                    }
-                }
+                // [AUDIT] Reintegração de Recursos (Loot) REMOVIDA.
+                // O backend (Laravel) resolve o saque e a lealdade na base de dados.
+                // O frontend deve recarregar os dados puros via router.reload().
 
                 console.log(`[WAR] REINTEGRATION: Mission ${march.id} processed at Sector ${originId}.`);
+                const { router } = await import('@inertiajs/react');
+                router.reload({ only: ['base', 'gameData'] });
                 eventBus.emit('VILLAGE:UPDATE', { villageId: originId });
             }
         }

@@ -34,8 +34,14 @@ class AuthController extends Controller
     // ====================== LOGIN/LOGOUT ======================
     public function login(LoginRequest $request)
     {
-        $request->authenticate();
-        $request->session()->regenerate();
+        if ($request->authenticate()) {
+            $jogador = Auth::user();
+            foreach ($jogador->bases as $base) {
+                $base->last_update_at = now();
+                $base->save();
+            }
+            $request->session()->regenerate();
+        }
 
         return redirect()->intended('/dashboard');
     }
@@ -55,7 +61,11 @@ class AuthController extends Controller
         if (!$jogador) return redirect('/login');
  
         // 1. Obter Base Selecionada
-        $bases = $jogador->bases()->with('recursos', 'edificios', 'construcoes', 'treinos', 'tropas')->get();
+        $bases = $jogador->bases()->with('recursos', 'edificios', 'construcoes', 'treinos', 'tropas')->get()
+            ->map(function($b) {
+                $b->setAttribute('resources', $this->gameService->calculateResources($b));
+                return $b;
+            });
         $selectedBaseId = session('selected_base_id');
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
  
@@ -109,7 +119,7 @@ class AuthController extends Controller
             'bases' => $bases,
             'buildings' => $base?->edificios ?? [],
             'population' => $populacao ?? null,
-            'resources' => $base?->resources ?? [],
+            'resources' => $base ? $this->gameService->calculateResources($base) : [],
             'taxas' => $taxas ?? [],
             'taxasPerSecond' => $taxas ?? [],
             'populacao' => $populacao ?? null,
@@ -120,7 +130,7 @@ class AuthController extends Controller
             'gameConfig' => config('game'),
             // Payload optimizado para Polling
             'gameData' => [
-                'resources' => $base?->resources,
+                'resources' => $base ? $this->gameService->calculateResources($base) : null,
                 'units' => $base?->tropas,
                 'buildings' => $base?->edificios,
                 'population' => $populacao,
@@ -128,7 +138,10 @@ class AuthController extends Controller
                     'sent' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get() ?? [],
                     'received' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get() ?? [],
                 ],
-                'rebels' => Base::whereNull('jogador_id')->get() ?? [],
+                'rebels' => Base::whereNull('jogador_id')->get()->map(function($b) {
+                    $b->setAttribute('resources', $this->gameService->calculateResources($b));
+                    return $b;
+                }) ?? [],
             ]
         ]);
     }
