@@ -6,6 +6,7 @@ import { entityManager } from '../../core/EntityManager';
 import { eventBus, Events } from '../../core/EventBus';
 import { GameSystem } from './types';
 import { AttackMarchComponent } from '../components/AttackMarchComponent';
+import { gameStateService } from '../../services/GameStateService';
 import { Logger } from '../../core/Logger';
 
 export class SyncSystem implements GameSystem {
