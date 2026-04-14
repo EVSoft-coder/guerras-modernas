@@ -81,46 +81,42 @@ export function VillageDashboard({
     if (!base) return <div className="p-10 text-white uppercase font-mono">Connecting to Satellite...</div>;
 
     // Procura o edifício na base ou prepara um objeto Ghost baseado na config se necessário
-    const foundBuilding = (base.edificios || []).find(b => b.id === selectedBuildingId || b.tipo === selectedBuildingType);
-    let currentBuilding = null;
-    
+    const foundBuilding = (base.edificios || []).find(b => b.id === selectedBuildingId || b.buildingType === selectedBuildingType);
+    let currentBuilding: any = null;
+    let fallbackLevel = 0;
+
     if (selectedBuildingType) {
         const buildDef = (gameConfig?.buildings || {})[selectedBuildingType];
         
         if (selectedBuildingType === 'qg') {
-            currentBuilding = { tipo: 'qg', nome: 'Quartel General', nivel: Number(base.qg_nivel), base: base };
+            currentBuilding = { buildingType: 'qg', nome: 'Quartel General', nivel: Number(base.qg_nivel), base: base };
+            fallbackLevel = Number(base.qg_nivel);
         } else if (selectedBuildingType === 'muralha') {
-            currentBuilding = { tipo: 'muralha', nome: 'Perímetro Defensivo', nivel: Number(base.muralha_nivel), base: base };
+            currentBuilding = { buildingType: 'muralha', nome: 'Perímetro Defensivo', nivel: Number(base.muralha_nivel), base: base };
+            fallbackLevel = Number(base.muralha_nivel);
         } else if (foundBuilding) {
-            currentBuilding = { ...foundBuilding, base: base };
-        } else if (buildDef) {
-            // GHOST BUILDING: Não existe na DB ainda, mas existe na config
-            currentBuilding = { 
-                tipo: selectedBuildingType, 
-                nome: buildDef.name, 
-                nivel: 0, 
-                base: base 
-            };
+            currentBuilding = { ...foundBuilding, ...buildDef, nome: buildDef?.name || 'Estrutura' };
+            fallbackLevel = foundBuilding.nivel;
         } else {
-            // Fallback para evitar modal invisível
-            currentBuilding = {
-                tipo: selectedBuildingType,
-                nome: 'Estrutura em Scanner',
-                nivel: 0,
-                base: base
+            currentBuilding = { 
+                ...buildDef, 
+                buildingType: selectedBuildingType, 
+                nome: buildDef?.name || 'Projeto Padrão', 
+                nivel: 0 
             };
         }
     }
 
     const handleBuildingClick = (building: any) => {
         setSelectedBuildingId(building.id || null);
-        setSelectedBuildingType(building.tipo || null);
+        setSelectedBuildingType(building.buildingType || null);
     };
 
-    const handleUpgrade = (tipo: string) => {
+    const handleUpgrade = (buildingType: string) => {
+        setIsUpgrading(true);
         eventBus.emit(Events.BUILDING_UPGRADE_REQUEST, {
             base_id: base.id,
-            tipo
+            tipo: buildingType
         });
         setSelectedBuildingId(null);
         addToast('Pedido de atualização estrutural enviado ao Comando.', 'info');

@@ -6,7 +6,7 @@ import { router } from '@inertiajs/react';
 
 interface QueueItemData {
     id: number;
-    tipo: 'construcao' | 'treino';
+    buildingType: 'construcao' | 'treino';
     label: string;
     sublabel: string;
     started_at: string;
@@ -28,15 +28,15 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
     const unifiedQueue: QueueItemData[] = [
         ...construcoes.map(c => ({
             id: c.id,
-            tipo: 'construcao' as const,
-            label: c.edificio_tipo?.replace(/_/g, ' ') || 'Estrutura',
+            buildingType: 'construcao' as const,
+            label: c.buildingType?.replace(/_/g, ' ') || 'Estrutura',
             sublabel: `Upgrade para Nível ${c.nivel_destino}`,
             started_at: c.created_at,
             ends_at: c.completado_em
         })),
         ...treinos.map(t => ({
             id: t.id,
-            tipo: 'treino' as const,
+            buildingType: 'treino' as const,
             label: t.unidade?.replace(/_/g, ' ') || 'Unidade',
             sublabel: `Recrutamento: ${t.quantidade}x`,
             started_at: t.created_at,
@@ -59,7 +59,7 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
                 <AnimatePresence mode="popLayout">
                     {unifiedQueue.length > 0 ? (
                         unifiedQueue.map((item, index) => (
-                            <QueueItem key={`${item.tipo}-${item.id}`} item={item} isFirst={index === 0} />
+                            <QueueItem key={`${item.buildingType}-${item.id}`} item={item} isFirst={index === 0} />
                         ))
                     ) : (
                         <motion.div 
@@ -150,7 +150,7 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
             <div className="relative h-1 bg-neutral-900 rounded-full overflow-hidden shadow-inner border border-white/5">
                 <motion.div 
                     className={`absolute inset-y-0 left-0 ${
-                        item.tipo === 'construcao' ? 'bg-gradient-to-r from-orange-600 to-orange-400' : 'bg-gradient-to-r from-sky-600 to-sky-400'
+                        item.buildingType === 'construcao' ? 'bg-gradient-to-r from-orange-600 to-orange-400' : 'bg-gradient-to-r from-sky-600 to-sky-400'
                     } shadow-[0_0_10px_rgba(14,165,233,0.3)]`}
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}

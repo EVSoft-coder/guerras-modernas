@@ -15,6 +15,13 @@ class Construcao extends Model
         'completado_em',
     ];
 
+    protected $appends = ['buildingType'];
+
+    public function getBuildingTypeAttribute()
+    {
+        return $this->edificio_tipo;
+    }
+
     protected $casts = [
         'completado_em' => 'datetime',
     ];

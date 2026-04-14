@@ -34,10 +34,10 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
             { type: 'qg', level: base.qg_nivel ?? 1 },
             { type: 'muralha', level: base.muralha_nivel ?? 1 },
             ...(base.edificios?.filter(eb => {
-                const t = eb.tipo?.toLowerCase();
+                const t = eb.buildingType?.toLowerCase();
                 return t !== 'qg' && t !== 'muralha';
             }).map(eb => {
-                let type = eb.tipo?.toLowerCase();
+                let type = eb.buildingType?.toLowerCase();
                 return { type, level: eb.nivel };
             }) || [])
         ];
@@ -79,11 +79,11 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                     return (
                         <BuildingNode
                             key={b.id}
-                            tipo={b.id}
+                            buildingType={b.id}
                             nome={b.name}
                             nivel={b.level}
                             gridPos={pos}
-                            onClick={() => onBuildingClick({ ...b, tipo: b.id })}
+                            onClick={() => onBuildingClick({ ...b, buildingType: b.id })}
                         />
                     );
                 })}

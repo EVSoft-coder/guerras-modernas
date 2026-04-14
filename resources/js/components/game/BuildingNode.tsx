@@ -4,7 +4,7 @@ import { getEvolutionLevelAsset } from '@/lib/game-utils';
 import { getBuildingAsset } from '@/utils/assetMapper';
 
 interface BuildingNodeProps {
-    tipo: string;
+    buildingType: string;
     nome: string;
     nivel: number;
     gridPos: { x: number, y: number };
@@ -13,10 +13,10 @@ interface BuildingNodeProps {
     onClick: () => void;
 }
 
-export const BuildingNode: React.FC<BuildingNodeProps> = ({ tipo, nome, nivel, gridPos, isConstructing, isLocked, onClick }) => {
+export const BuildingNode: React.FC<BuildingNodeProps> = ({ buildingType, nome, nivel, gridPos, isConstructing, isLocked, onClick }) => {
     const isGhost = nivel === 0;
     const currentTryLevel = getEvolutionLevelAsset(nivel ?? 1);
-    const imgUrl = getBuildingAsset(tipo, isGhost ? 1 : currentTryLevel);
+    const imgUrl = getBuildingAsset(buildingType, isGhost ? 1 : currentTryLevel);
 
     return (
         <motion.div 

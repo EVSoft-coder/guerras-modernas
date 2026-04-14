@@ -14,6 +14,13 @@ class Edificio extends Model
         'nivel',
     ];
 
+    protected $appends = ['buildingType'];
+
+    public function getBuildingTypeAttribute()
+    {
+        return $this->tipo;
+    }
+
     public function base()
     {
         return $this->belongsTo(Base::class);

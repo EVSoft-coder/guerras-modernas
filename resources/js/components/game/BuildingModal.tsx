@@ -5,13 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRight, X, Loader2, Target as Sword } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getEvolutionLevelAsset, calculateBuildingCost, calculateConstructionTime, calculateResourceProduction, parseResourceValue } from '@/lib/game-utils';
+import { getEvolutionLevelAsset, calculateBuildingCost, calculateConstructionTime, calculateResourceProduction, parseResourceValue, getBuildingAsset } from '@/lib/game-utils';
 
 interface BuildingModalProps {
     isOpen: boolean;
     onClose: () => void;
     building: any;
     gameConfig: any;
-    onUpgrade: (tipo: string) => void;
+    onUpgrade: (buildingType: string) => void;
     onTrain: (unidade: string, quantidade: number) => void;
     isUpgrading: boolean;
     isTraining: boolean;
@@ -24,7 +25,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     if (!building) return null;
 
     const buildingsConfig = gameConfig?.buildings || {};
-    const config = buildingsConfig[building.tipo] || { 
+    const config = buildingsConfig[building.buildingType] || { 
         name: building.nome || 'Estrutura Desconhecida', 
         cost: {}, 
         time_base: 0, 
@@ -33,12 +34,16 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
     const nextLevel = (building.nivel || 0) + 1;
     
-    const [currentTryLevel, setCurrentTryLevel] = useState(getEvolutionLevelAsset(building.nivel || 0));
+    const mapToAssetLevel = (lvl: number) => {
+        return getEvolutionLevelAsset(lvl);
+    };
+
+    const currentTryLevel = mapToAssetLevel(building.nivel || 0);
     const [usePlaceholder, setUsePlaceholder] = useState(false);
     
-    // Caminho da imagem de resiliência absoluta
-    const blueprintUrl = "/images/building_blueprint_placeholder.png";
-    const currentImage = usePlaceholder ? blueprintUrl : `/images/edificios/${building.tipo?.toLowerCase()}/lvl_${currentTryLevel}.png`;
+    const isBuilt = (building.nivel || 0) > 0;
+    const blueprintUrl = getBuildingAsset(building.buildingType, 'blueprint');
+    const currentImage = usePlaceholder ? blueprintUrl : getBuildingAsset(building.buildingType, isBuilt ? currentTryLevel : 1);
 
     // Reset de estado quando o edifício muda
     useEffect(() => {
@@ -47,9 +52,8 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
             setTrainQty(1);
             setSelectedUnit(null);
         }
-        setCurrentTryLevel(getEvolutionLevelAsset(building.nivel || 0));
         setUsePlaceholder(false);
-    }, [building.tipo, building.nivel]);
+    }, [building.buildingType, building.nivel]);
 
     const renderCost = (resourceType: string, baseAmount: number) => {
         if (!baseAmount) return null;
@@ -101,7 +105,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
             'posto_recrutamento': 'pessoal',
             'factory': 'metal',
             'solar': 'energia'
-        }[building.tipo as string];
+        }[building.buildingType as string];
 
         if (!resKey) return null;
 
@@ -130,20 +134,23 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     const [trainQty, setTrainQty] = useState(1);
     const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
 
-    const tipoLower = building.tipo?.toLowerCase();
+    const tipoLower = building.buildingType?.toLowerCase();
     const isMilitary = ['quartel', 'aerodromo'].includes(tipoLower);
-    const availableUnits = isMilitary ? Object.entries(gameConfig?.units || {}).filter(([key, unit]: any) => {
+    
+    const isAvailable = (key: string) => {
         if (tipoLower === 'quartel') return ['infantaria', 'blindado_apc', 'tanque_combate', 'agente_espiao', 'politico'].includes(key);
         if (tipoLower === 'aerodromo') return ['helicoptero_ataque'].includes(key);
         return false;
-    }) : [];
+    };
+
+    const availableUnits = isMilitary ? Object.entries(gameConfig?.units || {}).filter(([key, unit]: any) => isAvailable(key)) : [];
 
     // Escolher a primeira unidade por defeito quando o modal abre num edifício militar
     useEffect(() => {
         if (isMilitary && availableUnits.length > 0 && !selectedUnit) {
             setSelectedUnit(availableUnits[0][0]);
         }
-    }, [building.tipo, isMilitary, availableUnits]);
+    }, [building.buildingType, isMilitary, availableUnits]);
 
     const renderUnitCard = ([key, unit]: [string, any]) => {
         const isSelected = selectedUnit === key;
@@ -188,7 +195,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                     Interface tática para gestão do edifício {building?.nome}. Permite análise de custos, bónus de produção e autorização de melhorias estruturais.
                 </DialogDescription>
                 <AnimatePresence mode="wait">
-                    {!building.tipo ? (
+                    {!building.buildingType ? (
                         <div className="p-12 text-center space-y-4">
                             <AlertTriangle className="mx-auto text-orange-500 animate-pulse" size={48} />
                             <h3 className="text-xl font-black uppercase tracking-tighter">Erro de Telemetria</h3>
@@ -261,7 +268,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                             {config.name}
                                         </DialogTitle>
                                         <p className="text-[10px] text-sky-500 font-bold uppercase tracking-widest flex items-center gap-2">
-                                            <Shield size={10} /> Setor de {building.tipo?.replace?.('_', ' ')?.toUpperCase?.() ?? 'ESTRUTURA'}
+                                            <Shield size={10} /> Setor de {building.buildingType?.replace?.('_', ' ')?.toUpperCase?.() ?? 'ESTRUTURA'}
                                         </p>
                                     </div>
                                 </DialogHeader>
@@ -363,7 +370,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
                                 <DialogFooter className="mt-6 md:mt-8">
                                     <Button 
-                                        onClick={() => onUpgrade(building.tipo)}
+                                        onClick={() => onUpgrade(building.buildingType)}
                                         disabled={isUpgrading || !canAfford}
                                         className={`w-full font-black uppercase tracking-[0.15em] md:tracking-[0.2em] py-6 md:py-8 rounded-xl md:rounded-2xl flex items-center justify-center gap-2 md:gap-3 group transition-all shadow-2xl ${
                                             canAfford 
