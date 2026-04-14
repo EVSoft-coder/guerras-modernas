@@ -92,6 +92,9 @@ export interface DashboardProps {
     jogador: User;
     base: Base;
     bases: Base[];
+    buildings?: any[];
+    population?: any;
+    resources?: any;
     relatorios: any[];
     relatoriosGlobal: any[];
     taxas: Record<string, number>;
@@ -106,6 +109,8 @@ export interface DashboardProps {
     gameData?: {
         resources: Recurso;
         units: any[];
+        buildings?: any[];
+        population?: any;
         movements: {
             sent: any[];
             received: any[];
