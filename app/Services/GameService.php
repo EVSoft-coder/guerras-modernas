@@ -31,13 +31,15 @@ class GameService
         }
 
         $now = now();
-        $seconds = $now->diffInSeconds($base->last_update_at);
+        // Garantir que o tempo decorrido nunca seja negativo
+        $lastUpdate = $base->last_update_at ?? $base->created_at ?? $now;
+        $seconds = $now->greaterThan($lastUpdate) ? $now->diffInSeconds($lastUpdate) : 0;
 
         return [
-            'metal' => $base->recursos_metal + ($base->metal_rate * $seconds),
-            'energia' => $base->recursos_energia + ($base->energia_rate * $seconds),
-            'comida' => $base->recursos_comida + ($base->comida_rate * $seconds),
-            'last_update_at' => $base->last_update_at,
+            'metal' => max(0, (float)($base->recursos_metal ?? 0) + (max(0, (float)$base->metal_rate) * $seconds)),
+            'energia' => max(0, (float)($base->recursos_energia ?? 0) + (max(0, (float)$base->energia_rate) * $seconds)),
+            'comida' => max(0, (float)($base->recursos_comida ?? 0) + (max(0, (float)$base->comida_rate) * $seconds)),
+            'last_update_at' => $lastUpdate,
         ];
     }
     /**

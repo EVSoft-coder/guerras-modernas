@@ -50,21 +50,6 @@ class Base extends Model
         return app(GameService::class)->calculateResources($this);
     }
 
-    public function getMetalRateAttribute()
-    {
-        return EconomyRules::calculateProductionPerMinute('metal', $this->obterNivelEdificio(BuildingType::MINA_METAL)) / 60;
-    }
-
-    public function getEnergiaRateAttribute()
-    {
-        return EconomyRules::calculateProductionPerMinute('energia', $this->obterNivelEdificio(BuildingType::CENTRAL_ENERGIA)) / 60;
-    }
-
-    public function getComidaRateAttribute()
-    {
-        return EconomyRules::calculateProductionPerMinute('comida', $this->obterNivelEdificio(BuildingType::FAZENDA)) / 60;
-    }
-
     private function obterNivelEdificio($tipo)
     {
         if ($tipo === BuildingType::QG) return (int) ($this->qg_nivel ?? 0);

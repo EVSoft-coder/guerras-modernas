@@ -47,7 +47,6 @@ trait HasResources
 
     public function getComidaRateAttribute()
     {
-        // Suprimentos == Comida
-        return $this->getProductionRates()['suprimentos'] / 60;
+        return $this->getProductionRates()['comida'] / 60;
     }
 }
