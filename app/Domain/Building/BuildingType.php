@@ -6,6 +6,7 @@ class BuildingType
 {
     const QG = 'qg';
     const MURALHA = 'muralha';
+    const FAZENDA = 'mina_suprimentos';
     const MINA_SUPRIMENTOS = 'mina_suprimentos';
     const REFINARIA = 'refinaria';
     const FABRICA_MUNICOES = 'fabrica_municoes';

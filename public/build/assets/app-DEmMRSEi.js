@@ -1,6 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+var _a;
 function _mergeNamespaces(n2, m2) {
   for (var i2 = 0; i2 < m2.length; i2++) {
     const e = m2[i2];
@@ -3136,11 +3137,11 @@ const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
   if (setImmediateSupported) {
     return setImmediate;
   }
-  return postMessageSupported ? ((token, callbacks) => {
+  return postMessageSupported ? ((token2, callbacks) => {
     _global.addEventListener(
       "message",
       ({ source, data }) => {
-        if (source === _global && data === token) {
+        if (source === _global && data === token2) {
           callbacks.length && callbacks.shift()();
         }
       },
@@ -3148,7 +3149,7 @@ const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
     );
     return (cb) => {
       callbacks.push(cb);
-      _global.postMessage(token, "*");
+      _global.postMessage(token2, "*");
     };
   })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
 })(typeof setImmediate === "function", isFunction$1(_global.postMessage));
@@ -3297,9 +3298,9 @@ function removeBrackets(key) {
 }
 function renderKey(path, key, dots) {
   if (!path) return key;
-  return path.concat(key).map(function each(token, i2) {
-    token = removeBrackets(token);
-    return !dots && i2 ? "[" + token + "]" : token;
+  return path.concat(key).map(function each(token2, i2) {
+    token2 = removeBrackets(token2);
+    return !dots && i2 ? "[" + token2 + "]" : token2;
   }).join(dots ? "." : "");
 }
 function isFlatArray(arr) {
@@ -5221,32 +5222,32 @@ let CancelToken$1 = class CancelToken {
     this.promise = new Promise(function promiseExecutor(resolve) {
       resolvePromise = resolve;
     });
-    const token = this;
+    const token2 = this;
     this.promise.then((cancel) => {
-      if (!token._listeners) return;
-      let i2 = token._listeners.length;
+      if (!token2._listeners) return;
+      let i2 = token2._listeners.length;
       while (i2-- > 0) {
-        token._listeners[i2](cancel);
+        token2._listeners[i2](cancel);
       }
-      token._listeners = null;
+      token2._listeners = null;
     });
     this.promise.then = (onfulfilled) => {
       let _resolve;
       const promise = new Promise((resolve) => {
-        token.subscribe(resolve);
+        token2.subscribe(resolve);
         _resolve = resolve;
       }).then(onfulfilled);
       promise.cancel = function reject() {
-        token.unsubscribe(_resolve);
+        token2.unsubscribe(_resolve);
       };
       return promise;
     };
     executor(function cancel(message, config, request) {
-      if (token.reason) {
+      if (token2.reason) {
         return;
       }
-      token.reason = new CanceledError$1(message, config, request);
-      resolvePromise(token.reason);
+      token2.reason = new CanceledError$1(message, config, request);
+      resolvePromise(token2.reason);
     });
   }
   /**
@@ -5298,11 +5299,11 @@ let CancelToken$1 = class CancelToken {
    */
   static source() {
     let cancel;
-    const token = new CancelToken(function executor(c2) {
+    const token2 = new CancelToken(function executor(c2) {
       cancel = c2;
     });
     return {
-      token,
+      token: token2,
       cancel
     };
   }
@@ -5523,8 +5524,8 @@ var g = class {
     typeof window < "u" && window.scrollTo(0, 0), this.regions().forEach((e) => {
       typeof e.scrollTo == "function" ? e.scrollTo(0, 0) : (e.scrollTop = 0, e.scrollLeft = 0);
     }), this.save(), window.location.hash && setTimeout(() => {
-      var _a;
-      return (_a = document.getElementById(window.location.hash.slice(1))) == null ? void 0 : _a.scrollIntoView();
+      var _a2;
+      return (_a2 = document.getElementById(window.location.hash.slice(1))) == null ? void 0 : _a2.scrollIntoView();
     });
   }
   static restore(e) {
@@ -5680,12 +5681,12 @@ var D = typeof window > "u", U$3 = new q(), qe = !D && /CriOS/.test(window.navig
     this.initialState = null;
   }
   remember(e, t2) {
-    var _a;
-    this.replaceState({ ...s$3.get(), rememberedState: { ...((_a = s$3.get()) == null ? void 0 : _a.rememberedState) ?? {}, [t2]: e } });
+    var _a2;
+    this.replaceState({ ...s$3.get(), rememberedState: { ...((_a2 = s$3.get()) == null ? void 0 : _a2.rememberedState) ?? {}, [t2]: e } });
   }
   restore(e) {
-    var _a, _b;
-    if (!D) return (_b = (_a = this.initialState) == null ? void 0 : _a[this.rememberedState]) == null ? void 0 : _b[e];
+    var _a2, _b;
+    if (!D) return (_b = (_a2 = this.initialState) == null ? void 0 : _a2[this.rememberedState]) == null ? void 0 : _b[e];
   }
   pushState(e, t2 = null) {
     if (!D) {
@@ -5708,9 +5709,9 @@ var D = typeof window > "u", U$3 = new q(), qe = !D && /CriOS/.test(window.navig
     return U$3.process();
   }
   decrypt(e = null) {
-    var _a;
+    var _a2;
     if (D) return Promise.resolve(e ?? s$3.get());
-    let t2 = e ?? ((_a = window.history.state) == null ? void 0 : _a.page);
+    let t2 = e ?? ((_a2 = window.history.state) == null ? void 0 : _a2.page);
     return this.decryptPageData(t2).then((i2) => {
       if (!i2) throw new Error("Unable to decrypt history");
       return this.initialState === null ? this.initialState = i2 ?? void 0 : this.current = i2 ?? {}, i2;
@@ -5721,8 +5722,8 @@ var D = typeof window > "u", U$3 = new q(), qe = !D && /CriOS/.test(window.navig
   }
   saveScrollPositions(e) {
     U$3.add(() => Promise.resolve().then(() => {
-      var _a;
-      ((_a = window.history.state) == null ? void 0 : _a.page) && this.doReplaceState({ page: window.history.state.page, scrollRegions: e }, this.current.url);
+      var _a2;
+      ((_a2 = window.history.state) == null ? void 0 : _a2.page) && this.doReplaceState({ page: window.history.state.page, scrollRegions: e }, this.current.url);
     }));
   }
   saveDocumentScrollPosition(e) {
@@ -5751,15 +5752,15 @@ var D = typeof window > "u", U$3 = new q(), qe = !D && /CriOS/.test(window.navig
     }
   }
   doReplaceState(e, t2) {
-    var _a, _b;
-    window.history.replaceState({ ...e, scrollRegions: e.scrollRegions ?? ((_a = window.history.state) == null ? void 0 : _a.scrollRegions), documentScrollPosition: e.documentScrollPosition ?? ((_b = window.history.state) == null ? void 0 : _b.documentScrollPosition) }, "", t2);
+    var _a2, _b;
+    window.history.replaceState({ ...e, scrollRegions: e.scrollRegions ?? ((_a2 = window.history.state) == null ? void 0 : _a2.scrollRegions), documentScrollPosition: e.documentScrollPosition ?? ((_b = window.history.state) == null ? void 0 : _b.documentScrollPosition) }, "", t2);
   }
   doPushState(e, t2) {
     window.history.pushState(e, "", t2);
   }
   getState(e, t2) {
-    var _a;
-    return ((_a = this.current) == null ? void 0 : _a[e]) ?? t2;
+    var _a2;
+    return ((_a2 = this.current) == null ? void 0 : _a2[e]) ?? t2;
   }
   deleteState(e) {
     this.current[e] !== void 0 && (delete this.current[e], this.replaceState(this.current));
@@ -6257,9 +6258,9 @@ var H$2 = class H {
     this.cancel({ cancelled: true }, true);
   }
   cancel({ cancelled: e = false, interrupted: t2 = false } = {}, i2) {
-    var _a;
+    var _a2;
     if (!this.shouldCancel(i2)) return;
-    (_a = this.requests.shift()) == null ? void 0 : _a.cancel({ interrupted: t2, cancelled: e });
+    (_a2 = this.requests.shift()) == null ? void 0 : _a2.cancel({ interrupted: t2, cancelled: e });
   }
   shouldCancel(e) {
     return e ? true : this.interruptible && this.requests.length >= this.maxConcurrent;
@@ -6390,8 +6391,8 @@ var K$2 = class K {
     }) };
   }
   loadDeferredProps() {
-    var _a;
-    let e = (_a = s$3.get()) == null ? void 0 : _a.deferredProps;
+    var _a2;
+    let e = (_a2 = s$3.get()) == null ? void 0 : _a2.deferredProps;
     e && Object.entries(e).forEach(([t2, i2]) => {
       this.reload({ only: i2 });
     });
@@ -6414,10 +6415,10 @@ var ze$1 = { buildDOMElement(r2) {
 }, update: F$1(function(r2) {
   let e = r2.map((i2) => this.buildDOMElement(i2));
   Array.from(document.head.childNodes).filter((i2) => this.isInertiaManagedElement(i2)).forEach((i2) => {
-    var _a, _b;
+    var _a2, _b;
     let n2 = this.findMatchingElementIndex(i2, e);
     if (n2 === -1) {
-      (_a = i2 == null ? void 0 : i2.parentNode) == null ? void 0 : _a.removeChild(i2);
+      (_a2 = i2 == null ? void 0 : i2.parentNode) == null ? void 0 : _a2.removeChild(i2);
       return;
     }
     let a = e.splice(n2, 1)[0];
@@ -6491,16 +6492,16 @@ var p$1 = "nprogress", f$1 = { minimum: 0.08, easing: "linear", positionUsing: "
     return 0;
   })(), J(He$1(e + r2, 0, 0.994));
 }, Ze = (r2) => {
-  var _a;
+  var _a2;
   if (et()) return document.getElementById(p$1);
   document.documentElement.classList.add(`${p$1}-busy`);
   let e = document.createElement("div");
   e.id = p$1, e.innerHTML = f$1.template;
   let t2 = e.querySelector(f$1.barSelector), i2 = r2 ? "-100" : X$2(C$2 || 0), n2 = Ue();
-  return t2.style.transition = "all 0 linear", t2.style.transform = `translate3d(${i2}%,0,0)`, f$1.showSpinner || ((_a = e.querySelector(f$1.spinnerSelector)) == null ? void 0 : _a.remove()), n2 !== document.body && n2.classList.add(`${p$1}-custom-parent`), n2.appendChild(e), e;
+  return t2.style.transition = "all 0 linear", t2.style.transform = `translate3d(${i2}%,0,0)`, f$1.showSpinner || ((_a2 = e.querySelector(f$1.spinnerSelector)) == null ? void 0 : _a2.remove()), n2 !== document.body && n2.classList.add(`${p$1}-custom-parent`), n2.appendChild(e), e;
 }, Ue = () => tt$1(f$1.parent) ? f$1.parent : document.querySelector(f$1.parent), De$1 = () => {
-  var _a;
-  document.documentElement.classList.remove(`${p$1}-busy`), Ue().classList.remove(`${p$1}-custom-parent`), (_a = document.getElementById(p$1)) == null ? void 0 : _a.remove();
+  var _a2;
+  document.documentElement.classList.remove(`${p$1}-busy`), Ue().classList.remove(`${p$1}-custom-parent`), (_a2 = document.getElementById(p$1)) == null ? void 0 : _a2.remove();
 }, et = () => document.getElementById(p$1) !== null, tt$1 = (r2) => typeof HTMLElement == "object" ? r2 instanceof HTMLElement : r2 && typeof r2 == "object" && r2.nodeType === 1 && typeof r2.nodeName == "string";
 function He$1(r2, e, t2) {
   return r2 < e ? e : r2 > t2 ? t2 : r2;
@@ -6603,8 +6604,8 @@ function at(r2, e) {
   document.addEventListener("inertia:finish", (i2) => ct(i2, t2), { once: true });
 }
 function lt(r2) {
-  var _a;
-  b$1.isStarted() && ((_a = r2.detail.progress) == null ? void 0 : _a.percentage) && b$1.set(Math.max(b$1.status, r2.detail.progress.percentage / 100 * 0.9));
+  var _a2;
+  b$1.isStarted() && ((_a2 = r2.detail.progress) == null ? void 0 : _a2.percentage) && b$1.set(Math.max(b$1.status, r2.detail.progress.percentage / 100 * 0.9));
 }
 function ct(r2, e) {
   clearTimeout(e), b$1.isStarted() && (r2.detail.visit.completed ? b$1.done() : r2.detail.visit.interrupted ? b$1.set(0) : r2.detail.visit.cancelled && (b$1.done(), b$1.remove()));
@@ -7931,11 +7932,11 @@ var ye = ({ children: u3, data: o3, params: n2, buffer: s2, as: a, always: m2, f
       y2.current = true, l2.current = true;
       let T2 = f2();
       Wr.reload({ ...T2, onStart: (x2) => {
-        var _a;
-        l2.current = true, (_a = T2.onStart) == null ? void 0 : _a.call(T2, x2);
+        var _a2;
+        l2.current = true, (_a2 = T2.onStart) == null ? void 0 : _a2.call(T2, x2);
       }, onFinish: (x2) => {
-        var _a;
-        P2(true), l2.current = false, (_a = T2.onFinish) == null ? void 0 : _a.call(T2, x2), m2 || t2.disconnect();
+        var _a2;
+        P2(true), l2.current = false, (_a2 = T2.onFinish) == null ? void 0 : _a2.call(T2, x2), m2 || t2.disconnect();
       } });
     }, { rootMargin: `${s2 || 0}px` });
     return t2.observe(e.current), () => {
@@ -8760,7 +8761,7 @@ const createClassGroupUtils = (config) => {
   };
 };
 const getGroupRecursive = (classParts, classPartObject) => {
-  var _a;
+  var _a2;
   if (classParts.length === 0) {
     return classPartObject.classGroupId;
   }
@@ -8774,9 +8775,9 @@ const getGroupRecursive = (classParts, classPartObject) => {
     return void 0;
   }
   const classRest = classParts.join(CLASS_PART_SEPARATOR);
-  return (_a = classPartObject.validators.find(({
+  return (_a2 = classPartObject.validators.find(({
     validator: validator2
-  }) => validator2(classRest))) == null ? void 0 : _a.classGroupId;
+  }) => validator2(classRest))) == null ? void 0 : _a2.classGroupId;
 };
 const arbitraryPropertyRegex = /^\[(.+)\]$/;
 const getGroupIdForArbitraryProperty = (className) => {
@@ -11533,8 +11534,8 @@ function mergeProps(slotProps, childProps) {
   return { ...slotProps, ...overrideProps };
 }
 function getElementRef$1(element) {
-  var _a, _b;
-  let getter = (_a = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a.get;
+  var _a2, _b;
+  let getter = (_a2 = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a2.get;
   let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
   if (mayWarn) {
     return element.ref;
@@ -11852,10 +11853,10 @@ var Label$2 = reactExports.forwardRef((props, forwardedRef) => {
       ...props,
       ref: forwardedRef,
       onMouseDown: (event) => {
-        var _a;
+        var _a2;
         const target = event.target;
         if (target.closest("button, input, select, textarea")) return;
-        (_a = props.onMouseDown) == null ? void 0 : _a.call(props, event);
+        (_a2 = props.onMouseDown) == null ? void 0 : _a2.call(props, event);
         if (!event.defaultPrevented && event.detail > 1) event.preventDefault();
       }
     }
@@ -12034,16 +12035,16 @@ function createContextScope(scopeName, createContextScopeDeps = []) {
     const index2 = defaultContexts.length;
     defaultContexts = [...defaultContexts, defaultContext];
     const Provider2 = (props) => {
-      var _a;
+      var _a2;
       const { scope, children, ...context } = props;
-      const Context = ((_a = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a[index2]) || BaseContext;
+      const Context = ((_a2 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a2[index2]) || BaseContext;
       const value = reactExports.useMemo(() => context, Object.values(context));
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, { value, children });
     };
     Provider2.displayName = rootComponentName + "Provider";
     function useContext2(consumerName, scope) {
-      var _a;
-      const Context = ((_a = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a[index2]) || BaseContext;
+      var _a2;
+      const Context = ((_a2 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a2[index2]) || BaseContext;
       const context = reactExports.useContext(Context);
       if (context) return context;
       if (defaultContext !== void 0) return defaultContext;
@@ -12100,8 +12101,8 @@ function useCallbackRef$1(callback) {
     callbackRef.current = callback;
   });
   return reactExports.useMemo(() => (...args) => {
-    var _a;
-    return (_a = callbackRef.current) == null ? void 0 : _a.call(callbackRef, ...args);
+    var _a2;
+    return (_a2 = callbackRef.current) == null ? void 0 : _a2.call(callbackRef, ...args);
   }, []);
 }
 function useControllableState({
@@ -12300,8 +12301,8 @@ function getAnimationName(styles) {
   return (styles == null ? void 0 : styles.animationName) || "none";
 }
 function getElementRef(element) {
-  var _a, _b;
-  let getter = (_a = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a.get;
+  var _a2, _b;
+  let getter = (_a2 = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a2.get;
   let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
   if (mayWarn) {
     return element.ref;
@@ -12655,9 +12656,9 @@ const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   __proto__: null,
   default: Register
 }, Symbol.toStringTag, { value: "Module" }));
-function ResetPassword({ token, email }) {
+function ResetPassword({ token: token2, email }) {
   const { data, setData, post, processing, errors, reset } = me$1({
-    token,
+    token: token2,
     email,
     password: "",
     password_confirmation: ""
@@ -13197,9 +13198,9 @@ function createFocusScopesStack() {
       stack.unshift(focusScope);
     },
     remove(focusScope) {
-      var _a;
+      var _a2;
       stack = arrayRemove(stack, focusScope);
-      (_a = stack[0]) == null ? void 0 : _a.resume();
+      (_a2 = stack[0]) == null ? void 0 : _a2.resume();
     }
   };
 }
@@ -13216,11 +13217,11 @@ function removeLinks(items) {
 }
 var PORTAL_NAME$4 = "Portal";
 var Portal$2 = reactExports.forwardRef((props, forwardedRef) => {
-  var _a;
+  var _a2;
   const { container: containerProp, ...portalProps } = props;
   const [mounted, setMounted] = reactExports.useState(false);
   useLayoutEffect2(() => setMounted(true), []);
-  const container = containerProp || mounted && ((_a = globalThis == null ? void 0 : globalThis.document) == null ? void 0 : _a.body);
+  const container = containerProp || mounted && ((_a2 = globalThis == null ? void 0 : globalThis.document) == null ? void 0 : _a2.body);
   return container ? ReactDOM.createPortal(/* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...portalProps, ref: forwardedRef }), container) : null;
 });
 Portal$2.displayName = PORTAL_NAME$4;
@@ -13433,8 +13434,8 @@ function createSidecarMedium(options) {
   medium.options = __assign({ async: true, ssr: false }, options);
   return medium;
 }
-var SideCar$1 = function(_a) {
-  var sideCar = _a.sideCar, rest = __rest(_a, ["sideCar"]);
+var SideCar$1 = function(_a2) {
+  var sideCar = _a2.sideCar, rest = __rest(_a2, ["sideCar"]);
   if (!sideCar) {
     throw new Error("Sidecar: please provide `sideCar` property to import the right car");
   }
@@ -13455,11 +13456,11 @@ var nothing = function() {
 };
 var RemoveScroll = reactExports.forwardRef(function(props, parentRef) {
   var ref2 = reactExports.useRef(null);
-  var _a = reactExports.useState({
+  var _a2 = reactExports.useState({
     onScrollCapture: nothing,
     onWheelCapture: nothing,
     onTouchMoveCapture: nothing
-  }), callbacks = _a[0], setCallbacks = _a[1];
+  }), callbacks = _a2[0], setCallbacks = _a2[1];
   var forwardProps = props.forwardProps, children = props.children, className = props.className, removeScrollBar = props.removeScrollBar, enabled = props.enabled, shards = props.shards, sideCar = props.sideCar, noIsolation = props.noIsolation, inert = props.inert, allowPinchZoom = props.allowPinchZoom, _b = props.as, Container = _b === void 0 ? "div" : _b, gapMode = props.gapMode, rest = __rest(props, ["forwardProps", "children", "className", "removeScrollBar", "enabled", "shards", "sideCar", "noIsolation", "inert", "allowPinchZoom", "as", "gapMode"]);
   var SideCar2 = sideCar;
   var containerRef = useMergeRefs([ref2, parentRef]);
@@ -13543,8 +13544,8 @@ var styleHookSingleton = function() {
 };
 var styleSingleton = function() {
   var useStyle2 = styleHookSingleton();
-  var Sheet2 = function(_a) {
-    var styles = _a.styles, dynamic = _a.dynamic;
+  var Sheet2 = function(_a2) {
+    var styles = _a2.styles, dynamic = _a2.dynamic;
     useStyle2(styles, dynamic);
     return null;
   };
@@ -13585,8 +13586,8 @@ var getGapWidth = function(gapMode) {
 };
 var Style = styleSingleton();
 var lockAttribute = "data-scroll-locked";
-var getStyles = function(_a, allowRelative, gapMode, important) {
-  var left = _a.left, top = _a.top, right = _a.right, gap = _a.gap;
+var getStyles = function(_a2, allowRelative, gapMode, important) {
+  var left = _a2.left, top = _a2.top, right = _a2.right, gap = _a2.gap;
   if (gapMode === void 0) {
     gapMode = "margin";
   }
@@ -13613,8 +13614,8 @@ var useLockAttribute = function() {
     };
   }, []);
 };
-var RemoveScrollBar = function(_a) {
-  var noRelative = _a.noRelative, noImportant = _a.noImportant, _b = _a.gapMode, gapMode = _b === void 0 ? "margin" : _b;
+var RemoveScrollBar = function(_a2) {
+  var noRelative = _a2.noRelative, noImportant = _a2.noImportant, _b = _a2.gapMode, gapMode = _b === void 0 ? "margin" : _b;
   useLockAttribute();
   var gap = reactExports.useMemo(function() {
     return getGapWidth(gapMode);
@@ -13666,7 +13667,7 @@ var locationCouldBeScrolled = function(axis, node) {
     }
     var isScrollable = elementCouldBeScrolled(axis, current);
     if (isScrollable) {
-      var _a = getScrollVariables(axis, current), scrollHeight = _a[1], clientHeight = _a[2];
+      var _a2 = getScrollVariables(axis, current), scrollHeight = _a2[1], clientHeight = _a2[2];
       if (scrollHeight > clientHeight) {
         return true;
       }
@@ -13675,16 +13676,16 @@ var locationCouldBeScrolled = function(axis, node) {
   } while (current && current !== ownerDocument.body);
   return false;
 };
-var getVScrollVariables = function(_a) {
-  var scrollTop = _a.scrollTop, scrollHeight = _a.scrollHeight, clientHeight = _a.clientHeight;
+var getVScrollVariables = function(_a2) {
+  var scrollTop = _a2.scrollTop, scrollHeight = _a2.scrollHeight, clientHeight = _a2.clientHeight;
   return [
     scrollTop,
     scrollHeight,
     clientHeight
   ];
 };
-var getHScrollVariables = function(_a) {
-  var scrollLeft = _a.scrollLeft, scrollWidth = _a.scrollWidth, clientWidth = _a.clientWidth;
+var getHScrollVariables = function(_a2) {
+  var scrollLeft = _a2.scrollLeft, scrollWidth = _a2.scrollWidth, clientWidth = _a2.clientWidth;
   return [
     scrollLeft,
     scrollWidth,
@@ -13710,7 +13711,7 @@ var handleScroll = function(axis, endTarget, event, sourceDelta, noOverscroll) {
   var availableScroll = 0;
   var availableScrollTop = 0;
   do {
-    var _a = getScrollVariables(axis, target), position = _a[0], scroll_1 = _a[1], capacity = _a[2];
+    var _a2 = getScrollVariables(axis, target), position = _a2[0], scroll_1 = _a2[1], capacity = _a2[2];
     var elementScroll = scroll_1 - capacity - directionFactor * position;
     if (position || elementScroll) {
       if (elementCouldBeScrolled(axis, target)) {
@@ -14147,9 +14148,9 @@ var DialogContentModal = reactExports.forwardRef(
         trapFocus: context.open,
         disableOutsidePointerEvents: true,
         onCloseAutoFocus: composeEventHandlers(props.onCloseAutoFocus, (event) => {
-          var _a;
+          var _a2;
           event.preventDefault();
-          (_a = context.triggerRef.current) == null ? void 0 : _a.focus();
+          (_a2 = context.triggerRef.current) == null ? void 0 : _a2.focus();
         }),
         onPointerDownOutside: composeEventHandlers(props.onPointerDownOutside, (event) => {
           const originalEvent = event.detail.originalEvent;
@@ -14178,8 +14179,8 @@ var DialogContentNonModal = reactExports.forwardRef(
         trapFocus: false,
         disableOutsidePointerEvents: false,
         onCloseAutoFocus: (event) => {
-          var _a, _b;
-          (_a = props.onCloseAutoFocus) == null ? void 0 : _a.call(props, event);
+          var _a2, _b;
+          (_a2 = props.onCloseAutoFocus) == null ? void 0 : _a2.call(props, event);
           if (!event.defaultPrevented) {
             if (!hasInteractedOutsideRef.current) (_b = context.triggerRef.current) == null ? void 0 : _b.focus();
             event.preventDefault();
@@ -14188,8 +14189,8 @@ var DialogContentNonModal = reactExports.forwardRef(
           hasPointerDownOutsideRef.current = false;
         },
         onInteractOutside: (event) => {
-          var _a, _b;
-          (_a = props.onInteractOutside) == null ? void 0 : _a.call(props, event);
+          var _a2, _b;
+          (_a2 = props.onInteractOutside) == null ? void 0 : _a2.call(props, event);
           if (!event.defaultPrevented) {
             hasInteractedOutsideRef.current = true;
             if (event.detail.originalEvent.type === "pointerdown") {
@@ -14309,8 +14310,8 @@ var DescriptionWarning = ({ contentRef, descriptionId }) => {
   const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
   const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
   reactExports.useEffect(() => {
-    var _a;
-    const describedById = (_a = contentRef.current) == null ? void 0 : _a.getAttribute("aria-describedby");
+    var _a2;
+    const describedById = (_a2 = contentRef.current) == null ? void 0 : _a2.getAttribute("aria-describedby");
     if (descriptionId && describedById) {
       const hasDescription = document.getElementById(descriptionId);
       if (!hasDescription) console.warn(MESSAGE);
@@ -16270,7 +16271,7 @@ var CONTENT_NAME$3 = "PopperContent";
 var [PopperContentProvider, useContentContext] = createPopperContext(CONTENT_NAME$3);
 var PopperContent = reactExports.forwardRef(
   (props, forwardedRef) => {
-    var _a, _b, _c, _d, _e2, _f;
+    var _a2, _b, _c, _d, _e2, _f;
     const {
       __scopePopper,
       side = "bottom",
@@ -16349,7 +16350,7 @@ var PopperContent = reactExports.forwardRef(
         handlePlaced == null ? void 0 : handlePlaced();
       }
     }, [isPositioned, handlePlaced]);
-    const arrowX = (_a = middlewareData.arrow) == null ? void 0 : _a.x;
+    const arrowX = (_a2 = middlewareData.arrow) == null ? void 0 : _a2.x;
     const arrowY = (_b = middlewareData.arrow) == null ? void 0 : _b.y;
     const cannotCenterArrow = ((_c = middlewareData.arrow) == null ? void 0 : _c.centerOffset) !== 0;
     const [contentZIndex, setContentZIndex] = reactExports.useState();
@@ -16473,9 +16474,9 @@ var transformOrigin = (options) => ({
   name: "transformOrigin",
   options,
   fn(data) {
-    var _a, _b, _c;
+    var _a2, _b, _c;
     const { placement, rects, middlewareData } = data;
-    const cannotCenterArrow = ((_a = middlewareData.arrow) == null ? void 0 : _a.centerOffset) !== 0;
+    const cannotCenterArrow = ((_a2 = middlewareData.arrow) == null ? void 0 : _a2.centerOffset) !== 0;
     const isArrowHidden = cannotCenterArrow;
     const arrowWidth = isArrowHidden ? 0 : options.arrowWidth;
     const arrowHeight = isArrowHidden ? 0 : options.arrowHeight;
@@ -17978,11 +17979,11 @@ var MenuContentImpl = reactExports.forwardRef(
     const ScrollLockWrapper = disableOutsideScroll ? ReactRemoveScroll : reactExports.Fragment;
     const scrollLockWrapperProps = disableOutsideScroll ? { as: Slot, allowPinchZoom: true } : void 0;
     const handleTypeaheadSearch = (key) => {
-      var _a, _b;
+      var _a2, _b;
       const search = searchRef.current + key;
       const items = getItems().filter((item) => !item.disabled);
       const currentItem = document.activeElement;
-      const currentMatch = (_a = items.find((item) => item.ref.current === currentItem)) == null ? void 0 : _a.textValue;
+      const currentMatch = (_a2 = items.find((item) => item.ref.current === currentItem)) == null ? void 0 : _a2.textValue;
       const values = items.map((item) => item.textValue);
       const nextMatch = getNextMatch(values, search, currentMatch);
       const newItem = (_b = items.find((item) => item.textValue === nextMatch)) == null ? void 0 : _b.ref.current;
@@ -18000,8 +18001,8 @@ var MenuContentImpl = reactExports.forwardRef(
     }, []);
     useFocusGuards();
     const isPointerMovingToSubmenu = reactExports.useCallback((event) => {
-      var _a, _b;
-      const isMovingTowards = pointerDirRef.current === ((_a = pointerGraceIntentRef.current) == null ? void 0 : _a.side);
+      var _a2, _b;
+      const isMovingTowards = pointerDirRef.current === ((_a2 = pointerGraceIntentRef.current) == null ? void 0 : _a2.side);
       return isMovingTowards && isPointerInGraceArea(event, (_b = pointerGraceIntentRef.current) == null ? void 0 : _b.area);
     }, []);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -18017,9 +18018,9 @@ var MenuContentImpl = reactExports.forwardRef(
         ),
         onItemLeave: reactExports.useCallback(
           (event) => {
-            var _a;
+            var _a2;
             if (isPointerMovingToSubmenu(event)) return;
-            (_a = contentRef.current) == null ? void 0 : _a.focus();
+            (_a2 = contentRef.current) == null ? void 0 : _a2.focus();
             setCurrentItemId(null);
           },
           [isPointerMovingToSubmenu]
@@ -18040,9 +18041,9 @@ var MenuContentImpl = reactExports.forwardRef(
             asChild: true,
             trapped: trapFocus,
             onMountAutoFocus: composeEventHandlers(onOpenAutoFocus, (event) => {
-              var _a;
+              var _a2;
               event.preventDefault();
-              (_a = contentRef.current) == null ? void 0 : _a.focus({ preventScroll: true });
+              (_a2 = contentRef.current) == null ? void 0 : _a2.focus({ preventScroll: true });
             }),
             onUnmountAutoFocus: onCloseAutoFocus,
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -18177,13 +18178,13 @@ var MenuItem = reactExports.forwardRef(
         disabled,
         onClick: composeEventHandlers(props.onClick, handleSelect),
         onPointerDown: (event) => {
-          var _a;
-          (_a = props.onPointerDown) == null ? void 0 : _a.call(props, event);
+          var _a2;
+          (_a2 = props.onPointerDown) == null ? void 0 : _a2.call(props, event);
           isPointerDownRef.current = true;
         },
         onPointerUp: composeEventHandlers(props.onPointerUp, (event) => {
-          var _a;
-          if (!isPointerDownRef.current) (_a = event.currentTarget) == null ? void 0 : _a.click();
+          var _a2;
+          if (!isPointerDownRef.current) (_a2 = event.currentTarget) == null ? void 0 : _a2.click();
         }),
         onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
           const isTypingAhead = contentContext.searchRef.current !== "";
@@ -18307,8 +18308,8 @@ var MenuRadioItem = reactExports.forwardRef(
         onSelect: composeEventHandlers(
           radioItemProps.onSelect,
           () => {
-            var _a;
-            return (_a = context.onValueChange) == null ? void 0 : _a.call(context, value);
+            var _a2;
+            return (_a2 = context.onValueChange) == null ? void 0 : _a2.call(context, value);
           },
           { checkForDefaultPrevented: false }
         )
@@ -18403,8 +18404,8 @@ var MenuSubTrigger = reactExports.forwardRef(
         ...props,
         ref: composeRefs$1(forwardedRef, subContext.onTriggerChange),
         onClick: (event) => {
-          var _a;
-          (_a = props.onClick) == null ? void 0 : _a.call(props, event);
+          var _a2;
+          (_a2 = props.onClick) == null ? void 0 : _a2.call(props, event);
           if (props.disabled || event.defaultPrevented) return;
           event.currentTarget.focus();
           if (!context.open) context.onOpenChange(true);
@@ -18426,9 +18427,9 @@ var MenuSubTrigger = reactExports.forwardRef(
         onPointerLeave: composeEventHandlers(
           props.onPointerLeave,
           whenMouse((event) => {
-            var _a, _b;
+            var _a2, _b;
             clearOpenTimer();
-            const contentRect = (_a = context.content) == null ? void 0 : _a.getBoundingClientRect();
+            const contentRect = (_a2 = context.content) == null ? void 0 : _a2.getBoundingClientRect();
             if (contentRect) {
               const side = (_b = context.content) == null ? void 0 : _b.dataset.side;
               const rightSide = side === "right";
@@ -18460,12 +18461,12 @@ var MenuSubTrigger = reactExports.forwardRef(
           })
         ),
         onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
-          var _a;
+          var _a2;
           const isTypingAhead = contentContext.searchRef.current !== "";
           if (props.disabled || isTypingAhead && event.key === " ") return;
           if (SUB_OPEN_KEYS[rootContext.dir].includes(event.key)) {
             context.onOpenChange(true);
-            (_a = context.content) == null ? void 0 : _a.focus();
+            (_a2 = context.content) == null ? void 0 : _a2.focus();
             event.preventDefault();
           }
         })
@@ -18497,8 +18498,8 @@ var MenuSubContent = reactExports.forwardRef(
         disableOutsideScroll: false,
         trapFocus: false,
         onOpenAutoFocus: (event) => {
-          var _a;
-          if (rootContext.isUsingKeyboardRef.current) (_a = ref2.current) == null ? void 0 : _a.focus();
+          var _a2;
+          if (rootContext.isUsingKeyboardRef.current) (_a2 = ref2.current) == null ? void 0 : _a2.focus();
           event.preventDefault();
         },
         onCloseAutoFocus: (event) => event.preventDefault(),
@@ -18510,12 +18511,12 @@ var MenuSubContent = reactExports.forwardRef(
           event.preventDefault();
         }),
         onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
-          var _a;
+          var _a2;
           const isKeyDownInside = event.currentTarget.contains(event.target);
           const isCloseKey = SUB_CLOSE_KEYS[rootContext.dir].includes(event.key);
           if (isKeyDownInside && isCloseKey) {
             context.onOpenChange(false);
-            (_a = subContext.trigger) == null ? void 0 : _a.focus();
+            (_a2 = subContext.trigger) == null ? void 0 : _a2.focus();
             event.preventDefault();
           }
         })
@@ -18691,8 +18692,8 @@ var DropdownMenuContent$1 = reactExports.forwardRef(
         ...contentProps,
         ref: forwardedRef,
         onCloseAutoFocus: composeEventHandlers(props.onCloseAutoFocus, (event) => {
-          var _a;
-          if (!hasInteractedOutsideRef.current) (_a = context.triggerRef.current) == null ? void 0 : _a.focus();
+          var _a2;
+          if (!hasInteractedOutsideRef.current) (_a2 = context.triggerRef.current) == null ? void 0 : _a2.focus();
           hasInteractedOutsideRef.current = false;
           event.preventDefault();
         }),
@@ -19078,8 +19079,8 @@ function UserMenuContent({ user }) {
   ] });
 }
 function NavUser() {
-  var _a;
-  const auth = ((_a = K$1().props) == null ? void 0 : _a.auth) ?? null;
+  var _a2;
+  const auth = ((_a2 = K$1().props) == null ? void 0 : _a2.auth) ?? null;
   const { state } = useSidebar();
   const isMobile = useIsMobile();
   return /* @__PURE__ */ jsxRuntimeExports.jsx(SidebarMenu, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SidebarMenuItem, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
@@ -19538,7 +19539,7 @@ const time = {
     queueMicrotask(clearTime);
   }
 };
-const checkStringStartsWith = (token) => (key) => typeof key === "string" && key.startsWith(token);
+const checkStringStartsWith = (token2) => (key) => typeof key === "string" && key.startsWith(token2);
 const isCSSVariableName = /* @__PURE__ */ checkStringStartsWith("--");
 const startsAsVariableToken = /* @__PURE__ */ checkStringStartsWith("var(--");
 const isCSSVariableToken = (value) => {
@@ -19672,8 +19673,8 @@ const color = {
 };
 const colorRegex = /(?:#[\da-f]{3,8}|(?:rgb|hsl)a?\((?:-?[\d.]+%?[,\s]+){2}-?[\d.]+%?\s*(?:[,/]\s*)?(?:\b\d+(?:\.\d+)?|\.\d+)?%?\))/giu;
 function test(v) {
-  var _a, _b;
-  return isNaN(v) && typeof v === "string" && (((_a = v.match(floatRegex)) == null ? void 0 : _a.length) || 0) + (((_b = v.match(colorRegex)) == null ? void 0 : _b.length) || 0) > 0;
+  var _a2, _b;
+  return isNaN(v) && typeof v === "string" && (((_a2 = v.match(floatRegex)) == null ? void 0 : _a2.length) || 0) + (((_b = v.match(colorRegex)) == null ? void 0 : _b.length) || 0) > 0;
 }
 const NUMBER_TOKEN = "number";
 const COLOR_TOKEN = "color";
@@ -20399,7 +20400,7 @@ class JSAnimation extends WithPromise {
       value: void 0
     };
     this.stop = () => {
-      var _a, _b;
+      var _a2, _b;
       const { motionValue: motionValue2 } = this.options;
       if (motionValue2 && motionValue2.updatedAt !== time.now()) {
         this.tick(time.now());
@@ -20408,7 +20409,7 @@ class JSAnimation extends WithPromise {
       if (this.state === "idle")
         return;
       this.teardown();
-      (_b = (_a = this.options).onStop) == null ? void 0 : _b.call(_a);
+      (_b = (_a2 = this.options).onStop) == null ? void 0 : _b.call(_a2);
     };
     this.options = options;
     this.initAnimation();
@@ -20586,14 +20587,14 @@ class JSAnimation extends WithPromise {
     }
   }
   play() {
-    var _a, _b;
+    var _a2, _b;
     if (this.isStopped)
       return;
     const { driver = frameloopDriver, startTime } = this.options;
     if (!this.driver) {
       this.driver = driver((timestamp) => this.tick(timestamp));
     }
-    (_b = (_a = this.options).onPlay) == null ? void 0 : _b.call(_a);
+    (_b = (_a2 = this.options).onPlay) == null ? void 0 : _b.call(_a2);
     const now2 = this.driver.now();
     if (this.state === "finished") {
       this.updateFinished();
@@ -20623,19 +20624,19 @@ class JSAnimation extends WithPromise {
     this.holdTime = null;
   }
   finish() {
-    var _a, _b;
+    var _a2, _b;
     this.notifyFinished();
     this.teardown();
     this.state = "finished";
-    (_b = (_a = this.options).onComplete) == null ? void 0 : _b.call(_a);
+    (_b = (_a2 = this.options).onComplete) == null ? void 0 : _b.call(_a2);
   }
   cancel() {
-    var _a, _b;
+    var _a2, _b;
     this.holdTime = null;
     this.startTime = 0;
     this.tick(0);
     this.teardown();
-    (_b = (_a = this.options).onCancel) == null ? void 0 : _b.call(_a);
+    (_b = (_a2 = this.options).onCancel) == null ? void 0 : _b.call(_a2);
   }
   teardown() {
     this.state = "idle";
@@ -20653,13 +20654,13 @@ class JSAnimation extends WithPromise {
     return this.tick(sampleTime, true);
   }
   attachTimeline(timeline) {
-    var _a;
+    var _a2;
     if (this.options.allowFlatten) {
       this.options.type = "keyframes";
       this.options.ease = "linear";
       this.initAnimation();
     }
-    (_a = this.driver) == null ? void 0 : _a.stop();
+    (_a2 = this.driver) == null ? void 0 : _a2.stop();
     return timeline.observe(this);
   }
 }
@@ -20822,8 +20823,8 @@ function measureAllKeyframes() {
       const restore = transformsToRestore.get(element);
       if (restore) {
         restore.forEach(([key, value]) => {
-          var _a;
-          (_a = element.getValue(key)) == null ? void 0 : _a.set(value);
+          var _a2;
+          (_a2 = element.getValue(key)) == null ? void 0 : _a2.set(value);
         });
       }
     });
@@ -21047,8 +21048,8 @@ class NativeAnimation extends WithPromise {
     this.animation.pause();
   }
   complete() {
-    var _a, _b;
-    (_b = (_a = this.animation).finish) == null ? void 0 : _b.call(_a);
+    var _a2, _b;
+    (_b = (_a2 = this.animation).finish) == null ? void 0 : _b.call(_a2);
   }
   cancel() {
     try {
@@ -21085,15 +21086,15 @@ class NativeAnimation extends WithPromise {
    * while deferring the commit until the next animation frame.
    */
   commitStyles() {
-    var _a, _b, _c;
-    const element = (_a = this.options) == null ? void 0 : _a.element;
+    var _a2, _b, _c;
+    const element = (_a2 = this.options) == null ? void 0 : _a2.element;
     if (!this.isPseudoElement && (element == null ? void 0 : element.isConnected)) {
       (_c = (_b = this.animation).commitStyles) == null ? void 0 : _c.call(_b);
     }
   }
   get duration() {
-    var _a, _b;
-    const duration = ((_b = (_a = this.animation.effect) == null ? void 0 : _a.getComputedTiming) == null ? void 0 : _b.call(_a).duration) || 0;
+    var _a2, _b;
+    const duration = ((_b = (_a2 = this.animation.effect) == null ? void 0 : _a2.getComputedTiming) == null ? void 0 : _b.call(_a2).duration) || 0;
     return /* @__PURE__ */ millisecondsToSeconds(Number(duration));
   }
   get iterationDuration() {
@@ -21137,9 +21138,9 @@ class NativeAnimation extends WithPromise {
    * Attaches a timeline to the animation, for instance the `ScrollTimeline`.
    */
   attachTimeline({ timeline, rangeStart, rangeEnd, observe }) {
-    var _a;
+    var _a2;
     if (this.allowFlatten) {
-      (_a = this.animation.effect) == null ? void 0 : _a.updateTiming({ easing: "linear" });
+      (_a2 = this.animation.effect) == null ? void 0 : _a2.updateTiming({ easing: "linear" });
     }
     this.animation.onfinish = null;
     if (timeline && supportsScrollTimeline()) {
@@ -21280,9 +21281,9 @@ const colorProperties = /* @__PURE__ */ new Set([
 ]);
 const supportsWaapi = /* @__PURE__ */ memo(() => Object.hasOwnProperty.call(Element.prototype, "animate"));
 function supportsBrowserAnimation(options) {
-  var _a;
+  var _a2;
   const { motionValue: motionValue2, name, repeatDelay, repeatType, damping, type: type2, keyframes: keyframes2 } = options;
-  const subject = (_a = motionValue2 == null ? void 0 : motionValue2.owner) == null ? void 0 : _a.current;
+  const subject = (_a2 = motionValue2 == null ? void 0 : motionValue2.owner) == null ? void 0 : _a2.current;
   if (!(subject instanceof HTMLElement)) {
     return false;
   }
@@ -21300,13 +21301,13 @@ function supportsBrowserAnimation(options) {
 const MAX_RESOLVE_DELAY = 40;
 class AsyncMotionValueAnimation extends WithPromise {
   constructor({ autoplay = true, delay: delay2 = 0, type: type2 = "keyframes", repeat = 0, repeatDelay = 0, repeatType = "loop", keyframes: keyframes2, name, motionValue: motionValue2, element, ...options }) {
-    var _a;
+    var _a2;
     super();
     this.stop = () => {
-      var _a2, _b;
+      var _a3, _b;
       if (this._animation) {
         this._animation.stop();
-        (_a2 = this.stopTimeline) == null ? void 0 : _a2.call(this);
+        (_a3 = this.stopTimeline) == null ? void 0 : _a3.call(this);
       }
       (_b = this.keyframeResolver) == null ? void 0 : _b.cancel();
     };
@@ -21325,10 +21326,10 @@ class AsyncMotionValueAnimation extends WithPromise {
     };
     const KeyframeResolver$1 = (element == null ? void 0 : element.KeyframeResolver) || KeyframeResolver;
     this.keyframeResolver = new KeyframeResolver$1(keyframes2, (resolvedKeyframes, finalKeyframe, forced) => this.onKeyframesResolved(resolvedKeyframes, finalKeyframe, optionsWithDefaults, !forced), name, motionValue2, element);
-    (_a = this.keyframeResolver) == null ? void 0 : _a.scheduleResolve();
+    (_a2 = this.keyframeResolver) == null ? void 0 : _a2.scheduleResolve();
   }
   onKeyframesResolved(keyframes2, finalKeyframe, options, sync) {
-    var _a, _b;
+    var _a2, _b;
     this.keyframeResolver = void 0;
     const { name, type: type2, velocity, delay: delay2, isHandoff, onUpdate } = options;
     this.resolvedAt = time.now();
@@ -21350,7 +21351,7 @@ class AsyncMotionValueAnimation extends WithPromise {
       keyframes: keyframes2
     };
     const useWaapi = canAnimateValue && !isHandoff && supportsBrowserAnimation(resolvedOptions);
-    const element = (_b = (_a = resolvedOptions.motionValue) == null ? void 0 : _a.owner) == null ? void 0 : _b.current;
+    const element = (_b = (_a2 = resolvedOptions.motionValue) == null ? void 0 : _a2.owner) == null ? void 0 : _b.current;
     let animation;
     if (useWaapi) {
       try {
@@ -21385,9 +21386,9 @@ class AsyncMotionValueAnimation extends WithPromise {
     });
   }
   get animation() {
-    var _a;
+    var _a2;
     if (!this._animation) {
-      (_a = this.keyframeResolver) == null ? void 0 : _a.resume();
+      (_a2 = this.keyframeResolver) == null ? void 0 : _a2.resume();
       flushKeyframeResolvers();
     }
     return this._animation;
@@ -21434,11 +21435,11 @@ class AsyncMotionValueAnimation extends WithPromise {
     this.animation.complete();
   }
   cancel() {
-    var _a;
+    var _a2;
     if (this._animation) {
       this.animation.cancel();
     }
-    (_a = this.keyframeResolver) == null ? void 0 : _a.cancel();
+    (_a2 = this.keyframeResolver) == null ? void 0 : _a2.cancel();
   }
 }
 class GroupAnimation {
@@ -21544,10 +21545,10 @@ function parseCSSVariable(current) {
   return [`--${token1 ?? token2}`, fallback];
 }
 function getVariableValue(current, element, depth = 1) {
-  const [token, fallback] = parseCSSVariable(current);
-  if (!token)
+  const [token2, fallback] = parseCSSVariable(current);
+  if (!token2)
     return;
-  const resolved = window.getComputedStyle(element).getPropertyValue(token);
+  const resolved = window.getComputedStyle(element).getPropertyValue(token2);
   if (resolved) {
     const trimmed = resolved.trim();
     return isNumericalString(trimmed) ? parseFloat(trimmed) : trimmed;
@@ -21722,7 +21723,7 @@ class MotionValue {
     this.canTrackVelocity = null;
     this.events = {};
     this.updateAndNotify = (v) => {
-      var _a;
+      var _a2;
       const currentTime = time.now();
       if (this.updatedAt !== currentTime) {
         this.setPrevFrameValue();
@@ -21730,7 +21731,7 @@ class MotionValue {
       this.prev = this.current;
       this.setCurrent(v);
       if (this.current !== this.prev) {
-        (_a = this.events.change) == null ? void 0 : _a.notify(this.current);
+        (_a2 = this.events.change) == null ? void 0 : _a2.notify(this.current);
         if (this.dependents) {
           for (const dependent of this.dependents) {
             dependent.dirty();
@@ -21866,8 +21867,8 @@ class MotionValue {
       this.stopPassiveEffect();
   }
   dirty() {
-    var _a;
-    (_a = this.events.change) == null ? void 0 : _a.notify(this.current);
+    var _a2;
+    (_a2 = this.events.change) == null ? void 0 : _a2.notify(this.current);
   }
   addDependent(dependent) {
     if (!this.dependents) {
@@ -21971,8 +21972,8 @@ class MotionValue {
    * @public
    */
   destroy() {
-    var _a, _b;
-    (_a = this.dependents) == null ? void 0 : _a.clear();
+    var _a2, _b;
+    (_a2 = this.dependents) == null ? void 0 : _a2.clear();
     (_b = this.events.destroy) == null ? void 0 : _b.notify();
     this.clearListeners();
     this.stop();
@@ -22089,8 +22090,8 @@ function animateTarget(visualElement, targetAndTransition, { delay: delay2 = 0, 
   return animations2;
 }
 function animateVariant(visualElement, variant, options = {}) {
-  var _a;
-  const resolved = resolveVariant(visualElement, variant, options.type === "exit" ? (_a = visualElement.presenceContext) == null ? void 0 : _a.custom : void 0);
+  var _a2;
+  const resolved = resolveVariant(visualElement, variant, options.type === "exit" ? (_a2 = visualElement.presenceContext) == null ? void 0 : _a2.custom : void 0);
   let { transition = visualElement.getDefaultTransition() || {} } = resolved || {};
   if (options.transitionOverride) {
     transition = options.transitionOverride;
@@ -22395,7 +22396,7 @@ class DOMKeyframesResolver extends KeyframeResolver {
     }
   }
   measureEndState() {
-    var _a;
+    var _a2;
     const { element, name, unresolvedKeyframes } = this;
     if (!element || !element.current)
       return;
@@ -22407,7 +22408,7 @@ class DOMKeyframesResolver extends KeyframeResolver {
     if (finalKeyframe !== null && this.finalKeyframe === void 0) {
       this.finalKeyframe = finalKeyframe;
     }
-    if ((_a = this.removedTransforms) == null ? void 0 : _a.length) {
+    if ((_a2 = this.removedTransforms) == null ? void 0 : _a2.length) {
       this.removedTransforms.forEach(([unsetTransformName, unsetTransformValue]) => {
         element.getValue(unsetTransformName).set(unsetTransformValue);
       });
@@ -22661,8 +22662,8 @@ const getSize = (borderBoxAxis, svgAxis, htmlAxis) => (target, borderBoxSize) =>
 const getWidth = /* @__PURE__ */ getSize("inline", "width", "offsetWidth");
 const getHeight = /* @__PURE__ */ getSize("block", "height", "offsetHeight");
 function notifyTarget({ target, borderBoxSize }) {
-  var _a;
-  (_a = resizeHandlers.get(target)) == null ? void 0 : _a.forEach((handler) => {
+  var _a2;
+  (_a2 = resizeHandlers.get(target)) == null ? void 0 : _a2.forEach((handler) => {
     handler(target, {
       get width() {
         return getWidth(target, borderBoxSize);
@@ -22907,10 +22908,10 @@ class VisualElement {
     }
   }
   mount(instance) {
-    var _a, _b;
+    var _a2, _b;
     if (this.hasBeenMounted) {
       for (const key in this.initialValues) {
-        (_a = this.values.get(key)) == null ? void 0 : _a.jump(this.initialValues[key]);
+        (_a2 = this.values.get(key)) == null ? void 0 : _a2.jump(this.initialValues[key]);
         this.latestValues[key] = this.initialValues[key];
       }
     }
@@ -22939,14 +22940,14 @@ class VisualElement {
     this.hasBeenMounted = true;
   }
   unmount() {
-    var _a;
+    var _a2;
     this.projection && this.projection.unmount();
     cancelFrame(this.notifyUpdate);
     cancelFrame(this.render);
     this.valueSubscriptions.forEach((remove) => remove());
     this.valueSubscriptions.clear();
     this.removeFromVariantTree && this.removeFromVariantTree();
-    (_a = this.parent) == null ? void 0 : _a.removeChild(this);
+    (_a2 = this.parent) == null ? void 0 : _a2.removeChild(this);
     for (const key in this.events) {
       this.events[key].clear();
     }
@@ -23189,11 +23190,11 @@ class VisualElement {
    * props.
    */
   getBaseTarget(key) {
-    var _a;
+    var _a2;
     const { initial } = this.props;
     let valueFromInitial;
     if (typeof initial === "string" || typeof initial === "object") {
-      const variant = resolveVariantFromProps(this.props, initial, (_a = this.presenceContext) == null ? void 0 : _a.custom);
+      const variant = resolveVariantFromProps(this.props, initial, (_a2 = this.presenceContext) == null ? void 0 : _a2.custom);
       if (variant) {
         valueFromInitial = variant[key];
       }
@@ -23318,7 +23319,7 @@ function applyBoxDelta(box, { x: x2, y: y2 }) {
 const TREE_SCALE_SNAP_MIN = 0.999999999999;
 const TREE_SCALE_SNAP_MAX = 1.0000000000001;
 function applyTreeDeltas(box, treeScale, treePath, isSharedTransition = false) {
-  var _a;
+  var _a2;
   const treeLength = treePath.length;
   if (!treeLength)
     return;
@@ -23342,7 +23343,7 @@ function applyTreeDeltas(box, treeScale, treePath, isSharedTransition = false) {
       applyBoxDelta(box, delta);
     }
     if (isSharedTransition && hasTransform(node.latestValues)) {
-      transformBox(box, node.latestValues, (_a = node.layout) == null ? void 0 : _a.layoutBox);
+      transformBox(box, node.latestValues, (_a2 = node.layout) == null ? void 0 : _a2.layoutBox);
     }
   }
   if (treeScale.x < TREE_SCALE_SNAP_MAX && treeScale.x > TREE_SCALE_SNAP_MIN) {
@@ -23531,14 +23532,14 @@ function isForcedMotionValue(key, { layout: layout2, layoutId }) {
   return transformProps.has(key) || key.startsWith("origin") || (layout2 || layoutId !== void 0) && (!!scaleCorrectors[key] || key === "opacity");
 }
 function scrapeMotionValuesFromProps$1(props, prevProps, visualElement) {
-  var _a;
+  var _a2;
   const style = props.style;
   const prevStyle = prevProps == null ? void 0 : prevProps.style;
   const newValues = {};
   if (!style)
     return newValues;
   for (const key in style) {
-    if (isMotionValue(style[key]) || prevStyle && isMotionValue(prevStyle[key]) || isForcedMotionValue(key, props) || ((_a = visualElement == null ? void 0 : visualElement.getValue(key)) == null ? void 0 : _a.liveStyle) !== void 0) {
+    if (isMotionValue(style[key]) || prevStyle && isMotionValue(prevStyle[key]) || isForcedMotionValue(key, props) || ((_a2 = visualElement == null ? void 0 : visualElement.getValue(key)) == null ? void 0 : _a2.liveStyle) !== void 0) {
       newValues[key] = style[key];
     }
   }
@@ -23554,9 +23555,9 @@ class HTMLVisualElement extends DOMVisualElement {
     this.renderInstance = renderHTML;
   }
   readValueFromInstance(instance, key) {
-    var _a;
+    var _a2;
     if (transformProps.has(key)) {
-      return ((_a = this.projection) == null ? void 0 : _a.isProjecting) ? defaultTransformValue(key) : readTransformValue(instance, key);
+      return ((_a2 = this.projection) == null ? void 0 : _a2.isProjecting) ? defaultTransformValue(key) : readTransformValue(instance, key);
     } else {
       const computedStyle = getComputedStyle$1(instance);
       const value = (isCSSVariableName(key) ? computedStyle.getPropertyValue(key) : computedStyle[key]) || 0;
@@ -23797,8 +23798,8 @@ function createAnimationState(visualElement) {
   let isInitialRender = true;
   let wasReset = false;
   const buildResolvedTypeValues = (type2) => (acc, definition) => {
-    var _a;
-    const resolved = resolveVariant(visualElement, definition, type2 === "exit" ? (_a = visualElement.presenceContext) == null ? void 0 : _a.custom : void 0);
+    var _a2;
+    const resolved = resolveVariant(visualElement, definition, type2 === "exit" ? (_a2 = visualElement.presenceContext) == null ? void 0 : _a2.custom : void 0);
     if (resolved) {
       const { transition, transitionEnd, ...target } = resolved;
       acc = { ...acc, ...target, ...transitionEnd };
@@ -23947,12 +23948,12 @@ function createAnimationState(visualElement) {
     return shouldAnimate ? animate2(animations2) : Promise.resolve();
   }
   function setActive(type2, isActive) {
-    var _a;
+    var _a2;
     if (state[type2].isActive === isActive)
       return Promise.resolve();
-    (_a = visualElement.variantChildren) == null ? void 0 : _a.forEach((child) => {
-      var _a2;
-      return (_a2 = child.animationState) == null ? void 0 : _a2.setActive(type2, isActive);
+    (_a2 = visualElement.variantChildren) == null ? void 0 : _a2.forEach((child) => {
+      var _a3;
+      return (_a3 = child.animationState) == null ? void 0 : _a3.setActive(type2, isActive);
     });
     state[type2].isActive = isActive;
     const animations2 = animateChanges(type2);
@@ -24275,10 +24276,10 @@ class NodeStack {
     }
   }
   relegate(node) {
-    var _a;
+    var _a2;
     for (let i2 = this.members.indexOf(node) - 1; i2 >= 0; i2--) {
       const member = this.members[i2];
-      if (member.isPresent !== false && ((_a = member.instance) == null ? void 0 : _a.isConnected) !== false) {
+      if (member.isPresent !== false && ((_a2 = member.instance) == null ? void 0 : _a2.isConnected) !== false) {
         this.promote(member);
         return true;
       }
@@ -24286,7 +24287,7 @@ class NodeStack {
     return false;
   }
   promote(node, preserveFollowOpacity) {
-    var _a;
+    var _a2;
     const prevLead = this.lead;
     if (node === prevLead)
       return;
@@ -24306,7 +24307,7 @@ class NodeStack {
           node.snapshot = prevLead.snapshot;
           node.snapshot.latestValues = prevLead.animationValues || prevLead.latestValues;
         }
-        if ((_a = node.root) == null ? void 0 : _a.isUpdating)
+        if ((_a2 = node.root) == null ? void 0 : _a2.isUpdating)
           node.isLayoutDirty = true;
       }
       if (node.options.crossfade === false)
@@ -24315,8 +24316,8 @@ class NodeStack {
   }
   exitAnimationComplete() {
     this.members.forEach((member) => {
-      var _a, _b, _c, _d, _e2;
-      (_b = (_a = member.options).onExitComplete) == null ? void 0 : _b.call(_a);
+      var _a2, _b, _c, _d, _e2;
+      (_b = (_a2 = member.options).onExitComplete) == null ? void 0 : _b.call(_a2);
       (_e2 = (_c = member.resumingFrom) == null ? void 0 : (_d = _c.options).onExitComplete) == null ? void 0 : _e2.call(_d);
     });
   }
@@ -24324,8 +24325,8 @@ class NodeStack {
     this.members.forEach((member) => member.instance && member.scheduleRender(false));
   }
   removeLeadSnapshot() {
-    var _a;
-    if ((_a = this.lead) == null ? void 0 : _a.snapshot)
+    var _a2;
+    if ((_a2 = this.lead) == null ? void 0 : _a2.snapshot)
       this.lead.snapshot = void 0;
   }
 }
@@ -24733,12 +24734,12 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       };
     }
     measurePageBox() {
-      var _a;
+      var _a2;
       const { visualElement } = this.options;
       if (!visualElement)
         return createBox();
       const box = visualElement.measureViewportBox();
-      const wasInScrollRoot = ((_a = this.scroll) == null ? void 0 : _a.wasRoot) || this.path.some(checkNodeWasScrollRoot);
+      const wasInScrollRoot = ((_a2 = this.scroll) == null ? void 0 : _a2.wasRoot) || this.path.some(checkNodeWasScrollRoot);
       if (!wasInScrollRoot) {
         const { scroll } = this.root;
         if (scroll) {
@@ -24749,10 +24750,10 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       return box;
     }
     removeElementScroll(box) {
-      var _a;
+      var _a2;
       const boxWithoutScroll = createBox();
       copyBoxInto(boxWithoutScroll, box);
-      if ((_a = this.scroll) == null ? void 0 : _a.wasRoot) {
+      if ((_a2 = this.scroll) == null ? void 0 : _a2.wasRoot) {
         return boxWithoutScroll;
       }
       for (let i2 = 0; i2 < this.path.length; i2++) {
@@ -24769,7 +24770,7 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       return boxWithoutScroll;
     }
     applyTransform(box, transformOnly = false, output) {
-      var _a, _b;
+      var _a2, _b;
       const withTransforms = output || createBox();
       copyBoxInto(withTransforms, box);
       for (let i2 = 0; i2 < this.path.length; i2++) {
@@ -24780,7 +24781,7 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
         }
         if (!hasTransform(node.latestValues))
           continue;
-        transformBox(withTransforms, node.latestValues, (_a = node.layout) == null ? void 0 : _a.layoutBox);
+        transformBox(withTransforms, node.latestValues, (_a2 = node.layout) == null ? void 0 : _a2.layoutBox);
       }
       if (hasTransform(this.latestValues)) {
         transformBox(withTransforms, this.latestValues, (_b = this.layout) == null ? void 0 : _b.layoutBox);
@@ -24788,7 +24789,7 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       return withTransforms;
     }
     removeTransform(box) {
-      var _a;
+      var _a2;
       const boxWithoutTransform = createBox();
       copyBoxInto(boxWithoutTransform, box);
       for (let i2 = 0; i2 < this.path.length; i2++) {
@@ -24801,7 +24802,7 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
           sourceBox = createBox();
           copyBoxInto(sourceBox, node.measurePageBox());
         }
-        removeBoxTransforms(boxWithoutTransform, node.latestValues, (_a = node.snapshot) == null ? void 0 : _a.layoutBox, sourceBox);
+        removeBoxTransforms(boxWithoutTransform, node.latestValues, (_a2 = node.snapshot) == null ? void 0 : _a2.layoutBox, sourceBox);
       }
       if (hasTransform(this.latestValues)) {
         removeBoxTransforms(boxWithoutTransform, this.latestValues);
@@ -24837,13 +24838,13 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       }
     }
     resolveTargetDelta(forceRecalculation = false) {
-      var _a;
+      var _a2;
       const lead = this.getLead();
       this.isProjectionDirty || (this.isProjectionDirty = lead.isProjectionDirty);
       this.isTransformDirty || (this.isTransformDirty = lead.isTransformDirty);
       this.isSharedProjectionDirty || (this.isSharedProjectionDirty = lead.isSharedProjectionDirty);
       const isShared = Boolean(this.resumingFrom) || this !== lead;
-      const canSkip = !(forceRecalculation || isShared && this.isSharedProjectionDirty || this.isProjectionDirty || ((_a = this.parent) == null ? void 0 : _a.isProjectionDirty) || this.attemptToResolveRelativeTarget || this.root.updateBlockedByResize);
+      const canSkip = !(forceRecalculation || isShared && this.isSharedProjectionDirty || this.isProjectionDirty || ((_a2 = this.parent) == null ? void 0 : _a2.isProjectionDirty) || this.attemptToResolveRelativeTarget || this.root.updateBlockedByResize);
       if (canSkip)
         return;
       const { layout: layout2, layoutId } = this.options;
@@ -24915,11 +24916,11 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       this.relativeParent = this.relativeTarget = void 0;
     }
     calcProjection() {
-      var _a;
+      var _a2;
       const lead = this.getLead();
       const isShared = Boolean(this.resumingFrom) || this !== lead;
       let canSkip = true;
-      if (this.isProjectionDirty || ((_a = this.parent) == null ? void 0 : _a.isProjectionDirty)) {
+      if (this.isProjectionDirty || ((_a2 = this.parent) == null ? void 0 : _a2.isProjectionDirty)) {
         canSkip = false;
       }
       if (isShared && (this.isSharedProjectionDirty || this.isTransformDirty)) {
@@ -24973,8 +24974,8 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       this.isVisible = true;
     }
     scheduleRender(notifyAll2 = true) {
-      var _a;
-      (_a = this.options.visualElement) == null ? void 0 : _a.scheduleRender();
+      var _a2;
+      (_a2 = this.options.visualElement) == null ? void 0 : _a2.scheduleRender();
       if (notifyAll2) {
         const stack = this.getStack();
         stack && stack.scheduleRender();
@@ -25032,9 +25033,9 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       this.mixTargetDelta(this.options.layoutRoot ? 1e3 : 0);
     }
     startAnimation(options) {
-      var _a, _b, _c;
+      var _a2, _b, _c;
       this.notifyListeners("animationStart");
-      (_a = this.currentAnimation) == null ? void 0 : _a.stop();
+      (_a2 = this.currentAnimation) == null ? void 0 : _a2.stop();
       (_c = (_b = this.resumingFrom) == null ? void 0 : _b.currentAnimation) == null ? void 0 : _c.stop();
       if (this.pendingAnimation) {
         cancelFrame(this.pendingAnimation);
@@ -25117,14 +25118,14 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       return stack ? stack.lead === this : true;
     }
     getLead() {
-      var _a;
+      var _a2;
       const { layoutId } = this.options;
-      return layoutId ? ((_a = this.getStack()) == null ? void 0 : _a.lead) || this : this;
+      return layoutId ? ((_a2 = this.getStack()) == null ? void 0 : _a2.lead) || this : this;
     }
     getPrevLead() {
-      var _a;
+      var _a2;
       const { layoutId } = this.options;
-      return layoutId ? (_a = this.getStack()) == null ? void 0 : _a.prevLead : void 0;
+      return layoutId ? (_a2 = this.getStack()) == null ? void 0 : _a2.prevLead : void 0;
     }
     getStack() {
       const { layoutId } = this.options;
@@ -25249,8 +25250,8 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
     // Only run on root
     resetTree() {
       this.root.nodes.forEach((node) => {
-        var _a;
-        return (_a = node.currentAnimation) == null ? void 0 : _a.stop();
+        var _a2;
+        return (_a2 = node.currentAnimation) == null ? void 0 : _a2.stop();
       });
       this.root.nodes.forEach(clearMeasurements);
       this.root.sharedNodes.clear();
@@ -25261,8 +25262,8 @@ function updateLayout(node) {
   node.updateLayout();
 }
 function notifyLayoutUpdate(node) {
-  var _a;
-  const snapshot = ((_a = node.resumeFrom) == null ? void 0 : _a.snapshot) || node.snapshot;
+  var _a2;
+  const snapshot = ((_a2 = node.resumeFrom) == null ? void 0 : _a2.snapshot) || node.snapshot;
   if (node.isLead() && node.layout && snapshot && node.hasListeners("didUpdate")) {
     const { layoutBox: layout2, measuredBox: measuredLayout } = node.layout;
     const { animationType } = node.options;
@@ -25423,15 +25424,15 @@ function shouldAnimatePositionOnly(animationType, snapshot, layout2) {
   return animationType === "position" || animationType === "preserve-aspect" && !isNear(aspectRatio(snapshot), aspectRatio(layout2), 0.2);
 }
 function checkNodeWasScrollRoot(node) {
-  var _a;
-  return node !== node.root && ((_a = node.scroll) == null ? void 0 : _a.wasRoot);
+  var _a2;
+  return node !== node.root && ((_a2 = node.scroll) == null ? void 0 : _a2.wasRoot);
 }
 const DocumentProjectionNode = createProjectionNode$1({
   attachResizeListener: (ref2, notify) => addDomEvent(ref2, "resize", notify),
   measureScroll: () => {
-    var _a, _b;
+    var _a2, _b;
     return {
-      x: document.documentElement.scrollLeft || ((_a = document.body) == null ? void 0 : _a.scrollLeft) || 0,
+      x: document.documentElement.scrollLeft || ((_a2 = document.body) == null ? void 0 : _a2.scrollLeft) || 0,
       y: document.documentElement.scrollTop || ((_b = document.body) == null ? void 0 : _b.scrollTop) || 0
     };
   },
@@ -25526,7 +25527,7 @@ class PopChildMeasure extends reactExports.Component {
   }
 }
 function PopChild({ children, isPresent, anchorX, anchorY, root, pop }) {
-  var _a;
+  var _a2;
   const id2 = reactExports.useId();
   const ref2 = reactExports.useRef(null);
   const size2 = reactExports.useRef({
@@ -25538,7 +25539,7 @@ function PopChild({ children, isPresent, anchorX, anchorY, root, pop }) {
     bottom: 0
   });
   const { nonce } = reactExports.useContext(MotionConfigContext);
-  const childRef = ((_a = children.props) == null ? void 0 : _a.ref) ?? (children == null ? void 0 : children.ref);
+  const childRef = ((_a2 = children.props) == null ? void 0 : _a2.ref) ?? (children == null ? void 0 : children.ref);
   const composedRef = useComposedRefs(ref2, childRef);
   reactExports.useInsertionEffect(() => {
     const { width, height, top, left, right, bottom } = size2.current;
@@ -25564,8 +25565,8 @@ function PopChild({ children, isPresent, anchorX, anchorY, root, pop }) {
         `);
     }
     return () => {
-      var _a2;
-      (_a2 = ref2.current) == null ? void 0 : _a2.removeAttribute("data-motion-pop-id");
+      var _a3;
+      (_a3 = ref2.current) == null ? void 0 : _a3.removeAttribute("data-motion-pop-id");
       if (parent.contains(style)) {
         parent.removeChild(style);
       }
@@ -26031,9 +26032,9 @@ function useMotionRef(visualState, visualElement, externalRef) {
   });
   const refCleanup = reactExports.useRef(null);
   return reactExports.useCallback((instance) => {
-    var _a;
+    var _a2;
     if (instance) {
-      (_a = visualState.onMount) == null ? void 0 : _a.call(visualState, instance);
+      (_a2 = visualState.onMount) == null ? void 0 : _a2.call(visualState, instance);
     }
     const ref2 = externalRefContainer.current;
     if (typeof ref2 === "function") {
@@ -26061,7 +26062,7 @@ function isRefObject(ref2) {
   return ref2 && typeof ref2 === "object" && Object.prototype.hasOwnProperty.call(ref2, "current");
 }
 function useVisualElement(Component, visualState, props, createVisualElement, ProjectionNodeConstructor, isSVG) {
-  var _a, _b;
+  var _a2, _b;
   const { visualElement: parent } = reactExports.useContext(MotionContext);
   const lazyContext = reactExports.useContext(LazyContext);
   const presenceContext = reactExports.useContext(PresenceContext);
@@ -26098,7 +26099,7 @@ function useVisualElement(Component, visualState, props, createVisualElement, Pr
     }
   });
   const optimisedAppearId = props[optimizedAppearDataAttribute];
-  const wantsHandoff = reactExports.useRef(Boolean(optimisedAppearId) && typeof window !== "undefined" && !((_a = window.MotionHandoffIsComplete) == null ? void 0 : _a.call(window, optimisedAppearId)) && ((_b = window.MotionHasOptimisedAnimation) == null ? void 0 : _b.call(window, optimisedAppearId)));
+  const wantsHandoff = reactExports.useRef(Boolean(optimisedAppearId) && typeof window !== "undefined" && !((_a2 = window.MotionHandoffIsComplete) == null ? void 0 : _a2.call(window, optimisedAppearId)) && ((_b = window.MotionHasOptimisedAnimation) == null ? void 0 : _b.call(window, optimisedAppearId)));
   useIsomorphicLayoutEffect(() => {
     hasMountedOnce.current = true;
     if (!visualElement)
@@ -26119,8 +26120,8 @@ function useVisualElement(Component, visualState, props, createVisualElement, Pr
     }
     if (wantsHandoff.current) {
       queueMicrotask(() => {
-        var _a2;
-        (_a2 = window.MotionHandoffMarkAsComplete) == null ? void 0 : _a2.call(window, optimisedAppearId);
+        var _a3;
+        (_a3 = window.MotionHandoffMarkAsComplete) == null ? void 0 : _a3.call(window, optimisedAppearId);
       });
       wantsHandoff.current = false;
     }
@@ -26264,9 +26265,9 @@ class AnimationFeature extends Feature {
     }
   }
   unmount() {
-    var _a;
+    var _a2;
     this.node.animationState.reset();
-    (_a = this.unmountControls) == null ? void 0 : _a.call(this);
+    (_a2 = this.unmountControls) == null ? void 0 : _a2.call(this);
   }
 }
 let id = 0;
@@ -26277,7 +26278,7 @@ class ExitAnimationFeature extends Feature {
     this.isExitComplete = false;
   }
   update() {
-    var _a;
+    var _a2;
     if (!this.node.presenceContext)
       return;
     const { isPresent, onExitComplete } = this.node.presenceContext;
@@ -26293,7 +26294,7 @@ class ExitAnimationFeature extends Feature {
           if (resolved) {
             const { transition, transitionEnd, ...target } = resolved;
             for (const key in target) {
-              (_a = this.node.getValue(key)) == null ? void 0 : _a.jump(target[key]);
+              (_a2 = this.node.getValue(key)) == null ? void 0 : _a2.jump(target[key]);
             }
           }
         }
@@ -26803,9 +26804,9 @@ class VisualElementDragControls {
     axisValue.set(next);
   }
   resolveConstraints() {
-    var _a;
+    var _a2;
     const { dragConstraints, dragElastic } = this.getProps();
-    const layout2 = this.visualElement.projection && !this.visualElement.projection.layout ? this.visualElement.projection.measure(false) : (_a = this.visualElement.projection) == null ? void 0 : _a.layout;
+    const layout2 = this.visualElement.projection && !this.visualElement.projection.layout ? this.visualElement.projection.measure(false) : (_a2 = this.visualElement.projection) == null ? void 0 : _a2.layout;
     const prevConstraints = this.constraints;
     if (dragConstraints && isRefObject(dragConstraints)) {
       if (!this.constraints) {
@@ -27346,8 +27347,8 @@ class InViewFeature extends Feature {
     this.isInView = false;
   }
   startObserver() {
-    var _a;
-    (_a = this.stopObserver) == null ? void 0 : _a.call(this);
+    var _a2;
+    (_a2 = this.stopObserver) == null ? void 0 : _a2.call(this);
     const { viewport = {} } = this.node.getProps();
     const { root, margin: rootMargin, amount = "some", once } = viewport;
     const options = {
@@ -27387,8 +27388,8 @@ class InViewFeature extends Feature {
     }
   }
   unmount() {
-    var _a;
-    (_a = this.stopObserver) == null ? void 0 : _a.call(this);
+    var _a2;
+    (_a2 = this.stopObserver) == null ? void 0 : _a2.call(this);
     this.hasEnteredView = false;
     this.isInView = false;
   }
@@ -28204,17 +28205,17 @@ const VillageView = ({ base, onBuildingClick, gameConfig }) => {
   };
   const bConfigs = Object.values(buildingConfigs);
   const playerBuildings = U$2.useMemo(() => {
-    var _a;
+    var _a2;
     const list = [
       { type: "qg", level: base.qg_nivel ?? 1 },
       { type: "muralha", level: base.muralha_nivel ?? 1 },
-      ...((_a = base.edificios) == null ? void 0 : _a.filter((eb) => {
-        var _a2;
-        const t2 = (_a2 = eb.buildingType) == null ? void 0 : _a2.toLowerCase();
+      ...((_a2 = base.edificios) == null ? void 0 : _a2.filter((eb) => {
+        var _a3;
+        const t2 = (_a3 = eb.buildingType) == null ? void 0 : _a3.toLowerCase();
         return t2 !== "qg" && t2 !== "muralha";
       }).map((eb) => {
-        var _a2;
-        let type2 = (_a2 = eb.buildingType) == null ? void 0 : _a2.toLowerCase();
+        var _a3;
+        let type2 = (_a3 = eb.buildingType) == null ? void 0 : _a3.toLowerCase();
         return { type: type2, level: eb.nivel };
       })) || []
     ];
@@ -28373,7 +28374,7 @@ const BuildingModal = ({
   isUpgrading,
   isTraining
 }) => {
-  var _a, _b, _c, _d, _e2, _f;
+  var _a2, _b, _c, _d, _e2, _f;
   if (!building) return null;
   const buildingsConfig = (gameConfig == null ? void 0 : gameConfig.buildings) || {};
   const config = buildingsConfig[building.buildingType] || {
@@ -28400,11 +28401,11 @@ const BuildingModal = ({
     setUsePlaceholder(false);
   }, [building.buildingType, building.nivel]);
   const renderCost = (resourceType, baseAmount) => {
-    var _a2, _b2;
+    var _a3, _b2;
     if (!baseAmount) return null;
     const scaling = (gameConfig == null ? void 0 : gameConfig.scaling) || 1.5;
     const totalCost = calculateBuildingCost(baseAmount, building.nivel || 0, scaling);
-    const playerAmount = parseResourceValue(((_b2 = (_a2 = building.base) == null ? void 0 : _a2.recursos) == null ? void 0 : _b2[resourceType]) || 0);
+    const playerAmount = parseResourceValue(((_b2 = (_a3 = building.base) == null ? void 0 : _a3.recursos) == null ? void 0 : _b2[resourceType]) || 0);
     const hasEnough = playerAmount >= totalCost;
     const resourceIcons = {
       "suprimentos": "📦",
@@ -28436,7 +28437,7 @@ const BuildingModal = ({
     );
   };
   const getProductionBonus = (lvl) => {
-    var _a2, _b2;
+    var _a3, _b2;
     const resKey = {
       "mina_suprimentos": "suprimentos",
       "refinaria": "combustivel",
@@ -28446,20 +28447,20 @@ const BuildingModal = ({
       "solar": "energia"
     }[building.buildingType];
     if (!resKey) return null;
-    const baseProd = ((_a2 = gameConfig == null ? void 0 : gameConfig.production) == null ? void 0 : _a2[resKey]) || 10;
+    const baseProd = ((_a3 = gameConfig == null ? void 0 : gameConfig.production) == null ? void 0 : _a3[resKey]) || 10;
     const speed = ((_b2 = gameConfig == null ? void 0 : gameConfig.speed) == null ? void 0 : _b2.resources) || 1;
     const scaling = (gameConfig == null ? void 0 : gameConfig.scaling) || 1.5;
     return calculateResourceProduction(baseProd, lvl, speed, scaling);
   };
   const currentBonus = getProductionBonus(building.nivel || 0);
   const nextBonus = getProductionBonus(nextLevel);
-  const constSpeed = ((_a = gameConfig == null ? void 0 : gameConfig.speed) == null ? void 0 : _a.construction) || 1;
+  const constSpeed = ((_a2 = gameConfig == null ? void 0 : gameConfig.speed) == null ? void 0 : _a2.construction) || 1;
   const totalTime = calculateConstructionTime(config.time_base, building.nivel || 0, constSpeed);
   const timeFormatted = `${Math.floor(totalTime / 60)}m ${Math.floor(totalTime % 60)}s`;
   const canAfford = config.cost ? Object.entries(config.cost).every(([type2, amount]) => {
-    var _a2, _b2;
+    var _a3, _b2;
     const cost = calculateBuildingCost(amount, building.nivel || 0, (gameConfig == null ? void 0 : gameConfig.scaling) || 1.5);
-    return parseResourceValue(((_b2 = (_a2 = building.base) == null ? void 0 : _a2.recursos) == null ? void 0 : _b2[type2]) || 0) >= cost;
+    return parseResourceValue(((_b2 = (_a3 = building.base) == null ? void 0 : _a3.recursos) == null ? void 0 : _b2[type2]) || 0) >= cost;
   }) : true;
   const [trainQty, setTrainQty] = reactExports.useState(1);
   const [selectedUnit, setSelectedUnit] = reactExports.useState(null);
@@ -28480,8 +28481,8 @@ const BuildingModal = ({
     const isSelected = selectedUnit === key;
     Object.entries(unit.cost || {}).every(
       ([res, amt]) => {
-        var _a2, _b2;
-        return parseResourceValue(((_b2 = (_a2 = building.base) == null ? void 0 : _a2.recursos) == null ? void 0 : _b2[res]) || 0) >= amt * trainQty;
+        var _a3, _b2;
+        return parseResourceValue(((_b2 = (_a3 = building.base) == null ? void 0 : _a3.recursos) == null ? void 0 : _b2[res]) || 0) >= amt * trainQty;
       }
     );
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -28766,22 +28767,22 @@ const ProductionQueue = ({
 }) => {
   const unifiedQueue = [
     ...construcoes.map((c2) => {
-      var _a;
+      var _a2;
       return {
         id: c2.id,
         buildingType: "construcao",
-        label: ((_a = c2.buildingType) == null ? void 0 : _a.replace(/_/g, " ")) || "Estrutura",
+        label: ((_a2 = c2.buildingType) == null ? void 0 : _a2.replace(/_/g, " ")) || "Estrutura",
         sublabel: `Upgrade para Nível ${c2.nivel_destino}`,
         started_at: c2.created_at,
         ends_at: c2.completado_em
       };
     }),
     ...treinos.map((t2) => {
-      var _a;
+      var _a2;
       return {
         id: t2.id,
         buildingType: "treino",
-        label: ((_a = t2.unidade) == null ? void 0 : _a.replace(/_/g, " ")) || "Unidade",
+        label: ((_a2 = t2.unidade) == null ? void 0 : _a2.replace(/_/g, " ")) || "Unidade",
         sublabel: `Recrutamento: ${t2.quantidade}x`,
         started_at: t2.created_at,
         ends_at: t2.completado_em
@@ -28953,7 +28954,7 @@ const ArmyMovementPanel = ({
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "p-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "divide-y divide-white/5", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesRecebidos == null ? void 0 : ataquesRecebidos.map((atk) => {
-        var _a;
+        var _a2;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
           {
@@ -28968,7 +28969,7 @@ const ArmyMovementPanel = ({
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mt-1", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[9px] text-neutral-500 uppercase font-mono tracking-tighter", children: [
                       "Vetor de Ataque: ",
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: (_a = atk.origem) == null ? void 0 : _a.username })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: (_a2 = atk.origem) == null ? void 0 : _a2.username })
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1 h-1 bg-red-500 rounded-full animate-ping" })
                   ] })
@@ -28987,7 +28988,7 @@ const ArmyMovementPanel = ({
         );
       }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesEnviados == null ? void 0 : ataquesEnviados.map((atk) => {
-        var _a;
+        var _a2;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
           {
@@ -29003,7 +29004,7 @@ const ArmyMovementPanel = ({
                     "Missão: ",
                     atk.tipo.replace(/_/g, " "),
                     " / Alvo: ",
-                    (_a = atk.destino) == null ? void 0 : _a.username
+                    (_a2 = atk.destino) == null ? void 0 : _a2.username
                   ] }) })
                 ] })
               ] }),
@@ -29141,7 +29142,7 @@ const AttackModal = ({
   };
   const hasTropasSelected = Object.values(selectedTropas).some((v) => v > 0);
   const stats = reactExports.useMemo(() => {
-    var _a;
+    var _a2;
     if (!destinoBase || !origemBase) return null;
     const dx = destinoBase.coordenada_x - origemBase.coordenada_x;
     const dy = destinoBase.coordenada_y - origemBase.coordenada_y;
@@ -29150,16 +29151,16 @@ const AttackModal = ({
     let totalAttack = 0;
     let totalCapacity = 0;
     Object.entries(selectedTropas).forEach(([unidade, qtd]) => {
-      var _a2;
+      var _a3;
       if (qtd > 0) {
-        const config = ((_a2 = gameConfig == null ? void 0 : gameConfig.units) == null ? void 0 : _a2[unidade]) || {};
+        const config = ((_a3 = gameConfig == null ? void 0 : gameConfig.units) == null ? void 0 : _a3[unidade]) || {};
         if (config.speed < minSpeed) minSpeed = config.speed;
         totalAttack += qtd * (config.attack || 0);
         totalCapacity += qtd * (config.capacity || 0);
       }
     });
     if (minSpeed === 999) minSpeed = 10;
-    const speedTravel = ((_a = gameConfig == null ? void 0 : gameConfig.speed) == null ? void 0 : _a.travel) || 1;
+    const speedTravel = ((_a2 = gameConfig == null ? void 0 : gameConfig.speed) == null ? void 0 : _a2.travel) || 1;
     const segundos = Math.max(30, distancia * 100 / (minSpeed * speedTravel));
     return {
       distancia: distancia.toFixed(1),
@@ -29830,7 +29831,7 @@ class GameStateService {
     this.notify();
   }
   updateGlobalSummary() {
-    var _a;
+    var _a2;
     const villageEntities = entityManager.getEntitiesWith(["Village", "GridPosition"]);
     const villageList = villageEntities.map((id2) => {
       const v = entityManager.getComponent(id2, "Village");
@@ -29853,7 +29854,7 @@ class GameStateService {
     });
     this.globalState = {
       ...this.globalState,
-      player: ((_a = this.globalState) == null ? void 0 : _a.player) ?? { name: "OPERATIVE", id: 1 },
+      player: ((_a2 = this.globalState) == null ? void 0 : _a2.player) ?? { name: "OPERATIVE", id: 1 },
       villages: villageList,
       worldMapBases,
       rebelCount: worldMapBases.filter((b2) => !b2.ownerId).length
@@ -29923,8 +29924,8 @@ const ActiveMovements = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-neutral-400 uppercase tracking-[0.3em]", children: "ACTIVE_MOVEMENTS" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-black/40 backdrop-blur-md border border-white/5 p-4 rounded-3xl shadow-2xl space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar", children: movements.map((m2) => {
-      var _a, _b, _c, _d, _e2;
-      const remaining = Math.max(0, (((_a = m2.march) == null ? void 0 : _a.arrivalTime) - now2) / 1e3);
+      var _a2, _b, _c, _d, _e2;
+      const remaining = Math.max(0, (((_a2 = m2.march) == null ? void 0 : _a2.arrivalTime) - now2) / 1e3);
       const progress2 = Math.min(100, (1 - remaining / ((_b = m2.march) == null ? void 0 : _b.totalTime)) * 100);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-neutral-900/40 border border-white/5 p-3 rounded-2xl space-y-2 group transition-all hover:border-white/10", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
@@ -29969,7 +29970,7 @@ const StrategyHUD = ({
   villages,
   onJump
 }) => {
-  var _a;
+  var _a2;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 pointer-events-none z-50 flex flex-col justify-between p-8", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start w-full gap-8", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-1/4 pt-16", children: [
@@ -30067,7 +30068,7 @@ const StrategyHUD = ({
                   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-neutral-400 uppercase tracking-widest", children: "SIGNAL_DETECTED" })
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-3xl font-black text-white uppercase tracking-tighter leading-none", children: [
-                  ((_a = selectedEntity.type) == null ? void 0 : _a.replace("Unit", "")) || "TARGET",
+                  ((_a2 = selectedEntity.type) == null ? void 0 : _a2.replace("Unit", "")) || "TARGET",
                   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sky-500", children: "_SECURE" })
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] font-mono text-neutral-500 mt-1", children: [
@@ -30103,7 +30104,7 @@ const InfoBit = ({ label, value, color: color2 }) => /* @__PURE__ */ jsxRuntimeE
   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-black uppercase tracking-tighter ${color2}`, children: value })
 ] });
 function WorldMapView({ playerBase, troops = [], gameConfig }) {
-  var _a, _b, _c, _d, _e2, _f, _g, _h, _i, _j;
+  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i, _j;
   const [center, setCenter] = reactExports.useState({ x: (playerBase == null ? void 0 : playerBase.coordenada_x) || 500, y: (playerBase == null ? void 0 : playerBase.coordenada_y) || 500 });
   const [selectedSector, setSelectedSector] = reactExports.useState(null);
   const [searchCoords, setSearchCoords] = reactExports.useState({ x: "", y: "" });
@@ -30224,7 +30225,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                 /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Array.from({ length: 20 }).map((_2, iy) => {
                   const y2 = center.y - 10 + iy;
                   return Array.from({ length: 20 }).map((_22, ix) => {
-                    var _a2;
+                    var _a3;
                     const x2 = center.x - 10 + ix;
                     const baseAt = allBases.find((b2) => b2.coordenada_x === x2 && b2.coordenada_y === y2);
                     const isSelected = (selectedSector == null ? void 0 : selectedSector.x) === x2 && (selectedSector == null ? void 0 : selectedSector.y) === y2;
@@ -30288,7 +30289,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                           (baseAt == null ? void 0 : baseAt.is_protected) && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-yellow-400 font-black animate-pulse", children: "UNDER_PROTECTION" }),
                           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                             "OWNER: ",
-                            isRebel ? "NEUTRAL_INSURGENT" : ((_a2 = baseAt == null ? void 0 : baseAt.jogador) == null ? void 0 : _a2.username) || "NONE"
+                            isRebel ? "NEUTRAL_INSURGENT" : ((_a3 = baseAt == null ? void 0 : baseAt.jogador) == null ? void 0 : _a3.username) || "NONE"
                           ] })
                         ] })
                       ] }) })
@@ -30296,7 +30297,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                   });
                 }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-30", children: gameEntities.map((e) => {
-                  var _a2;
+                  var _a3;
                   return /* @__PURE__ */ jsxRuntimeExports.jsx(
                     motion.div,
                     {
@@ -30321,7 +30322,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                             "EXPE_ID: ",
                             e.id,
                             " | ",
-                            ((_a2 = e.status) == null ? void 0 : _a2.toUpperCase()) || "OPERACIONAL"
+                            ((_a3 = e.status) == null ? void 0 : _a3.toUpperCase()) || "OPERACIONAL"
                           ] }),
                           e.march && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[8px] font-mono text-neutral-500", children: [
                             "ETA: ",
@@ -30369,7 +30370,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
         className: "fixed right-10 top-32 bottom-32 w-96 bg-neutral-950/90 backdrop-blur-2xl rounded-[3rem] border-2 border-white/5 p-8 shadow-2xl z-40 overflow-hidden flex flex-col pointer-events-auto",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "mb-8", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2", children: ((_a = selectedSector.base) == null ? void 0 : _a.nome) || "Sector Vazio" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2", children: ((_a2 = selectedSector.base) == null ? void 0 : _a2.nome) || "Sector Vazio" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-neutral-500 font-mono text-sm", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Crosshair, { size: 14 }),
               " ",
@@ -30611,13 +30612,13 @@ function VillageDashboard({
             "Transmissões Globais"
           ] }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "py-6 min-h-[100px]", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: (relatoriosGlobal ?? []).length > 0 ? (relatoriosGlobal ?? []).map((r2, i2) => {
-            var _a, _b;
+            var _a2, _b;
             return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "group/item relative pl-4 transition-all duration-300", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute left-0 top-0 bottom-0 w-[2px] bg-orange-500/20 group-hover/item:bg-orange-500 transition-colors" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[8px] text-neutral-600 font-black uppercase tracking-widest mb-1 group-hover/item:text-neutral-400 transition-colors", children: new Date(r2.created_at).toLocaleTimeString() }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-neutral-400 group-hover/item:text-white transition-colors", children: [
                 "Operação de ",
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-orange-400 font-black", children: (_a = r2.atacante) == null ? void 0 : _a.username }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-orange-400 font-black", children: (_a2 = r2.atacante) == null ? void 0 : _a2.username }),
                 " interceptada em contra-partida com ",
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-bold", children: (_b = r2.defensor) == null ? void 0 : _b.username })
               ] })
@@ -30679,7 +30680,7 @@ const breadcrumbs$6 = [
   }
 ];
 function Dashboard(props) {
-  var _a, _b, _c, _d, _e2, _f;
+  var _a2, _b, _c, _d, _e2, _f;
   const gameMode = useGameMode();
   const { entities } = useGameEntities() || { entities: [] };
   (entities == null ? void 0 : entities.some((e) => e.march)) ?? false;
@@ -30697,8 +30698,8 @@ function Dashboard(props) {
           setLastSync(/* @__PURE__ */ new Date());
         },
         onError: (err) => {
-          var _a2;
-          if ((_a2 = err == null ? void 0 : err.message) == null ? void 0 : _a2.includes("409")) return;
+          var _a3;
+          if ((_a3 = err == null ? void 0 : err.message) == null ? void 0 : _a3.includes("409")) return;
           console.warn("[SYNC] Sincronização parcial falhou:", err);
         },
         onFinish: () => {
@@ -30725,7 +30726,7 @@ function Dashboard(props) {
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[6px] text-neutral-600 mt-0.5 tracking-normal", children: "BUILD_VER: 2026.04.12.2101" })
   ] });
-  const currentBase = ((_a = props.gameData) == null ? void 0 : _a.resources) ? { ...props.base, recursos: props.gameData.resources } : props.base;
+  const currentBase = ((_a2 = props.gameData) == null ? void 0 : _a2.resources) ? { ...props.base, recursos: props.gameData.resources } : props.base;
   const currentBuildings = ((_b = props.gameData) == null ? void 0 : _b.buildings) ?? props.buildings ?? [];
   const currentPopulation = ((_c = props.gameData) == null ? void 0 : _c.population) ?? props.population ?? null;
   const currentResources = ((_d = props.gameData) == null ? void 0 : _d.resources) ?? props.resources ?? {};
@@ -31056,14 +31057,14 @@ function Ranking({ jogadores }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-4 text-right", children: "PontuaÃ§Ã£o Total" })
         ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-white/5", children: jogadores.map((j2, index2) => {
-          var _a;
+          var _a2;
           return /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-white/5 transition-colors duration-200 group", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-4 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `inline-flex items-center justify-center w-8 h-8 rounded-full font-mono text-xs ${index2 === 0 ? "bg-orange-500/20 text-orange-500 border border-orange-500/30" : index2 === 1 ? "bg-neutral-300/20 text-neutral-300 border border-neutral-300/30" : index2 === 2 ? "bg-amber-700/20 text-amber-700 border border-amber-700/30" : "text-neutral-500"}`, children: index2 + 1 }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-black uppercase tracking-tight text-white group-hover:text-sky-400 transition-colors", children: j2.username }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] text-neutral-500 flex items-center gap-1", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { size: 10 }),
-                ((_a = j2.alianca) == null ? void 0 : _a.nome) || "Sem ColigaÃ§Ã£o"
+                ((_a2 = j2.alianca) == null ? void 0 : _a2.nome) || "Sem ColigaÃ§Ã£o"
               ] })
             ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-4 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-2 text-xs font-mono", children: [
@@ -31647,10 +31648,10 @@ function Password() {
       preserveScroll: true,
       onSuccess: () => reset(),
       onError: (errors2) => {
-        var _a, _b;
+        var _a2, _b;
         if (errors2.password) {
           reset("password", "password_confirmation");
-          (_a = passwordInput.current) == null ? void 0 : _a.focus();
+          (_a2 = passwordInput.current) == null ? void 0 : _a2.focus();
         }
         if (errors2.current_password) {
           reset("current_password");
@@ -31745,8 +31746,8 @@ function DeleteUser() {
       preserveScroll: true,
       onSuccess: () => closeModal(),
       onError: () => {
-        var _a;
-        return (_a = passwordInput.current) == null ? void 0 : _a.focus();
+        var _a2;
+        return (_a2 = passwordInput.current) == null ? void 0 : _a2.focus();
       },
       onFinish: () => reset()
     });
@@ -31802,8 +31803,8 @@ const breadcrumbs = [
   }
 ];
 function Profile({ mustVerifyEmail, status }) {
-  var _a, _b, _c, _d;
-  const auth = ((_a = K$1().props) == null ? void 0 : _a.auth) ?? null;
+  var _a2, _b, _c, _d;
+  const auth = ((_a2 = K$1().props) == null ? void 0 : _a2.auth) ?? null;
   const { data, setData, patch, errors, processing, recentlySuccessful } = me$1({
     name: ((_b = auth == null ? void 0 : auth.user) == null ? void 0 : _b.name) ?? "",
     email: ((_c = auth == null ? void 0 : auth.user) == null ? void 0 : _c.email) ?? ""
@@ -31892,8 +31893,8 @@ const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.de
   default: Profile
 }, Symbol.toStringTag, { value: "Module" }));
 function Welcome() {
-  var _a;
-  const auth = ((_a = K$1().props) == null ? void 0 : _a.auth) ?? null;
+  var _a2;
+  const auth = ((_a2 = K$1().props) == null ? void 0 : _a2.auth) ?? null;
   reactExports.useEffect(() => {
     const gameLayers = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
     gameLayers.forEach((id2) => {
@@ -44285,6 +44286,10 @@ function requireClient() {
   return client.exports;
 }
 var clientExports = requireClient();
+const token = (_a = document.querySelector('meta[name="csrf-token"]')) == null ? void 0 : _a.getAttribute("content");
+if (token) {
+  axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
+}
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 const appName = "GuerrasModernas";
@@ -44302,13 +44307,13 @@ if (rootElement) {
       return pages[`./pages/${name}.tsx`].default;
     },
     setup({ el, App, props }) {
-      var _a, _b, _c, _d, _e2, _f;
+      var _a2, _b, _c, _d, _e2, _f;
       console.log("UI MOUNTED");
-      const isAuth = (_c = (_b = (_a = props == null ? void 0 : props.initialPage) == null ? void 0 : _a.props) == null ? void 0 : _b.auth) == null ? void 0 : _c.user;
+      const isAuth = (_c = (_b = (_a2 = props == null ? void 0 : props.initialPage) == null ? void 0 : _a2.props) == null ? void 0 : _b.auth) == null ? void 0 : _c.user;
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DkGk8z_z.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Djj9q-oB.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44344,4 +44349,4 @@ export {
   index_esm as i,
   stateManager as s
 };
-//# sourceMappingURL=app-BYXQGs0o.js.map
+//# sourceMappingURL=app-DEmMRSEi.js.map

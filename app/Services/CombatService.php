@@ -124,20 +124,28 @@ class CombatService
             }
 
             // Lógica de Saque Automático
-            $saque = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0];
+            $saque = ['metal' => 0, 'energia' => 0, 'comida' => 0];
             if ($vitoria) {
-                $recursosBase = $destino->recursos;
-                $totalDisponivel = $recursosBase->suprimentos + $recursosBase->combustivel + $recursosBase->municoes;
+                // Sincronizar recursos do alvo antes de saquear
+                app(\App\Services\GameService::class)->atualizarRecursos($destino);
+
+                $totalDisponivel = $destino->recursos_metal + $destino->recursos_energia + $destino->recursos_comida;
                 
                 if ($totalDisponivel > 0) {
                     $ratioSaque = min(1, $capacidadeSaqueTotal / $totalDisponivel);
-                    foreach(['suprimentos', 'combustivel', 'municoes'] as $res) {
-                        $fatorIndividual = ($recursosBase->$res / max(1, $totalDisponivel));
+                    foreach(['metal', 'energia', 'comida'] as $res) {
+                        $field = "recursos_{$res}";
+                        $fatorIndividual = ($destino->$field / max(1, $totalDisponivel));
                         $qtdSaque = floor($capacidadeSaqueTotal * $fatorIndividual);
-                        $finalQtd = (int) min($recursosBase->$res, $qtdSaque);
+                        $finalQtd = (int) min($destino->$field, $qtdSaque);
                         
                         $saque[$res] = $finalQtd;
-                        $recursosBase->decrement($res, $finalQtd);
+                        $destino->decrement($field, $finalQtd);
+                        
+                        // Sincronizar legado se existir
+                        if ($destino->recursos) {
+                            $destino->recursos->decrement($res, $finalQtd);
+                        }
                     }
                 }
             }
@@ -197,6 +205,9 @@ class CombatService
                 return;
             }
 
+            // Sincronizar recursos antes de creditar o saque
+            app(\App\Services\GameService::class)->atualizarRecursos($origem);
+
             foreach ($ataque->tropas as $u => $q) {
                 if ($q <= 0) continue;
                 $origem->tropas()->firstOrCreate(['unidade' => $u], ['quantidade' => 0])->increment('quantidade', $q);
@@ -205,7 +216,13 @@ class CombatService
             if ($ataque->saque) {
                 foreach ($ataque->saque as $res => $qtd) {
                     if ($qtd <= 0) continue;
-                    $origem->recursos->increment($res, $qtd);
+                    $field = "recursos_{$res}";
+                    $origem->increment($field, $qtd);
+
+                    // Compatibilidade legado
+                    if ($origem->recursos) {
+                        $origem->recursos->increment($res, $qtd);
+                    }
                 }
             }
             $ataque->delete();

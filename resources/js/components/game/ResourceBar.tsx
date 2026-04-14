@@ -20,20 +20,16 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
     });
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrent(prev => ({
-                suprimentos: prev.suprimentos + (taxasPerSecond?.suprimentos ?? 0),
-                combustivel: prev.combustivel + (taxasPerSecond?.combustivel ?? 0),
-                municoes: prev.municoes + (taxasPerSecond?.municoes ?? 0),
-                metal: prev.metal + (taxasPerSecond?.metal ?? 0),
-                energia: prev.energia + (taxasPerSecond?.energia ?? 0),
-                pessoal: prev.pessoal + (taxasPerSecond?.pessoal ?? 0),
-                cap: recursos?.cap ?? 10000
-            }));
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [taxasPerSecond]);
+        setCurrent({
+            suprimentos: recursos?.suprimentos ?? 0,
+            combustivel: recursos?.combustivel ?? 0,
+            municoes: recursos?.municoes ?? 0,
+            pessoal: recursos?.pessoal ?? 0,
+            metal: recursos?.metal ?? 0,
+            energia: recursos?.energia ?? 0,
+            cap: recursos?.cap ?? 10000
+        });
+    }, [recursos]);
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 w-full z-20">

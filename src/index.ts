@@ -108,7 +108,6 @@ Logger.info(`[BOOT] Test Unit Alpha-Zero (ID: ${testUnit}) deployed at ORIGIN.`)
 // 4. MOBILIZAÃ‡ÃƒO IA INIMIGA (UNIDADE OMEGA)
 const enemyUnit = entityManager.createEntity();
 entityManager.addComponent(enemyUnit, new VelocityComponent(0, 0));
-entityManager.addComponent(enemyUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(enemyUnit, new HealthComponent(2000, 2000));
 entityManager.addComponent(enemyUnit, new AttackComponent(100, 200, 3)); 
 entityManager.addComponent(enemyUnit, new AIComponent('AGGRESSIVE')); 

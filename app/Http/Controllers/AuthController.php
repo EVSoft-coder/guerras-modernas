@@ -104,7 +104,7 @@ class AuthController extends Controller
             'bases' => $bases,
             'buildings' => $base?->edificios ?? [],
             'population' => $populacao ?? null,
-            'resources' => $base?->recursos ?? [],
+            'resources' => $base?->resources ?? [],
             'taxas' => $taxas ?? [],
             'taxasPerSecond' => $taxas ?? [],
             'populacao' => $populacao ?? null,
@@ -115,7 +115,7 @@ class AuthController extends Controller
             'gameConfig' => config('game'),
             // Payload optimizado para Polling
             'gameData' => [
-                'resources' => $base?->recursos,
+                'resources' => $base?->resources,
                 'units' => $base?->tropas,
                 'buildings' => $base?->edificios,
                 'population' => $populacao,
@@ -147,10 +147,10 @@ class AuthController extends Controller
                     'coordenada_y' => rand(100, 900),
                     'qg_nivel' => 1,
                     'muralha_nivel' => 1,
-                ]);
- 
-                $base->recursos()->create([
-                    'suprimentos' => 1000, 'combustivel' => 800, 'municoes' => 500, 'pessoal' => 300,
+                    'recursos_metal' => 1000,
+                    'recursos_energia' => 800,
+                    'recursos_comida' => 500,
+                    'last_update_at' => now(),
                 ]);
  
                 Auth::login($jogador);

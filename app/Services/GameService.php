@@ -20,43 +20,64 @@ use Carbon\Carbon;
  */
 class GameService
 {
+    public function calculateResources($base)
+    {
+        if (!$base->last_update_at) {
+            return [
+                'metal' => $base->recursos_metal,
+                'energia' => $base->recursos_energia,
+                'comida' => $base->recursos_comida,
+            ];
+        }
+
+        $now = now();
+        $seconds = $now->diffInSeconds($base->last_update_at);
+
+        return [
+            'metal' => $base->recursos_metal + ($base->metal_rate * $seconds),
+            'energia' => $base->recursos_energia + ($base->energia_rate * $seconds),
+            'comida' => $base->recursos_comida + ($base->comida_rate * $seconds),
+            'last_update_at' => $base->last_update_at,
+        ];
+    }
     /**
      * ATUALIZAÇÃO DE RECURSOS
      * Calcula a produção passiva baseada no tempo decorrido.
      */
     public function atualizarRecursos(Base $base): void
     {
-        $recursos = $base->recursos;
-        if (!$recursos) return;
+        $calculated = $this->calculateResources($base);
+        
+        $base->update([
+            'recursos_metal' => $calculated['metal'],
+            'recursos_energia' => $calculated['energia'],
+            'recursos_comida' => $calculated['comida'],
+            'last_update_at' => now(),
+        ]);
 
-        $agora = now();
-        $ultimaVez = $recursos->updated_at;
-        $segundosPassados = $agora->diffInSeconds($ultimaVez);
-
-        if ($segundosPassados <= 0) return;
-
-        $taxasPerMinute = $this->obterTaxasProducao($base);
-
-        foreach ($taxasPerMinute as $res => $rate) {
-            $incremento = ($rate / 60) * $segundosPassados;
-            $recursos->$res += $incremento;
+        if ($base->recursos) {
+            $base->recursos->update([
+                'metal' => $calculated['metal'],
+                'energia' => $calculated['energia'],
+                'comida' => $calculated['comida'],
+            ]);
         }
-
-        $recursos->save();
     }
 
     public function obterTaxasProducao(Base $base): array
     {
         return [
-            'suprimentos' => EconomyRules::calculateProductionPerMinute('suprimentos', $this->obterNivelEdificio($base, BuildingType::MINA_SUPRIMENTOS)),
-            'combustivel' => EconomyRules::calculateProductionPerMinute('combustivel', $this->obterNivelEdificio($base, BuildingType::REFINARIA)),
-            'municoes' => EconomyRules::calculateProductionPerMinute('municoes', $this->obterNivelEdificio($base, BuildingType::FABRICA_MUNICOES)),
+            'metal' => EconomyRules::calculateProductionPerMinute('metal', $this->obterNivelEdificio($base, BuildingType::MINA_METAL)),
+            'energia' => EconomyRules::calculateProductionPerMinute('energia', $this->obterNivelEdificio($base, BuildingType::CENTRAL_ENERGIA)),
+            'comida' => EconomyRules::calculateProductionPerMinute('comida', $this->obterNivelEdificio($base, BuildingType::FAZENDA)),
             'pessoal' => EconomyRules::calculateProductionPerMinute('pessoal', 
                 $this->obterNivelEdificio($base, BuildingType::POSTO_RECRUTAMENTO) + 
                 $this->obterNivelEdificio($base, BuildingType::HOUSING)
             ),
-            'metal' => EconomyRules::calculateProductionPerMinute('metal', $this->obterNivelEdificio($base, BuildingType::MINA_METAL)),
-            'energia' => EconomyRules::calculateProductionPerMinute('energia', $this->obterNivelEdificio($base, BuildingType::CENTRAL_ENERGIA)),
+            // Legado / Compatibilidade (Mapear para novos nomes atómicos)
+            'suprimentos' => EconomyRules::calculateProductionPerMinute('metal', $this->obterNivelEdificio($base, BuildingType::MINA_METAL)),
+            'combustivel' => EconomyRules::calculateProductionPerMinute('energia', $this->obterNivelEdificio($base, BuildingType::CENTRAL_ENERGIA)),
+            'municoes' => EconomyRules::calculateProductionPerMinute('comida', $this->obterNivelEdificio($base, BuildingType::FAZENDA)),
         ];
     }
 
@@ -202,14 +223,30 @@ class GameService
      */
     public function consumirRecursos(Base $base, array $custos): bool
     {
+        // Garante persistência do estado atual antes da mutação
+        $this->atualizarRecursos($base);
+
         return DB::transaction(function() use ($base, $custos) {
-            $recursos = $base->recursos;
+            // Mapeamento de chaves legadas para atómicas se necessário
+            $map = [
+                'suprimentos' => 'recursos_metal',
+                'combustivel' => 'recursos_energia',
+                'municoes' => 'recursos_comida',
+                'metal' => 'recursos_metal',
+                'energia' => 'recursos_energia',
+                'comida' => 'recursos_comida',
+            ];
+
             foreach ($custos as $res => $qtd) {
-                if ($recursos->$res < $qtd) return false;
+                $field = $map[$res] ?? $res;
+                if (($base->$field ?? 0) < $qtd) return false;
             }
+
             foreach ($custos as $res => $qtd) {
-                $recursos->decrement($res, $qtd);
+                $field = $map[$res] ?? $res;
+                $base->decrement($field, $qtd);
             }
+
             return true;
         });
     }

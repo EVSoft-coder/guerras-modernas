@@ -34,4 +34,20 @@ trait HasResources
     {
         return $this->hasOne(Recurso::class);
     }
+
+    public function getMetalRateAttribute()
+    {
+        return $this->getProductionRates()['metal'] / 60;
+    }
+
+    public function getEnergiaRateAttribute()
+    {
+        return $this->getProductionRates()['energia'] / 60;
+    }
+
+    public function getComidaRateAttribute()
+    {
+        // Suprimentos == Comida
+        return $this->getProductionRates()['suprimentos'] / 60;
+    }
 }

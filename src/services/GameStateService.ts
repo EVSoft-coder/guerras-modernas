@@ -5,8 +5,6 @@
 import { entityManager } from '../core/EntityManager';
 import { Logger } from '../core/Logger';
 import { stateManager, GameMode } from '../core/StateManager';
-import { AttackMarchComponent } from '../game/components/AttackMarchComponent';
-import { buildingConfigs } from '../game/config';
 
 export interface EntitySnapshot {
     id: number;
@@ -56,12 +54,14 @@ class GameStateService {
             const gridPos = entityManager.getComponent<any>(id, 'GridPosition');
             if (gridPos && !gridPos.isVisible) continue;
 
-            const res = entityManager.getComponent<any>(id, 'Resource');
+            // [AUDIT] Resource calculation logic REMOVED.
+            // Resources are now handled exclusively by the backend (Laravel) 
+            // and managed via Inertia props/React state in the frontend.
+            // This service strictly exposes ECS data for visual rendering only.
             const march = entityManager.getComponent<any>(id, 'March');
             const army = entityManager.getComponent<any>(id, 'Army');
             const village = entityManager.getComponent<any>(id, 'Village');
             const unit = entityManager.getComponent<any>(id, 'Unit');
-            const player = entityManager.getComponent<any>(id, 'Player');
 
             let x = gridPos ? gridPos.x : 0;
             let y = gridPos ? gridPos.y : 0;

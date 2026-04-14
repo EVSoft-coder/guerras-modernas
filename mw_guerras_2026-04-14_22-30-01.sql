@@ -220,7 +220,7 @@ CREATE TABLE `construcoes` (
   PRIMARY KEY (`id`),
   KEY `construcoes_ibfk_1` (`base_id`),
   CONSTRAINT `construcoes_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,7 +249,7 @@ CREATE TABLE `edificios` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `edificios_base_tipo_unique` (`base_id`,`tipo`),
   CONSTRAINT `edificios_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -263,7 +263,7 @@ INSERT INTO `edificios` VALUES
 (2,1,'Quartel',5,'2026-04-07 20:55:47','2026-04-12 13:23:33'),
 (3,1,'Muralha',1,'2026-04-07 20:55:47','2026-04-07 20:55:47'),
 (4,1,'mina_suprimentos',6,'2026-04-07 21:00:08','2026-04-10 05:55:12'),
-(5,1,'refinaria',4,'2026-04-07 21:05:56','2026-04-12 13:27:29'),
+(5,1,'refinaria',5,'2026-04-07 21:05:56','2026-04-13 21:47:13'),
 (6,1,'fabrica_municoes',4,'2026-04-07 21:13:22','2026-04-12 16:09:47'),
 (7,1,'posto_recrutamento',3,'2026-04-07 21:14:03','2026-04-12 13:28:29'),
 (8,1,'radar_estrategico',4,'2026-04-09 22:27:04','2026-04-12 21:09:54'),
@@ -282,7 +282,10 @@ INSERT INTO `edificios` VALUES
 (21,5,'posto_recrutamento',1,'2026-04-11 08:03:36','2026-04-11 08:03:36'),
 (22,6,'mina_suprimentos',1,'2026-04-11 08:10:06','2026-04-11 08:10:06'),
 (23,6,'quartel',1,'2026-04-11 08:10:06','2026-04-11 08:10:06'),
-(24,6,'posto_recrutamento',1,'2026-04-11 08:10:06','2026-04-11 08:10:06');
+(24,6,'posto_recrutamento',1,'2026-04-11 08:10:06','2026-04-11 08:10:06'),
+(25,1,'mina_metal',1,'2026-04-13 21:40:57','2026-04-13 23:22:39'),
+(26,1,'housing',2,'2026-04-13 21:54:09','2026-04-13 23:17:07'),
+(27,1,'central_energia',1,'2026-04-13 22:02:06','2026-04-13 23:22:40');
 /*!40000 ALTER TABLE `edificios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -494,7 +497,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -521,8 +524,45 @@ INSERT INTO `migrations` VALUES
 (15,'2026_04_08_230231_add_xp_to_jogadores_table',3),
 (16,'2026_04_09_195101_create_pesquisas_table',3),
 (17,'2026_04_11_185928_add_coords_to_ataques_table',3),
-(18,'2026_04_11_190918_add_saque_to_ataques_table',3);
+(18,'2026_04_11_190918_add_saque_to_ataques_table',3),
+(19,'2026_04_12_162848_add_specialized_resources_to_recursos_table',4),
+(20,'2026_04_12_163317_create_pedido_aliancas_table',4),
+(21,'2026_04_12_215752_add_protection_to_bases_table',5),
+(22,'2026_04_12_222029_add_cap_to_recursos_table',5),
+(23,'2026_04_13_231303_rename_complexo_residencial_to_housing_in_tables',6),
+(24,'2026_04_13_232148_rename_production_buildings_to_new_standard',7);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pedido_aliancas`
+--
+
+DROP TABLE IF EXISTS `pedido_aliancas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pedido_aliancas` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `jogador_id` bigint(20) unsigned NOT NULL,
+  `alianca_id` bigint(20) unsigned NOT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pendente',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `pedido_aliancas_jogador_id_foreign` (`jogador_id`),
+  KEY `pedido_aliancas_alianca_id_foreign` (`alianca_id`),
+  CONSTRAINT `pedido_aliancas_alianca_id_foreign` FOREIGN KEY (`alianca_id`) REFERENCES `aliancas` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `pedido_aliancas_jogador_id_foreign` FOREIGN KEY (`jogador_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pedido_aliancas`
+--
+
+LOCK TABLES `pedido_aliancas` WRITE;
+/*!40000 ALTER TABLE `pedido_aliancas` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pedido_aliancas` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -595,6 +635,7 @@ CREATE TABLE `recursos` (
   `pessoal` int(10) unsigned NOT NULL DEFAULT 500,
   `metal` bigint(20) unsigned NOT NULL DEFAULT 0,
   `energia` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `cap` int(11) NOT NULL DEFAULT 10000,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
@@ -610,13 +651,13 @@ CREATE TABLE `recursos` (
 LOCK TABLES `recursos` WRITE;
 /*!40000 ALTER TABLE `recursos` DISABLE KEYS */;
 INSERT INTO `recursos` VALUES
-(1,1,2926,11595,15328,28680,0,0,'2026-04-07 20:55:47','2026-04-12 21:06:36'),
-(2,1,137923,59249,41689,17953,0,0,'2026-04-09 12:30:19','2026-04-10 22:24:34'),
-(3,2,2801,1416,1112,1120,0,0,'2026-04-11 07:49:37','2026-04-11 08:52:04'),
-(4,3,2796,1415,1111,1118,0,0,'2026-04-11 07:51:28','2026-04-11 08:53:41'),
-(5,4,1500,1000,800,600,0,0,'2026-04-11 07:59:45','2026-04-11 07:59:45'),
-(6,5,2823,1423,1117,1129,0,0,'2026-04-11 08:03:36','2026-04-11 09:07:04'),
-(7,6,2766,1405,1104,1106,0,0,'2026-04-11 08:10:06','2026-04-11 09:10:52');
+(1,1,101,11595,14628,28570,0,0,10000,'2026-04-07 20:55:47','2026-04-13 22:02:06'),
+(2,1,137923,59249,41689,17953,0,0,10000,'2026-04-09 12:30:19','2026-04-10 22:24:34'),
+(3,2,2801,1416,1112,1120,0,0,10000,'2026-04-11 07:49:37','2026-04-11 08:52:04'),
+(4,3,2796,1415,1111,1118,0,0,10000,'2026-04-11 07:51:28','2026-04-11 08:53:41'),
+(5,4,1500,1000,800,600,0,0,10000,'2026-04-11 07:59:45','2026-04-11 07:59:45'),
+(6,5,2823,1423,1117,1129,0,0,10000,'2026-04-11 08:03:36','2026-04-11 09:07:04'),
+(7,6,2766,1405,1104,1106,0,0,10000,'2026-04-11 08:10:06','2026-04-11 09:10:52');
 /*!40000 ALTER TABLE `recursos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -730,4 +771,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-04-13 22:47:29
+-- Dump completed on 2026-04-14 22:30:06
