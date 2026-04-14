@@ -170,7 +170,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                                 </div>
                                 <button 
                                     onClick={() => {
-                                        eventBus.emit(Events.BUILD_REQUEST as any, {
+                                        eventBus.emit(Events.BUILDING_REQUEST as any, {
                                             entityId: ent.id,
                                             timestamp: Date.now(),
                                             data: { buildingType: 'MINE' }
