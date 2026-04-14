@@ -22,11 +22,24 @@ class GameService
 {
     public function calculateResources($base)
     {
+        // 1. Migração Transparente: Se as novas colunas estiverem a zero e houver legado, recuperar dados.
+        // Verificamos se recursos_metal é 0 e se a relação 'recursos' existe.
+        if ((float)($base->recursos_metal ?? 0) <= 0 && $base->recursos) {
+            $base->recursos_metal = (float)$base->recursos->metal;
+            $base->recursos_energia = (float)$base->recursos->energia;
+            $base->recursos_comida = (float)$base->recursos->comida;
+            
+            if (!$base->last_update_at) {
+                // Sincronizar timestamp do legado
+                $base->last_update_at = $base->recursos->updated_at;
+            }
+        }
+
         if (!$base->last_update_at) {
             return [
-                'metal' => $base->recursos_metal,
-                'energia' => $base->recursos_energia,
-                'comida' => $base->recursos_comida,
+                'metal' => (float)($base->recursos_metal ?? 0),
+                'energia' => (float)($base->recursos_energia ?? 0),
+                'comida' => (float)($base->recursos_comida ?? 0),
             ];
         }
 
