@@ -26,7 +26,9 @@ if (!headers_sent()) {
 }
 
 // Landing Page e Autenticação
-Route::get('/', function () { return view('welcome'); });
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+})->name('home');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->withoutMiddleware(['auth']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');

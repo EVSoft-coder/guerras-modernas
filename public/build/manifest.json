@@ -5,7 +5,7 @@
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-B6gkH95y.js",
+    "file": "assets/app-BYXQGs0o.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -18,7 +18,7 @@
     ]
   },
   "src/index.ts": {
-    "file": "assets/index-CJX-9VaZ.js",
+    "file": "assets/index-DkGk8z_z.js",
     "name": "index",
     "src": "src/index.ts",
     "isDynamicEntry": true,

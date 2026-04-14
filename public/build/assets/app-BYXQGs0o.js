@@ -44297,6 +44297,7 @@ if (rootElement) {
   ae({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => {
+      console.log("INERTIA LOAD:", name);
       const pages = /* @__PURE__ */ Object.assign({ "./pages/Auth/ConfirmPassword.tsx": __vite_glob_0_0, "./pages/Auth/ForgotPassword.tsx": __vite_glob_0_1, "./pages/Auth/Login.tsx": __vite_glob_0_2, "./pages/Auth/Register.tsx": __vite_glob_0_3, "./pages/Auth/ResetPassword.tsx": __vite_glob_0_4, "./pages/Auth/VerifyEmail.tsx": __vite_glob_0_5, "./pages/Relatorios/Index.tsx": __vite_glob_0_6, "./pages/dashboard.tsx": __vite_glob_0_7, "./pages/manual.tsx": __vite_glob_0_8, "./pages/mapa.tsx": __vite_glob_0_9, "./pages/ranking.tsx": __vite_glob_0_10, "./pages/settings/appearance.tsx": __vite_glob_0_11, "./pages/settings/password.tsx": __vite_glob_0_12, "./pages/settings/profile.tsx": __vite_glob_0_13, "./pages/welcome.tsx": __vite_glob_0_14 });
       return pages[`./pages/${name}.tsx`].default;
     },
@@ -44307,7 +44308,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CJX-9VaZ.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DkGk8z_z.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44343,4 +44344,4 @@ export {
   index_esm as i,
   stateManager as s
 };
-//# sourceMappingURL=app-B6gkH95y.js.map
+//# sourceMappingURL=app-BYXQGs0o.js.map
