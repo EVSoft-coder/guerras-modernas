@@ -24,6 +24,7 @@ export interface GlobalGameState {
     villages: Array<{ id: number; name: string; x: number; y: number }>;
     worldMapBases: Array<any>;
     rebelCount: number;
+    revealedTiles: string[];
 }
 
 class GameStateService {
@@ -32,7 +33,8 @@ class GameStateService {
         player: { name: 'OPERATIVE', id: 1 },
         villages: [],
         worldMapBases: [],
-        rebelCount: 0
+        rebelCount: 0,
+        revealedTiles: []
     };
     private listeners: Array<() => void> = [];
 
