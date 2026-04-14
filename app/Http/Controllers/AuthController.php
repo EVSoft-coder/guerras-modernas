@@ -98,6 +98,9 @@ class AuthController extends Controller
             'jogador' => $jogador,
             'base' => $base,
             'bases' => $bases,
+            'buildings' => $base?->edificios ?? [],
+            'population' => $populacao ?? null,
+            'resources' => $base?->recursos ?? [],
             'taxas' => $taxas ?? [],
             'taxasPerSecond' => $taxas ?? [],
             'populacao' => $populacao ?? null,
@@ -110,6 +113,8 @@ class AuthController extends Controller
             'gameData' => [
                 'resources' => $base?->recursos,
                 'units' => $base?->tropas,
+                'buildings' => $base?->edificios,
+                'population' => $populacao,
                 'movements' => [
                     'sent' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get() ?? [],
                     'received' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get() ?? [],

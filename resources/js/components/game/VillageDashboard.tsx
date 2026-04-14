@@ -18,20 +18,26 @@ import { useGameEntities } from '@/hooks/use-game-entities';
 
 export function VillageDashboard({ 
     jogador, base: initialBase, bases: backendBases = [], taxasPerSecond, gameConfig, 
-    ataquesRecebidos, ataquesEnviados, relatoriosGlobal, populacao 
-}: DashboardProps & { bases: any[], populacao?: any }) {
+    ataquesRecebidos, ataquesEnviados, relatoriosGlobal, populacao, // deprecated props
+    buildings, population, resources
+}: DashboardProps & { bases: any[], populacao?: any, buildings?: any[], population?: any, resources?: any }) {
     // 0. ECS ENGINE INTEGRATION - BARKING STATE
     const { globalState } = useGameEntities();
 
-    // 1. DATA PROJECTOR (Business logic moved to GameStateService)
+    // 1. DATA PROJECTOR
+    // Garantir que consumimos as props atómicas recebidas do backend
+    const currentBuildings = buildings || initialBase?.edificios || [];
+    const currentResources = resources || initialBase?.recursos || {};
+    const currentPopulation = population || populacao || null;
+
     const base = React.useMemo(() => {
         if (!initialBase) return null;
         return {
             ...initialBase,
-            edificios: (initialBase.edificios || []) as any[],
-            recursos: { ...(initialBase.recursos || {}) }
+            edificios: currentBuildings,
+            recursos: currentResources
         };
-    }, [initialBase]);
+    }, [initialBase, currentBuildings, currentResources]);
 
     // Use logic villages from ECS instead of backend props for switcher
     const displayBases = (globalState.worldMapBases.length > 0 
@@ -136,7 +142,7 @@ export function VillageDashboard({
             <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-orange-500/5 blur-[150px] pointer-events-none"></div>
 
             <Head title="Centro de Comando Tático" />
-            <ResourceBar recursos={base?.recursos ?? {}} taxasPerSecond={taxasPerSecond ?? {}} populacao={populacao} />
+            <ResourceBar recursos={currentResources} taxasPerSecond={taxasPerSecond ?? {}} populacao={currentPopulation} />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 flex-1 relative z-10">
                 <div className="lg:col-span-8 flex flex-col gap-6">

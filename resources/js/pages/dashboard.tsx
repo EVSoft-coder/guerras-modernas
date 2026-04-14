@@ -82,6 +82,9 @@ export default function Dashboard(props: DashboardProps) {
 
     // Protecção de Props durante carregamento parcial
     const currentBase = props.gameData?.resources ? { ...props.base, recursos: props.gameData.resources } : props.base;
+    const currentBuildings = props.gameData?.buildings ?? props.buildings ?? [];
+    const currentPopulation = props.gameData?.population ?? props.population ?? null;
+    const currentResources = props.gameData?.resources ?? props.resources ?? {};
 
     if (gameMode === "WORLD_MAP") {
         return (
@@ -102,7 +105,13 @@ export default function Dashboard(props: DashboardProps) {
     // Default: VILLAGE -> Dashboard UI
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <VillageDashboard {...props} base={currentBase} />
+            <VillageDashboard 
+                 {...props} 
+                 base={currentBase} 
+                 buildings={currentBuildings}
+                 population={currentPopulation}
+                 resources={currentResources}
+            />
             {SyncIndicator}
         </AppLayout>
     );
