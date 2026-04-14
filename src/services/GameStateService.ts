@@ -22,7 +22,6 @@ export interface EntitySnapshot {
 export interface GlobalGameState {
     player: { name: string; id: number };
     villages: Array<{ id: number; name: string; x: number; y: number }>;
-    resources: { suprimentos: number; combustivel: number; municoes: number; metal: number; energia: number; pessoal: number };
     worldMapBases: Array<any>;
     rebelCount: number;
 }
@@ -32,7 +31,6 @@ class GameStateService {
     private globalState: GlobalGameState = {
         player: { name: 'OPERATIVE', id: 1 },
         villages: [],
-        resources: { suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0, pessoal: 0 },
         worldMapBases: [],
         rebelCount: 0
     };
@@ -94,22 +92,7 @@ class GameStateService {
     }
 
     private updateGlobalSummary(): void {
-        const resEntities = entityManager.getEntitiesWith(['Resource']);
         const villageEntities = entityManager.getEntitiesWith(['Village', 'GridPosition']);
-        
-        let totalRes = { suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0, pessoal: 0 };
-        resEntities.forEach(id => {
-            const r = entityManager.getComponent<any>(id, 'Resource');
-            if (r) {
-                totalRes.suprimentos += r.suprimentos || 0;
-                totalRes.combustivel += r.combustivel || 0;
-                totalRes.municoes += r.municoes || 0;
-                totalRes.metal += r.metal || 0;
-                totalRes.energia += r.energia || 0;
-                totalRes.pessoal += r.pessoal || 0;
-            }
-        });
-
         const villageList = villageEntities.map(id => {
             const v = entityManager.getComponent<any>(id, 'Village');
             const p = entityManager.getComponent<any>(id, 'GridPosition');
@@ -134,7 +117,6 @@ class GameStateService {
         this.globalState = {
             player: this.globalState?.player ?? { name: 'OPERATIVE', id: 1 },
             villages: villageList,
-            resources: totalRes,
             worldMapBases,
             rebelCount: worldMapBases.filter(b => !b.ownerId).length
         };

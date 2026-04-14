@@ -29,9 +29,9 @@ export function VillageDashboard({
         return {
             ...initialBase,
             edificios: (initialBase.edificios || []) as any[],
-            recursos: { ...(initialBase.recursos || {}), ...globalState.resources }
+            recursos: { ...(initialBase.recursos || {}) }
         };
-    }, [initialBase, globalState.resources]);
+    }, [initialBase]);
 
     // Use logic villages from ECS instead of backend props for switcher
     const displayBases = (globalState.worldMapBases.length > 0 
