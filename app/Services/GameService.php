@@ -39,37 +39,58 @@ class GameService
 
     public function calculateResources($base)
     {
-        // 1. Migração Transparente: Se as novas colunas estiverem a zero e houver legado, recuperar dados.
-        // Verificamos se recursos_metal é 0 e se a relação 'recursos' existe.
-        if ((float)($base->recursos_metal ?? 0) <= 0 && $base->recursos) {
-            $base->recursos_metal = (float)$base->recursos->metal;
-            $base->recursos_energia = (float)$base->recursos->energia;
-            $base->recursos_comida = (float)$base->recursos->comida;
-            
-            if (!$base->last_update_at) {
-                // Sincronizar timestamp do legado
-                $base->last_update_at = $base->recursos->updated_at;
-            }
+        // Carregar relação recursos se não carregada
+        if (!$base->relationLoaded('recursos')) {
+            $base->load('recursos');
         }
+        $rec = $base->recursos;
 
-        if (!$base->last_update_at) {
+        // Fonte de verdade: tabela `recursos` (que tem dados reais)
+        $suprimentos = (float)($rec->suprimentos ?? 0);
+        $combustivel = (float)($rec->combustivel ?? 0);
+        $municoes    = (float)($rec->municoes ?? 0);
+        $pessoal     = (float)($rec->pessoal ?? 0);
+        $metal       = (float)($rec->metal ?? 0);
+        $energia     = (float)($rec->energia ?? 0);
+        $cap         = (int)($rec->cap ?? 10000);
+
+        // Timestamp de referência: ultimo_update na base ou updated_at nos recursos
+        $lastUpdate = $base->last_update_at 
+            ?? $base->ultimo_update 
+            ?? ($rec ? $rec->updated_at : null) 
+            ?? $base->created_at;
+
+        if (!$lastUpdate) {
             return [
-                'metal' => (float)($base->recursos_metal ?? 0),
-                'energia' => (float)($base->recursos_energia ?? 0),
-                'comida' => (float)($base->recursos_comida ?? 0),
+                'suprimentos' => $suprimentos,
+                'combustivel' => $combustivel,
+                'municoes'    => $municoes,
+                'pessoal'     => $pessoal,
+                'metal'       => $metal,
+                'energia'     => $energia,
+                'cap'         => $cap,
             ];
         }
 
         $now = now();
-        // Garantir que o tempo decorrido nunca seja negativo
-        $lastUpdate = $base->last_update_at ?? $base->created_at ?? $now;
+        $lastUpdate = \Carbon\Carbon::parse($lastUpdate);
         $seconds = $now->greaterThan($lastUpdate) ? $now->diffInSeconds($lastUpdate) : 0;
 
+        // Taxas de produção por segundo (obtidas dos accessors do modelo)
+        $taxas = $this->obterTaxasProducao($base);
+        $metalRatePerSec    = ($taxas['suprimentos'] ?? 0) / 60;
+        $combRatePerSec     = ($taxas['combustivel'] ?? 0) / 60;
+        $municoesRatePerSec = ($taxas['municoes'] ?? 0) / 60;
+
         $resources = [
-            'metal' => max(0, (float)($base->recursos_metal ?? 0) + (max(0, (float)$base->metal_rate) * $seconds)),
-            'energia' => max(0, (float)($base->recursos_energia ?? 0) + (max(0, (float)$base->energia_rate) * $seconds)),
-            'comida' => max(0, (float)($base->recursos_comida ?? 0) + (max(0, (float)$base->comida_rate) * $seconds)),
-            'last_update_at' => $lastUpdate,
+            'suprimentos' => min($cap, max(0, $suprimentos + ($metalRatePerSec * $seconds))),
+            'combustivel' => min($cap, max(0, $combustivel + ($combRatePerSec * $seconds))),
+            'municoes'    => min($cap, max(0, $municoes + ($municoesRatePerSec * $seconds))),
+            'pessoal'     => $pessoal,
+            'metal'       => $metal,
+            'energia'     => $energia,
+            'cap'         => $cap,
+            'last_update_at' => $lastUpdate->toDateTimeString(),
         ];
 
         \Illuminate\Support\Facades\Log::info("CALCULATED RESOURCES", $resources);
@@ -78,26 +99,31 @@ class GameService
     }
     /**
      * ATUALIZAÇÃO DE RECURSOS
-     * Calcula a produção passiva baseada no tempo decorrido.
+     * Calcula a produção passiva baseada no tempo decorrido e persiste na tabela recursos.
      */
     public function atualizarRecursos(Base $base): void
     {
         $calculated = $this->calculateResources($base);
         
-        $base->update([
-            'recursos_metal' => $calculated['metal'],
-            'recursos_energia' => $calculated['energia'],
-            'recursos_comida' => $calculated['comida'],
-            'last_update_at' => now(),
-        ]);
-
+        // Persistir na tabela `recursos` (fonte de verdade)
         if ($base->recursos) {
             $base->recursos->update([
-                'metal' => $calculated['metal'],
-                'energia' => $calculated['energia'],
-                'comida' => $calculated['comida'],
+                'suprimentos' => $calculated['suprimentos'],
+                'combustivel' => $calculated['combustivel'],
+                'municoes'    => $calculated['municoes'],
+                'pessoal'     => $calculated['pessoal'],
+                'metal'       => $calculated['metal'],
+                'energia'     => $calculated['energia'],
             ]);
         }
+
+        // Atualizar timestamp na base (usar coluna que existe: ultimo_update)
+        $base->ultimo_update = now();
+        // Também atualizar last_update_at se a coluna existir
+        if (\Schema::hasColumn('bases', 'last_update_at')) {
+            $base->last_update_at = now();
+        }
+        $base->save();
     }
 
     public function obterTaxasProducao(Base $base): array
@@ -263,29 +289,26 @@ class GameService
         $this->atualizarRecursos($base);
 
         return DB::transaction(function() use ($base, $custos) {
-            // Mapeamento de chaves legadas para atómicas se necessário
-            $map = [
-                'suprimentos' => 'recursos_metal',
-                'combustivel' => 'recursos_energia',
-                'municoes' => 'recursos_comida',
-                'metal' => 'recursos_metal',
-                'energia' => 'recursos_energia',
-                'comida' => 'recursos_comida',
-            ];
+            $rec = $base->recursos;
+            if (!$rec) return false;
 
+            // Verificar se há recursos suficientes
             foreach ($custos as $res => $qtd) {
-                $field = $map[$res] ?? $res;
-                if (($base->$field ?? 0) < $qtd) return false;
+                if ($qtd <= 0) continue;
+                $available = (float)($rec->$res ?? 0);
+                if ($available < $qtd) return false;
             }
 
+            // Deduzir recursos
             foreach ($custos as $res => $qtd) {
-                $field = $map[$res] ?? $res;
-                $base->decrement($field, $qtd);
+                if ($qtd <= 0) continue;
+                $rec->decrement($res, $qtd);
             }
 
             return true;
         });
     }
+
 
     public function obterNivelEdificio(Base $base, string $tipo): int
     {

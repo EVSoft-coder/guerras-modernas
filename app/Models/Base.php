@@ -15,7 +15,7 @@ class Base extends Model
     use HasFactory, HasResources;
 
     protected $table = 'bases';
-    protected $appends = ['ownerId', 'metal_rate', 'energia_rate', 'comida_rate', 'resources'];
+    protected $appends = ['ownerId', 'metal_rate', 'energia_rate', 'comida_rate'];
 
     protected $fillable = [
         'jogador_id',
@@ -24,10 +24,6 @@ class Base extends Model
         'coordenada_y',
         'qg_nivel',
         'muralha_nivel',
-        'recursos_metal',
-        'recursos_energia',
-        'recursos_comida',
-        'last_update_at',
         'ultimo_update',
         'is_protected',
         'protection_until',
@@ -37,13 +33,10 @@ class Base extends Model
     protected $casts = [
         'is_protected' => 'boolean',
         'protection_until' => 'datetime',
-        'last_update_at' => 'datetime',
         'ultimo_update' => 'datetime',
         'loyalty' => 'integer',
-        'recursos_metal' => 'decimal:2',
-        'recursos_energia' => 'decimal:2',
-        'recursos_comida' => 'decimal:2',
     ];
+
 
     public function getResourcesAttribute()
     {

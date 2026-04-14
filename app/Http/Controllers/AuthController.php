@@ -37,7 +37,7 @@ class AuthController extends Controller
         if ($request->authenticate()) {
             $jogador = Auth::user();
             foreach ($jogador->bases as $base) {
-                $base->last_update_at = now();
+                $base->ultimo_update = now();
                 $base->save();
             }
             $request->session()->regenerate();
@@ -74,7 +74,7 @@ class AuthController extends Controller
             $this->gameService->atualizarRecursos($base);
             
             // Força a atualização do timestamp para garantir sincronia absoluta no próximo tick do cliente
-            $base->last_update_at = now();
+            $base->ultimo_update = now();
             $base->save();
 
             $this->gameService->processarFilas($base);
