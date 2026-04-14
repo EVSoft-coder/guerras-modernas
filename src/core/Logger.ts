@@ -3,8 +3,8 @@
  * Subsistema de telemetria e registo tático.
  */
 export class Logger {
-    // Flag de depuração - Definir como true para visibilidade total em dev
-    public static DEBUG_MODE = process.env.NODE_ENV === 'development';
+    // Flag de depuração - Ativar apenas em ambiente de desenvolvimento Vite
+    public static DEBUG_MODE = (import.meta as any).env?.DEV ?? false;
 
     public static info(message: string): void {
         if (!this.DEBUG_MODE) return;
