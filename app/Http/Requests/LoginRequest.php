@@ -19,11 +19,12 @@ class LoginRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
+    public function authenticate(): void
     {
-        return [
-            'email.required' => 'O email de oficial é obrigatório.',
-            'password.required' => 'A senha secreta é necessária para o login.',
-        ];
+        if (! \Illuminate\Support\Facades\Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
     }
 }

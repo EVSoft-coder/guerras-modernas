@@ -22,18 +22,22 @@ class AuthController extends Controller
     }
  
     // ====================== VIEWS ======================
-    public function showLogin() { return view('auth.login'); }
+    public function showLogin() {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return Inertia::render('Auth/Login');
+    }
     public function showRegister() { return view('auth.register'); }
     public function perfil() { return Inertia::render('perfil'); }
  
     // ====================== LOGIN/LOGOUT ======================
     public function login(LoginRequest $request)
     {
-        if (Auth::attempt($request->only('email', 'password'))) {
-            $request->session()->regenerate();
-            return redirect('/dashboard');
-        }
-        return redirect()->back()->withErrors(['email' => 'Credenciais inválidas.']);
+        $request->authenticate();
+        $request->session()->regenerate();
+
+        return redirect()->intended('/dashboard');
     }
  
     public function logout(Request $request)
