@@ -119,6 +119,7 @@ class GameStateService {
         });
 
         this.globalState = {
+            ...this.globalState,
             player: this.globalState?.player ?? { name: 'OPERATIVE', id: 1 },
             villages: villageList,
             worldMapBases,
