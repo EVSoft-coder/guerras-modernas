@@ -3,15 +3,12 @@
  * Utilitário de mapeamento e fallback de ativos visuais.
  */
 
-export const getBuildingAsset = (type: string, level: number = 1): string => {
+export const getBuildingAsset = (type: string, level: number | 'blueprint' = 1): string => {
     if (!type) return '/assets/placeholders/building_unknown.svg';
     const t = type.toLowerCase();
     
-    // Lista de edifícios que ainda dependem de placeholders
-    const placeholders: string[] = []; // Todos agora possuem arte final
-    
-    if (placeholders.includes(t)) {
-        return `/assets/placeholders/building_${t}.svg`;
+    if (level === 'blueprint') {
+        return "/images/building_blueprint_placeholder.png";
     }
 
     // Normalização de nomes para pastas de assets reais
