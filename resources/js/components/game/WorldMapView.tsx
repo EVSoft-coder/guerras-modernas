@@ -402,7 +402,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
             )}
 
             <StrategyHUD 
-                resources={globalState.resources}
+                resources={playerBase?.recursos || {}}
                 coordinates={center}
                 selectedEntity={selectedEntityObj}
                 miniMapData={gameEntities}
