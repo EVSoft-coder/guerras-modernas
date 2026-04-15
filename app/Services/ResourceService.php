@@ -117,13 +117,23 @@ class ResourceService
      */
     private function getRates(Base $base): array
     {
+        // Pré-carregar edifícios para evitar múltiplas queries (N+1)
+        $edificios = $base->edificios;
+
+        $getLevel = function($type) use ($edificios) {
+            // Tentar busca exata e normalizada
+            return (int)($edificios->filter(function($e) use ($type) {
+                return \App\Domain\Building\BuildingType::normalize($e->tipo) === $type;
+            })->first()?->nivel ?? 0);
+        };
+
         $levels = [
-            'mina_metal' => (int)($base->edificios()->where('tipo', 'mina_metal')->first()?->nivel ?? 0),
-            'central_energia' => (int)($base->edificios()->where('tipo', 'central_energia')->first()?->nivel ?? 0),
-            'mina_suprimentos' => (int)($base->edificios()->where('tipo', 'mina_suprimentos')->first()?->nivel ?? 0),
-            'refinaria' => (int)($base->edificios()->where('tipo', 'refinaria')->first()?->nivel ?? 0),
-            'fabrica_municoes' => (int)($base->edificios()->where('tipo', 'fabrica_municoes')->first()?->nivel ?? 0),
-            'posto_recrutamento' => (int)($base->edificios()->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0),
+            'mina_metal' => $getLevel(\App\Domain\Building\BuildingType::MINA_METAL),
+            'central_energia' => $getLevel(\App\Domain\Building\BuildingType::CENTRAL_ENERGIA),
+            'mina_suprimentos' => $getLevel(\App\Domain\Building\BuildingType::MINA_SUPRIMENTOS),
+            'refinaria' => $getLevel(\App\Domain\Building\BuildingType::REFINARIA),
+            'fabrica_municoes' => $getLevel(\App\Domain\Building\BuildingType::FABRICA_MUNICOES),
+            'posto_recrutamento' => $getLevel(\App\Domain\Building\BuildingType::POSTO_RECRUTAMENTO),
         ];
 
         return [
