@@ -18,6 +18,25 @@ export class ResourceSystem implements GameSystem {
         // No Delta-Time based increments (+rate * dt) are allowed here.
     }
 
+    public sync(resources: any): void {
+        if (!resources) return;
+        
+        // Sincronizar Entidade 1 (Base Principal do Jogador no ECS)
+        const baseEntity = 1;
+        if (entityManager.hasEntity(baseEntity)) {
+            const resComp = entityManager.getComponent<any>(baseEntity, 'Resource');
+            if (resComp) {
+                resComp.suprimentos = Number(resources.suprimentos);
+                resComp.combustivel = Number(resources.combustivel);
+                resComp.municoes = Number(resources.municoes);
+                resComp.metal = Number(resources.metal);
+                resComp.pessoal = Number(resources.pessoal);
+                resComp.energia = Number(resources.energia);
+                console.log('[ECS] ResourceSystem - Synchronized via Backend Uplink.');
+            }
+        }
+    }
+
     public preUpdate(deltaTime: number): void {}
     public postUpdate(deltaTime: number): void {}
     public destroy(): void {}

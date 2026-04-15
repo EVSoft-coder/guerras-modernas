@@ -7,6 +7,7 @@ import { WorldMapView } from '@/components/game/WorldMapView';
 import { useGameMode } from '@/hooks/use-game-mode';
 import { useGameEntities } from '@/hooks/use-game-entities';
 import PollingService from '@src/services/PollingService';
+import { resourceSystem } from '@src/game/systems/ResourceSystem';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,8 +21,14 @@ const breadcrumbs: BreadcrumbItem[] = [
  * Gere a transição entre Dashboard (Vila) e WorldMapView baseado no estado ECS.
  */
 export default function Dashboard(props: DashboardProps) {
-    console.log('%cINITIAL RESOURCES FROM BACKEND', 'color: lime; font-weight: bold', props.resources);
     const gameMode = useGameMode();
+
+    useEffect(() => {
+        if (props.resources) {
+            console.log('%cINITIAL RESOURCES FROM BACKEND', 'color:lime;font-weight:bold', props.resources);
+            resourceSystem.sync(props.resources);
+        }
+    }, [props.resources]);
     const { entities } = useGameEntities() || { entities: [] };
     const hasActiveArmy = entities?.some(e => e.march) ?? false;
     
