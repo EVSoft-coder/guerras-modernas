@@ -78,6 +78,13 @@ class ResourceService
 
         $now = Carbon::now();
         $taxasMinuto = $this->getRates($base);
+        
+        Log::info('RESOURCE_SYNC_START', [
+            'base_id' => $base->id,
+            'rates' => $taxasMinuto,
+            'now' => $now->toDateTimeString()
+        ]);
+
         $calculated = $this->calculate($resource, $now, $taxasMinuto);
         
         Log::info('RESOURCE_SYNC', $calculated);
