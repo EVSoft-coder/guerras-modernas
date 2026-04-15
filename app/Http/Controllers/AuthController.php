@@ -61,7 +61,7 @@ class AuthController extends Controller
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
  
         if ($base) {
-            // CORREÇÃO CRÍTICA FASE 4.3 — TICK DE RECURSOS (Persistência no Refresh)
+            // CORREÇÃO CRÍTICA FASE 4.3.2 — TICK DE RECURSOS (Persistência no Refresh)
             $this->gameService->tickRecursos($base);
 
             // PROCESSAMENTO DETERMINÍSTICO DE FILAS (Sem escrita automática de recursos)
@@ -71,21 +71,13 @@ class AuthController extends Controller
             session(['selected_base_id' => $base->id]);
             $base->refresh();
             $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
- 
+  
             $taxas = $this->gameService->obterTaxasProducao($base);
             $populacao = $this->gameService->obterEstatisticasPopulacao($base);
 
             // Filtragem de Soberania: Apenas edifícios com nível > 0 são transmitidos pelo backend
             $base->setRelation('edificios', $base->edificios->filter(fn($e) => $e->nivel > 0));
         }
- 
-        // NOTE: Mobilização insurgente automática removida (deve ser via Seeder ou Cron)
-
-        $finalResources = $base ? $this->gameService->calculateResources($base) : null;
-
-        // Pre-cálculo de taxas para o frontend (Real-Time Tick)
-        $taxasRaw = $this->gameService->obterTaxasProducao($base);
-        $taxasPerSecond = collect($taxasRaw)->map(fn($v) => (float)$v / 60)->toArray();
 
         // 🚨 AUDITORIA DE SEGURANÇA (Detetar Resets)
         if (!$base || !$base->recursos) {
@@ -96,15 +88,18 @@ class AuthController extends Controller
             ]);
         }
 
+        $resources = $base?->recursos ? $base->recursos->toArray() : null;
+        \Illuminate\Support\Facades\Log::info('Resources sent to frontend', $resources ?? []);
+
         return Inertia::render('dashboard', [
             'jogador' => $jogador,
             'base' => $base,
             'bases' => $bases,
             'buildings' => $base?->edificios ?? [],
             'population' => $populacao ?? null,
-            'resources' => $finalResources,
-            'taxas' => $taxasRaw,
-            'taxasPerSecond' => $taxasPerSecond,
+            'resources' => $resources,
+            'taxas' => $this->gameService->obterTaxasProducao($base),
+            'taxasPerSecond' => collect($this->gameService->obterTaxasProducao($base))->map(fn($v) => (float)$v / 60)->toArray(),
             'populacao' => $populacao ?? null,
             'relatorios' => \App\Models\Relatorio::where('atacante_id', $jogador->id)
                 ->orWhere('defensor_id', $jogador->id)

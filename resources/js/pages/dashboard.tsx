@@ -20,6 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
  * Gere a transição entre Dashboard (Vila) e WorldMapView baseado no estado ECS.
  */
 export default function Dashboard(props: DashboardProps) {
+    console.log('INITIAL RESOURCES FROM BACKEND', props.resources);
     const gameMode = useGameMode();
     const { entities } = useGameEntities() || { entities: [] };
     const hasActiveArmy = entities?.some(e => e.march) ?? false;
