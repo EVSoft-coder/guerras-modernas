@@ -68,6 +68,11 @@ class GameService
         $this->syncResources($base);
     }
 
+    public function tickResources(Base $base): void
+    {
+        $this->tickRecursos($base);
+    }
+
     public function obterTaxasProducao(Base $base): array
     {
         return [

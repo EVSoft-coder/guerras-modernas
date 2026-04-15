@@ -35,18 +35,18 @@ export function VillageDashboard({
     // 0. ECS ENGINE INTEGRATION - BARKING STATE
     const { globalState } = useGameEntities();
 
-    // 1. DATA PROJECTOR
-    const [localResources, setLocalResources] = useState(resources || initialBase?.recursos || {});
+    // 1. DATA PROJECTOR (FASE 4.3.5)
+    const [resources_state, setResources] = useState(resources || initialBase?.recursos || {});
     
     useEffect(() => {
         if (resources) {
             console.log('%cINITIAL RESOURCES FROM BACKEND', 'color:lime;font-weight:bold', resources);
-            setLocalResources(resources);
+            setResources(resources);
         }
     }, [resources]);
 
     const currentBuildings = buildings || initialBase?.edificios || [];
-    const currentResources = localResources;
+    const currentResources = resources_state;
     const currentPopulation = population || populacao || null;
 
     const base = React.useMemo(() => {
