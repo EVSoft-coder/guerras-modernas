@@ -98,6 +98,13 @@ Route::get('/mw-debug-resources', function() {
     ]);
 });
 
+Route::get('/mw-debug-logs', function() {
+    $logPath = storage_path('logs/laravel.log');
+    if (!file_exists($logPath)) return "Log not found";
+    $lines = explode("\n", file_get_contents($logPath));
+    return response()->json(array_slice($lines, -100));
+});
+
 // Rotas Protegidas (Requer Login)
 Route::middleware(['auth'])->group(function () {
     
