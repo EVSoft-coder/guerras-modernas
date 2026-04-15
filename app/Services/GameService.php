@@ -32,9 +32,10 @@ class GameService
      */
     public function snap(Base $base): array
     {
+        if (!$base->recursos) $base->load('recursos');
         return [
             'base' => $base,
-            'resources' => $this->resourceService->calculate($base),
+            'resources' => $this->resourceService->calculate($base->recursos),
             'ultimo_update' => $base->ultimo_update
         ];
     }
@@ -49,12 +50,13 @@ class GameService
      */
     public function calculateResources($base, $now = null)
     {
-        return $this->resourceService->calculate($base, $now);
+        if (!$base->recursos) $base->load('recursos');
+        return $this->resourceService->calculate($base->recursos, $now);
     }
 
     public function syncResources(Base $base): void
     {
-        $this->resourceService->syncVillageResources($base);
+        $this->resourceService->sync($base);
     }
 
     public function obterTaxasProducao(Base $base): array

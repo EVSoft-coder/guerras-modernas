@@ -13,16 +13,13 @@ interface BuildingNodeProps {
     onClick: () => void;
 }
 
-export const BuildingNode: React.FC<BuildingNodeProps> = ({ buildingType, nome, nivel, gridPos, isConstructing, isLocked, onClick }) => {
+export const BuildingNode: React.FC<Omit<BuildingNodeProps, 'gridPos'>> = ({ buildingType, nome, nivel, isConstructing, isLocked, onClick }) => {
     const isGhost = nivel === 0;
     const currentTryLevel = getEvolutionLevelAsset(nivel ?? 1);
     const imgUrl = getBuildingAsset(buildingType, isGhost ? 1 : currentTryLevel);
 
     return (
         <motion.div 
-            style={gridPos ? { 
-                gridArea: `${(gridPos?.y ?? 0) + 1} / ${(gridPos?.x ?? 0) + 1} / span 1 / span 1` 
-            } : {}}
             whileHover={!isLocked ? { scale: 1.1, zIndex: 100 } : {}}
             whileTap={!isLocked ? { scale: 0.9 } : {}}
             onClick={!isLocked ? onClick : undefined}

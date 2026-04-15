@@ -35,11 +35,6 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         if ($request->authenticate()) {
-            $jogador = Auth::user();
-            foreach ($jogador->bases as $base) {
-                $base->ultimo_update = now();
-                $base->save();
-            }
             $request->session()->regenerate();
         }
 
@@ -81,27 +76,7 @@ class AuthController extends Controller
             $base->setRelation('edificios', $base->edificios->filter(fn($e) => $e->nivel > 0));
         }
  
-        // 5. Garantir Subsistência Rebelde (Mínimo 5)
-        try {
-            $rebelCount = Base::whereNull('jogador_id')->count();
-            if ($rebelCount < 5 && $base) {
-                for ($i = $rebelCount; $i < 5; $i++) {
-                    $rebel = Base::create([
-                        'jogador_id' => null,
-                        'nome' => 'Reduto Insurgente ' . chr(65 + $i),
-                        'coordenada_x' => $base->coordenada_x + rand(-5, 5),
-                        'coordenada_y' => $base->coordenada_y + rand(-5, 5),
-                        'qg_nivel' => rand(1, 5),
-                        'muralha_nivel' => rand(1, 3),
-                    ]);
-                    $rebel->recursos()->create([
-                        'suprimentos' => 5000, 'combustivel' => 5000, 'municoes' => 5000, 'pessoal' => 1000,
-                    ]);
-                }
-            }
-        } catch (\Exception $e) {
-            \Log::error("Falha na mobilização insurgente: " . $e->getMessage());
-        }
+        // NOTE: Mobilização insurgente automática removida (deve ser via Seeder ou Cron)
 
         $finalResources = $base ? $this->gameService->calculateResources($base) : [];
 

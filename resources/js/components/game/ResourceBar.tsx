@@ -9,51 +9,12 @@ interface ResourceBarProps {
 }
 
 export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ recursos, taxasPerSecond, populacao }) => {
-    const [current, setCurrent] = useState({
-        suprimentos: recursos?.suprimentos ?? 0,
-        combustivel: recursos?.combustivel ?? 0,
-        municoes: recursos?.municoes ?? 0,
-        pessoal: recursos?.pessoal ?? 0,
-        metal: recursos?.metal ?? 0,
-        energia: recursos?.energia ?? 0,
-        cap: recursos?.cap ?? 10000
-    });
-
-    // Doutrina de Simulacro Determinístico (Frontend-Only Sync)
-    useEffect(() => {
-        const anchor = Date.now();
-        const baseValues = {
-            suprimentos: recursos?.suprimentos ?? 0,
-            combustivel: recursos?.combustivel ?? 0,
-            municoes: recursos?.municoes ?? 0,
-            metal: recursos?.metal ?? 0,
-            energia: recursos?.energia ?? 0,
-            pessoal: recursos?.pessoal ?? 0
-        };
-
-        const tick = setInterval(() => {
-            const elapsedSeconds = (Date.now() - anchor) / 1000;
-
-            setCurrent(prev => ({
-                ...baseValues,
-                cap: recursos?.cap ?? 10000,
-                suprimentos: Math.min(recursos?.cap ?? 10000, baseValues.suprimentos + ((taxasPerSecond?.suprimentos ?? 0) * elapsedSeconds)),
-                combustivel: Math.min(recursos?.cap ?? 10000, baseValues.combustivel + ((taxasPerSecond?.combustivel ?? 0) * elapsedSeconds)),
-                municoes: Math.min(recursos?.cap ?? 10000, baseValues.municoes + ((taxasPerSecond?.municoes ?? 0) * elapsedSeconds)),
-                metal: Math.min(recursos?.cap ?? 10000, baseValues.metal + ((taxasPerSecond?.metal ?? 0) * elapsedSeconds)),
-                energia: Math.min(recursos?.cap ?? 10000, baseValues.energia + ((taxasPerSecond?.energia ?? 0) * elapsedSeconds)),
-            }));
-        }, 1000);
-
-        return () => clearInterval(tick);
-    }, [recursos, taxasPerSecond]);
-
     return (
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 w-full z-20">
             <ResourceItem 
                 icon={<Shield className="text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]" size={24} />} 
                 label="Suprimentos" 
-                value={current.suprimentos} 
+                value={recursos?.suprimentos ?? 0} 
                 rate={taxasPerSecond?.suprimentos ?? 0}
                 cap={recursos?.cap ?? 10000}
                 color="text-white"
@@ -62,7 +23,7 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
             <ResourceItem 
                 icon={<Fuel className="text-orange-400 drop-shadow-[0_0_12px_rgba(251,146,60,0.5)]" size={24} />} 
                 label="Combustível" 
-                value={current.combustivel} 
+                value={recursos?.combustivel ?? 0} 
                 rate={taxasPerSecond?.combustivel ?? 0}
                 cap={recursos?.cap ?? 10000}
                 color="text-white"
@@ -71,7 +32,7 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
             <ResourceItem 
                 icon={<Boxes className="text-zinc-400 drop-shadow-[0_0_12px_rgba(161,161,170,0.5)]" size={24} />} 
                 label="Metal" 
-                value={current.metal} 
+                value={recursos?.metal ?? 0} 
                 rate={taxasPerSecond?.metal ?? 0}
                 cap={recursos?.cap ?? 10000}
                 color="text-white"
@@ -80,7 +41,7 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
             <ResourceItem 
                 icon={<Rocket className="text-red-400 drop-shadow-[0_0_12px_rgba(248,113,113,0.5)]" size={24} />} 
                 label="Munições" 
-                value={current.municoes} 
+                value={recursos?.municoes ?? 0} 
                 rate={taxasPerSecond?.municoes ?? 0}
                 cap={recursos?.cap ?? 10000}
                 color="text-white"
@@ -89,7 +50,7 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
             <ResourceItem 
                 icon={<Zap className="text-yellow-400 drop-shadow-[0_0_12px_rgba(250,204,21,0.5)]" size={24} />} 
                 label="Energia" 
-                value={current.energia} 
+                value={recursos?.energia ?? 0} 
                 rate={taxasPerSecond?.energia ?? 0}
                 cap={recursos?.cap ?? 10000}
                 color="text-white"
@@ -98,7 +59,7 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
             <ResourceItem 
                 icon={<Users className="text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.5)]" size={24} />} 
                 label="Guarnição" 
-                value={current.pessoal} 
+                value={recursos?.pessoal ?? 0} 
                 customValue={populacao ? `${Math.floor(populacao.used)} / ${populacao.total}` : null}
                 rate={taxasPerSecond?.pessoal ?? 0}
                 cap={populacao?.total ?? recursos?.cap ?? 10000}
@@ -155,7 +116,7 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ icon, label, value, rate, c
                 key={value}
                 className={`text-4xl font-black font-mono tracking-tighter ${color} drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]`}
             >
-                <AnimatedNumber value={value} customValue={customValue} />
+                {Math.floor(value).toLocaleString()}
             </motion.div>
 
             <div className="mt-3 w-full">

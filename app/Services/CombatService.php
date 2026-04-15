@@ -131,25 +131,23 @@ class CombatService
             }
 
             // Lógica de Saque Automático
-            $saque = ['metal' => 0, 'energia' => 0, 'comida' => 0];
+            $saque = ['metal' => 0, 'energia' => 0, 'municoes' => 0];
             if ($vitoria) {
                 // Sincronizar recursos do alvo antes de saquear (OBRIGATÓRIO)
-                $this->resourceService->syncVillageResources($destino);
+                $this->resourceService->sync($destino);
                 $resData = $destino->resources; // Cálculo em tempo real
 
-                $totalDisponivel = $resData['metal'] + $resData['energia'] + $resData['comida'];
+                $totalDisponivel = $resData['metal'] + $resData['energia'] + $resData['municoes'];
                 
                 if ($totalDisponivel > 0) {
                     $ratioSaque = min(1, $capacidadeSaqueTotal / $totalDisponivel);
-                    foreach(['metal', 'energia', 'comida'] as $res) {
+                    foreach(['metal', 'energia', 'municoes'] as $res) {
                         $qtdSaque = floor($capacidadeSaqueTotal * ($resData[$res] / max(1, $totalDisponivel)));
                         $finalQtd = (int) min($resData[$res], $qtdSaque);
                         
                         $saque[$res] = $finalQtd;
-                        $field = "recursos_{$res}";
-                        $destino->decrement($field, $finalQtd);
                         
-                        // Sincronizar legado se existir
+                        // Deduzir recursos directamente na tabela unificada
                         if ($destino->recursos) {
                             $destino->recursos->decrement($res, $finalQtd);
                         }
@@ -213,7 +211,7 @@ class CombatService
             }
 
             // Sincronizar recursos antes de creditar o saque
-            $this->resourceService->syncVillageResources($origem);
+            $this->resourceService->sync($origem);
 
             foreach ($ataque->tropas as $u => $q) {
                 if ($q <= 0) continue;
@@ -223,10 +221,8 @@ class CombatService
             if ($ataque->saque) {
                 foreach ($ataque->saque as $res => $qtd) {
                     if ($qtd <= 0) continue;
-                    $field = "recursos_{$res}";
-                    $origem->increment($field, $qtd);
-
-                    // Compatibilidade legado
+                    
+                    // Creditar recursos exclusivamente na tabela recursos
                     if ($origem->recursos) {
                         $origem->recursos->increment($res, $qtd);
                     }

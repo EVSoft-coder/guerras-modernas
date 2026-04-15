@@ -13,7 +13,7 @@ class EconomyService
      */
     public function atualizarRecursos(Base $base)
     {
-        (new ResourceService())->syncVillageResources($base);
+        (new ResourceService())->sync($base);
     }
  
     /**

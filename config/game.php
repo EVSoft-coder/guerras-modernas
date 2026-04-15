@@ -28,7 +28,6 @@ return [
         'pessoal' => 100,
         'metal' => 15,
         'energia' => 10,
-        'comida' => 30,
     ],
 
     /*

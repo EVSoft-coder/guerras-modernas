@@ -10,35 +10,17 @@ interface VillageViewProps {
 }
 
 export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig }) => {
-    // Mapeamento de posições fixas táticas para os tipos de edifícios (Grid 5x5: 0 a 4)
-    const buildingPositions: Record<string, { x: number, y: number }> = {
-        'parlamento': { x: 0, y: 0 },
-        'housing': { x: 2, y: 0 },
-        'centro_pesquisa': { x: 1, y: 0 },
-        'aerodromo': { x: 3, y: 0 },
-        'radar_estrategico': { x: 1, y: 1 },
-        'quartel': { x: 3, y: 1 },
-        'qg': { x: 2, y: 2 },
-        'mina_suprimentos': { x: 0, y: 2 },
-        'refinaria': { x: 4, y: 2 },
-        'fabrica_municoes': { x: 4, y: 4 },
-        'posto_recrutamento': { x: 0, y: 4 },
-        'muralha': { x: 2, y: 4 },
-        'mina_metal': { x: 4, y: 1 },
-        'central_energia': { x: 3, y: 1 }
-    };
-
     const bConfigs = Object.values(buildingConfigs);
     const playerBuildings = React.useMemo(() => {
         const list = [
-            { type: 'qg', level: base.qg_nivel ?? 1 },
-            { type: 'muralha', level: base.muralha_nivel ?? 1 },
+            { id: 'qg-core', type: 'qg', level: base.qg_nivel ?? 1 },
+            { id: 'muralha-core', type: 'muralha', level: base.muralha_nivel ?? 1 },
             ...(base.edificios?.filter(eb => {
                 const t = eb.buildingType?.toLowerCase();
                 return t !== 'qg' && t !== 'muralha';
             }).map(eb => {
                 let type = eb.buildingType?.toLowerCase();
-                return { type, level: eb.nivel };
+                return { id: eb.id, type, level: eb.nivel };
             }) || [])
         ];
         return list;
@@ -51,6 +33,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
 
         return {
             ...b,
+            uniqueId: existing ? existing.id : `ghost-${b.id}`,
             level: existing ? existing.level : 0,
             isBuilt: !!existing
         };
@@ -77,11 +60,10 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                 {buildings.map(b => {
                     return (
                         <BuildingNode
-                            key={b.id}
+                            key={b.uniqueId}
                             buildingType={b.id}
                             nome={b.name}
                             nivel={b.level}
-                            gridPos={null} // Auto-flow na grelha 5-cols
                             onClick={() => onBuildingClick({ ...b, buildingType: b.id })}
                             isLocked={!b.isBuilt && b.level === 0 && b.id !== 'qg' && b.id !== 'muralha'} // Exemplo de lock
                         />

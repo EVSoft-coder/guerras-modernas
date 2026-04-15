@@ -24,10 +24,17 @@ class Recurso extends Model
         parent::boot();
 
         static::creating(function ($model) {
+            if (self::where('base_id', $model->base_id)->exists()) {
+                Log::error('❌ RECURSO_DUPLICADO_NEGADO', [
+                    'base_id' => $model->base_id,
+                    'trace' => collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5))->map(fn($f) => ($f['file'] ?? '?') . ':' . ($f['line'] ?? '?'))->toArray()
+                ]);
+                return false; // Cancela a criação se já existir
+            }
+
             Log::warning('🔴 RECURSO_CREATING', [
                 'base_id' => $model->base_id,
                 'data' => $model->toArray(),
-                'trace' => collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 8))->map(fn($f) => ($f['file'] ?? '?') . ':' . ($f['line'] ?? '?') . ' ' . ($f['function'] ?? '?'))->toArray(),
             ]);
         });
 

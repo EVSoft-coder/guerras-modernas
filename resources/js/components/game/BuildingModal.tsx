@@ -41,6 +41,8 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
     const currentTryLevel = mapToAssetLevel(building.nivel || 0);
     const [usePlaceholder, setUsePlaceholder] = useState(false);
+    const [trainQty, setTrainQty] = useState(1);
+    const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
     
     const isBuilt = (building.nivel || 0) > 0;
     const blueprintUrl = getBuildingAsset(building.buildingType, 'blueprint');
@@ -97,28 +99,9 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         );
     };
 
-    // Obter bónus de produção
-    const getProductionBonus = (lvl: number) => {
-        const resKey = {
-            'mina_suprimentos': 'suprimentos',
-            'refinaria': 'combustivel',
-            'fabrica_municoes': 'municoes',
-            'posto_recrutamento': 'pessoal',
-            'factory': 'metal',
-            'solar': 'energia'
-        }[building.buildingType as string];
-
-        if (!resKey) return null;
-
-        const baseProd = gameConfig?.production?.[resKey] || 10;
-        const speed = gameConfig?.speed?.resources || 1;
-        const scaling = gameConfig?.scaling || 1.5;
-
-        return calculateResourceProduction(baseProd, lvl, speed, scaling);
-    };
-
-    const currentBonus = getProductionBonus(building.nivel || 0);
-    const nextBonus = getProductionBonus(nextLevel);
+    // Bonus de produção tática removidos do frontend (devem vir do backend no futuro)
+    const currentBonus = null;
+    const nextBonus = null;
     
     // Cálculo de tempo real
     const constSpeed = gameConfig?.speed?.construction || 1;
@@ -130,10 +113,6 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         const cost = calculateBuildingCost(amount as number, building.nivel || 0, gameConfig?.scaling || 1.5);
         return parseResourceValue(building.base?.recursos?.[type] || 0) >= cost;
     }) : true;
-
-    // Lógica de Recrutamento
-    const [trainQty, setTrainQty] = useState(1);
-    const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
 
     const tipoLower = building.buildingType?.toLowerCase();
     const isMilitary = ['quartel', 'aerodromo'].includes(tipoLower);
@@ -278,21 +257,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                         </p>
                                     </div>
 
-                                    {/* Comparativos de Inteligência */}
-                                    {currentBonus && (
-                                        <div className="grid grid-cols-2 gap-3 md:gap-4">
-                                            <div className="bg-white/5 p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10 space-y-1">
-                                                <span className="text-[8px] md:text-[9px] font-black text-neutral-500 uppercase tracking-widest">Capacidade Atual</span>
-                                                <div className="text-sm md:text-xl font-mono font-black text-white">{currentBonus.toLocaleString()}/h</div>
-                                            </div>
-                                            <div className="bg-sky-600/10 p-3 md:p-4 rounded-xl md:rounded-2xl border border-sky-500/30 space-y-1">
-                                                <span className="text-[8px] md:text-[9px] font-black text-sky-400 uppercase tracking-widest">Nível Seguinte</span>
-                                                <div className="text-sm md:text-xl font-mono font-black text-sky-400 flex items-center gap-1">
-                                                    <TrendingUp className="w-3.5 h-3.5 md:w-4 md:h-4" /> {nextBonus?.toLocaleString()}/h
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
+                                    {/* Comparativos de Inteligência removidos (dependem de dados do backend) */}
 
                                     {/* Para edifícios não produtores (Quartel, etc) mostrar um bónus tático genérico */}
                                     {!currentBonus && (
