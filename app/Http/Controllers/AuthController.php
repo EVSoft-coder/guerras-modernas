@@ -81,7 +81,7 @@ class AuthController extends Controller
  
         // NOTE: Mobilização insurgente automática removida (deve ser via Seeder ou Cron)
 
-        $finalResources = $base ? $this->gameService->calculateResources($base) : [];
+        $finalResources = $base ? $this->gameService->calculateResources($base) : null;
 
         // Pre-cálculo de taxas para o frontend (Real-Time Tick)
         $taxasRaw = $this->gameService->obterTaxasProducao($base);
