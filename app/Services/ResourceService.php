@@ -37,8 +37,9 @@ class ResourceService
         $lastUpdateCarbon = Carbon::parse($lastUpdate);
         
         $elapsed = 0;
-        if ($now->greaterThan($lastUpdateCarbon)) {
-            $elapsed = (float)$now->diffInSeconds($lastUpdateCarbon);
+        $diff = (float)$now->getTimestamp() - (float)$lastUpdateCarbon->getTimestamp();
+        if ($diff > 0) {
+            $elapsed = $diff;
         }
 
         Log::info('RESOURCE_DEBUG', [
