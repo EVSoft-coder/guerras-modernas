@@ -35,7 +35,7 @@ class GameService
         if (!$base->recursos) $base->load('recursos');
         return [
             'base' => $base,
-            'resources' => $this->resourceService->calculate($base->recursos),
+            'resources' => $this->resourceService->calculate($base->recursos, null, $this->obterTaxasProducao($base)),
             'ultimo_update' => $base->ultimo_update
         ];
     }
@@ -51,7 +51,7 @@ class GameService
     public function calculateResources($base, $now = null)
     {
         if (!$base->recursos) $base->load('recursos');
-        return $this->resourceService->calculate($base->recursos, $now);
+        return $this->resourceService->calculate($base->recursos, $now, $this->obterTaxasProducao($base));
     }
 
     public function syncResources(Base $base): void

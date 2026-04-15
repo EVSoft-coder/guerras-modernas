@@ -20,20 +20,15 @@ class ResourceService
      * Regra: amount + (rate_hour * (elapsed / 3600))
      * NÃO ALTERA A BASE DE DADOS.
      */
-    public function calculate(Recurso $resource, $now = null): array
+    public function calculate(Recurso $resource, $now = null, array $taxasMinuto = null): array
     {
         if (!$now) $now = Carbon::now();
         $base = $resource->base;
 
-        if (!$base) {
-            return [
-                'suprimentos' => $resource->suprimentos, 
-                'combustivel' => $resource->combustivel, 
-                'municoes' => $resource->municoes,
-                'pessoal' => $resource->pessoal, 
-                'metal' => $resource->metal, 
-                'energia' => $resource->energia, 
-                'cap' => 10000,
+        if (!$taxasMinuto) {
+            $taxasMinuto = [
+                'suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 
+                'metal' => 0, 'energia' => 0, 'pessoal' => 0
             ];
         }
 
@@ -46,9 +41,13 @@ class ResourceService
             $elapsed = (float)$now->diffInSeconds($lastUpdateCarbon);
         }
 
-        // Obter taxas (GameService centraliza as regras de edifícios)
-        $gameService = new GameService();
-        $taxasMinuto = $gameService->obterTaxasProducao($base);
+        Log::info('RESOURCE_DEBUG', [
+            'before' => $resource->suprimentos,
+            'rate_min' => $taxasMinuto['suprimentos'] ?? 0,
+            'last_update' => $lastUpdateCarbon->toDateTimeString(),
+            'now' => $now->toDateTimeString(),
+            'elapsed' => $elapsed
+        ]);
         
         $calcFunc = function($baseAmount, $ratePerMin) use ($elapsed) {
             $ratePerHour = $ratePerMin * 60;
@@ -78,7 +77,10 @@ class ResourceService
         if (!$resource) return;
 
         $now = Carbon::now();
-        $calculated = $this->calculate($resource, $now);
+        $taxasMinuto = $this->getRates($base);
+        $calculated = $this->calculate($resource, $now, $taxasMinuto);
+        
+        Log::info('RESOURCE_SYNC', $calculated);
         
         DB::transaction(function() use ($base, $resource, $calculated, $now) {
             // Write 1: Tabela Recursos (Fonte da Verdade)
@@ -101,5 +103,29 @@ class ResourceService
         // Mutar instâncias para evitar stale data no mesmo request
         $base->ultimo_update = $now;
         $resource->setRawAttributes(array_merge($resource->getAttributes(), $calculated, ['updated_at' => $now]), true);
+    }
+    
+    /**
+     * Auxiliar interno para obter taxas sem depender de GameService
+     */
+    private function getRates(Base $base): array
+    {
+        $levels = [
+            'mina_metal' => (int)($base->edificios()->where('tipo', 'mina_metal')->first()?->nivel ?? 0),
+            'central_energia' => (int)($base->edificios()->where('tipo', 'central_energia')->first()?->nivel ?? 0),
+            'mina_suprimentos' => (int)($base->edificios()->where('tipo', 'mina_suprimentos')->first()?->nivel ?? 0),
+            'refinaria' => (int)($base->edificios()->where('tipo', 'refinaria')->first()?->nivel ?? 0),
+            'fabrica_municoes' => (int)($base->edificios()->where('tipo', 'fabrica_municoes')->first()?->nivel ?? 0),
+            'posto_recrutamento' => (int)($base->edificios()->where('tipo', 'posto_recrutamento')->first()?->nivel ?? 0),
+        ];
+
+        return [
+            'metal' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('metal', $levels['mina_metal']),
+            'energia' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('energia', $levels['central_energia']),
+            'suprimentos' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('suprimentos', $levels['mina_suprimentos']),
+            'combustivel' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('combustivel', $levels['refinaria']),
+            'municoes' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('municoes', $levels['fabrica_municoes']),
+            'pessoal' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('pessoal', $levels['posto_recrutamento']),
+        ];
     }
 }

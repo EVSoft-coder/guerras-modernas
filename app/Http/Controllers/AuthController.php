@@ -150,7 +150,7 @@ class AuthController extends Controller
                 ]);
 
                 // Criar recursos iniciais na tabela recursos (fonte de verdade)
-                $base->recursos()->create([
+                $base->recursos()->firstOrCreate(['base_id' => $base->id], [
                     'suprimentos' => 1000,
                     'combustivel' => 800,
                     'municoes' => 500,

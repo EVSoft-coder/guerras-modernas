@@ -35,8 +35,7 @@ class GameSeeder extends Seeder
         ]);
 
         // Criar Recursos
-        Recurso::create([
-            'base_id' => $base->id,
+        Recurso::firstOrCreate(['base_id' => $base->id], [
             'suprimentos' => 50000,
             'combustivel' => 30000,
             'municoes' => 20000,
