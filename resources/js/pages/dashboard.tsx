@@ -22,16 +22,22 @@ const breadcrumbs: BreadcrumbItem[] = [
  */
 export default function Dashboard(props: DashboardProps) {
     const gameMode = useGameMode();
-
-    useEffect(() => {
-        if (props.resources) {
-            console.log('%cINITIAL RESOURCES FROM BACKEND', 'color:lime;font-weight:bold', props.resources);
-            resourceSystem.sync(props.resources);
-        }
-    }, [props.resources]);
     const { entities } = useGameEntities() || { entities: [] };
     const hasActiveArmy = entities?.some(e => e.march) ?? false;
     
+    // === RECURSOS: Usar props.resources como fonte da verdade (persistidos no backend) ===
+    const [resources, setResources] = useState(props.resources ?? props.base?.recursos ?? {});
+
+    useEffect(() => {
+        // Quando props.resources muda (refresh ou polling), atualizar estado local
+        const incoming = props.resources ?? props.gameData?.resources;
+        if (incoming && typeof incoming === 'object') {
+            console.log('%cRESOURCES FROM BACKEND', 'color:lime;font-weight:bold', incoming);
+            setResources(incoming);
+            resourceSystem.sync(incoming);
+        }
+    }, [props.resources, props.gameData?.resources]);
+
     // Semáforo de Recarga via Ref (Garante valor atualizado sem disparar re-renders)
     const reloadingRef = useRef(false);
     const [lastSync, setLastSync] = useState<Date>(new Date());
@@ -39,27 +45,22 @@ export default function Dashboard(props: DashboardProps) {
 
     // Gestão de Polling Estável (Instância Única)
     useEffect(() => {
-        // Intervalo Táctico: 15 segundos (Reduz carga no servidor e colisões)
         const POLL_INTERVAL = 15000;
 
         PollingService.start(() => {
             if (document.hidden || reloadingRef.current) return;
-
-            // Bloqueio de Segurança Instantâneo
             reloadingRef.current = true;
             
             router.reload({
-                only: ["gameData", "base"],
+                only: ["gameData", "base", "resources"],
                 onSuccess: () => {
                     setLastSync(new Date());
                 },
                 onError: (err) => {
-                    // Ignorar erros de concorrência silenciosamente para não poluir logs
                     if (err?.message?.includes('409')) return;
                     console.warn("[SYNC] Sincronização parcial falhou:", err);
                 },
                 onFinish: () => {
-                    // Liberação segura após estabilização de rede
                     setTimeout(() => {
                         reloadingRef.current = false;
                     }, 3000);
@@ -68,7 +69,7 @@ export default function Dashboard(props: DashboardProps) {
         }, POLL_INTERVAL);
 
         return () => PollingService.stop();
-    }, []); // Executa apenas no mount inicial
+    }, []);
 
     // Timer visual de sincronização
     useEffect(() => {
@@ -84,15 +85,14 @@ export default function Dashboard(props: DashboardProps) {
                 <span className="mr-1 inline-block h-1 w-1 animate-pulse rounded-full bg-emerald-500"></span>
                 Sync: {secondsSinceSync}s ago
             </div>
-            <div className="text-[6px] text-neutral-600 mt-0.5 tracking-normal">BUILD_VER: 2026.04.12.2101</div>
+            <div className="text-[6px] text-neutral-600 mt-0.5 tracking-normal">BUILD_VER: 2026.04.15</div>
         </div>
     );
 
-    // Protecção de Props durante carregamento parcial
-    const currentBase = props.gameData?.resources ? { ...props.base, recursos: props.gameData.resources } : props.base;
+    // Montar base com recursos corretos
+    const currentBase = props.base ? { ...props.base, recursos: resources } : props.base;
     const currentBuildings = props.gameData?.buildings ?? props.buildings ?? [];
     const currentPopulation = props.gameData?.population ?? props.population ?? null;
-    const currentResources = props.gameData?.resources ?? props.resources ?? {};
 
     if (gameMode === "WORLD_MAP") {
         return (
@@ -118,7 +118,7 @@ export default function Dashboard(props: DashboardProps) {
                  base={currentBase} 
                  buildings={currentBuildings}
                  population={currentPopulation}
-                 resources={currentResources}
+                 resources={resources}
             />
             {SyncIndicator}
         </AppLayout>

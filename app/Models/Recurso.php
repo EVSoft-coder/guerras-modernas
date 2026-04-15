@@ -17,6 +17,8 @@ class Recurso extends Model
         'pessoal',
         'metal',
         'energia',
+        'cap',
+        'updated_at',
     ];
 
     protected static function boot()
