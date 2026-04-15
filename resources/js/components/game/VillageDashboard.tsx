@@ -21,7 +21,17 @@ export function VillageDashboard({
     jogador, base: initialBase, bases: backendBases = [], taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal, populacao, // deprecated props
     buildings, population, resources
-}: DashboardProps & { bases: any[], populacao?: any, buildings?: any[], population?: any, resources?: any }) {
+}: DashboardProps & { 
+    bases?: any[], 
+    populacao?: any, 
+    buildings?: any[], 
+    population?: any, 
+    resources?: any,
+    ataquesRecebidos?: any[],
+    ataquesEnviados?: any[],
+    relatoriosGlobal?: any[],
+    taxasPerSecond?: Record<string, number>
+}) {
     // 0. ECS ENGINE INTEGRATION - BARKING STATE
     const { globalState } = useGameEntities();
 
@@ -199,8 +209,8 @@ export function VillageDashboard({
                         </CardHeader>
                         <CardContent className="py-6 min-h-[100px]">
                             <div className="space-y-4">
-                                {(relatoriosGlobal ?? []).length > 0 ? (relatoriosGlobal ?? []).map((r: any, i: number) => (
-                                    <div key={i} className="group/item relative pl-4 transition-all duration-300">
+                                {(relatoriosGlobal ?? []).length > 0 ? (relatoriosGlobal ?? []).map((r: { id: number, created_at: string, atacante?: { username: string }, defensor?: { username: string } }) => (
+                                    <div key={r.id} className="group/item relative pl-4 transition-all duration-300">
                                         <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-orange-500/20 group-hover/item:bg-orange-500 transition-colors"></div>
                                         <div className="text-[8px] text-neutral-600 font-black uppercase tracking-widest mb-1 group-hover/item:text-neutral-400 transition-colors">
                                             {new Date(r.created_at).toLocaleTimeString()}

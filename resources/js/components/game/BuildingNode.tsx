@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { getEvolutionLevelAsset } from '@/lib/game-utils';
 import { getBuildingAsset } from '@/utils/assetMapper';
@@ -7,7 +7,7 @@ interface BuildingNodeProps {
     buildingType: string;
     nome: string;
     nivel: number;
-    gridPos: { x: number, y: number };
+    gridPos: { x: number, y: number } | null;
     isConstructing?: boolean;
     isLocked?: boolean;
     onClick: () => void;
@@ -20,9 +20,9 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ buildingType, nome, 
 
     return (
         <motion.div 
-            style={{ 
+            style={gridPos ? { 
                 gridArea: `${(gridPos?.y ?? 0) + 1} / ${(gridPos?.x ?? 0) + 1} / span 1 / span 1` 
-            }}
+            } : {}}
             whileHover={!isLocked ? { scale: 1.1, zIndex: 100 } : {}}
             whileTap={!isLocked ? { scale: 0.9 } : {}}
             onClick={!isLocked ? onClick : undefined}

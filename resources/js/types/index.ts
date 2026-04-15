@@ -61,6 +61,8 @@ export interface Edificio {
     tipo?: string; // deprecated
     buildingType: string;
     nivel: number;
+    pos_x: number;
+    pos_y: number;
 }
 
 export interface FilaConstrucao {

@@ -24,11 +24,11 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameC
             </CardHeader>
             <CardContent className="py-6 min-h-[150px]">
                 <div className="grid grid-cols-1 gap-3">
-                    {(tropas || []).map((t, i) => {
+                    {(tropas || []).map((t) => {
                         const config = unitsConfig[t.tipo] || { name: t.tipo };
                         return (
                             <motion.div 
-                                key={i} 
+                                key={t.id} 
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="bg-white/[0.03] p-4 rounded-2xl border border-white/5 group hover:border-emerald-500/30 transition-all duration-300 relative overflow-hidden"

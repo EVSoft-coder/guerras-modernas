@@ -66,10 +66,7 @@ class AuthController extends Controller
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
  
         if ($base) {
-            // Sincronizar Economia (Persistir incrementos no DB no carregamento)
-            $this->gameService->syncResources($base);
-
-            // PROCESSAMENTO DETERMINÍSTICO DE FILAS
+            // PROCESSAMENTO DETERMINÍSTICO DE FILAS (Sem escrita automática de recursos)
             $this->gameService->processarFilas($base);
             
             // 3. Persistência de Sessão e Recarga Real

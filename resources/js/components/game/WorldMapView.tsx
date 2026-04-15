@@ -10,6 +10,7 @@ import { useGameEntities } from '@/hooks/use-game-entities';
 import { StrategyHUD } from './StrategyHUD';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { eventBus, Events } from '@src/core/EventBus';
+import { Base } from '@/types';
 
 interface BaseMap {
     id: number;
@@ -30,7 +31,7 @@ interface BaseMap {
 }
 
 interface WorldMapViewProps {
-    playerBase?: any;
+    playerBase?: Base;
     troops?: any[];
     gameConfig?: any;
 }
@@ -108,6 +109,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     const { post, processing } = useForm();
 
     const handleSendAttack = (params: any) => {
+        if (!playerBase) return;
         eventBus.emit(Events.ATTACK_LAUNCH, {
             originX: playerBase.coordenada_x,
             originY: playerBase.coordenada_y,
@@ -402,7 +404,14 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
             )}
 
             <StrategyHUD 
-                resources={playerBase?.recursos || {}}
+                resources={playerBase?.recursos || {
+                    suprimentos: 0,
+                    combustivel: 0,
+                    municoes: 0,
+                    metal: 0,
+                    energia: 0,
+                    pessoal: 0
+                } as any}
                 coordinates={center}
                 selectedEntity={selectedEntityObj}
                 miniMapData={gameEntities}

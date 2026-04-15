@@ -126,8 +126,8 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     const timeFormatted = `${Math.floor(totalTime / 60)}m ${Math.floor(totalTime % 60)}s`;
 
     // Verificar se tem todos os recursos para o upgrade
-    const canAfford = config.cost ? Object.entries(config.cost).every(([type, amount]: any) => {
-        const cost = calculateBuildingCost(amount, building.nivel || 0, gameConfig?.scaling || 1.5);
+    const canAfford = config.cost ? Object.entries(config.cost).every(([type, amount]) => {
+        const cost = calculateBuildingCost(amount as number, building.nivel || 0, gameConfig?.scaling || 1.5);
         return parseResourceValue(building.base?.recursos?.[type] || 0) >= cost;
     }) : true;
 
@@ -144,7 +144,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         return false;
     };
 
-    const availableUnits = isMilitary ? Object.entries(gameConfig?.units || {}).filter(([key, unit]: any) => isAvailable(key)) : [];
+    const availableUnits = isMilitary ? Object.entries(gameConfig?.units || {}).filter(([key]) => isAvailable(key)) : [];
 
     // Escolher a primeira unidade por defeito quando o modal abre num edifício militar
     useEffect(() => {
@@ -155,8 +155,8 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
     const renderUnitCard = ([key, unit]: [string, any]) => {
         const isSelected = selectedUnit === key;
-        const canAffordUnit = Object.entries(unit.cost || {}).every(([res, amt]: any) => 
-            parseResourceValue(building.base?.recursos?.[res] || 0) >= (amt * trainQty)
+        const canAffordUnit = Object.entries(unit.cost || {}).every(([res, amt]) => 
+            parseResourceValue(building.base?.recursos?.[res] || 0) >= ((amt as number) * trainQty)
         );
 
         return (

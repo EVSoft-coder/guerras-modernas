@@ -28,7 +28,12 @@ class BaseController extends Controller
  
         try {
             \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request) {
-                $this->gameService->iniciarUpgrade($base, $request->tipo);
+                $this->gameService->iniciarUpgrade(
+                    $base, 
+                    $request->tipo,
+                    $request->input('pos_x', 0),
+                    $request->input('pos_y', 0)
+                );
             });
             if ($request->wantsJson()) {
                 return response()->json(['status' => 'success', 'message' => "Upgrade de " . strtoupper($request->tipo) . " iniciado."]);

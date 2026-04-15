@@ -72,18 +72,18 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
             <div className="absolute inset-0 scanline-overlay opacity-[0.15] z-10 pointer-events-none"></div>
             <div className="absolute inset-0 bg-gradient-to-b from-sky-500/5 to-transparent h-20 animate-scanline z-10 pointer-events-none"></div>
             
-            {/* GRID DE EDIFÍCIOS TÁCTICO */}
-            <div className="absolute inset-0 z-20 grid grid-cols-5 grid-rows-5 p-8 md:p-12 lg:p-16 gap-2">
+            {/* GRID DE EDIFÍCIOS TÁCTICO - Estilo TribalWars Determinístico */}
+            <div className="absolute inset-0 z-20 grid grid-cols-5 auto-rows-max p-8 md:p-12 lg:p-16 gap-4 overflow-y-auto custom-scrollbar">
                 {buildings.map(b => {
-                    const pos = buildingPositions[b.id] || { x: 0, y: 0 };
                     return (
                         <BuildingNode
                             key={b.id}
                             buildingType={b.id}
                             nome={b.name}
                             nivel={b.level}
-                            gridPos={pos}
+                            gridPos={null} // Auto-flow na grelha 5-cols
                             onClick={() => onBuildingClick({ ...b, buildingType: b.id })}
+                            isLocked={!b.isBuilt && b.level === 0 && b.id !== 'qg' && b.id !== 'muralha'} // Exemplo de lock
                         />
                     );
                 })}

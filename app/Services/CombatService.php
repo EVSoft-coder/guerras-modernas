@@ -9,8 +9,15 @@ use App\Domain\Combat\CombatRules;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use App\Services\ResourceService;
+
 class CombatService
 {
+    protected $resourceService;
+
+    public function __construct() {
+        $this->resourceService = new ResourceService();
+    }
     /**
      * Inicia uma missão militar, subtraindo tropas da origem e criando o registo de marcha.
      */
@@ -126,8 +133,8 @@ class CombatService
             // Lógica de Saque Automático
             $saque = ['metal' => 0, 'energia' => 0, 'comida' => 0];
             if ($vitoria) {
-                // Sincronizar recursos do alvo antes de saquear
-                app(\App\Services\GameService::class)->syncResources($destino);
+                // Sincronizar recursos do alvo antes de saquear (OBRIGATÓRIO)
+                $this->resourceService->syncVillageResources($destino);
                 $resData = $destino->resources; // Cálculo em tempo real
 
                 $totalDisponivel = $resData['metal'] + $resData['energia'] + $resData['comida'];
@@ -206,7 +213,7 @@ class CombatService
             }
 
             // Sincronizar recursos antes de creditar o saque
-            app(\App\Services\GameService::class)->syncResources($origem);
+            $this->resourceService->syncVillageResources($origem);
 
             foreach ($ataque->tropas as $u => $q) {
                 if ($q <= 0) continue;

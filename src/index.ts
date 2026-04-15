@@ -3,8 +3,8 @@ import { gameLoop } from './core/GameLoop';
 import { inputSystem } from './game/systems/InputSystem';
 import { uiManager } from './ui/UIManager';
 import { entityManager } from './core/EntityManager';
-import { Position, PositionComponent } from './game/components/Position';
-import { Velocity, VelocityComponent } from './game/components/Velocity';
+import { PositionComponent } from './game/components/Position';
+import { VelocityComponent } from './game/components/Velocity';
 import { GridPositionComponent } from './game/components/GridPositionComponent';
 import { RenderableComponent } from './game/components/RenderableComponent';
 import { 

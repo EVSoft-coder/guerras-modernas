@@ -14,12 +14,19 @@ use App\Domain\Economy\EconomyRules;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 
+use App\Services\ResourceService;
+
 /**
  * GameService Centralizado
  * Concentra a lógica core de economia, engenharia e recrutamento.
  */
 class GameService
 {
+    protected $resourceService;
+
+    public function __construct() {
+        $this->resourceService = new ResourceService();
+    }
     /**
      * Retorna o estado completo da base (Snapshot)
      */
@@ -27,7 +34,7 @@ class GameService
     {
         return [
             'base' => $base,
-            'resources' => $this->calculateResources($base),
+            'resources' => $this->resourceService->calculate($base),
             'ultimo_update' => $base->ultimo_update
         ];
     }
@@ -37,104 +44,17 @@ class GameService
         return $this->snap($base);
     }
 
+    /**
+     * PROXY PARA RESOURCE SERVICE
+     */
     public function calculateResources($base, $now = null)
     {
-        if (!$now) $now = Carbon::now();
-
-        // Carregar relação recursos se não carregada
-        if (!$base->relationLoaded('recursos')) {
-            $base->load('recursos');
-        }
-        $rec = $base->recursos;
-
-        // Fail-safe: Se não houver linha de recursos, retorna estado base zero
-        if (!$rec) {
-            return [
-                'suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0,
-                'pessoal' => 0, 'metal' => 0, 'energia' => 0, 'cap' => 10000,
-            ];
-        }
-
-        $baseSuprimentos = (float)($rec->suprimentos ?? 0);
-        $baseCombustivel = (float)($rec->combustivel ?? 0);
-        $baseMunicoes    = (float)($rec->municoes ?? 0);
-        $basePessoal     = (float)($rec->pessoal ?? 0);
-        $baseMetal       = (float)($rec->metal ?? 0);
-        $baseEnergia     = (float)($rec->energia ?? 0);
-        $cap         = (int)($rec->cap ?? 10000);
-
-        // Fonte Única de Verdade Temporal: ultimo_update na base
-        $lastUpdate = $base->ultimo_update ?? $base->created_at;
-
-        $lastUpdateCarbon = Carbon::parse($lastUpdate);
-        
-        // Cálculo de Delta Temporal (Segurança acrescida para Carbon 3)
-        $seconds = 0;
-        if ($now->greaterThan($lastUpdateCarbon)) {
-            $seconds = (float)$now->diffInSeconds($lastUpdateCarbon);
-        }
-
-        // Taxas de produção por segundo calculadas dinamicamente
-        $taxas = $this->obterTaxasProducao($base);
-        $rateSup = ($taxas['suprimentos'] ?? 0) / 60;
-        $rateComb = ($taxas['combustivel'] ?? 0) / 60;
-        $rateMun = ($taxas['municoes'] ?? 0) / 60;
-        $rateMetal = ($taxas['metal'] ?? 0) / 60;
-        $rateEnergia = ($taxas['energia'] ?? 0) / 60;
-
-        $resources = [
-            'suprimentos' => min($cap, max(0, $baseSuprimentos + ($rateSup * $seconds))),
-            'combustivel' => min($cap, max(0, $baseCombustivel + ($rateComb * $seconds))),
-            'municoes'    => min($cap, max(0, $baseMunicoes + ($rateMun * $seconds))),
-            'metal'       => min($cap, max(0, $baseMetal + ($rateMetal * $seconds))),
-            'energia'     => min($cap, max(0, $baseEnergia + ($rateEnergia * $seconds))),
-            'pessoal'     => $basePessoal,
-            'cap'         => $cap,
-            'last_update_at' => $lastUpdateCarbon->toDateTimeString(),
-            'calculated_at' => $now->toDateTimeString(),
-        ];
-
-        return $resources;
+        return $this->resourceService->calculate($base, $now);
     }
 
-    /**
-     * PERSISTÊNCIA DE RECURSOS (SYNC)
-     * Chamar apenas durante mutações (ações do jogador).
-     * Sincroniza todas as tabelas e limpa o buffer temporal.
-     */
     public function syncResources(Base $base): void
     {
-        $now = Carbon::now();
-        $calculated = $this->calculateResources($base, $now);
-        
-        DB::transaction(function() use ($base, $calculated, $now) {
-            // 1. Atualizar tabela de recursos (Legacy Sync)
-            DB::table('recursos')
-                ->where('base_id', $base->id)
-                ->update([
-                    'suprimentos' => $calculated['suprimentos'],
-                    'combustivel' => $calculated['combustivel'],
-                    'municoes'    => $calculated['municoes'],
-                    'pessoal'     => $calculated['pessoal'],
-                    'metal'       => $calculated['metal'],
-                    'energia'     => $calculated['energia'],
-                    'updated_at'  => $now
-                ]);
-
-            // 2. Atualizar tabela de bases (Modern Sync - Parallel Source)
-            DB::table('bases')->where('id', $base->id)->update([
-                'ultimo_update' => $now,
-                'recursos_metal' => $calculated['metal'],
-                'recursos_energia' => $calculated['energia'],
-                'recursos_comida' => $calculated['municoes'],
-            ]);
-        });
-
-        // Mutar instância em memória para garantir consistência em requests longos
-        $base->ultimo_update = $now;
-        if ($base->relationLoaded('recursos') && $base->recursos) {
-            $base->recursos->setRawAttributes(array_merge($calculated, ['updated_at' => $now]), true);
-        }
+        $this->resourceService->syncVillageResources($base);
     }
 
     public function obterTaxasProducao(Base $base): array
@@ -153,7 +73,7 @@ class GameService
      * LOGICA DE CONSTRUÇÃO
      * Valida recursos e inicia o upgrade de um edifício.
      */
-    public function iniciarUpgrade(Base $base, string $tipoRaw): ?Construcao
+    public function iniciarUpgrade(Base $base, string $tipoRaw, int $posX = 0, int $posY = 0): ?Construcao
     {
         // 0. Sincronizar economia antes de qualquer dedução
         $this->syncResources($base);
@@ -172,7 +92,30 @@ class GameService
             throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente para suportar esta expansão estrutural. Melhore o Complexo Residencial.");
         }
 
-        return DB::transaction(function() use ($base, $tipo, $custos, $tempo, $nivelAtual) {
+        // CORREÇÃO 5 — BACKEND VALIDATION (Layout Determinístico)
+        if ($nivelAtual === 0 && !in_array($tipo, [BuildingType::QG, BuildingType::MURALHA])) {
+            // Se as coordenadas forem 0,0, assumimos que o jogador quer "Auto-Place" ou é um comando antigo
+            if ($posX === 0 && $posY === 0) {
+                $pos = $this->findNextAvailablePosition($base);
+                $posX = $pos['x'];
+                $posY = $pos['y'];
+            }
+
+            $exists = DB::table('edificios')
+                ->where('base_id', $base->id)
+                ->where('pos_x', $posX)
+                ->where('pos_y', $posY)
+                ->exists();
+            
+            if ($exists) {
+                // Se colidir, tentamos encontrar o próximo livre de qualquer forma
+                $pos = $this->findNextAvailablePosition($base);
+                $posX = $pos['x'];
+                $posY = $pos['y'];
+            }
+        }
+
+        return DB::transaction(function() use ($base, $tipo, $custos, $tempo, $nivelAtual, $posX, $posY) {
             if (!$this->consumirRecursos($base, $custos)) {
                 throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
             }
@@ -186,7 +129,7 @@ class GameService
                 } else {
                     $base->edificios()->updateOrCreate(
                         ['tipo' => $tipo],
-                        ['nivel' => 1]
+                        ['nivel' => 1, 'pos_x' => $posX, 'pos_y' => $posY]
                     );
                 }
                 
@@ -260,7 +203,13 @@ class GameService
                     if ($edificio) {
                         $edificio->increment('nivel');
                     } else {
-                        $base->edificios()->create(['tipo' => $tipo, 'nivel' => 1]);
+                        $pos = $this->findNextAvailablePosition($base);
+                        $base->edificios()->create([
+                            'tipo' => $tipo, 
+                            'nivel' => 1,
+                            'pos_x' => $pos['x'],
+                            'pos_y' => $pos['y']
+                        ]);
                     }
                 }
                 $fila->delete();
@@ -361,5 +310,27 @@ class GameService
                 'troops' => $usedByTroops
             ]
         ];
+    }
+
+    /**
+     * LOCALIZADOR DE ESPAÇO TÁCTICO
+     * Encontra a primeira célula livre na grelha 5x5.
+     */
+    public function findNextAvailablePosition(Base $base): array
+    {
+        for ($y = 0; $y < 10; $y++) { // Aumentado para 10 para expansão futura
+            for ($x = 0; $x < 5; $x++) {
+                $isOccupied = DB::table('edificios')
+                    ->where('base_id', $base->id)
+                    ->where('pos_x', $x)
+                    ->where('pos_y', $y)
+                    ->exists();
+                
+                if (!$isOccupied) {
+                    return ['x' => $x, 'y' => $y];
+                }
+            }
+        }
+        return ['x' => 0, 'y' => 0];
     }
 }

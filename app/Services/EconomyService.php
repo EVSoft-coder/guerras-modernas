@@ -13,23 +13,7 @@ class EconomyService
      */
     public function atualizarRecursos(Base $base)
     {
-        $recursos = $base->recursos;
-        if (!$recursos) return;
- 
-        $agora = now();
-        $ultimaVez = $recursos->updated_at;
-        $segundosPassados = $agora->greaterThan($ultimaVez) ? abs($agora->diffInSeconds($ultimaVez)) : 0;
- 
-        if ($segundosPassados <= 0) return;
- 
-        $taxasPerMinute = $this->obterTaxasProducao($base);
- 
-        foreach ($taxasPerMinute as $res => $rate) {
-            $incremento = ($rate / 60) * $segundosPassados;
-            $recursos->$res += $incremento;
-        }
- 
-        $recursos->save();
+        (new ResourceService())->syncVillageResources($base);
     }
  
     /**

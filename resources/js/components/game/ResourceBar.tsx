@@ -19,32 +19,30 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
         cap: recursos?.cap ?? 10000
     });
 
-    // Sincronização e Loop de Incremento (Estilo TribalWars Real-Time)
+    // Doutrina de Simulacro Determinístico (Frontend-Only Sync)
     useEffect(() => {
-        // 1. Atualizar valores base quando prop muda (Sync com Server)
-        setCurrent({
+        const anchor = Date.now();
+        const baseValues = {
             suprimentos: recursos?.suprimentos ?? 0,
             combustivel: recursos?.combustivel ?? 0,
             municoes: recursos?.municoes ?? 0,
-            pessoal: recursos?.pessoal ?? 0,
             metal: recursos?.metal ?? 0,
             energia: recursos?.energia ?? 0,
-            cap: recursos?.cap ?? 10000
-        });
+            pessoal: recursos?.pessoal ?? 0
+        };
 
-        // 2. Iniciar loop de incrementos infinitesimais (Visual apenas)
         const tick = setInterval(() => {
-            setCurrent(prev => {
-                const step = 1 / 1; // 1 tick por segundo
-                return {
-                    ...prev,
-                    suprimentos: Math.min(prev.cap, prev.suprimentos + (taxasPerSecond?.suprimentos ?? 0)),
-                    combustivel: Math.min(prev.cap, prev.combustivel + (taxasPerSecond?.combustivel ?? 0)),
-                    municoes: Math.min(prev.cap, prev.municoes + (taxasPerSecond?.municoes ?? 0)),
-                    metal: Math.min(prev.cap, prev.metal + (taxasPerSecond?.metal ?? 0)),
-                    energia: Math.min(prev.cap, prev.energia + (taxasPerSecond?.energia ?? 0)),
-                };
-            });
+            const elapsedSeconds = (Date.now() - anchor) / 1000;
+
+            setCurrent(prev => ({
+                ...baseValues,
+                cap: recursos?.cap ?? 10000,
+                suprimentos: Math.min(recursos?.cap ?? 10000, baseValues.suprimentos + ((taxasPerSecond?.suprimentos ?? 0) * elapsedSeconds)),
+                combustivel: Math.min(recursos?.cap ?? 10000, baseValues.combustivel + ((taxasPerSecond?.combustivel ?? 0) * elapsedSeconds)),
+                municoes: Math.min(recursos?.cap ?? 10000, baseValues.municoes + ((taxasPerSecond?.municoes ?? 0) * elapsedSeconds)),
+                metal: Math.min(recursos?.cap ?? 10000, baseValues.metal + ((taxasPerSecond?.metal ?? 0) * elapsedSeconds)),
+                energia: Math.min(recursos?.cap ?? 10000, baseValues.energia + ((taxasPerSecond?.energia ?? 0) * elapsedSeconds)),
+            }));
         }, 1000);
 
         return () => clearInterval(tick);
@@ -111,7 +109,19 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
     );
 };
 
-const ResourceItem = ({ icon, label, value, rate, cap, color, accentColor, isStatic = false, customValue }: any) => {
+interface ResourceItemProps {
+    icon: React.ReactNode;
+    label: string;
+    value: number;
+    rate: number;
+    cap: number;
+    color: string;
+    accentColor: string;
+    isStatic?: boolean;
+    customValue?: string | null;
+}
+
+const ResourceItem: React.FC<ResourceItemProps> = ({ icon, label, value, rate, cap, color, accentColor, isStatic = false, customValue }) => {
     return (
         <div className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-3xl p-6 rounded-[2.5rem] border border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.6)] group cursor-help transition-all duration-500 hover:bg-white/[0.05] hover:border-white/10 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -181,7 +191,7 @@ const ResourceItem = ({ icon, label, value, rate, cap, color, accentColor, isSta
     );
 };
 
-const AnimatedNumber = ({ value, customValue }: { value: number, customValue?: string }) => {
+const AnimatedNumber = ({ value, customValue }: { value: number, customValue?: string | null }) => {
     if (customValue) return <span>{customValue}</span>;
     const [displayValue, setDisplayValue] = useState(value);
 

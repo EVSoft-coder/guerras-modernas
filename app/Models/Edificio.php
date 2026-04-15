@@ -12,6 +12,8 @@ class Edificio extends Model
         'base_id',
         'tipo',
         'nivel',
+        'pos_x',
+        'pos_y',
     ];
 
     protected $appends = ['buildingType'];
