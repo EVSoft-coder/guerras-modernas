@@ -98,6 +98,11 @@ Route::get('/mw-debug-resources', function() {
     ]);
 });
 
+Route::get('/mw-debug-schema', function() {
+    $columns = \DB::select('SHOW COLUMNS FROM recursos');
+    return response()->json($columns);
+});
+
 Route::get('/mw-debug-logs', function() {
     $logPath = storage_path('logs/laravel.log');
     if (!file_exists($logPath)) return "Log not found";
