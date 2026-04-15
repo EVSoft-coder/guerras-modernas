@@ -41,12 +41,16 @@ Route::get('/mw-admin-trigger-99', function() {
     try {
         $output = [];
         $diagnostic = [];
+        $projectRoot = base_path();
         
-        exec('pwd', $diagnostic);
-        exec('ls -a', $diagnostic);
+        exec('echo "PROJECT_ROOT: ' . $projectRoot . '"', $diagnostic);
+        exec('cd ' . escapeshellarg($projectRoot) . ' && pwd', $diagnostic);
         
-        // Tentar git pull para atualizar o código
-        exec('git pull origin master 2>&1', $output);
+        // Git pull from project root
+        exec('cd ' . escapeshellarg($projectRoot) . ' && git pull origin master 2>&1', $output);
+        
+        // Build frontend
+        exec('cd ' . escapeshellarg($projectRoot) . ' && npm run build 2>&1', $buildOutput);
         
         Artisan::call('view:clear');
         Artisan::call('cache:clear');
@@ -57,17 +61,38 @@ Route::get('/mw-admin-trigger-99', function() {
         return response()->json([
             'status' => 'SUCCESS',
             'mission' => 'DIAGNOSTICO E SINCRONIZACAO',
+            'project_root' => $projectRoot,
             'directory_info' => $diagnostic,
             'git_output' => $output,
-            'message' => 'Código sincronizado, migrações executadas e cache detonada no servidor OVH.',
+            'build_output' => $buildOutput ?? [],
+            'message' => 'Código sincronizado, migrações executadas e cache detonada.',
             'timestamp' => now()->toDateTimeString()
         ]);
     } catch (\Exception $e) {
         return response()->json([
             'status' => 'FAILURE',
-            'error' => $e->getMessage()
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
         ], 500);
     }
+});
+
+// Diagnóstico de Recursos (Temporário)
+Route::get('/mw-debug-resources', function() {
+    $recurso = \App\Models\Recurso::first();
+    $base = \App\Models\Base::whereNotNull('jogador_id')->with('recursos')->first();
+    
+    return response()->json([
+        'recurso_table_first' => $recurso ? $recurso->toArray() : 'NO_RECORDS',
+        'base_with_recursos' => $base ? [
+            'base_id' => $base->id,
+            'base_nome' => $base->nome,
+            'ultimo_update' => $base->ultimo_update,
+            'recursos_relation' => $base->recursos ? $base->recursos->toArray() : 'NULL_RELATION',
+        ] : 'NO_BASE',
+        'total_recursos_rows' => \App\Models\Recurso::count(),
+        'timestamp' => now()->toDateTimeString(),
+    ]);
 });
 
 // Rotas Protegidas (Requer Login)
