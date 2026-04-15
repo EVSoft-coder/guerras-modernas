@@ -44,13 +44,14 @@ Route::get('/mw-admin-trigger-99', function() {
         $projectRoot = base_path();
         
         exec('echo "PROJECT_ROOT: ' . $projectRoot . '"', $diagnostic);
-        exec('cd ' . escapeshellarg($projectRoot) . ' && pwd', $diagnostic);
+        exec('ls -la ' . escapeshellarg($projectRoot), $diagnostic);
+        exec('ls -la ' . escapeshellarg(dirname($projectRoot)), $diagnostic);
+        
+        // Tentar encontrar o .git
+        exec('find ' . escapeshellarg(dirname($projectRoot, 2)) . ' -name .git -type d -maxdepth 3 2>/dev/null', $gitSearch);
         
         // Git pull from project root
         exec('cd ' . escapeshellarg($projectRoot) . ' && git pull origin master 2>&1', $output);
-        
-        // Build frontend
-        exec('cd ' . escapeshellarg($projectRoot) . ' && npm run build 2>&1', $buildOutput);
         
         Artisan::call('view:clear');
         Artisan::call('cache:clear');
@@ -63,9 +64,9 @@ Route::get('/mw-admin-trigger-99', function() {
             'mission' => 'DIAGNOSTICO E SINCRONIZACAO',
             'project_root' => $projectRoot,
             'directory_info' => $diagnostic,
+            'git_search' => $gitSearch,
             'git_output' => $output,
-            'build_output' => $buildOutput ?? [],
-            'message' => 'Código sincronizado, migrações executadas e cache detonada.',
+            'message' => 'Diágnostico executado. Verifique o git_search para localizar o repositório.',
             'timestamp' => now()->toDateTimeString()
         ]);
     } catch (\Exception $e) {
