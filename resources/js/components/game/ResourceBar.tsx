@@ -83,6 +83,29 @@ interface ResourceItemProps {
 }
 
 const ResourceItem: React.FC<ResourceItemProps> = ({ icon, label, value, rate, cap, color, accentColor, isStatic = false, customValue }) => {
+    const [simulatedValue, setSimulatedValue] = useState(value);
+
+    // Sincronizar com o valor real do servidor quando ele muda
+    useEffect(() => {
+        if (value > 0 || simulatedValue === 0) {
+            setSimulatedValue(value);
+        }
+    }, [value]);
+
+    // Simulação visual em tempo real (Ticker)
+    useEffect(() => {
+        if (isStatic || rate === 0) return;
+
+        const interval = setInterval(() => {
+            setSimulatedValue(prev => {
+                const next = prev + rate;
+                return next > cap ? cap : next;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [rate, cap, isStatic]);
+
     return (
         <div className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-3xl p-6 rounded-[2.5rem] border border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.6)] group cursor-help transition-all duration-500 hover:bg-white/[0.05] hover:border-white/10 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -94,11 +117,11 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ icon, label, value, rate, c
                     <div className="flex flex-col gap-1 w-full text-[9px] font-mono uppercase text-neutral-400">
                         <div className="flex justify-between">
                             <span>Fluxo/Hora:</span>
-                            <span className="text-emerald-400 font-black">+{(rate * 3600).toLocaleString()}</span>
+                            <span className="text-emerald-400 font-black">+{(rate * 3600).toFixed(0).toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between border-t border-white/5 pt-1 mt-1">
                             <span>Eficiência:</span>
-                            <span className="text-sky-400 font-black">{Math.min(100, (Number(value) / cap) * 100).toFixed(1)}%</span>
+                            <span className="text-sky-400 font-black">{Math.min(100, (simulatedValue / cap) * 100).toFixed(1)}%</span>
                         </div>
                         <div className="text-[7px] text-neutral-600 mt-2 text-center italic">
                              Sensor ótico de monitorização estratégica ativado
@@ -112,12 +135,9 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ icon, label, value, rate, c
                 <span className="text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 group-hover:text-white transition-colors">{label}</span>
             </div>
             
-            <motion.div 
-                key={value}
-                className={`text-4xl font-black font-mono tracking-tighter ${color} drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]`}
-            >
-                {Math.floor(value).toLocaleString()}
-            </motion.div>
+            <div className={`text-4xl font-black font-mono tracking-tighter ${color} drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]`}>
+                <AnimatedNumber value={simulatedValue} customValue={customValue} />
+            </div>
 
             <div className="mt-3 w-full">
                 {!isStatic ? (
@@ -135,7 +155,7 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ icon, label, value, rate, c
                             <motion.div 
                                 className={`h-full ${accentColor}`}
                                 initial={{ width: 0 }}
-                                animate={{ width: `${Math.min(100, (value / cap) * 100)}%` }}
+                                animate={{ width: `${Math.min(100, (simulatedValue / cap) * 100)}%` }}
                             />
                         </div>
                     </div>
@@ -156,6 +176,7 @@ const AnimatedNumber = ({ value, customValue }: { value: number, customValue?: s
     if (customValue) return <span>{customValue}</span>;
     const [displayValue, setDisplayValue] = useState(value);
 
+    // Ticker ultra-suave usando requestAnimationFrame
     useEffect(() => {
         const controls = animate(displayValue, value, {
             duration: 0.8,

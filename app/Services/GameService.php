@@ -59,6 +59,15 @@ class GameService
         $this->resourceService->sync($base);
     }
 
+    /**
+     * TICKER DE RECURSOS (Fase 4 - Estabilidade)
+     * Realiza o tick completo e persiste na base de dados.
+     */
+    public function tickRecursos(Base $base): void
+    {
+        $this->syncResources($base);
+    }
+
     public function obterTaxasProducao(Base $base): array
     {
         return [

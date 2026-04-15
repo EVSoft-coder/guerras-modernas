@@ -61,6 +61,9 @@ class AuthController extends Controller
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
  
         if ($base) {
+            // CORREÇÃO CRÍTICA FASE 4.3 — TICK DE RECURSOS (Persistência no Refresh)
+            $this->gameService->tickRecursos($base);
+
             // PROCESSAMENTO DETERMINÍSTICO DE FILAS (Sem escrita automática de recursos)
             $this->gameService->processarFilas($base);
             
