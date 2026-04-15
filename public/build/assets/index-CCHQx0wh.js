@@ -1,8 +1,8 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/app-DEmMRSEi.js","assets/app-DYabfW0d.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/app-C6Kubtfk.js","assets/app-BoXEvXNf.css"])))=>i.map(i=>d[i]);
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, _ as __vitePreload, s as stateManager, b as axios, G as GameState, c as GameMode } from "./app-DEmMRSEi.js";
+import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, _ as __vitePreload, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-C6Kubtfk.js";
 const unitConfigs = {
   infantaria: {
     id: "infantaria",
@@ -263,97 +263,6 @@ class WorldSystem {
   }
 }
 const worldSystem = new WorldSystem();
-class ResourceSystem {
-  init() {
-    console.log("[SYSTEM] ResourceSystem - Logistics and Upkeep Engine ACTIVE.");
-  }
-  update(deltaTime) {
-    this.processLogistics(deltaTime);
-  }
-  processLogistics(deltaTime) {
-    const villages = entityManager.getEntitiesWith(["Village", "Resource"]);
-    const buildings = entityManager.getEntitiesWith(["Building", "Production"]);
-    const villageProduction = /* @__PURE__ */ new Map();
-    for (const bId of buildings) {
-      const building = entityManager.getComponent(bId, "Building");
-      const prod = entityManager.getComponent(bId, "Production");
-      if (building && building.villageId !== void 0 && prod) {
-        if (!villageProduction.has(building.villageId)) {
-          villageProduction.set(building.villageId, {
-            suprimentos: 0,
-            combustivel: 0,
-            municoes: 0,
-            metal: 0,
-            energia: 0,
-            pessoal: 0
-          });
-        }
-        const rates = villageProduction.get(building.villageId);
-        const amount = prod.ratePerSecond * deltaTime;
-        if (prod.resourceType === "all") {
-          Object.keys(rates).forEach((k) => rates[k] += amount);
-        } else if (rates[prod.resourceType] !== void 0) {
-          rates[prod.resourceType] += amount;
-        }
-      }
-    }
-    for (const vId of villages) {
-      const res = entityManager.getComponent(vId, "Resource");
-      const army = entityManager.getComponent(vId, "Army");
-      const village = entityManager.getComponent(vId, "Village");
-      if (!res) continue;
-      const rates = villageProduction.get(vId);
-      if (rates) {
-        Object.keys(rates).forEach((type) => {
-          this.addResource(res, type, rates[type]);
-        });
-      }
-      const nativeProd = entityManager.getComponent(vId, "Production");
-      if (nativeProd) {
-        const amount = nativeProd.ratePerSecond * deltaTime;
-        if (nativeProd.resourceType === "all") {
-          ["suprimentos", "combustivel", "municoes", "metal", "energia", "pessoal"].forEach((r) => this.addResource(res, r, amount));
-        } else {
-          this.addResource(res, nativeProd.resourceType, amount);
-        }
-      }
-      let totalUpkeepFood = 0;
-      let totalUpkeepFuel = 0;
-      let totalEnergyDemand = 0;
-      if (army) {
-        const units = army.units;
-        totalUpkeepFood += (units["infantaria"] || 0) * 0.01;
-        totalUpkeepFuel += (units["blindado_apc"] || 0) * 0.05;
-        totalUpkeepFuel += (units["tanque_combate"] || 0) * 0.1;
-        totalUpkeepFuel += (units["helicoptero_ataque"] || 0) * 0.2;
-      }
-      if (village) {
-        totalEnergyDemand += village.level * 0.5;
-      }
-      this.consumeResource(res, "suprimentos", totalUpkeepFood * deltaTime);
-      this.consumeResource(res, "combustivel", totalUpkeepFuel * deltaTime);
-      this.consumeResource(res, "energia", totalEnergyDemand * deltaTime);
-    }
-  }
-  addResource(res, type, amount) {
-    if (res[type] !== void 0) {
-      const limit = res.cap ? res.cap : 9999999;
-      res[type] = Math.min(limit, res[type] + amount);
-    }
-  }
-  consumeResource(res, type, amount) {
-    if (res[type] !== void 0) {
-      res[type] = Math.max(0, res[type] - amount);
-    }
-  }
-  preUpdate(deltaTime) {
-  }
-  postUpdate(deltaTime) {
-  }
-  destroy() {
-  }
-}
-const resourceSystem = new ResourceSystem();
 class BuildQueueComponent {
   constructor(queue = []) {
     __publicField(this, "type", "BuildQueue");
@@ -900,7 +809,6 @@ class CombatSystem {
         const canTake = Math.min(available, carryCapacity - totalLooted);
         if (canTake > 0) {
           loot[res] = Math.floor(canTake);
-          village.resources[res] -= canTake;
           totalLooted += canTake;
         }
       }
@@ -1026,15 +934,8 @@ class AttackSystem {
       const village = entityManager.getComponent(originId, "Village");
       const resources = entityManager.getComponent(originId, "Resource");
       if (village && resources) {
-        for (const [res, qty] of Object.entries(march.loot || {})) {
-          if (resources[res] !== void 0) {
-            resources[res] += qty;
-            if (village.resources && village.resources[res] !== void 0) {
-              village.resources[res] += qty;
-            }
-          }
-        }
         console.log(`[WAR] REINTEGRATION: Mission ${march.id} processed at Sector ${originId}.`);
+        Sr.reload({ only: ["base", "gameData"] });
         eventBus.emit("VILLAGE:UPDATE", { villageId: originId });
       }
     }
@@ -1410,11 +1311,6 @@ class RebelGeneratorSystem {
       const village = entityManager.getComponent(id, "Village");
       if (village && village.isRebel && village.level < 10) {
         village.level++;
-        const bonus = 100;
-        village.resources.suprimentos += bonus;
-        village.resources.combustivel += bonus;
-        village.resources.metal += bonus;
-        village.resources.municoes += bonus;
         const army = entityManager.getComponent(id, "Army");
         if (army) {
           army.units["infantaria"] = (army.units["infantaria"] || 0) + 120;
@@ -1531,7 +1427,7 @@ class SyncSystem {
         throw new Error(resData.message || "Operation Denied");
       }
       const { router } = await __vitePreload(async () => {
-        const { router: router2 } = await import("./app-DEmMRSEi.js").then((n) => n.i);
+        const { router: router2 } = await import("./app-C6Kubtfk.js").then((n) => n.i);
         return { router: router2 };
       }, true ? __vite__mapDeps([0,1]) : void 0);
       router.reload();
@@ -1559,7 +1455,7 @@ class SyncSystem {
         throw new Error(resData.message || "Recruitment Failed");
       }
       const { router } = await __vitePreload(async () => {
-        const { router: router2 } = await import("./app-DEmMRSEi.js").then((n) => n.i);
+        const { router: router2 } = await import("./app-C6Kubtfk.js").then((n) => n.i);
         return { router: router2 };
       }, true ? __vite__mapDeps([0,1]) : void 0);
       router.reload();
@@ -2541,7 +2437,6 @@ entityManager.addComponent(testUnit, new SpriteComponent("/images/unidades/agent
 Logger.info(`[BOOT] Test Unit Alpha-Zero (ID: ${testUnit}) deployed at ORIGIN.`);
 const enemyUnit = entityManager.createEntity();
 entityManager.addComponent(enemyUnit, new VelocityComponent(0, 0));
-entityManager.addComponent(enemyUnit, new VelocityComponent(0, 0));
 entityManager.addComponent(enemyUnit, new HealthComponent(2e3, 2e3));
 entityManager.addComponent(enemyUnit, new AttackComponent(100, 200, 3));
 entityManager.addComponent(enemyUnit, new AIComponent("AGGRESSIVE"));
@@ -2581,4 +2476,4 @@ rebelCoords.forEach((coord, index) => {
 });
 stateManager.setState(GameState.PLAYING);
 Logger.info("--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---");
-//# sourceMappingURL=index-Djj9q-oB.js.map
+//# sourceMappingURL=index-CCHQx0wh.js.map
