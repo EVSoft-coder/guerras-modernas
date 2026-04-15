@@ -37,16 +37,27 @@ trait HasResources
 
     public function getMetalRateAttribute()
     {
-        return $this->getProductionRates()['metal'] / 60;
+        return ($this->getProductionRates()['metal'] ?? 0) / 60;
     }
 
     public function getEnergiaRateAttribute()
     {
-        return $this->getProductionRates()['energia'] / 60;
+        return ($this->getProductionRates()['energia'] ?? 0) / 60;
     }
 
     public function getComidaRateAttribute()
     {
-        return $this->getProductionRates()['comida'] / 60;
+        // Mapeamento legado: comida agora é munições no motor atómico
+        return ($this->getProductionRates()['municoes'] ?? 0) / 60;
+    }
+
+    public function getSuprimentosRateAttribute()
+    {
+        return ($this->getProductionRates()['suprimentos'] ?? 0) / 60;
+    }
+
+    public function getCombustivelRateAttribute()
+    {
+        return ($this->getProductionRates()['combustivel'] ?? 0) / 60;
     }
 }
