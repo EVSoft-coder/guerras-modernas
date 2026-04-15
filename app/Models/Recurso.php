@@ -21,6 +21,16 @@ class Recurso extends Model
         'updated_at',
     ];
 
+    protected $casts = [
+        'suprimentos' => 'double',
+        'combustivel' => 'double',
+        'municoes' => 'double',
+        'metal' => 'double',
+        'energia' => 'double',
+        'pessoal' => 'double',
+        'updated_at' => 'datetime',
+    ];
+
     protected static function boot()
     {
         parent::boot();
