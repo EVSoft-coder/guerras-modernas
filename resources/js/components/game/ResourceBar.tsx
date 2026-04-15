@@ -19,7 +19,9 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
         cap: recursos?.cap ?? 10000
     });
 
+    // Sincronização e Loop de Incremento (Estilo TribalWars Real-Time)
     useEffect(() => {
+        // 1. Atualizar valores base quando prop muda (Sync com Server)
         setCurrent({
             suprimentos: recursos?.suprimentos ?? 0,
             combustivel: recursos?.combustivel ?? 0,
@@ -29,7 +31,24 @@ export const ResourceBar: React.FC<ResourceBarProps & { populacao?: any }> = ({ 
             energia: recursos?.energia ?? 0,
             cap: recursos?.cap ?? 10000
         });
-    }, [recursos]);
+
+        // 2. Iniciar loop de incrementos infinitesimais (Visual apenas)
+        const tick = setInterval(() => {
+            setCurrent(prev => {
+                const step = 1 / 1; // 1 tick por segundo
+                return {
+                    ...prev,
+                    suprimentos: Math.min(prev.cap, prev.suprimentos + (taxasPerSecond?.suprimentos ?? 0)),
+                    combustivel: Math.min(prev.cap, prev.combustivel + (taxasPerSecond?.combustivel ?? 0)),
+                    municoes: Math.min(prev.cap, prev.municoes + (taxasPerSecond?.municoes ?? 0)),
+                    metal: Math.min(prev.cap, prev.metal + (taxasPerSecond?.metal ?? 0)),
+                    energia: Math.min(prev.cap, prev.energia + (taxasPerSecond?.energia ?? 0)),
+                };
+            });
+        }, 1000);
+
+        return () => clearInterval(tick);
+    }, [recursos, taxasPerSecond]);
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 w-full z-20">

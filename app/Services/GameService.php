@@ -12,7 +12,7 @@ use App\Domain\Building\BuildingRules;
 use App\Domain\Unit\UnitRules;
 use App\Domain\Economy\EconomyRules;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * GameService Centralizado
@@ -37,13 +37,9 @@ class GameService
         return $this->snap($base);
     }
 
-    public function calculateResources($base)
+    public function calculateResources($base, $now = null)
     {
-        $log = \Illuminate\Support\Facades\Log::class;
-        $log::info('RESOURCE_CALC_ONLY', [
-            'base_id' => $base->id,
-            'writing' => false
-        ]);
+        if (!$now) $now = Carbon::now();
 
         // Carregar relação recursos se não carregada
         if (!$base->relationLoaded('recursos')) {
@@ -51,52 +47,51 @@ class GameService
         }
         $rec = $base->recursos;
 
-        // Fonte de verdade: tabela `recursos` (que tem dados reais)
-        $suprimentos = (float)($rec->suprimentos ?? 0);
-        $combustivel = (float)($rec->combustivel ?? 0);
-        $municoes    = (float)($rec->municoes ?? 0);
-        $pessoal     = (float)($rec->pessoal ?? 0);
-        $metal       = (float)($rec->metal ?? 0);
-        $energia     = (float)($rec->energia ?? 0);
-        $cap         = (int)($rec->cap ?? 10000);
-
-        // Timestamp de referência: ultimo_update na base ou updated_at nos recursos
-        $lastUpdate = $base->ultimo_update 
-            ?? ($rec ? $rec->updated_at : null) 
-            ?? $base->created_at;
-
-        if (!$lastUpdate) {
+        // Fail-safe: Se não houver linha de recursos, retorna estado base zero
+        if (!$rec) {
             return [
-                'suprimentos' => $suprimentos,
-                'combustivel' => $combustivel,
-                'municoes'    => $municoes,
-                'pessoal'     => $pessoal,
-                'metal'       => $metal,
-                'energia'     => $energia,
-                'cap'         => $cap,
+                'suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0,
+                'pessoal' => 0, 'metal' => 0, 'energia' => 0, 'cap' => 10000,
             ];
         }
 
-        $now = now();
-        $lastUpdate = \Carbon\Carbon::parse($lastUpdate);
-        // DETERMINISTIC TIME PROTECTION: Fix for Carbon 3 signed diffs
-        $seconds = $now->greaterThan($lastUpdate) ? max(0, abs($now->diffInSeconds($lastUpdate))) : 0;
+        $baseSuprimentos = (float)($rec->suprimentos ?? 0);
+        $baseCombustivel = (float)($rec->combustivel ?? 0);
+        $baseMunicoes    = (float)($rec->municoes ?? 0);
+        $basePessoal     = (float)($rec->pessoal ?? 0);
+        $baseMetal       = (float)($rec->metal ?? 0);
+        $baseEnergia     = (float)($rec->energia ?? 0);
+        $cap         = (int)($rec->cap ?? 10000);
 
-        // Taxas de produção por segundo (obtidas dos accessors do modelo)
+        // Fonte Única de Verdade Temporal: ultimo_update na base
+        $lastUpdate = $base->ultimo_update ?? $base->created_at;
+
+        $lastUpdateCarbon = Carbon::parse($lastUpdate);
+        
+        // Cálculo de Delta Temporal (Segurança acrescida para Carbon 3)
+        $seconds = 0;
+        if ($now->greaterThan($lastUpdateCarbon)) {
+            $seconds = (float)$now->diffInSeconds($lastUpdateCarbon);
+        }
+
+        // Taxas de produção por segundo calculadas dinamicamente
         $taxas = $this->obterTaxasProducao($base);
-        $metalRatePerSec    = ($taxas['suprimentos'] ?? 0) / 60;
-        $combRatePerSec     = ($taxas['combustivel'] ?? 0) / 60;
-        $municoesRatePerSec = ($taxas['municoes'] ?? 0) / 60;
+        $rateSup = ($taxas['suprimentos'] ?? 0) / 60;
+        $rateComb = ($taxas['combustivel'] ?? 0) / 60;
+        $rateMun = ($taxas['municoes'] ?? 0) / 60;
+        $rateMetal = ($taxas['metal'] ?? 0) / 60;
+        $rateEnergia = ($taxas['energia'] ?? 0) / 60;
 
         $resources = [
-            'suprimentos' => min($cap, max(0, $suprimentos + ($metalRatePerSec * $seconds))),
-            'combustivel' => min($cap, max(0, $combustivel + ($combRatePerSec * $seconds))),
-            'municoes'    => min($cap, max(0, $municoes + ($municoesRatePerSec * $seconds))),
-            'pessoal'     => $pessoal,
-            'metal'       => $metal,
-            'energia'     => $energia,
+            'suprimentos' => min($cap, max(0, $baseSuprimentos + ($rateSup * $seconds))),
+            'combustivel' => min($cap, max(0, $baseCombustivel + ($rateComb * $seconds))),
+            'municoes'    => min($cap, max(0, $baseMunicoes + ($rateMun * $seconds))),
+            'metal'       => min($cap, max(0, $baseMetal + ($rateMetal * $seconds))),
+            'energia'     => min($cap, max(0, $baseEnergia + ($rateEnergia * $seconds))),
+            'pessoal'     => $basePessoal,
             'cap'         => $cap,
-            'last_update_at' => $lastUpdate->toDateTimeString(),
+            'last_update_at' => $lastUpdateCarbon->toDateTimeString(),
+            'calculated_at' => $now->toDateTimeString(),
         ];
 
         return $resources;
@@ -105,30 +100,41 @@ class GameService
     /**
      * PERSISTÊNCIA DE RECURSOS (SYNC)
      * Chamar apenas durante mutações (ações do jogador).
+     * Sincroniza todas as tabelas e limpa o buffer temporal.
      */
     public function syncResources(Base $base): void
     {
-        $calculated = $this->calculateResources($base);
+        $now = Carbon::now();
+        $calculated = $this->calculateResources($base, $now);
         
-        // Persistir explicitamente na tabela de recursos
-        DB::table('recursos')
-            ->where('base_id', $base->id)
-            ->update([
-                'suprimentos' => $calculated['suprimentos'],
-                'combustivel' => $calculated['combustivel'],
-                'municoes'    => $calculated['municoes'],
-                'pessoal'     => $calculated['pessoal'],
-                'metal'       => $calculated['metal'],
-                'energia'     => $calculated['energia'],
-                'updated_at'  => now()
-            ]);
+        DB::transaction(function() use ($base, $calculated, $now) {
+            // 1. Atualizar tabela de recursos (Legacy Sync)
+            DB::table('recursos')
+                ->where('base_id', $base->id)
+                ->update([
+                    'suprimentos' => $calculated['suprimentos'],
+                    'combustivel' => $calculated['combustivel'],
+                    'municoes'    => $calculated['municoes'],
+                    'pessoal'     => $calculated['pessoal'],
+                    'metal'       => $calculated['metal'],
+                    'energia'     => $calculated['energia'],
+                    'updated_at'  => $now
+                ]);
 
-        // Atualizar timestamp na base (único ponto de reset temporal)
-        DB::table('bases')->where('id', $base->id)->update([
-            'ultimo_update' => now(),
-        ]);
-        
-        $base->ultimo_update = now();
+            // 2. Atualizar tabela de bases (Modern Sync - Parallel Source)
+            DB::table('bases')->where('id', $base->id)->update([
+                'ultimo_update' => $now,
+                'recursos_metal' => $calculated['metal'],
+                'recursos_energia' => $calculated['energia'],
+                'recursos_comida' => $calculated['municoes'],
+            ]);
+        });
+
+        // Mutar instância em memória para garantir consistência em requests longos
+        $base->ultimo_update = $now;
+        if ($base->relationLoaded('recursos') && $base->recursos) {
+            $base->recursos->setRawAttributes(array_merge($calculated, ['updated_at' => $now]), true);
+        }
     }
 
     public function obterTaxasProducao(Base $base): array
@@ -136,15 +142,10 @@ class GameService
         return [
             'metal' => EconomyRules::calculateProductionPerMinute('metal', $this->obterNivelEdificio($base, BuildingType::MINA_METAL)),
             'energia' => EconomyRules::calculateProductionPerMinute('energia', $this->obterNivelEdificio($base, BuildingType::CENTRAL_ENERGIA)),
-            'comida' => EconomyRules::calculateProductionPerMinute('comida', $this->obterNivelEdificio($base, BuildingType::FAZENDA)),
-            'pessoal' => EconomyRules::calculateProductionPerMinute('pessoal', 
-                $this->obterNivelEdificio($base, BuildingType::POSTO_RECRUTAMENTO) + 
-                $this->obterNivelEdificio($base, BuildingType::HOUSING)
-            ),
-            // Legado / Compatibilidade (Mapear para novos nomes atómicos)
-            'suprimentos' => EconomyRules::calculateProductionPerMinute('metal', $this->obterNivelEdificio($base, BuildingType::MINA_METAL)),
-            'combustivel' => EconomyRules::calculateProductionPerMinute('energia', $this->obterNivelEdificio($base, BuildingType::CENTRAL_ENERGIA)),
-            'municoes' => EconomyRules::calculateProductionPerMinute('comida', $this->obterNivelEdificio($base, BuildingType::FAZENDA)),
+            'suprimentos' => EconomyRules::calculateProductionPerMinute('suprimentos', $this->obterNivelEdificio($base, BuildingType::MINA_SUPRIMENTOS)),
+            'combustivel' => EconomyRules::calculateProductionPerMinute('combustivel', $this->obterNivelEdificio($base, BuildingType::REFINARIA)),
+            'municoes' => EconomyRules::calculateProductionPerMinute('municoes', $this->obterNivelEdificio($base, BuildingType::FABRICA_MUNICOES)),
+            'pessoal' => EconomyRules::calculateProductionPerMinute('pessoal', $this->obterNivelEdificio($base, BuildingType::POSTO_RECRUTAMENTO)),
         ];
     }
 

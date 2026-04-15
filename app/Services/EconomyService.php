@@ -18,7 +18,7 @@ class EconomyService
  
         $agora = now();
         $ultimaVez = $recursos->updated_at;
-        $segundosPassados = $agora->diffInSeconds($ultimaVez);
+        $segundosPassados = $agora->greaterThan($ultimaVez) ? abs($agora->diffInSeconds($ultimaVez)) : 0;
  
         if ($segundosPassados <= 0) return;
  

@@ -66,7 +66,10 @@ class AuthController extends Controller
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
  
         if ($base) {
-            // DETERMINISTIC: No writes on read.
+            // Sincronizar Economia (Persistir incrementos no DB no carregamento)
+            $this->gameService->syncResources($base);
+
+            // PROCESSAMENTO DETERMINÍSTICO DE FILAS
             $this->gameService->processarFilas($base);
             
             // 3. Persistência de Sessão e Recarga Real
@@ -105,6 +108,19 @@ class AuthController extends Controller
 
         $finalResources = $base ? $this->gameService->calculateResources($base) : [];
 
+        // Pre-cálculo de taxas para o frontend (Real-Time Tick)
+        $taxasRaw = $this->gameService->obterTaxasProducao($base);
+        $taxasPerSecond = collect($taxasRaw)->map(fn($v) => (float)$v / 60)->toArray();
+
+        // 🚨 AUDITORIA DE SEGURANÇA (Detetar Resets)
+        if (!$base || !$base->recursos) {
+            \Illuminate\Support\Facades\Log::critical('RESNET_DETECTED: Base ou Recursos NULL no Dashboard', [
+                'user_id' => $jogador->id,
+                'base_id' => $selectedBaseId,
+                'has_base' => !!$base,
+            ]);
+        }
+
         return Inertia::render('dashboard', [
             'jogador' => $jogador,
             'base' => $base,
@@ -112,8 +128,8 @@ class AuthController extends Controller
             'buildings' => $base?->edificios ?? [],
             'population' => $populacao ?? null,
             'resources' => $finalResources,
-            'taxas' => $taxas ?? [],
-            'taxasPerSecond' => $taxas ?? [],
+            'taxas' => $taxasRaw,
+            'taxasPerSecond' => $taxasPerSecond,
             'populacao' => $populacao ?? null,
             'relatorios' => \App\Models\Relatorio::where('atacante_id', $jogador->id)
                 ->orWhere('defensor_id', $jogador->id)
