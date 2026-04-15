@@ -92,7 +92,9 @@ class GameService
 
         $now = now();
         $lastUpdate = \Carbon\Carbon::parse($lastUpdate);
-        $seconds = $now->greaterThan($lastUpdate) ? $now->diffInSeconds($lastUpdate) : 0;
+        // CRITICAL FIX: Carbon 3 (Laravel 11) retorna diffInSeconds com SINAL (negativo quando now > past)
+        // Carbon 2 retornava absoluto por defeito. Forçar abs() para garantir valor positivo.
+        $seconds = $now->greaterThan($lastUpdate) ? abs($now->diffInSeconds($lastUpdate)) : 0;
 
         // Taxas de produção por segundo (obtidas dos accessors do modelo)
         $taxas = $this->obterTaxasProducao($base);
