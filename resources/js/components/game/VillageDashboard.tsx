@@ -36,9 +36,17 @@ export function VillageDashboard({
     const { globalState } = useGameEntities();
 
     // 1. DATA PROJECTOR
-    // Garantir que consumimos as props atómicas recebidas do backend
+    const [localResources, setLocalResources] = useState(resources || initialBase?.recursos || {});
+    
+    useEffect(() => {
+        if (resources) {
+            console.log('%cINITIAL RESOURCES FROM BACKEND', 'color:lime;font-weight:bold', resources);
+            setLocalResources(resources);
+        }
+    }, [resources]);
+
     const currentBuildings = buildings || initialBase?.edificios || [];
-    const currentResources = resources || initialBase?.recursos || {};
+    const currentResources = localResources;
     const currentPopulation = population || populacao || null;
 
     const base = React.useMemo(() => {

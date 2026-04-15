@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BaseController;
 use App\Http\Controllers\AliancaController;
 use App\Http\Controllers\RankingController;
@@ -73,7 +74,7 @@ Route::get('/mw-admin-trigger-99', function() {
 Route::middleware(['auth'])->group(function () {
     
     // Core Game
-    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/mapa', [MapaController::class, 'index'])->name('mapa');
     Route::get('/api/mapa/data', [MapaController::class, 'apiData'])->name('api.mapa.data');
     Route::get('/api/mapa/chunk/{cx}/{cy}', [MapaController::class, 'apiChunk'])->name('api.mapa.chunk');
