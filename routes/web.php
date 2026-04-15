@@ -92,7 +92,8 @@ Route::get('/mw-debug-resources', function() {
             'recursos_relation' => $base->recursos ? $base->recursos->toArray() : 'NULL_RELATION',
         ] : 'NO_BASE',
         'total_recursos_rows' => \App\Models\Recurso::count(),
-        'edificio_types' => \App\Models\Edificio::select('tipo', \DB::raw('count(*) as count'))->groupBy('tipo')->get(),
+        'edificio_types_all' => \App\Models\Edificio::select('tipo', \DB::raw('count(*) as count'))->groupBy('tipo')->get(),
+        'base_buildings' => $base ? $base->edificios()->select('tipo', 'nivel')->get() : [],
         'timestamp' => now()->toDateTimeString(),
     ]);
 });
