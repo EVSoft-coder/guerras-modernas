@@ -40,28 +40,16 @@ class GameService
     public function calculateResources($base)
     {
         $log = \Illuminate\Support\Facades\Log::class;
-        $log::info('=== CALC_START ===', ['base_id' => $base->id]);
+        $log::info('RESOURCE_CALC_ONLY', [
+            'base_id' => $base->id,
+            'writing' => false
+        ]);
 
         // Carregar relação recursos se não carregada
         if (!$base->relationLoaded('recursos')) {
             $base->load('recursos');
         }
         $rec = $base->recursos;
-
-        $log::info('CALC_STEP_1_RAW_DB', [
-            'base_id' => $base->id,
-            'rec_exists' => !!$rec,
-            'rec_id' => $rec?->id,
-            'db_suprimentos' => $rec?->suprimentos,
-            'db_combustivel' => $rec?->combustivel,
-            'db_municoes' => $rec?->municoes,
-            'db_pessoal' => $rec?->pessoal,
-            'db_metal' => $rec?->metal,
-            'db_energia' => $rec?->energia,
-            'db_cap' => $rec?->cap,
-            'ultimo_update' => $base->ultimo_update,
-            'rec_updated_at' => $rec?->updated_at,
-        ]);
 
         // Fonte de verdade: tabela `recursos` (que tem dados reais)
         $suprimentos = (float)($rec->suprimentos ?? 0);
@@ -78,7 +66,6 @@ class GameService
             ?? $base->created_at;
 
         if (!$lastUpdate) {
-            $log::warning('CALC_NO_TIMESTAMP', ['base_id' => $base->id]);
             return [
                 'suprimentos' => $suprimentos,
                 'combustivel' => $combustivel,
@@ -92,23 +79,14 @@ class GameService
 
         $now = now();
         $lastUpdate = \Carbon\Carbon::parse($lastUpdate);
-        // CRITICAL FIX: Carbon 3 (Laravel 11) retorna diffInSeconds com SINAL (negativo quando now > past)
-        // Carbon 2 retornava absoluto por defeito. Forçar abs() para garantir valor positivo.
-        $seconds = $now->greaterThan($lastUpdate) ? abs($now->diffInSeconds($lastUpdate)) : 0;
+        // DETERMINISTIC TIME PROTECTION: Fix for Carbon 3 signed diffs
+        $seconds = $now->greaterThan($lastUpdate) ? max(0, abs($now->diffInSeconds($lastUpdate))) : 0;
 
         // Taxas de produção por segundo (obtidas dos accessors do modelo)
         $taxas = $this->obterTaxasProducao($base);
         $metalRatePerSec    = ($taxas['suprimentos'] ?? 0) / 60;
         $combRatePerSec     = ($taxas['combustivel'] ?? 0) / 60;
         $municoesRatePerSec = ($taxas['municoes'] ?? 0) / 60;
-
-        $log::info('CALC_STEP_2_RATES', [
-            'base_id' => $base->id,
-            'seconds_elapsed' => $seconds,
-            'rate_sup' => $metalRatePerSec,
-            'rate_comb' => $combRatePerSec,
-            'rate_mun' => $municoesRatePerSec,
-        ]);
 
         $resources = [
             'suprimentos' => min($cap, max(0, $suprimentos + ($metalRatePerSec * $seconds))),
@@ -121,48 +99,36 @@ class GameService
             'last_update_at' => $lastUpdate->toDateTimeString(),
         ];
 
-        $log::info('=== CALC_RESULT ===', ['base_id' => $base->id, 'output' => $resources]);
-
         return $resources;
     }
+
     /**
-     * ATUALIZAÇÃO DE RECURSOS
-     * Calcula a produção passiva baseada no tempo decorrido e persiste na tabela recursos.
+     * PERSISTÊNCIA DE RECURSOS (SYNC)
+     * Chamar apenas durante mutações (ações do jogador).
      */
-    public function atualizarRecursos(Base $base): void
+    public function syncResources(Base $base): void
     {
-        $log = \Illuminate\Support\Facades\Log::class;
-        $log::info('>>> UPDATE_START', ['base_id' => $base->id]);
-
         $calculated = $this->calculateResources($base);
-
-        $log::info('>>> UPDATE_WILL_WRITE', [
-            'base_id' => $base->id,
-            'rec_exists' => !!$base->recursos,
-            'values_to_write' => $calculated,
-        ]);
         
-        // Persistir na tabela `recursos` (fonte de verdade)
-        if ($base->recursos) {
-            $base->recursos->update([
+        // Persistir explicitamente na tabela de recursos
+        DB::table('recursos')
+            ->where('base_id', $base->id)
+            ->update([
                 'suprimentos' => $calculated['suprimentos'],
                 'combustivel' => $calculated['combustivel'],
                 'municoes'    => $calculated['municoes'],
                 'pessoal'     => $calculated['pessoal'],
                 'metal'       => $calculated['metal'],
                 'energia'     => $calculated['energia'],
+                'updated_at'  => now()
             ]);
-        } else {
-            $log::error('>>> UPDATE_NO_RECURSOS_RELATION', ['base_id' => $base->id]);
-        }
 
-        // Atualizar timestamp na base (usar coluna que existe: ultimo_update)
+        // Atualizar timestamp na base (único ponto de reset temporal)
         DB::table('bases')->where('id', $base->id)->update([
             'ultimo_update' => now(),
         ]);
+        
         $base->ultimo_update = now();
-
-        $log::info('>>> UPDATE_DONE', ['base_id' => $base->id]);
     }
 
     public function obterTaxasProducao(Base $base): array
@@ -189,7 +155,7 @@ class GameService
     public function iniciarUpgrade(Base $base, string $tipoRaw): ?Construcao
     {
         // 0. Sincronizar economia antes de qualquer dedução
-        $this->atualizarRecursos($base);
+        $this->syncResources($base);
 
         $tipo = BuildingType::normalize($tipoRaw);
         $nivelAtual = $this->obterNivelEdificio($base, $tipo);
@@ -243,7 +209,7 @@ class GameService
     public function iniciarTreino(Base $base, string $unidade, int $quantidade): Treino
     {
         // 0. Sincronizar economia antes de qualquer dedução
-        $this->atualizarRecursos($base);
+        $this->syncResources($base);
 
         $custos = UnitRules::calculateCost($unidade, $quantidade);
         $tempo = UnitRules::calculateTime($unidade, $quantidade);
@@ -325,7 +291,7 @@ class GameService
     public function consumirRecursos(Base $base, array $custos): bool
     {
         // Garante persistência do estado atual antes da mutação
-        $this->atualizarRecursos($base);
+        $this->syncResources($base);
 
         return DB::transaction(function() use ($base, $custos) {
             $rec = $base->recursos;

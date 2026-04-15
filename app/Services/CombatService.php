@@ -127,7 +127,7 @@ class CombatService
             $saque = ['metal' => 0, 'energia' => 0, 'comida' => 0];
             if ($vitoria) {
                 // Sincronizar recursos do alvo antes de saquear
-                app(\App\Services\GameService::class)->atualizarRecursos($destino);
+                app(\App\Services\GameService::class)->syncResources($destino);
                 $resData = $destino->resources; // Cálculo em tempo real
 
                 $totalDisponivel = $resData['metal'] + $resData['energia'] + $resData['comida'];
@@ -206,7 +206,7 @@ class CombatService
             }
 
             // Sincronizar recursos antes de creditar o saque
-            app(\App\Services\GameService::class)->atualizarRecursos($origem);
+            app(\App\Services\GameService::class)->syncResources($origem);
 
             foreach ($ataque->tropas as $u => $q) {
                 if ($q <= 0) continue;

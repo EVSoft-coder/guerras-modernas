@@ -91,7 +91,7 @@ class BaseController extends Controller
         if ($base->jogador_id !== Auth::id()) abort(403);
  
         try {
-            $this->gameService->atualizarRecursos($base);
+            $this->gameService->syncResources($base);
 
             $custo = 300;
             $ganho = 100;

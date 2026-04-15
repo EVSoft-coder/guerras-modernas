@@ -21,8 +21,8 @@ class ProcessarCron extends Command
 
         foreach ($bases as $base) {
             try {
-                // 1. Atualizar Recursos (Cálculo Atómico MySQL)
-                $gameService->atualizarRecursos($base);
+                // 1. Sincronizar Recursos (Persistência Passiva)
+                $gameService->syncResources($base);
 
                 // 2. Processar Fila de Construção e Treino
                 $gameService->processarFilas($base);

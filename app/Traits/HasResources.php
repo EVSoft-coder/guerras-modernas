@@ -13,7 +13,7 @@ trait HasResources
     public function updateResources()
     {
         $service = new GameService();
-        $service->atualizarRecursos($this);
+        $service->syncResources($this);
         
         return $this->recursos;
     }
