@@ -61,35 +61,25 @@ class AuthController extends Controller
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
  
         if ($base) {
-            // CORREÇÃO CRÍTICA FASE 4.3.2 — TICK DE RECURSOS (Persistência no Refresh)
+            // CORREÇÃO FORÇADA 4.3.3 — TICK DE RECURSOS E PERSISTÊNCIA TOTAL
             $this->gameService->tickRecursos($base);
 
-            // PROCESSAMENTO DETERMINÍSTICO DE FILAS (Sem escrita automática de recursos)
+            // PROCESSAMENTO DETERMINÍSTICO DE FILAS
             $this->gameService->processarFilas($base);
             
-            // 3. Persistência de Sessão e Recarga Real
             session(['selected_base_id' => $base->id]);
             $base->refresh();
             $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
   
-            $taxas = $this->gameService->obterTaxasProducao($base);
             $populacao = $this->gameService->obterEstatisticasPopulacao($base);
 
-            // Filtragem de Soberania: Apenas edifícios com nível > 0 são transmitidos pelo backend
+            // Filtragem de Soberania
             $base->setRelation('edificios', $base->edificios->filter(fn($e) => $e->nivel > 0));
         }
 
-        // 🚨 AUDITORIA DE SEGURANÇA (Detetar Resets)
-        if (!$base || !$base->recursos) {
-            \Illuminate\Support\Facades\Log::critical('RESNET_DETECTED: Base ou Recursos NULL no Dashboard', [
-                'user_id' => $jogador->id,
-                'base_id' => $selectedBaseId,
-                'has_base' => !!$base,
-            ]);
-        }
-
-        $resources = $base?->recursos ? $base->recursos->toArray() : null;
-        \Illuminate\Support\Facades\Log::info('Resources sent to frontend', $resources ?? []);
+        // 🚨 AUDITORIA DE RECURSOS FORÇADA
+        $resources = $base?->recursos ? $base->recursos->fresh()->toArray() : null;
+        \Illuminate\Support\Facades\Log::info('RESOURCES SENT TO FRONTEND', $resources ?? ['status' => 'NULL']);
 
         return Inertia::render('dashboard', [
             'jogador' => $jogador,
