@@ -124,5 +124,8 @@ export const Events = {
     ATTACK_RESOLVE: 'ATTACK:RESOLVE',
 
     // Sincronização Externa
-    LARAVEL_SYNC_ATTACKS: 'LARAVEL:SYNC_ATTACKS'
+    LARAVEL_SYNC_ATTACKS: 'LARAVEL:SYNC_ATTACKS',
+
+    // UI/Feedbacks
+    UI_ALERT: 'UI:ALERT'
 };

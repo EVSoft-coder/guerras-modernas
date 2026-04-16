@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Log;
  */
 class ResourceService
 {
+    protected static $syncedBases = [];
+
     /**
      * CÁLCULO PURO (Simulacro Determinístico)
      * Regra: amount + (rate_hour * (elapsed / 3600))
@@ -73,6 +75,9 @@ class ResourceService
      */
     public function sync(Base $base): void
     {
+        if (in_array($base->id, self::$syncedBases)) return;
+        self::$syncedBases[] = $base->id;
+
         if (!$base->recursos) $base->load('recursos');
         $resource = $base->recursos;
         if (!$resource) return;

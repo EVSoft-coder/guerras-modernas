@@ -28304,7 +28304,7 @@ const BuildingModal = ({
   isUpgrading,
   isTraining
 }) => {
-  var _a2, _b, _c, _d, _e2, _f;
+  var _a2, _b, _c, _d, _e2, _f, _g;
   if (!building) return null;
   const buildingsConfig = (gameConfig == null ? void 0 : gameConfig.buildings) || {};
   const config = buildingsConfig[building.buildingType] || {
@@ -28371,12 +28371,16 @@ const BuildingModal = ({
   const constSpeed = ((_a2 = gameConfig == null ? void 0 : gameConfig.speed) == null ? void 0 : _a2.construction) || 1;
   const totalTime = calculateConstructionTime(config.time_base, building.nivel || 0, constSpeed);
   const timeFormatted = `${Math.floor(totalTime / 60)}m ${Math.floor(totalTime % 60)}s`;
-  const canAfford = config.cost ? Object.entries(config.cost).every(([type2, amount]) => {
+  const canAffordResources = config.cost ? Object.entries(config.cost).every(([type2, amount]) => {
     var _a3, _b2;
-    const cost = calculateBuildingCost(amount, building.nivel || 0, (gameConfig == null ? void 0 : gameConfig.scaling) || 1.5);
+    const cost = calculateBuildingCost(type2 === "pessoal" ? 0 : amount, building.nivel || 0, (gameConfig == null ? void 0 : gameConfig.scaling) || 1.5);
+    if (type2 === "pessoal") return true;
     return parseResourceValue(((_b2 = (_a3 = building.base) == null ? void 0 : _a3.recursos) == null ? void 0 : _b2[type2]) || 0) >= cost;
   }) : true;
-  const tipoLower = (_b = building.buildingType) == null ? void 0 : _b.toLowerCase();
+  const popCost = ((_b = config.cost) == null ? void 0 : _b.pessoal) || 0;
+  const hasPopulation = ((population == null ? void 0 : population.available) ?? 0) >= popCost;
+  const canAfford = canAffordResources && hasPopulation;
+  const tipoLower = (_c = building.buildingType) == null ? void 0 : _c.toLowerCase();
   const isMilitary = ["quartel", "aerodromo"].includes(tipoLower);
   const isAvailable = (key) => {
     if (tipoLower === "quartel") return ["infantaria", "blindado_apc", "tanque_combate", "agente_espiao", "politico"].includes(key);
@@ -28499,7 +28503,7 @@ const BuildingModal = ({
               /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] text-sky-500 font-bold uppercase tracking-widest flex items-center gap-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { size: 10 }),
                 " Setor de ",
-                ((_f = (_e2 = (_d = (_c = building.buildingType) == null ? void 0 : _c.replace) == null ? void 0 : _d.call(_c, "_", " ")) == null ? void 0 : _e2.toUpperCase) == null ? void 0 : _f.call(_e2)) ?? "ESTRUTURA"
+                ((_g = (_f = (_e2 = (_d = building.buildingType) == null ? void 0 : _d.replace) == null ? void 0 : _e2.call(_d, "_", " ")) == null ? void 0 : _f.toUpperCase) == null ? void 0 : _g.call(_f)) ?? "ESTRUTURA"
               ] })
             ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 md:space-y-6 flex-1 overflow-y-auto md:pr-2 custom-scrollbar", children: [
@@ -28574,7 +28578,7 @@ const BuildingModal = ({
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-base md:text-xl group-hover:translate-x-1 transition-transform flex items-center gap-2", children: [
                     isUpgrading && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { size: 20, className: "animate-spin" }),
-                    isUpgrading ? "AUTORIZANDO..." : canAfford ? building.nivel === 0 ? "CONSTRUIR" : `UPGRADE PARA NÍVEL ${building.nivel + 1}` : "RECURSOS INSUFICIENTES"
+                    isUpgrading ? "AUTORIZANDO..." : canAfford ? building.nivel === 0 ? "CONSTRUIR" : `UPGRADE PARA NÍVEL ${building.nivel + 1}` : !hasPopulation ? "ESPAÇO HABITACIONAL INSUFICIENTE" : "RECURSOS INSUFICIENTES"
                   ] }),
                   !isUpgrading && canAfford && /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" }),
                   !canAfford && !isUpgrading && /* @__PURE__ */ jsxRuntimeExports.jsx(TriangleAlert, { className: "w-4 h-4 md:w-5 md:h-5" })
@@ -29007,7 +29011,9 @@ const Events = {
   ATTACK_RETURNED: "ATTACK:RETURNED",
   ATTACK_RESOLVE: "ATTACK:RESOLVE",
   // Sincronização Externa
-  LARAVEL_SYNC_ATTACKS: "LARAVEL:SYNC_ATTACKS"
+  LARAVEL_SYNC_ATTACKS: "LARAVEL:SYNC_ATTACKS",
+  // UI/Feedbacks
+  UI_ALERT: "UI:ALERT"
 };
 const AttackModal = ({
   isOpen,
@@ -30371,13 +30377,13 @@ function VillageDashboard({
   populacao,
   // deprecated props
   buildings,
-  population,
+  population: population2,
   resources
 }) {
   const { globalState } = useGameEntities();
   const currentBuildings = buildings || (initialBase == null ? void 0 : initialBase.edificios) || [];
   const currentResources = resources || (initialBase == null ? void 0 : initialBase.recursos) || {};
-  const currentPopulation = population || populacao || null;
+  const currentPopulation = population2 || populacao || null;
   const base = U$2.useMemo(() => {
     if (!initialBase) return null;
     return {
@@ -30409,10 +30415,16 @@ function VillageDashboard({
       Logger.info(`MODE CHANGE [UI_SYNC]: ${ev.data.mode}`);
       setGameMode(ev.data.mode);
     });
+    const unsubAlert = eventBus.subscribe(Events.UI_ALERT, (ev) => {
+      addToast(ev.data.message, ev.data.type || "info");
+      setIsUpgrading(false);
+      setIsTraining(false);
+    });
     return () => {
       unsubArrived();
       unsubReturned();
       unsubMode();
+      unsubAlert();
     };
   }, [base, ataquesEnviados, ataquesRecebidos]);
   if (!base) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-10 text-white uppercase font-mono", children: "Connecting to Satellite..." });
@@ -30540,7 +30552,8 @@ function VillageDashboard({
         onUpgrade: handleUpgrade,
         onTrain: handleTrain,
         isUpgrading,
-        isTraining
+        isTraining,
+        population: currentPopulation
       }
     )
   ] });
@@ -44255,7 +44268,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CCHQx0wh.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DgXs4xqk.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44293,4 +44306,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-C6Kubtfk.js.map
+//# sourceMappingURL=app-D0rhtbCz.js.map

@@ -32,10 +32,13 @@ class EconomyRules
     
     /**
      * Calcula a capacidade total de população (slots).
+     * Escala inspirada no Tribal Wars (Level 30 ~ 24000)
      */
     public static function calculatePopulationCapacity(int $complexoLevel): int
     {
-        $baseLogistica = 100; // Capacidade mínima inicial de comando
-        return $baseLogistica + ($complexoLevel * 50);
+        if ($complexoLevel <= 0) return 200; // Mínimo absoluto para survival
+        
+        // Formula: 200 * 1.18^level
+        return (int) (200 * pow(1.18, $complexoLevel));
     }
 }

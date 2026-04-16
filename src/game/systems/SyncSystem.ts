@@ -56,8 +56,9 @@ export class SyncSystem implements GameSystem {
             router.reload();
 
             Logger.info('[ACTION] Structural upgrade authorized by Central Command.');
-        } catch (err) {
+        } catch (err: any) {
             Logger.error('[ACTION_FAILURE] Building upgrade aborted', err);
+            eventBus.emit(Events.UI_ALERT, { data: { message: err.message, type: 'error' } });
         }
     }
 
@@ -86,8 +87,9 @@ export class SyncSystem implements GameSystem {
             router.reload();
 
             Logger.info('[ACTION] Recruitment procedures online.');
-        } catch (err) {
+        } catch (err: any) {
             Logger.error('[ACTION_FAILURE] Recruitment aborted', err);
+            eventBus.emit(Events.UI_ALERT, { data: { message: err.message, type: 'error' } });
         }
     }
 

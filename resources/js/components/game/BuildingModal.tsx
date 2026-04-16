@@ -109,10 +109,16 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     const timeFormatted = `${Math.floor(totalTime / 60)}m ${Math.floor(totalTime % 60)}s`;
 
     // Verificar se tem todos os recursos para o upgrade
-    const canAfford = config.cost ? Object.entries(config.cost).every(([type, amount]) => {
-        const cost = calculateBuildingCost(amount as number, building.nivel || 0, gameConfig?.scaling || 1.5);
+    const canAffordResources = config.cost ? Object.entries(config.cost).every(([type, amount]) => {
+        const cost = calculateBuildingCost(type === 'pessoal' ? 0 : amount as number, building.nivel || 0, gameConfig?.scaling || 1.5);
+        if (type === 'pessoal') return true; // Pessoal é verificado em separado (cap de população)
         return parseResourceValue(building.base?.recursos?.[type] || 0) >= cost;
     }) : true;
+
+    const popCost = config.cost?.pessoal || 0;
+    const hasPopulation = (population?.available ?? 0) >= popCost;
+    
+    const canAfford = canAffordResources && hasPopulation;
 
     const tipoLower = building.buildingType?.toLowerCase();
     const isMilitary = ['quartel', 'aerodromo'].includes(tipoLower);
@@ -342,12 +348,12 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                         <span className="text-base md:text-xl group-hover:translate-x-1 transition-transform flex items-center gap-2">
                                             {isUpgrading && <Loader2 size={20} className="animate-spin" />}
                                             {isUpgrading 
-                                                ? 'AUTORIZANDO...' 
-                                                : (canAfford 
-                                                    ? (building.nivel === 0 ? 'CONSTRUIR' : `UPGRADE PARA NÍVEL ${building.nivel + 1}`) 
-                                                    : 'RECURSOS INSUFICIENTES'
-                                                  )
-                                            }
+                                                 ? 'AUTORIZANDO...' 
+                                                 : (canAfford 
+                                                     ? (building.nivel === 0 ? 'CONSTRUIR' : `UPGRADE PARA NÍVEL ${building.nivel + 1}`) 
+                                                     : (!hasPopulation ? 'ESPAÇO HABITACIONAL INSUFICIENTE' : 'RECURSOS INSUFICIENTES')
+                                                   )
+                                             }
                                         </span>
                                         {!isUpgrading && canAfford && <ChevronRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" />}
                                         {!canAfford && !isUpgrading && <AlertTriangle className="w-4 h-4 md:w-5 md:h-5" />}

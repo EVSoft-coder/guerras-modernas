@@ -81,10 +81,17 @@ export function VillageDashboard({
             setGameMode(ev.data.mode);
         });
 
+        const unsubAlert = eventBus.subscribe(Events.UI_ALERT, (ev) => {
+            addToast(ev.data.message, ev.data.type || 'info');
+            setIsUpgrading(false);
+            setIsTraining(false);
+        });
+
         return () => {
             unsubArrived();
             unsubReturned();
             unsubMode();
+            unsubAlert();
         };
     }, [base, ataquesEnviados, ataquesRecebidos]);
 
@@ -241,6 +248,7 @@ export function VillageDashboard({
                 onTrain={handleTrain}
                 isUpgrading={isUpgrading}
                 isTraining={isTraining}
+                population={currentPopulation}
             />
         </div>
     );
