@@ -25,6 +25,11 @@ class BuildingQueueService
      */
     public function startConstruction(Base $base, string $type, int $posX = 0, int $posY = 0)
     {
+        // PASSO 4 — BLOQUEIOS: Impedir nova construção se já existir uma na fila
+        if (BuildingQueue::where('base_id', $base->id)->exists()) {
+            throw new \Exception("ENGENHARIA: Equipa de construção ocupada. Aguarde a conclusão da obra atual.");
+        }
+
         $type = BuildingType::normalize($type);
         
         $nivelAtual = $this->getCurrentLevel($base, $type);
