@@ -62,7 +62,7 @@ class AuthController extends Controller
  
         if ($base) {
             // CORREÇÃO FORÇADA 4.3.3 — TICK DE RECURSOS E PERSISTÊNCIA TOTAL
-            $this->gameService->tickRecursos($base);
+            $this->gameService->tickResources($base);
 
             // PROCESSAMENTO DETERMINÍSTICO DE FILAS
             $this->gameService->processarFilas($base);
