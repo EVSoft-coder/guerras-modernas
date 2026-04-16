@@ -77,6 +77,7 @@ export class WorldMapSyncSystem implements GameSystem {
                     entityManager.createEntity(entityId);
                     entityManager.addComponent(entityId, new VillageComponent(
                         b.ownerId,
+                        b.id, // dbId
                         b.nivel || 1,
                         undefined, // Resources will be updated via specific sync if needed
                         b.nome,

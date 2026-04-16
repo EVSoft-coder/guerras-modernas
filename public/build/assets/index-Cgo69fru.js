@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-C5bj_5wL.js";
+import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-CSfBDRqK.js";
 const unitConfigs = {
   infantaria: {
     id: "infantaria",
@@ -1210,7 +1210,7 @@ class RenderSystem {
 }
 const renderSystem = new RenderSystem();
 class VillageComponent {
-  constructor(ownerId, level = 1, resources = {
+  constructor(ownerId, dbId = null, level = 1, resources = {
     suprimentos: 0,
     combustivel: 0,
     municoes: 0,
@@ -1220,6 +1220,7 @@ class VillageComponent {
   }, name = "Base_Outpost", isRebel = false, loyalty = 100, isProtected = false, protectionUntil = 0) {
     __publicField(this, "type", "Village");
     __publicField(this, "ownerId");
+    this.dbId = dbId;
     this.level = level;
     this.resources = resources;
     this.name = name;
@@ -1657,6 +1658,8 @@ class WorldMapSyncSystem {
           entityManager.createEntity(entityId);
           entityManager.addComponent(entityId, new VillageComponent(
             b.ownerId,
+            b.id,
+            // dbId
             b.nivel || 1,
             void 0,
             // Resources will be updated via specific sync if needed
@@ -2489,4 +2492,4 @@ rebelCoords.forEach((coord, index) => {
 });
 stateManager.setState(GameState.PLAYING);
 Logger.info("--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---");
-//# sourceMappingURL=index-Cs90Juz9.js.map
+//# sourceMappingURL=index-Cgo69fru.js.map

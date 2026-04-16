@@ -108,7 +108,7 @@ class GameStateService {
             const v = entityManager.getComponent<any>(id, 'Village');
             const p = entityManager.getComponent<any>(id, 'GridPosition');
             return {
-                id,
+                id: v?.dbId || id,
                 nome: v?.name || 'Setor Hostil',
                 coordenada_x: Math.round(p?.x || 0),
                 coordenada_y: Math.round(p?.y || 0),

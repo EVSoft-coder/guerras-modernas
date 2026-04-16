@@ -29937,7 +29937,7 @@ class GameStateService {
       const v = entityManager.getComponent(id2, "Village");
       const p2 = entityManager.getComponent(id2, "GridPosition");
       return {
-        id: id2,
+        id: (v == null ? void 0 : v.dbId) || id2,
         nome: (v == null ? void 0 : v.name) || "Setor Hostil",
         coordenada_x: Math.round((p2 == null ? void 0 : p2.x) || 0),
         coordenada_y: Math.round((p2 == null ? void 0 : p2.y) || 0),
@@ -44266,7 +44266,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Cs90Juz9.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Cgo69fru.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44302,4 +44302,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-C5bj_5wL.js.map
+//# sourceMappingURL=app-CSfBDRqK.js.map

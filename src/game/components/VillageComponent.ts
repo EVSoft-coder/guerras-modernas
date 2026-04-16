@@ -15,6 +15,7 @@ export class VillageComponent implements Component {
 
     constructor(
         ownerId: number | null,
+        public dbId: number | null = null,
         public level: number = 1,
         public resources: VillageResources = { 
             suprimentos: 0, 
