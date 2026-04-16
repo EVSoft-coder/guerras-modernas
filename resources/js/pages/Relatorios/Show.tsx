@@ -1,0 +1,244 @@
+import React from 'react';
+import AppLayout from '@/layouts/app-layout';
+import { Head, Link } from '@inertiajs/react';
+import { motion } from 'framer-motion';
+import { 
+    Sword, Shield, Zap, Skull, Calendar, ChevronLeft, 
+    Target, TrendingUp, TrendingDown, Info, BarChart3,
+    Trophy, XCircle
+} from 'lucide-react';
+import { usePage } from '@inertiajs/react';
+
+interface Relatorio {
+    id: number;
+    atacante_id: number;
+    defensor_id: number;
+    vencedor_id: number;
+    titulo: string;
+    origem_nome: string;
+    destino_nome: string;
+    detalhes: {
+        tropa_ataque: Record<string, number>;
+        tropa_defesa: Record<string, number>;
+        perdas_atacante: Record<string, number>;
+        perdas_defensor: Record<string, number>;
+        saque: Record<string, number>;
+        luck: number;
+        morale: number;
+        wallBonus: number;
+        totalAtk: number;
+        totalDef: number;
+        coords: string;
+    };
+    created_at: string;
+    atacante: { nome: string };
+    defensor: { nome: string };
+}
+
+export default function Show({ relatorio }: { relatorio: Relatorio }) {
+    const { auth }: any = usePage().props;
+    const isAtacante = relatorio.atacante_id === auth.user.jogador.id;
+    const isVitoria = relatorio.vencedor_id === auth.user.jogador.id;
+    const det = relatorio.detalhes;
+
+    return (
+        <AppLayout breadcrumbs={[
+            { title: 'Relatórios', href: '/relatorios' },
+            { title: `SITREP: ${relatorio.id}`, href: `/relatorios/${relatorio.id}` }
+        ]}>
+            <Head title={`Relatório de Batalha #${relatorio.id}`} />
+            
+            <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6">
+                {/* Botão Voltar */}
+                <Link 
+                    href="/relatorios" 
+                    className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest"
+                >
+                    <ChevronLeft size={16} /> Arquivos Centrais
+                </Link>
+
+                {/* Título e Status */}
+                <div className="bg-neutral-900/60 border border-white/5 rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl">
+                    <div className={`absolute top-0 right-0 p-12 opacity-5 pointer-events-none`}>
+                        {isVitoria ? <Trophy size={160} /> : <Skull size={160} />}
+                    </div>
+
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-3">
+                                <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${isVitoria ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                                    {isVitoria ? 'Missão Concluída' : 'Falha na Operação'}
+                                </span>
+                                <span className="text-neutral-600 font-mono text-xs">ID: {relatorio.id}</span>
+                            </div>
+                            <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none">
+                                {relatorio.titulo}
+                            </h1>
+                            <p className="text-neutral-500 font-mono text-xs flex items-center gap-2">
+                                <Calendar size={12} /> {new Date(relatorio.created_at).toLocaleString()} | Setor {det.coords}
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <div className="text-right">
+                                <p className="text-[10px] font-black text-neutral-600 uppercase">Resultado Táctico</p>
+                                <p className={`text-3xl font-black uppercase ${isVitoria ? 'text-emerald-500' : 'text-red-500'}`}>
+                                    {isVitoria ? '+ VITÓRIA' : '- DERROTA'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Coluna 1: Relatório de Forças (Atacante) */}
+                    <div className="space-y-6">
+                        <BattleForceCard 
+                            title="Desdobramento Ofensivo" 
+                            actor={relatorio.atacante.nome}
+                            base={relatorio.origem_nome}
+                            units={det.tropa_ataque}
+                            losses={det.perdas_atacante}
+                            color="sky"
+                            icon={<Sword size={18} />}
+                        />
+                    </div>
+
+                    {/* Coluna 2: Sumário Técnico (Mecanismos de Combate) */}
+                    <div className="space-y-6">
+                        <div className="bg-neutral-900/40 border border-white/5 rounded-[2rem] p-6 space-y-6">
+                            <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest flex items-center gap-2">
+                                <BarChart3 size={14} className="text-sky-500" /> Analítica de Combate
+                            </h3>
+
+                            <div className="space-y-4">
+                                <StatRow 
+                                    label="Probabilidade de Sorte" 
+                                    value={`${(det.luck * 100).toFixed(1)}%`}
+                                    desc="Modificador aleatório de impacto"
+                                    color={det.luck >= 0 ? 'text-emerald-400' : 'text-red-400'}
+                                    icon={det.luck >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                                />
+                                <StatRow 
+                                    label="Moral da Tropa" 
+                                    value={`${(det.morale * 100).toFixed(0)}%`}
+                                    desc="Eficiência baseada no porte do alvo"
+                                    color={det.morale === 1 ? 'text-emerald-400' : 'text-orange-400'}
+                                    icon={<Zap size={12} />}
+                                />
+                                <StatRow 
+                                    label="Defesa de Perímetro" 
+                                    value={`+${((det.wallBonus - 1) * 100).toFixed(0)}%`}
+                                    desc="Vantagem táctica da muralha"
+                                    color="text-white"
+                                    icon={<Shield size={12} />}
+                                />
+                                <div className="pt-4 border-t border-white/5 space-y-4">
+                                    <div className="flex justify-between items-end">
+                                        <div className="text-[10px] font-black text-neutral-500 uppercase">Força Atacante Total</div>
+                                        <div className="text-lg font-black text-white">{Math.round(det.totalAtk).toLocaleString()}</div>
+                                    </div>
+                                    <div className="flex justify-between items-end">
+                                        <div className="text-[10px] font-black text-neutral-500 uppercase">Resistência Defensiva</div>
+                                        <div className="text-lg font-black text-red-500">{Math.round(det.totalDef).toLocaleString()}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Saque */}
+                        <div className="bg-emerald-950/10 border border-emerald-500/20 rounded-[2rem] p-6">
+                            <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-2 mb-4">
+                                <Zap size={14} /> Espólio Capturado
+                            </h3>
+                            <div className="grid grid-cols-3 gap-2">
+                                {Object.entries(det.saque).map(([res, qty]) => (
+                                    <div key={res} className="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                                        <span className="text-[8px] font-black text-neutral-500 uppercase mb-1">{res}</span>
+                                        <span className="text-xs font-bold text-white">{qty.toLocaleString()}</span>
+                                    </div>
+                                ))}
+                                {Object.values(det.saque).every(v => v === 0) && (
+                                    <div className="col-span-3 py-4 text-center text-neutral-600 text-[10px] font-black uppercase italic">
+                                        Transmissão: Zero recursos capturados
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Coluna 3: Relatório de Forças (Defensor) */}
+                    <div className="space-y-6">
+                        <BattleForceCard 
+                            title="Guarnição Defensiva" 
+                            actor={relatorio.defensor ? relatorio.defensor.nome : 'FORÇAS LOCAIS'}
+                            base={relatorio.destino_nome}
+                            units={det.tropa_defesa}
+                            losses={det.perdas_defensor}
+                            color="red"
+                            icon={<Shield size={18} />}
+                        />
+                    </div>
+                </div>
+            </div>
+        </AppLayout>
+    );
+}
+
+const BattleForceCard = ({ title, actor, base, units, losses, color, icon }: any) => (
+    <div className="bg-neutral-900/40 border border-white/5 rounded-[2rem] p-6 space-y-4">
+        <div className="flex justify-between items-start">
+            <div className="space-y-1">
+                <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-widest flex items-center gap-2">
+                    {icon} {title}
+                </h3>
+                <p className="text-sm font-black text-white uppercase">{actor}</p>
+                <p className="text-[10px] text-neutral-600 font-mono uppercase">{base}</p>
+            </div>
+        </div>
+
+        <div className="space-y-2">
+            <div className="grid grid-cols-4 px-2 py-1 text-[8px] font-black text-neutral-700 uppercase">
+                <div className="col-span-2">Unidade</div>
+                <div className="text-center">Total</div>
+                <div className="text-center">Perdas</div>
+            </div>
+            {Object.entries(units).map(([unit, qty]: [any, any]) => {
+                const loss = losses[unit] || 0;
+                if (qty === 0 && loss === 0) return null;
+                
+                return (
+                    <div key={unit} className="grid grid-cols-4 items-center bg-black/40 p-2 rounded-xl border border-white/5 group hover:border-white/10 transition-colors">
+                        <div className="col-span-2 text-[10px] font-bold text-neutral-300 uppercase truncate">
+                            {unit.replace(/_/g, ' ')}
+                        </div>
+                        <div className="text-center text-[11px] font-mono font-bold text-white">
+                            {qty}
+                        </div>
+                        <div className={`text-center text-[11px] font-mono font-bold ${loss > 0 ? 'text-red-500' : 'text-neutral-700'}`}>
+                            -{loss}
+                        </div>
+                    </div>
+                );
+            })}
+            {Object.keys(units).length === 0 && (
+                <div className="py-8 text-center border border-dashed border-white/10 rounded-xl text-neutral-600 text-[10px] font-black uppercase tracking-widest">
+                    Sem registo de tropas
+                </div>
+            )}
+        </div>
+    </div>
+);
+
+const StatRow = ({ label, value, desc, color, icon }: any) => (
+    <div className="flex items-center justify-between group">
+        <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+                {icon && <span className="text-neutral-500">{icon}</span>}
+                <span className="text-[9px] font-black text-neutral-400 uppercase tracking-tighter">{label}</span>
+            </div>
+            <p className="text-[8px] text-neutral-700 uppercase font-bold">{desc}</p>
+        </div>
+        <div className={`text-sm font-black font-mono ${color}`}>{value}</div>
+    </div>
+);
