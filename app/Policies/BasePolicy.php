@@ -13,7 +13,7 @@ class BasePolicy
      */
     public function view(Authenticatable $user, Base $base): bool
     {
-        return $base->jogador_id === $user->id;
+        return $base->jogador_id === $user->getAuthIdentifier();
     }
 
     /**
@@ -21,7 +21,7 @@ class BasePolicy
      */
     public function update(Authenticatable $user, Base $base): bool
     {
-        return $base->jogador_id === $user->id;
+        return $base->jogador_id === $user->getAuthIdentifier();
     }
 
     /**
@@ -29,6 +29,6 @@ class BasePolicy
      */
     public function command(Authenticatable $user, Base $base): bool
     {
-        return $base->jogador_id === $user->id;
+        return $base->jogador_id === $user->getAuthIdentifier();
     }
 }

@@ -21,14 +21,14 @@ class UpgradeBuilding
     }
 
     /**
-     * @param Authenticatable|\App\Models\Jogador $user
+     * @param Authenticatable $user
      */
     public function execute(Authenticatable $user, int $baseId, string $type, int $posX = 0, int $posY = 0): void
     {
         $base = Base::findOrFail($baseId);
 
-        // Validação de Ownership (Fase 4)
-        if ($base->jogador_id !== $user->id) {
+        // Validação de Ownership via getAuthIdentifier()
+        if ($base->jogador_id !== $user->getAuthIdentifier()) {
             throw new \Exception("Acesso Negado: A base especificada não está sob o seu comando.");
         }
 

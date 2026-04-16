@@ -24,13 +24,14 @@ class GetDashboardData
     }
 
     /**
-     * @param Authenticatable|\App\Models\Jogador $user
+     * @param Authenticatable $user
      */
     public function execute(Authenticatable $user, ?int $selectedBaseId = null): array
     {
-        // 1. Obter Bases
-        // Usamos Query Builder para garantir compatibilidade caso o modelo User não tenha a relação bases definida
-        $bases = Base::where('jogador_id', $user->id)
+        $userId = $user->getAuthIdentifier();
+
+        // 1. Obter Bases via Identificador
+        $bases = Base::where('jogador_id', $userId)
             ->with(['recursos', 'edificios', 'buildingQueue', 'treinos', 'tropas'])
             ->get();
             
@@ -63,8 +64,8 @@ class GetDashboardData
         $taxasPerSecond = collect($taxas)->map(fn($v) => (float)$v / 60)->toArray();
 
         // 4. Relatórios
-        $relatorios = \App\Models\Relatorio::where('atacante_id', $user->id)
-            ->orWhere('defensor_id', $user->id)
+        $relatorios = \App\Models\Relatorio::where('atacante_id', $userId)
+            ->orWhere('defensor_id', $userId)
             ->latest()->take(10)->get();
             
         $relatoriosGlobal = \App\Models\Relatorio::latest()->take(10)->get();

@@ -24,14 +24,14 @@ class SendMission
     }
 
     /**
-     * @param Authenticatable|\App\Models\Jogador $user
+     * @param Authenticatable $user
      */
     public function execute(Authenticatable $user, array $data): void
     {
         $baseOrigem = Base::findOrFail($data['origem_id']);
         
-        // Ownership Check
-        if ($baseOrigem->jogador_id !== $user->id) {
+        // Ownership Check using Identifiers
+        if ($baseOrigem->jogador_id !== $user->getAuthIdentifier()) {
             throw new \Exception("Acesso Negado: Você não tem autoridade sobre esta unidade de comando.");
         }
 
