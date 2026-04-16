@@ -36,6 +36,7 @@ export class RebelGeneratorSystem implements GameSystem {
         
         entityManager.addComponent(rebelId, new VillageComponent(
             null, 
+            -1, // dbId dummy para rebelde manual
             level,
             { suprimentos: 1000, combustivel: 1000, municoes: 1000, pessoal: 0, metal: 1000, energia: 0 },
             `FORCE_INSURGENT_SQUAD`,
@@ -142,6 +143,7 @@ export class RebelGeneratorSystem implements GameSystem {
         
         entityManager.addComponent(rebelId, new VillageComponent(
             null, 
+            rebelId * -1, // dbId dummy
             level,
             { 
                 suprimentos: level * 100, 

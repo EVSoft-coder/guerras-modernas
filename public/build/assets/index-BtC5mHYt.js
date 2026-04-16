@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-BvF2V2Y_.js";
+import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-DKNNa4eo.js";
 const unitConfigs = {
   infantaria: {
     id: "infantaria",
@@ -1268,6 +1268,8 @@ class RebelGeneratorSystem {
     const level = 3;
     entityManager.addComponent(rebelId, new VillageComponent(
       null,
+      -1,
+      // dbId dummy para rebelde manual
       level,
       { suprimentos: 1e3, combustivel: 1e3, municoes: 1e3, pessoal: 0, metal: 1e3, energia: 0 },
       `FORCE_INSURGENT_SQUAD`,
@@ -1354,6 +1356,8 @@ class RebelGeneratorSystem {
     const rebelId = entityManager.createEntity();
     entityManager.addComponent(rebelId, new VillageComponent(
       null,
+      rebelId * -1,
+      // dbId dummy
       level,
       {
         suprimentos: level * 100,
@@ -2492,4 +2496,4 @@ rebelCoords.forEach((coord, index) => {
 });
 stateManager.setState(GameState.PLAYING);
 Logger.info("--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---");
-//# sourceMappingURL=index-CcKWWEzF.js.map
+//# sourceMappingURL=index-BtC5mHYt.js.map
