@@ -75,6 +75,15 @@ export interface FilaConstrucao {
     created_at: string;
 }
 
+export interface BuildingQueueMember {
+    id: number;
+    base_id: number;
+    type: string;
+    target_level: number;
+    started_at: string;
+    finishes_at: string;
+}
+
 export interface Base {
     id: number;
     ownerId: number;
@@ -85,6 +94,7 @@ export interface Base {
     muralha_nivel: number;
     recursos: Recurso;
     edificios: Edificio[];
+    buildingQueue?: BuildingQueueMember[];
     construcoes: FilaConstrucao[];
     treinos: any[];
     tropas: any[];
