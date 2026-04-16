@@ -3,7 +3,7 @@
 namespace App\Application;
 
 use App\Models\Base;
-use App\Models\Jogador;
+use Illuminate\Contracts\Auth\Authenticatable;
 use App\Services\CombatService;
 use App\Services\TimeService;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +23,10 @@ class SendMission
         $this->timeService = $timeService;
     }
 
-    public function execute(Jogador $user, array $data): void
+    /**
+     * @param Authenticatable|\App\Models\Jogador $user
+     */
+    public function execute(Authenticatable $user, array $data): void
     {
         $baseOrigem = Base::findOrFail($data['origem_id']);
         

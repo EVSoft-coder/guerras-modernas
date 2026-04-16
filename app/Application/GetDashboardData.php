@@ -3,7 +3,7 @@
 namespace App\Application;
 
 use App\Models\Base;
-use App\Models\Jogador;
+use Illuminate\Contracts\Auth\Authenticatable;
 use App\Services\GameService;
 use App\Services\TimeService;
 use Illuminate\Support\Facades\Log;
@@ -23,10 +23,14 @@ class GetDashboardData
         $this->timeService = $timeService;
     }
 
-    public function execute(Jogador $user, ?int $selectedBaseId = null): array
+    /**
+     * @param Authenticatable|\App\Models\Jogador $user
+     */
+    public function execute(Authenticatable $user, ?int $selectedBaseId = null): array
     {
         // 1. Obter Bases
-        $bases = $user->bases()
+        // Usamos Query Builder para garantir compatibilidade caso o modelo User não tenha a relação bases definida
+        $bases = Base::where('jogador_id', $user->id)
             ->with(['recursos', 'edificios', 'buildingQueue', 'treinos', 'tropas'])
             ->get();
             

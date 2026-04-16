@@ -3,7 +3,7 @@
 namespace App\Application;
 
 use App\Models\Base;
-use App\Models\Jogador;
+use Illuminate\Contracts\Auth\Authenticatable;
 use App\Services\GameService;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +20,10 @@ class UpgradeBuilding
         $this->gameService = $gameService;
     }
 
-    public function execute(Jogador $user, int $baseId, string $type, int $posX = 0, int $posY = 0): void
+    /**
+     * @param Authenticatable|\App\Models\Jogador $user
+     */
+    public function execute(Authenticatable $user, int $baseId, string $type, int $posX = 0, int $posY = 0): void
     {
         $base = Base::findOrFail($baseId);
 
