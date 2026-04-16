@@ -11,24 +11,28 @@ use App\Domain\Building\BuildingType;
 use App\Domain\Building\BuildingRules;
 use App\Domain\Unit\UnitRules;
 use App\Domain\Economy\EconomyRules;
+use App\Services\TimeService;
+use App\Services\ResourceService;
+use App\Services\BuildingQueueService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 
-use App\Services\ResourceService;
-
 /**
- * GameService Centralizado
+ * GameService Centralizado.
  * Concentra a lógica core de economia, engenharia e recrutamento.
  */
 class GameService
 {
     protected $resourceService;
     protected $buildingQueueService;
+    protected $timeService;
 
-    public function __construct() {
-        $this->resourceService = new ResourceService();
-        $this->buildingQueueService = new BuildingQueueService();
+    public function __construct(?TimeService $timeService = null) {
+        $this->timeService = $timeService ?? new TimeService();
+        $this->resourceService = new ResourceService($this->timeService);
+        $this->buildingQueueService = new BuildingQueueService($this->timeService);
     }
+
     /**
      * Retorna o estado completo da base (Snapshot)
      */
@@ -37,7 +41,7 @@ class GameService
         if (!$base->recursos) $base->load('recursos');
         return [
             'base' => $base,
-            'resources' => $this->resourceService->calculate($base->recursos, null, $this->obterTaxasProducao($base)),
+            'resources' => $this->resourceService->calculate($base->recursos, $this->timeService->now(), $this->obterTaxasProducao($base)),
             'ultimo_update' => $base->ultimo_update
         ];
     }
@@ -47,13 +51,10 @@ class GameService
         return $this->snap($base);
     }
 
-    /**
-     * PROXY PARA RESOURCE SERVICE
-     */
     public function calculateResources($base, $now = null)
     {
         if (!$base->recursos) $base->load('recursos');
-        return $this->resourceService->calculate($base->recursos, $now, $this->obterTaxasProducao($base));
+        return $this->resourceService->calculate($base->recursos, $now ?? $this->timeService->now(), $this->obterTaxasProducao($base));
     }
 
     public function syncResources(Base $base): void
@@ -61,18 +62,9 @@ class GameService
         $this->resourceService->sync($base);
     }
 
-    /**
-     * TICKER DE RECURSOS (Fase 4 - Estabilidade)
-     * Realiza o tick completo e persiste na base de dados.
-     */
-    public function tickRecursos(Base $base): void
-    {
-        $this->syncResources($base);
-    }
-
     public function tickResources(Base $base): void
     {
-        $this->tickRecursos($base);
+        $this->syncResources($base);
     }
 
     public function obterTaxasProducao(Base $base): array
@@ -87,32 +79,22 @@ class GameService
         ];
     }
 
-    /**
-     * LOGICA DE CONSTRUÇÃO
-     * Valida recursos e inicia o upgrade de um edifício.
-     */
     public function iniciarUpgrade(Base $base, string $tipoRaw, int $posX = 0, int $posY = 0): ?Construcao
     {
-        // 0. Sincronizar economia antes de qualquer dedução
         $this->syncResources($base);
 
         $tipo = BuildingType::normalize($tipoRaw);
         $nivelAtual = $this->obterNivelEdificio($base, $tipo);
-        
         $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
-        $tempo = BuildingRules::calculateTime($tipo, $nivelAtual);
 
-        // 1. Validar Cap de População (Se o edifício consome slots)
         $stats = $this->obterEstatisticasPopulacao($base);
         $popRequerida = config("game.buildings.{$tipo}.cost.pessoal") ?? 0;
 
         if ($stats['available'] < $popRequerida) {
-            throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente para suportar esta expansão estrutural. Melhore o Complexo Residencial.");
+            throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente. Melhore o Complexo Residencial.");
         }
 
-        // CORREÇÃO 5 — BACKEND VALIDATION (Layout Determinístico)
         if ($nivelAtual === 0 && !in_array($tipo, [BuildingType::QG, BuildingType::MURALHA])) {
-            // Se as coordenadas forem 0,0, assumimos que o jogador quer "Auto-Place" ou é um comando antigo
             if ($posX === 0 && $posY === 0) {
                 $pos = $this->findNextAvailablePosition($base);
                 $posX = $pos['x'];
@@ -126,7 +108,6 @@ class GameService
                 ->exists();
             
             if ($exists) {
-                // Se colidir, tentamos encontrar o próximo livre de qualquer forma
                 $pos = $this->findNextAvailablePosition($base);
                 $posX = $pos['x'];
                 $posY = $pos['y'];
@@ -142,24 +123,18 @@ class GameService
         });
     }
 
-    /**
-     * LOGICA DE RECRUTAMENTO
-     * Valida recursos e inicia o treino de tropas.
-     */
     public function iniciarTreino(Base $base, string $unidade, int $quantidade): Treino
     {
-        // 0. Sincronizar economia antes de qualquer dedução
         $this->syncResources($base);
 
         $custos = UnitRules::calculateCost($unidade, $quantidade);
         $tempo = UnitRules::calculateTime($unidade, $quantidade);
 
-        // 1. Validar Cap de População (Slots Habitacionais)
         $stats = $this->obterEstatisticasPopulacao($base);
         $popRequerida = $custos['pessoal'] ?? 0;
 
         if ($stats['available'] < $popRequerida) {
-            throw new \Exception("LOGÍSTICA: Capacidade habitacional insuficiente para alojar novas tropas. Expanda o Complexo Residencial.");
+            throw new \Exception("LOGÍSTICA: Capacidade habitacional insuficiente. Expanda o Complexo Residencial.");
         }
 
         return DB::transaction(function() use ($base, $unidade, $quantidade, $custos, $tempo) {
@@ -171,24 +146,18 @@ class GameService
                 'base_id' => $base->id,
                 'unidade' => $unidade,
                 'quantidade' => $quantidade,
-                'completado_em' => now()->addSeconds($tempo),
+                'completado_em' => $this->timeService->now()->addSeconds($tempo),
             ]);
         });
     }
 
-    /**
-     * PROCESSAMENTO DE FILAS
-     * Finaliza construções e treinos que atingiram o tempo limite.
-     */
     public function processarFilas(Base $base): void
     {
         $mudou = false;
 
-        // 1. Processar Nova Fila de Construção
         $this->buildingQueueService->processQueue($base);
 
-        // 2. Processar Treinos (Mantido por enquanto)
-        $treinos = $base->treinos()->where('completado_em', '<=', now())->get();
+        $treinos = $base->treinos()->where('completado_em', '<=', $this->timeService->now())->get();
         foreach ($treinos as $fila) {
             $mudou = true;
             DB::transaction(function() use ($base, $fila) {
@@ -206,26 +175,20 @@ class GameService
         }
     }
 
-    /**
-     * HELPERS ATÓMICOS
-     */
     public function consumirRecursos(Base $base, array $custos): bool
     {
-        // Garante persistência do estado atual antes da mutação
         $this->syncResources($base);
 
         return DB::transaction(function() use ($base, $custos) {
             $rec = $base->recursos;
             if (!$rec) return false;
 
-            // Verificar se há recursos suficientes
             foreach ($custos as $res => $qtd) {
                 if ($qtd <= 0) continue;
                 $available = (float)($rec->$res ?? 0);
                 if ($available < $qtd) return false;
             }
 
-            // Deduzir recursos
             foreach ($custos as $res => $qtd) {
                 if ($qtd <= 0) continue;
                 $rec->decrement($res, $qtd);
@@ -243,9 +206,6 @@ class GameService
         return (int) ($base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0);
     }
 
-    /**
-     * ESTATISTICAS DE POPULAÇÃO
-     */
     public function obterEstatisticasPopulacao(Base $base): array
     {
         $complexoLevel = $this->obterNivelEdificio($base, BuildingType::HOUSING);
@@ -254,7 +214,6 @@ class GameService
         $configs = config('game.buildings');
         $usedByBuildings = 0;
 
-        // Somar ocupação de edifícios
         foreach ($base->edificios as $edificio) {
             $basePessoal = $configs[$edificio->tipo]['cost']['pessoal'] ?? 0;
             $usedByBuildings += $basePessoal * $edificio->nivel;
@@ -262,7 +221,6 @@ class GameService
         $usedByBuildings += ($configs['qg']['cost']['pessoal'] ?? 0) * $base->qg_nivel;
         $usedByBuildings += ($configs['muralha']['cost']['pessoal'] ?? 0) * $base->muralha_nivel;
 
-        // Somar ocupação de tropas
         $unitConfigs = config('game.units');
         $usedByTroops = 0;
         foreach ($base->tropas as $tropa) {
@@ -283,13 +241,9 @@ class GameService
         ];
     }
 
-    /**
-     * LOCALIZADOR DE ESPAÇO TÁCTICO
-     * Encontra a primeira célula livre na grelha 5x5.
-     */
     public function findNextAvailablePosition(Base $base): array
     {
-        for ($y = 0; $y < 10; $y++) { // Aumentado para 10 para expansão futura
+        for ($y = 0; $y < 10; $y++) {
             for ($x = 0; $x < 5; $x++) {
                 $isOccupied = DB::table('edificios')
                     ->where('base_id', $base->id)

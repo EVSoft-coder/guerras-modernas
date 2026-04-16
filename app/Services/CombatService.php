@@ -6,6 +6,7 @@ use App\Models\Base;
 use App\Models\Ataque;
 use App\Models\Relatorio;
 use App\Domain\Combat\CombatRules;
+use App\Services\TimeService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -14,10 +15,13 @@ use App\Services\ResourceService;
 class CombatService
 {
     protected $resourceService;
+    protected $timeService;
 
-    public function __construct() {
-        $this->resourceService = new ResourceService();
+    public function __construct(?TimeService $timeService = null) {
+        $this->timeService = $timeService ?? new TimeService();
+        $this->resourceService = new ResourceService($this->timeService);
     }
+
     /**
      * Inicia uma missão militar, subtraindo tropas da origem e criando o registo de marcha.
      */
@@ -53,7 +57,7 @@ class CombatService
                 'destino_y' => $coords ? $coords['y'] : ($destino ? $destino->coordenada_y : null),
                 'tropas' => $tropas,
                 'tipo' => $tipo,
-                'chegada_em' => now()->addSeconds($tempo),
+                'chegada_em' => $this->timeService->now()->addSeconds($tempo),
                 'processado' => false
             ]);
         });
@@ -67,7 +71,6 @@ class CombatService
         DB::transaction(function() use ($ataque) {
             $origem = $ataque->origem;
             
-            // Se não tem destino fixo, tentar localizar base pelas coordenadas
             $destino = $ataque->destino;
             if (!$destino && $ataque->destino_x !== null) {
                 $destino = Base::where('coordenada_x', $ataque->destino_x)
@@ -75,9 +78,6 @@ class CombatService
                               ->first();
             }
 
-            $unidadesConfig = config('game.units');
-            
-            // Caso de Sector Vazio (sem base)
             if (!$destino) {
                 Relatorio::create([
                     'atacante_id' => $origem->jogador_id,
@@ -96,17 +96,12 @@ class CombatService
                 return;
             }
 
-            // 1. Cálculo de Pontos para Moral (Proporção de Poder)
             $ptsAtk = $this->calculateCombatPoints($origem);
             $ptsDef = $this->calculateCombatPoints($destino);
-            $morale = min(1.0, max(0.3, ($ptsDef / max(1, $ptsAtk)) * 3)); // Se atacante é 10x maior, moral desce
-
-            // 2. Sorte do Dia (-25% a +25%)
+            $morale = min(1.0, max(0.3, ($ptsDef / max(1, $ptsAtk)) * 3));
             $luck = rand(-25, 25) / 100;
 
-            // 3. Especialização de Tropas (Sistema de Pesos Infantaria vs Blindados)
             $unidadesConfig = config('game.units');
-            
             $atkInfantry = 0;
             $atkArmored = 0;
             $capacidadeSaqueTotal = 0;
@@ -122,26 +117,19 @@ class CombatService
             }
 
             $totalAtkRaw = $atkInfantry + $atkArmored;
-            
-            // Defensor: Proporção de Defesa Baseada na Composição do Atacante
             $forcaDefRaw = 0;
             $ratioAtkArmored = $totalAtkRaw > 0 ? ($atkArmored / $totalAtkRaw) : 0;
 
             foreach ($destino->tropas as $t) {
                 $comp = $unidadesConfig[$t->unidade] ?? [];
-                // Defesa ponderada: (Def_Gen * %Infantaria) + (Def_Arm * %Blindados)
                 $defPonderada = (($comp['defense_general'] ?? 10) * (1 - $ratioAtkArmored)) 
                               + (($comp['defense_armored'] ?? 5) * $ratioAtkArmored);
-                
                 $forcaDefRaw += $t->quantidade * $defPonderada;
             }
 
-            // 4. Bónus de Perímetro (Muralha)
-            // Cada nível dá +4% de força e uma defesa base (ex: 50 por nível)
             $wallBonus = 1 + ($destino->muralha_nivel * 0.04);
             $forcaDefRaw += ($destino->muralha_nivel * 50);
 
-            // Resolução de Batalha Final
             $resultado = CombatRules::resolveBattle($totalAtkRaw, $forcaDefRaw, [
                 'luck' => $luck,
                 'morale' => $morale,
@@ -150,7 +138,6 @@ class CombatService
             $vitoria = $resultado['vitoriaAtacante'];
             $atrito = $resultado['atrito'];
 
-            // Aplicar Perdas
             $tropasRestantes = [];
             $perdasAtacanteTotal = [];
             foreach ($ataque->tropas as $u => $q) {
@@ -166,24 +153,17 @@ class CombatService
                 $perdasDefensorTotal[$t->unidade] = $perdas;
             }
 
-            // Lógica de Saque Automático
             $saque = ['metal' => 0, 'energia' => 0, 'municoes' => 0];
             if ($vitoria) {
-                // Sincronizar recursos do alvo antes de saquear (OBRIGATÓRIO)
                 $this->resourceService->sync($destino);
-                $resData = $destino->resources; // Cálculo em tempo real
-
+                $resData = $destino->resources;
                 $totalDisponivel = $resData['metal'] + $resData['energia'] + $resData['municoes'];
                 
                 if ($totalDisponivel > 0) {
-                    $ratioSaque = min(1, $capacidadeSaqueTotal / $totalDisponivel);
                     foreach(['metal', 'energia', 'municoes'] as $res) {
                         $qtdSaque = floor($capacidadeSaqueTotal * ($resData[$res] / max(1, $totalDisponivel)));
                         $finalQtd = (int) min($resData[$res], $qtdSaque);
-                        
                         $saque[$res] = $finalQtd;
-                        
-                        // Deduzir recursos directamente na tabela unificada
                         if ($destino->recursos) {
                             $destino->recursos->decrement($res, $finalQtd);
                         }
@@ -191,7 +171,6 @@ class CombatService
                 }
             }
 
-            // Gerar Relatório Tático conforme DB Schema
             Relatorio::create([
                 'atacante_id' => $origem->jogador_id,
                 'defensor_id' => $destino->jogador_id,
@@ -218,15 +197,11 @@ class CombatService
         });
     }
 
-    /**
-     * Inicia a marcha de regresso após a resolução.
-     */
     private function iniciarRetorno(Ataque $ataque, array $tropas, array $saque)
     {
         $origem = $ataque->origem;
         $dx = $ataque->destino_x - $origem->coordenada_x;
         $dy = $ataque->destino_y - $origem->coordenada_y;
-        
         $distancia = sqrt($dx*$dx + $dy*$dy);
         $tempo = CombatRules::calculateTravelTime($distancia, $tropas);
 
@@ -234,14 +209,11 @@ class CombatService
             'tipo' => 'retorno',
             'tropas' => $tropas,
             'saque' => $saque,
-            'chegada_em' => now()->addSeconds($tempo),
+            'chegada_em' => $this->timeService->now()->addSeconds($tempo),
             'processado' => false
         ]);
     }
 
-    /**
-     * Finaliza o regresso, devolvendo tropas e recursos à base de origem.
-     */
     public function finalizarRetorno(Ataque $ataque)
     {
         DB::transaction(function() use ($ataque) {
@@ -251,7 +223,6 @@ class CombatService
                 return;
             }
 
-            // Sincronizar recursos antes de creditar o saque
             $this->resourceService->sync($origem);
 
             foreach ($ataque->tropas as $u => $q) {
@@ -262,8 +233,6 @@ class CombatService
             if ($ataque->saque) {
                 foreach ($ataque->saque as $res => $qtd) {
                     if ($qtd <= 0) continue;
-                    
-                    // Creditar recursos exclusivamente na tabela recursos
                     if ($origem->recursos) {
                         $origem->recursos->increment($res, $qtd);
                     }
@@ -273,9 +242,6 @@ class CombatService
         });
     }
 
-    /**
-     * Calcula o valor estratégico (pontos) de uma base para fins de Moral.
-     */
     private function calculateCombatPoints(Base $base)
     {
         $pts = ($base->qg_nivel * 10) 
@@ -285,4 +251,3 @@ class CombatService
         return max(1, $pts);
     }
 }
-

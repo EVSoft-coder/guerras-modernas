@@ -7,11 +7,19 @@ use App\Models\BuildingQueue;
 use App\Models\Edificio;
 use App\Domain\Building\BuildingType;
 use App\Domain\Building\BuildingRules;
+use App\Services\TimeService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class BuildingQueueService
 {
+    private TimeService $timeService;
+
+    public function __construct(?TimeService $timeService = null)
+    {
+        $this->timeService = $timeService ?? new TimeService();
+    }
+
     /**
      * Inicia uma nova construção na fila.
      */
@@ -19,18 +27,18 @@ class BuildingQueueService
     {
         $type = BuildingType::normalize($type);
         
-        // Obter nível atual (QG e Muralha estão na tabela bases, outros na edificios)
         $nivelAtual = $this->getCurrentLevel($base, $type);
         $targetLevel = $nivelAtual + 1;
 
         $tempo = BuildingRules::calculateTime($type, $nivelAtual);
+        $now = $this->timeService->now();
         
         return BuildingQueue::create([
             'base_id' => $base->id,
             'type' => $type,
             'target_level' => $targetLevel,
-            'started_at' => now(),
-            'finishes_at' => now()->addSeconds($tempo),
+            'started_at' => $now,
+            'finishes_at' => $now->copy()->addSeconds($tempo),
         ]);
     }
 
@@ -40,7 +48,7 @@ class BuildingQueueService
     public function processQueue(Base $base)
     {
         $pending = BuildingQueue::where('base_id', $base->id)
-            ->where('finishes_at', '<=', now())
+            ->where('finishes_at', '<=', $this->timeService->now())
             ->get();
 
         if ($pending->isEmpty()) return;
@@ -51,9 +59,6 @@ class BuildingQueueService
                 $entry->delete();
             }
         });
-
-        // Opcional: Notificar frontend via Broadcast se necessário
-        // broadcast(new \App\Events\BaseUpdated($base))->toOthers();
     }
 
     /**
@@ -73,8 +78,7 @@ class BuildingQueueService
                 $edificio->nivel = $level;
                 $edificio->save();
             } else {
-                // Se não existe (nível 1), criar em posição disponível
-                $pos = (new GameService())->findNextAvailablePosition($base);
+                $pos = (new GameService($this->timeService))->findNextAvailablePosition($base);
                 $base->edificios()->create([
                     'tipo' => $type,
                     'nivel' => $level,
@@ -85,9 +89,6 @@ class BuildingQueueService
         }
     }
 
-    /**
-     * Helper para obter o nível atual.
-     */
     private function getCurrentLevel(Base $base, string $type): int
     {
         if ($type === BuildingType::QG) return (int) $base->qg_nivel;

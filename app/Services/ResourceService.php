@@ -4,18 +4,25 @@ namespace App\Services;
 
 use App\Models\Base;
 use App\Models\Recurso;
+use App\Services\TimeService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-
 use Illuminate\Support\Facades\Log;
 
 /**
- * ResourceService - Doutrina de Persistência Atómica
+ * ResourceService - Doutrina de Persistência Atómica.
  * Responsável estrito pelo cálculo e sincronização de recursos.
+ * Fase 2: Harden Resource Service (uso de locks e transações).
  */
 class ResourceService
 {
+    private TimeService $timeService;
     protected static $syncedBases = [];
+
+    public function __construct(?TimeService $timeService = null)
+    {
+        $this->timeService = $timeService ?? new TimeService();
+    }
 
     /**
      * CÁLCULO PURO (Simulacro Determinístico)
@@ -24,7 +31,7 @@ class ResourceService
      */
     public function calculate(Recurso $resource, $now = null, array $taxasMinuto = null): array
     {
-        if (!$now) $now = Carbon::now();
+        if (!$now) $now = $this->timeService->now();
         $base = $resource->base;
 
         if (!$taxasMinuto) {
@@ -44,11 +51,10 @@ class ResourceService
             $elapsed = $diff;
         }
 
-        Log::info('RESOURCE_DEBUG', [
+        Log::info('[RESOURCE_CALC]', [
+            'base_id' => $base->id,
             'before' => $resource->suprimentos,
             'rate_min' => $taxasMinuto['suprimentos'] ?? 0,
-            'last_update' => $lastUpdateCarbon->toDateTimeString(),
-            'now' => $now->toDateTimeString(),
             'elapsed' => $elapsed
         ]);
         
@@ -71,33 +77,27 @@ class ResourceService
 
     /**
      * SINCRONIZAÇÃO ATÓMICA (Único ponto de escrita)
-     * Deve ser chamado apenas em Build, Recruit ou Attack.
      */
     public function sync(Base $base): void
     {
         if (in_array($base->id, self::$syncedBases)) return;
-        self::$syncedBases[] = $base->id;
 
-        if (!$base->recursos) $base->load('recursos');
-        $resource = $base->recursos;
-        if (!$resource) return;
+        DB::transaction(function() use ($base) {
+            // Fase 2: Lock for Update
+            $lockedBase = Base::where('id', $base->id)->lockForUpdate()->with('recursos')->first();
+            if (!$lockedBase || !$lockedBase->recursos) return;
 
-        $now = Carbon::now();
-        $taxasMinuto = $this->getRates($base);
-        
-        Log::info('RESOURCE_SYNC_START', [
-            'base_id' => $base->id,
-            'rates' => $taxasMinuto,
-            'now' => $now->toDateTimeString()
-        ]);
+            $now = $this->timeService->now();
+            $taxasMinuto = $this->getRates($lockedBase);
+            $calculated = $this->calculate($lockedBase->recursos, $now, $taxasMinuto);
+            
+            Log::info('[RESOURCE_SYNC]', [
+                'base_id' => $base->id,
+                'calculated' => $calculated
+            ]);
 
-        $calculated = $this->calculate($resource, $now, $taxasMinuto);
-        
-        Log::info('RESOURCE_SYNC', $calculated);
-        
-        DB::transaction(function() use ($base, $resource, $calculated, $now) {
-            // Write 1: Tabela Recursos (Fonte da Verdade)
-            $resource->update([
+            // Write 1: Tabela Recursos
+            $lockedBase->recursos->update([
                 'suprimentos' => $calculated['suprimentos'],
                 'combustivel' => $calculated['combustivel'],
                 'municoes'    => $calculated['municoes'],
@@ -107,27 +107,23 @@ class ResourceService
                 'updated_at'  => $now
             ]);
 
-            // Write 2: Tabela Bases (Checkpoints Táticos)
-            $base->update([
+            // Write 2: Tabela Bases
+            $lockedBase->update([
                 'ultimo_update' => $now
             ]);
+
+            // Atualizar instâncias passadas por referência (se necessário)
+            $base->setRelation('recursos', $lockedBase->recursos);
+            $base->ultimo_update = $now;
         });
 
-        // Mutar instâncias para evitar stale data no mesmo request
-        $base->ultimo_update = $now;
-        $resource->setRawAttributes(array_merge($resource->getAttributes(), $calculated, ['updated_at' => $now]), true);
+        self::$syncedBases[] = $base->id;
     }
     
-    /**
-     * Auxiliar interno para obter taxas sem depender de GameService
-     */
     private function getRates(Base $base): array
     {
-        // Pré-carregar edifícios para evitar múltiplas queries (N+1)
         $edificios = $base->edificios;
-
         $getLevel = function($type) use ($edificios) {
-            // Tentar busca exata e normalizada
             return (int)($edificios->filter(function($e) use ($type) {
                 return \App\Domain\Building\BuildingType::normalize($e->tipo) === $type;
             })->first()?->nivel ?? 0);

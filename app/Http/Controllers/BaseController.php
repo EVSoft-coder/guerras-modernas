@@ -1,40 +1,44 @@
 <?php
- 
+
 namespace App\Http\Controllers;
- 
+
+use App\Application\UpgradeBuilding;
 use App\Models\Base;
-use App\Services\GameService;
 use App\Http\Requests\BuildingUpgradeRequest;
 use App\Http\Requests\TreinarRequest;
+use App\Services\GameService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
- 
+
+/**
+ * BaseController - Controller "Magra" (Lean).
+ * Gestão de operações básicas delegada à camada Application.
+ */
 class BaseController extends Controller
 {
-    protected $gameService;
+    private UpgradeBuilding $upgradeBuilding;
+    private GameService $gameService;
 
-    public function __construct(GameService $gameService) 
+    public function __construct(UpgradeBuilding $upgradeBuilding, GameService $gameService)
     {
+        $this->upgradeBuilding = $upgradeBuilding;
         $this->gameService = $gameService;
     }
- 
+
     /**
      * Iniciar um upgrade de edifício.
      */
     public function upgrade(BuildingUpgradeRequest $request)
     {
-        $base = Base::findOrFail($request->base_id);
-        if ($base->jogador_id !== Auth::id()) abort(403);
- 
         try {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request) {
-                $this->gameService->iniciarUpgrade(
-                    $base, 
-                    $request->tipo,
-                    $request->input('pos_x', 0),
-                    $request->input('pos_y', 0)
-                );
-            });
+            $this->upgradeBuilding->execute(
+                Auth::user(),
+                $request->base_id,
+                $request->tipo,
+                $request->input('pos_x', 0),
+                $request->input('pos_y', 0)
+            );
+
             if ($request->wantsJson()) {
                 return response()->json(['status' => 'success', 'message' => "Upgrade de " . strtoupper($request->tipo) . " iniciado."]);
             }
@@ -46,19 +50,21 @@ class BaseController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
- 
+
     /**
      * Iniciar recrutamento de tropas.
+     * (A ser movido para UnitQueue no futuro)
      */
     public function treinar(TreinarRequest $request)
     {
         $base = Base::findOrFail($request->base_id);
-        if ($base->jogador_id !== Auth::id()) abort(403);
- 
+        $this->authorize('update', $base);
+
         try {
             \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request) {
                 $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
             });
+
             if ($request->wantsJson()) {
                 return response()->json(['status' => 'success', 'message' => "{$request->quantidade}x " . strtoupper($request->unidade) . " em alistamento."]);
             }
@@ -70,20 +76,19 @@ class BaseController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
- 
+
     /**
      * Trocar base selecionada.
      */
     public function switchBase($id)
     {
-        $base = Base::where('id', $id)->where('jogador_id', Auth::id())->firstOrFail();
+        $base = Base::findOrFail($id);
+        $this->authorize('view', $base);
+
         session(['selected_base_id' => $base->id]);
         return redirect()->route('dashboard')->with('success', "Comando transferido para {$base->nome}!");
     }
- 
-    /**
-     * Efetuar troca de recursos no Mercado Negro.
-     */
+
     public function trocar(Request $request)
     {
         $request->validate([
@@ -91,19 +96,17 @@ class BaseController extends Controller
             'oferece' => 'required|string',
             'recebe'  => 'required|string'
         ]);
- 
+
         $base = Base::findOrFail($request->base_id);
-        if ($base->jogador_id !== Auth::id()) abort(403);
- 
+        $this->authorize('update', $base);
+
         try {
             $this->gameService->syncResources($base);
 
-            $custo = 300;
-            $ganho = 100;
-            
-            \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request, $custo, $ganho) {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request) {
+                $custo = 300;
+                $ganho = 100;
                 if ($this->gameService->consumirRecursos($base, [$request->oferece => $custo])) {
-                    // Adicionar recurso recebido directamente na tabela recursos
                     if ($base->recursos) {
                         $base->recursos->increment($request->recebe, $ganho);
                     }
