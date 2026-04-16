@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Target, Search, Crosshair, Navigation, Shield, Sword, Home, ShieldAlert, List, ChevronRight, ChevronLeft, Map as MapIcon } from 'lucide-react';
+import { Target, Search, Crosshair, Navigation, Shield, Sword, Home, ShieldAlert, List, ChevronRight, ChevronLeft, User, Map as MapIcon } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
