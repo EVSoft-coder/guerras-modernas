@@ -28302,7 +28302,8 @@ const BuildingModal = ({
   onUpgrade,
   onTrain,
   isUpgrading,
-  isTraining
+  isTraining,
+  population
 }) => {
   var _a2, _b, _c, _d, _e2, _f, _g;
   if (!building) return null;
@@ -30377,13 +30378,13 @@ function VillageDashboard({
   populacao,
   // deprecated props
   buildings,
-  population: population2,
+  population,
   resources
 }) {
   const { globalState } = useGameEntities();
   const currentBuildings = buildings || (initialBase == null ? void 0 : initialBase.edificios) || [];
   const currentResources = resources || (initialBase == null ? void 0 : initialBase.recursos) || {};
-  const currentPopulation = population2 || populacao || null;
+  const currentPopulation = population || populacao || null;
   const base = U$2.useMemo(() => {
     if (!initialBase) return null;
     return {
@@ -44268,7 +44269,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DgXs4xqk.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CwvGwJF9.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44306,4 +44307,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-D0rhtbCz.js.map
+//# sourceMappingURL=app-ZosuGejq.js.map

@@ -17,11 +17,12 @@ interface BuildingModalProps {
     onTrain: (unidade: string, quantidade: number) => void;
     isUpgrading: boolean;
     isTraining: boolean;
+    population: any;
 }
 
 export const BuildingModal: React.FC<BuildingModalProps> = ({ 
     isOpen, onClose, building, gameConfig, 
-    onUpgrade, onTrain, isUpgrading, isTraining 
+    onUpgrade, onTrain, isUpgrading, isTraining, population
 }) => {
     if (!building) return null;
 
