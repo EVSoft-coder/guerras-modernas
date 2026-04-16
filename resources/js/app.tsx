@@ -16,7 +16,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { ToastProvider } from '@/components/game/ToastProvider';
 import { initializeTheme } from './hooks/use-appearance';
-import { eventBus } from '../../src/core/EventBus';
+import { eventBus } from '@src/core/EventBus';
 declare global {
     interface Window {
         route: any;

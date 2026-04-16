@@ -5447,7 +5447,7 @@ function F$1(r2, e) {
 function P$1(r2, e) {
   return document.dispatchEvent(new CustomEvent(`inertia:${r2}`, e));
 }
-var _ = (r2) => P$1("before", { cancelable: true, detail: { visit: r2 } }), pe = (r2) => P$1("error", { detail: { errors: r2 } }), de$1 = (r2) => P$1("exception", { cancelable: true, detail: { exception: r2 } }), he = (r2) => P$1("finish", { detail: { visit: r2 } }), me$2 = (r2) => P$1("invalid", { cancelable: true, detail: { response: r2 } }), R$1 = (r2) => P$1("navigate", { detail: { page: r2 } }), fe$1 = (r2) => P$1("progress", { detail: { progress: r2 } }), ge$1 = (r2) => P$1("start", { detail: { visit: r2 } }), ve = (r2) => P$1("success", { detail: { page: r2 } }), be = (r2, e) => P$1("prefetched", { detail: { fetchedAt: Date.now(), response: r2.data, visit: e } }), ye$1 = (r2) => P$1("prefetching", { detail: { visit: r2 } });
+var _ = (r2) => P$1("before", { cancelable: true, detail: { visit: r2 } }), pe = (r2) => P$1("error", { detail: { errors: r2 } }), de$1 = (r2) => P$1("exception", { cancelable: true, detail: { exception: r2 } }), he = (r2) => P$1("finish", { detail: { visit: r2 } }), me$2 = (r2) => P$1("invalid", { cancelable: true, detail: { response: r2 } }), R$1 = (r2) => P$1("navigate", { detail: { page: r2 } }), fe$1 = (r2) => P$1("progress", { detail: { progress: r2 } }), ge = (r2) => P$1("start", { detail: { visit: r2 } }), ve = (r2) => P$1("success", { detail: { page: r2 } }), be = (r2, e) => P$1("prefetched", { detail: { fetchedAt: Date.now(), response: r2.data, visit: e } }), ye = (r2) => P$1("prefetching", { detail: { visit: r2 } });
 var u$3 = class u {
   static set(e, t2) {
     typeof window < "u" && window.sessionStorage.setItem(e, JSON.stringify(t2));
@@ -5478,7 +5478,7 @@ var u$3 = class u {
   }
 };
 u$3.locationVisitKey = "inertiaLocationVisit";
-var Pe$1 = async (r2) => {
+var Pe = async (r2) => {
   if (typeof window > "u") throw new Error("Unable to encrypt history");
   let e = Se(), t2 = await Ee(), i2 = await je(t2);
   if (!i2) throw new Error("Unable to encrypt history");
@@ -5703,7 +5703,7 @@ var D = typeof window > "u", U$3 = new q(), qe = !D && /CriOS/.test(window.navig
     }
   }
   getPageData(e) {
-    return new Promise((t2) => e.encryptHistory ? Pe$1(e).then(t2) : t2(e));
+    return new Promise((t2) => e.encryptHistory ? Pe(e).then(t2) : t2(e));
   }
   processQueue() {
     return U$3.process();
@@ -5783,7 +5783,7 @@ var D = typeof window > "u", U$3 = new q(), qe = !D && /CriOS/.test(window.navig
 };
 typeof window < "u" && window.history.scrollRestoration && (window.history.scrollRestoration = "manual");
 var o$3 = new re();
-var ie$1 = class ie {
+var ie = class {
   constructor() {
     this.internalListeners = [];
   }
@@ -5827,7 +5827,7 @@ var ie$1 = class ie {
       this.onMissingHistoryItem();
     });
   }
-}, w$1 = new ie$1();
+}, w$1 = new ie();
 var ne$1 = class ne {
   constructor() {
     this.type = this.resolveType();
@@ -5918,7 +5918,7 @@ var oe$1 = class oe {
       this.polls.forEach((e) => e.isInBackground(document.hidden));
     }, false);
   }
-}, Ae$2 = new oe$1();
+}, Ae$1 = new oe$1();
 var ae$1 = (r2, e, t2) => {
   if (r2 === e) return true;
   for (let i2 in r2) if (!t2.includes(i2) && r2[i2] !== e[i2] && !Xe(r2[i2], e[i2])) return false;
@@ -6216,7 +6216,7 @@ var V = class {
     return new V(e, t2);
   }
   async send() {
-    this.requestParams.onCancelToken(() => this.cancel({ cancelled: true })), ge$1(this.requestParams.all()), this.requestParams.onStart(), this.requestParams.all().prefetch && (this.requestParams.onPrefetching(), ye$1(this.requestParams.all()));
+    this.requestParams.onCancelToken(() => this.cancel({ cancelled: true })), ge(this.requestParams.all()), this.requestParams.onStart(), this.requestParams.all().prefetch && (this.requestParams.onPrefetching(), ye(this.requestParams.all()));
     let e = this.requestParams.all().prefetch;
     return axios({ method: this.requestParams.all().method, url: I(this.requestParams.all().url).href, data: this.requestParams.data(), params: this.requestParams.queryParams(), signal: this.cancelToken.signal, headers: this.getHeaders(), onUploadProgress: this.onProgress.bind(this), responseType: "text" }).then((t2) => (this.response = A$1.create(this.requestParams, t2, this.page), this.response.handle())).catch((t2) => (t2 == null ? void 0 : t2.response) ? (this.response = A$1.create(this.requestParams, t2.response, this.page), this.response.handle()) : Promise.reject(t2)).catch((t2) => {
       if (!axios.isCancel(t2) && de$1(t2)) return Promise.reject(t2);
@@ -6313,7 +6313,7 @@ var K$2 = class K {
     this.asyncRequestStream.cancelInFlight(), this.syncRequestStream.cancelInFlight();
   }
   poll(e, t2 = {}, i2 = {}) {
-    return Ae$2.add(e, () => this.reload(t2), { autoStart: i2.autoStart ?? true, keepAlive: i2.keepAlive ?? false });
+    return Ae$1.add(e, () => this.reload(t2), { autoStart: i2.autoStart ?? true, keepAlive: i2.keepAlive ?? false });
   }
   visit(e, t2 = {}) {
     let i2 = this.getPendingVisit(e, { ...t2, showProgress: t2.showProgress ?? !t2.async }), n2 = this.getVisitEvents(t2);
@@ -6499,10 +6499,10 @@ var p$1 = "nprogress", f$1 = { minimum: 0.08, easing: "linear", positionUsing: "
   e.id = p$1, e.innerHTML = f$1.template;
   let t2 = e.querySelector(f$1.barSelector), i2 = r2 ? "-100" : X$2(C$2 || 0), n2 = Ue();
   return t2.style.transition = "all 0 linear", t2.style.transform = `translate3d(${i2}%,0,0)`, f$1.showSpinner || ((_a2 = e.querySelector(f$1.spinnerSelector)) == null ? void 0 : _a2.remove()), n2 !== document.body && n2.classList.add(`${p$1}-custom-parent`), n2.appendChild(e), e;
-}, Ue = () => tt$1(f$1.parent) ? f$1.parent : document.querySelector(f$1.parent), De$1 = () => {
+}, Ue = () => tt(f$1.parent) ? f$1.parent : document.querySelector(f$1.parent), De$1 = () => {
   var _a2;
   document.documentElement.classList.remove(`${p$1}-busy`), Ue().classList.remove(`${p$1}-custom-parent`), (_a2 = document.getElementById(p$1)) == null ? void 0 : _a2.remove();
-}, et = () => document.getElementById(p$1) !== null, tt$1 = (r2) => typeof HTMLElement == "object" ? r2 instanceof HTMLElement : r2 && typeof r2 == "object" && r2.nodeType === 1 && typeof r2.nodeName == "string";
+}, et = () => document.getElementById(p$1) !== null, tt = (r2) => typeof HTMLElement == "object" ? r2 instanceof HTMLElement : r2 && typeof r2 == "object" && r2.nodeType === 1 && typeof r2.nodeName == "string";
 function He$1(r2, e, t2) {
   return r2 < e ? e : r2 > t2 ? t2 : r2;
 }
@@ -7760,15 +7760,6 @@ function K$1() {
   if (!u3) throw new Error("usePage must be used within the Inertia component");
   return u3;
 }
-var ie2 = ({ children: u3, data: o3, fallback: n2 }) => {
-  if (!o3) throw new Error("`<Deferred>` requires a `data` prop");
-  let [s2, a] = reactExports.useState(false), m2 = K$1().props, p2 = Array.isArray(o3) ? o3 : [o3];
-  return reactExports.useEffect(() => {
-    a(p2.every((g2) => m2[g2] !== void 0));
-  }, [m2, p2]), s2 ? u3 : n2;
-};
-ie2.displayName = "InertiaDeferred";
-var Ae$1 = ie2;
 var Me = function({ children: u3, title: o3 }) {
   let n2 = reactExports.useContext(M$2), s2 = reactExports.useMemo(() => n2.createProvider(), [n2]);
   reactExports.useEffect(() => () => {
@@ -7901,66 +7892,7 @@ function me$1(u3, o3) {
   }, []);
   return { data: P2, setData: Q2, isDirty: !Ke(P2, a), errors: l2, hasErrors: f2, processing: h2, progress: x2, wasSuccessful: q2, recentlySuccessful: J2, transform: j2, setDefaults: Y2, reset: z, setError: V2, clearErrors: D2, submit: b2, get: G2, post: U2, put: $2, patch: w2, delete: C2, cancel: X2 };
 }
-function ge(u3, o3 = {}, n2 = { keepAlive: false, autoStart: true }) {
-  let s2 = reactExports.useRef(Wr.poll(u3, o3, { ...n2, autoStart: false }));
-  return reactExports.useEffect(() => ((n2.autoStart ?? true) && s2.current.start(), () => s2.current.stop()), []), { stop: s2.current.stop, start: s2.current.start };
-}
-function Pe(u3 = {}) {
-  let o3 = typeof window > "u" ? null : Wr.getCached(window.location.pathname, u3), n2 = typeof window > "u" ? null : Wr.getPrefetching(window.location.pathname, u3), [s2, a] = reactExports.useState((o3 == null ? void 0 : o3.staleTimestamp) || null), [m2, p2] = reactExports.useState(n2 !== null), [g2, P2] = reactExports.useState(o3 !== null);
-  return reactExports.useEffect(() => {
-    let y2 = Wr.on("prefetching", (e) => {
-      e.detail.visit.url.pathname === window.location.pathname && p2(true);
-    }), l2 = Wr.on("prefetched", (e) => {
-      e.detail.visit.url.pathname === window.location.pathname && (p2(false), P2(true), a(e.detail.fetchedAt));
-    });
-    return () => {
-      l2(), y2();
-    };
-  }, []), { lastUpdatedAt: s2, isPrefetching: m2, isPrefetched: g2, flush: () => Wr.flush(window.location.pathname, u3) };
-}
-var ye = ({ children: u3, data: o3, params: n2, buffer: s2, as: a, always: m2, fallback: p2 }) => {
-  m2 = m2 ?? false, a = a ?? "div", p2 = p2 ?? null;
-  let [g2, P2] = reactExports.useState(false), y2 = reactExports.useRef(false), l2 = reactExports.useRef(false), e = reactExports.useRef(null), f2 = reactExports.useCallback(() => {
-    if (o3) return { only: Array.isArray(o3) ? o3 : [o3] };
-    if (!n2) throw new Error("You must provide either a `data` or `params` prop.");
-    return n2;
-  }, [n2, o3]);
-  return reactExports.useEffect(() => {
-    if (!e.current) return;
-    let t2 = new IntersectionObserver((h2) => {
-      if (!h2[0].isIntersecting || (!m2 && y2.current && t2.disconnect(), l2.current)) return;
-      y2.current = true, l2.current = true;
-      let T2 = f2();
-      Wr.reload({ ...T2, onStart: (x2) => {
-        var _a2;
-        l2.current = true, (_a2 = T2.onStart) == null ? void 0 : _a2.call(T2, x2);
-      }, onFinish: (x2) => {
-        var _a2;
-        P2(true), l2.current = false, (_a2 = T2.onFinish) == null ? void 0 : _a2.call(T2, x2), m2 || t2.disconnect();
-      } });
-    }, { rootMargin: `${s2 || 0}px` });
-    return t2.observe(e.current), () => {
-      t2.disconnect();
-    };
-  }, [e, f2, s2]), m2 || !g2 ? reactExports.createElement(a, { props: null, ref: e }, g2 ? u3 : p2) : g2 ? u3 : null;
-};
-ye.displayName = "InertiaWhenVisible";
-var tt = ye;
 var Sr = Wr;
-const index_esm = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  Deferred: Ae$1,
-  Head: Le$1,
-  Link: $e,
-  WhenVisible: tt,
-  createInertiaApp: ae,
-  router: Sr,
-  useForm: me$1,
-  usePage: K$1,
-  usePoll: ge,
-  usePrefetch: Pe,
-  useRemember: H$1
-}, Symbol.toStringTag, { value: "Module" }));
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -30343,7 +30275,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
   const jumpToPlayer = () => {
     if (playerBase) setCenter({ x: playerBase.coordenada_x, y: playerBase.coordenada_y });
   };
-  const { post, processing } = me$1();
+  const { processing } = me$1();
   const handleSendAttack = (params) => {
     if (!playerBase) return;
     eventBus.emit(Events.ATTACK_LAUNCH, {
@@ -44564,7 +44496,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-BSdUqU14.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BhkD9TQX.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44592,14 +44524,12 @@ export {
   GameState as G,
   Logger as L,
   Sr as S,
-  __vitePreload as _,
   entityManager as a,
   axios as b,
   GameMode as c,
   eventBus as e,
   gameStateService as g,
-  index_esm as i,
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-VBExRWT8.js.map
+//# sourceMappingURL=app-C1c2nLJj.js.map

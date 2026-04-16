@@ -3,11 +3,12 @@
  * Orquestrador de SincronizaÃ§Ã£o: Laravel -> ECS e ECS -> UI.
  */
 import { entityManager } from '../../core/EntityManager';
-import { eventBus, Events } from '../../core/EventBus';
+import { eventBus, Events } from '@src/core/EventBus';
 import { GameSystem } from './types';
 import { AttackMarchComponent } from '../components/AttackMarchComponent';
 import { gameStateService } from '../../services/GameStateService';
 import { Logger } from '../../core/Logger';
+import { router } from '@inertiajs/react';
 
 export class SyncSystem implements GameSystem {
     public init(): void {
@@ -52,7 +53,6 @@ export class SyncSystem implements GameSystem {
             }
             
             // Garantir que a UI reflete a nova fila de construção
-            const { router } = await import('@inertiajs/react');
             router.reload();
             eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'UPGRADE' } });
 
@@ -84,7 +84,6 @@ export class SyncSystem implements GameSystem {
             }
             
             // Re-hidratar ECS com dados puros do backend (Source of Truth)
-            const { router } = await import('@inertiajs/react');
             router.reload();
             eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'RECRUITMENT' } });
 
