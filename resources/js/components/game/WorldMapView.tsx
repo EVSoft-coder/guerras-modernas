@@ -36,8 +36,26 @@ interface WorldMapViewProps {
     gameConfig?: any;
 }
 
+/**
+ * DETERMINISTIC GEOGRAPHY PROTOCOL:
+ * Matches backend WorldSystem logic to render terrains without extra data transfer.
+ */
+const getTerrain = (tx: number, ty: number) => {
+    // Edge Oceans
+    if (ty < 5 || ty > 94 || tx < 5 || tx > 94) return 'water';
+    
+    // Deterministic Pseudo-Noise
+    const noise = (Math.sin(tx * 0.12) + Math.cos(ty * 0.15) + Math.sin(tx * 0.3 + ty * 0.2)) / 3;
+    
+    if (noise > 0.5) return 'mountain';
+    if (noise < -0.4) return 'desert';
+    if (noise < -0.6) return 'water'; // Internal lakes
+    
+    return 'grass';
+};
+
 export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapViewProps) {
-    const [center, setCenter] = useState({ x: playerBase?.coordenada_x || 500, y: playerBase?.coordenada_y || 500 });
+    const [center, setCenter] = useState({ x: playerBase?.coordenada_x || 50, y: playerBase?.coordenada_y || 50 });
     const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: any } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
     const [isAttackModalOpen, setIsAttackModalOpen] = useState(false);
@@ -50,15 +68,12 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     }, [gameEntities, selectedUnit]);
 
     const handleWheel = (e: React.WheelEvent) => {
-        e.preventDefault();
+        // Prevent default zoom if possible, but allow system scroll if needed
         const delta = e.deltaY > 0 ? -0.05 : 0.05;
         setZoom(prev => Math.min(Math.max(prev + delta, 0.4), 2.5));
     };
 
-    // TACTICAL REMOVAL: Chunk loading logic removed in favor of direct ECS Observation
-    
     useEffect(() => {
-        // RADAR TÁCTICO: Listeners de eventos de combate continuam activos via EventBus
         if ((window as any).eventBus) {
             const eb = (window as any).eventBus;
             
@@ -89,7 +104,6 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
         }
     }, [center]);
 
-    // ECS SOVEREIGNTY: Rendering data pre-calculated in GameStateService
     const allBases = globalState.worldMapBases;
     const rebelBasesCount = globalState.rebelCount;
 
@@ -106,8 +120,6 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
         if (playerBase) setCenter({ x: playerBase.coordenada_x, y: playerBase.coordenada_y });
     };
 
-    const { post, processing } = useForm();
-
     const handleSendAttack = (params: any) => {
         if (!playerBase) return;
         eventBus.emit(Events.ATTACK_LAUNCH, {
@@ -117,7 +129,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
             targetY: params.destino_y,
             ownerId: playerBase.ownerId,
             troops: params.tropas,
-            backendParams: { ...params, origem_id: playerBase.id } // Pass meta for processing
+            backendParams: { ...params, origem_id: playerBase.id }
         });
         
         setIsAttackModalOpen(false);
@@ -128,6 +140,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     return (
         <div className="flex flex-col lg:flex-row gap-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-700 h-full overflow-hidden">
             <div className="flex-1 bg-neutral-950 rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative h-[700px]">
+                {/* HUD de Coordenadas e Busca */}
                 <div className="absolute top-6 left-6 z-20 flex gap-2">
                     <div className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-1 flex items-center shadow-2xl pointer-events-auto">
                         <Input 
@@ -152,8 +165,9 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                     </Button>
                 </div>
 
+                {/* Contentor do Mapa Digital */}
                 <div 
-                    className="relative w-full h-full overflow-auto bg-neutral-900 custom-scrollbar"
+                    className="relative w-full h-full overflow-auto bg-[#0a0f1a] custom-scrollbar"
                     onWheel={handleWheel}
                 >
                     <div 
@@ -177,37 +191,53 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                     const isRebel = baseAt && !baseAt.ownerId;
                                     const isEnemy = baseAt && baseAt.ownerId && baseAt.ownerId !== playerBase?.ownerId;
 
+                                    const terrain = getTerrain(x, y);
+
                                     return (
                                         <Tooltip key={`${x}-${y}`}>
                                             <TooltipTrigger asChild>
                                                 <div 
-                                                    className={`absolute border border-white/[0.05] transition-all cursor-crosshair group flex items-center justify-center
-                                                        ${isSelected ? 'border-sky-500 z-10 bg-sky-500/10 shadow-[0_0_30px_rgba(14,165,233,0.4)] ring-2 ring-sky-500/50' : 'hover:bg-white/5'}
-                                                        ${isPlayer ? 'bg-sky-500/10 border-sky-500/20' : ''}
-                                                        ${isEnemy ? 'bg-red-500/10 border-red-500/20' : ''}
-                                                        ${isRebel ? 'bg-red-600/20 border-red-600/40 z-[1000] opacity-100' : ''}
+                                                    className={`absolute border border-white/[0.05] transition-all cursor-crosshair group flex items-center justify-center overflow-hidden
+                                                        ${isSelected ? 'border-sky-500 z-10 ring-2 ring-sky-500/50 shadow-[0_0_30px_rgba(14,165,233,0.4)]' : 'hover:brightness-110'}
+                                                        ${isPlayer ? 'ring-1 ring-inset ring-sky-500/30' : ''}
+                                                        ${isEnemy ? 'ring-1 ring-inset ring-red-500/30' : ''}
+                                                        ${isRebel ? 'ring-1 ring-inset ring-amber-500/30' : ''}
                                                     `}
                                                     onClick={() => setSelectedSector({ x, y, base: baseAt })}
-                                                    style={{ left: ix * 80, top: iy * 80, width: 80, height: 80 }}
+                                                    style={{ 
+                                                        left: ix * 80, 
+                                                        top: iy * 80, 
+                                                        width: 80, 
+                                                        height: 80,
+                                                        backgroundImage: `url(/assets/terrains/${terrain}.png)`,
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center',
+                                                        backgroundColor: terrain === 'water' ? '#0a1d37' : '#1a1a1a'
+                                                    }}
                                                 >
-                                                    <span className={`absolute top-1 left-1 text-[7px] font-mono transition-opacity ${isSelected ? 'text-sky-400 opacity-100' : 'text-neutral-700 opacity-40 group-hover:opacity-100'}`}>
+                                                    {/* Sutil overlay para profundidade */}
+                                                    <div className="absolute inset-0 bg-black/10 transition-opacity group-hover:opacity-0" />
+                                                    
+                                                    {/* Coordenadas Digitais */}
+                                                    <span className={`absolute top-1 left-1 text-[7px] font-mono transition-opacity z-20 ${isSelected ? 'text-white opacity-100 bg-black/40 px-1' : 'text-neutral-400 opacity-40 group-hover:opacity-100'}`}>
                                                         {x.toString().padStart(2, '0')}:{y.toString().padStart(2, '0')}
                                                     </span>
 
+                                                    {/* Marcador de Base/Vila */}
                                                     {baseAt && (
                                                         <motion.div 
                                                             animate={isSelected ? { scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] } : {}}
                                                             transition={{ repeat: Infinity, duration: 3 }}
-                                                            className={`p-3 rounded-xl border-2 shadow-2xl relative
+                                                            className={`p-3 rounded-xl border-2 shadow-2xl relative z-10 backdrop-blur-xs
                                                                 ${isPlayer ? 'bg-sky-500/20 text-sky-400 border-sky-500/40 shadow-sky-500/20' : ''}
                                                                 ${isEnemy ? 'bg-red-500/20 text-red-400 border-red-500/40 shadow-red-500/20' : ''}
-                                                                ${isRebel ? 'bg-red-600/40 text-red-100 border-red-600/60 shadow-red-600/40' : ''}
+                                                                ${isRebel ? 'bg-amber-600/40 text-amber-100 border-amber-600/60 shadow-amber-600/40' : ''}
                                                             `}
                                                         >
                                                             <Home size={24} />
-                                                            {isSelected && (
-                                                                <div className="absolute -inset-2 bg-sky-500/20 blur-xl rounded-full -z-10 animate-pulse" />
-                                                            )}
+                                                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border border-white/20 
+                                                                ${isPlayer ? 'bg-sky-500' : (isEnemy ? 'bg-red-500' : 'bg-amber-500')} animate-pulse`} 
+                                                            />
                                                         </motion.div>
                                                     )}
                                                 </div>
@@ -217,16 +247,19 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                     <div className="flex items-center gap-2">
                                                         <Target size={12} className={isEnemy ? 'text-red-500' : (isRebel ? 'text-amber-500' : 'text-sky-500')} />
                                                         <span className="text-[10px] font-black uppercase text-white">
-                                                            {isRebel ? 'REBELDE' : (baseAt?.nome || 'Sector Neutro')}
+                                                            {isRebel ? 'REBELDE: INSURGÊNCIA LOCAL' : (baseAt?.nome || 'SECTOR NEUTRO')}
                                                         </span>
                                                     </div>
-                                                    <div className="flex justify-between gap-4 text-[8px] font-mono text-neutral-500">
-                                                        <span>COORD: {x}:{y}</span>
-                                                        <span>LOYALTY: {baseAt?.loyalty ?? 100}%</span>
+                                                    <div className="flex flex-col gap-1 text-[8px] font-mono text-neutral-400">
+                                                        <div className="flex justify-between"><span>COORDENADAS:</span> <span className="text-white">{x}:{y}</span></div>
+                                                        <div className="flex justify-between"><span>TERRENO:</span> <span className="text-sky-400 uppercase">{terrain}</span></div>
+                                                        <div className="flex justify-between"><span>MORAL/LOYALTY:</span> <span className="text-white">{baseAt?.loyalty ?? 100}%</span></div>
                                                         {baseAt?.is_protected && (
-                                                            <span className="text-yellow-400 font-black animate-pulse">UNDER_PROTECTION</span>
+                                                            <span className="text-yellow-400 font-black animate-pulse mt-1">SISTEMA_DE_PROTEÇÃO_ATIVO</span>
                                                         )}
-                                                        <span>OWNER: {isRebel ? 'NEUTRAL_INSURGENT' : (baseAt?.jogador?.username || 'NONE')}</span>
+                                                        <div className="flex justify-between border-t border-white/5 pt-1">
+                                                            <span>COMANDANTE:</span> <span className="text-white">{isRebel ? 'NEUTRAL_FORCES' : (baseAt?.jogador?.username || 'NENHUM')}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </TooltipContent>
@@ -236,6 +269,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                             })}
                         </TooltipProvider>
 
+                        {/* Camada de Entidades (Exércitos em Marcha) */}
                         <div className="absolute inset-0 pointer-events-none z-30">
                             {gameEntities.map(e => (
                                 <motion.div 
@@ -289,18 +323,20 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                     </div>
                 </div>
 
+                {/* Barra de Status do Rodapé */}
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 flex items-center gap-6 z-20">
                     <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-sky-500 rounded-full animate-pulse" />
-                        <span className="text-[10px] uppercase font-black tracking-widest text-neutral-400">Scan Online</span>
+                        <span className="text-[10px] uppercase font-black tracking-widest text-neutral-400">SIGINT Active</span>
                     </div>
                     <div className="w-px h-3 bg-white/20" />
                     <div className="font-mono text-[10px] text-sky-400 tracking-tighter">
-                        COORD_X: {center.x} | COORD_Y: {center.y} | BASES: {allBases.length} | REBELDES: {rebelBasesCount}
+                        CENTRAL_X: {center.x} | CENTRAL_Y: {center.y} | OBJECTS: {allBases.length + gameEntities.length}
                     </div>
                 </div>
             </div>
 
+            {/* Painel de Detalhes do Sector (Sidebar Direita) */}
             <AnimatePresence>
                 {selectedSector && (
                     <motion.div 
@@ -310,8 +346,11 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                         className="fixed right-10 top-32 bottom-32 w-96 bg-neutral-950/90 backdrop-blur-2xl rounded-[3rem] border-2 border-white/5 p-8 shadow-2xl z-40 overflow-hidden flex flex-col pointer-events-auto"
                     >
                         <header className="mb-8">
+                            <div className="text-[10px] text-sky-500 font-mono uppercase tracking-widest mb-1">
+                                {getTerrain(selectedSector.x, selectedSector.y)} terrain detected
+                            </div>
                             <h3 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2">
-                                {selectedSector.base?.nome || 'Sector Vazio'}
+                                {selectedSector.base?.nome || 'Sector Neutro'}
                             </h3>
                             <div className="flex items-center gap-2 text-neutral-500 font-mono text-sm">
                                 <Crosshair size={14} /> <span className="text-sky-500">[{selectedSector.x}:{selectedSector.y}]</span>
@@ -321,10 +360,9 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                         <div className="flex-1 space-y-8 overflow-auto custom-scrollbar">
                             {selectedSector.base ? (
                                 <div className="space-y-8">
-                                    {/* LOYALTY TRACKER */}
                                     <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 space-y-4">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-[10px] text-neutral-500 uppercase font-black tracking-widest">Territorial_Loyalty</span>
+                                            <span className="text-[10px] text-neutral-500 uppercase font-black tracking-widest">Territorial_Stability</span>
                                             <span className={`text-xs font-black ${(selectedSector.base?.loyalty ?? 100) < 30 ? 'text-red-500' : 'text-sky-400'}`}>
                                                 {selectedSector.base?.loyalty ?? 100}%
                                             </span>
@@ -339,51 +377,46 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                                 }`}
                                             />
                                         </div>
-                                        <p className="text-[8px] text-neutral-500 font-mono leading-tight">
-                                            { (selectedSector.base?.loyalty ?? 100) < 30 
-                                                ? 'CRITICAL_INSTABILITY: High risk of capitulation detected.' 
-                                                : 'Sovereignty status within operational parameters.' 
-                                            }
-                                        </p>
                                     </div>
 
                                     <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5">
-                                        <span className="text-[10px] text-neutral-500 uppercase font-black block tracking-widest">Commanding_Officer</span>
-                                        <span className="text-xl font-black text-white tracking-tight">{selectedSector.base.jogador?.username || 'NEUTRAL_INSURGENT'}</span>
+                                        <span className="text-[10px] text-neutral-500 uppercase font-black block tracking-widest">Base_Commander</span>
+                                        <span className="text-xl font-black text-white tracking-tight">{selectedSector.base.jogador?.username || 'NEUTRAL_FORCE'}</span>
                                     </div>
-                                    {selectedSector.base?.is_protected && selectedSector.base.protection_until && new Date(selectedSector.base.protection_until) > new Date() ? (
+
+                                    {selectedSector.base?.is_protected ? (
                                         <div className="py-8 text-center border-2 border-dashed border-yellow-500/30 rounded-3xl bg-yellow-500/5">
-                                            <div className="flex flex-col items-center gap-2">
-                                                <Shield className="text-yellow-500 animate-pulse" size={32} />
-                                                <span className="text-xs font-black text-yellow-500 uppercase tracking-widest">TACTICAL_TRUCE_ACTIVE</span>
-                                                {selectedSector.base.protection_until && (
-                                                    <span className="text-[10px] font-mono text-neutral-500 uppercase">
-                                                        Remains: {new Date(selectedSector.base.protection_until).toLocaleTimeString()}
-                                                    </span>
-                                                )}
-                                            </div>
+                                            <Shield className="text-yellow-500 animate-pulse mx-auto mb-2" size={32} />
+                                            <span className="text-xs font-black text-yellow-500 uppercase tracking-widest">DIPLOMATIC_TRUCE</span>
                                         </div>
                                     ) : (!selectedSector.base?.ownerId || selectedSector.base.ownerId !== playerBase?.ownerId) ? (
                                         <Button 
                                             className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-3xl shadow-xl shadow-red-600/20 active:scale-95 transition-all text-xs"
                                             onClick={() => setIsAttackModalOpen(true)}
                                         >
-                                            ENGAGE_COMBAT_SEQUENCE
+                                            INITIATE_ASSAULT
                                         </Button>
                                     ) : (
                                         <div className="py-6 text-center border-2 border-dashed border-sky-500/20 rounded-3xl bg-sky-500/5">
-                                            <span className="text-xs font-black text-sky-400 uppercase tracking-widest">Friendly_Fire_Restricted</span>
+                                            <span className="text-xs font-black text-sky-400 uppercase tracking-widest">Command_Center_Link_Active</span>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <Button 
-                                    variant="outline"
-                                    className="w-full border-2 border-white/5 py-8 rounded-3xl text-neutral-400 font-black uppercase"
-                                    onClick={() => setIsAttackModalOpen(true)}
-                                >
-                                    DISPATCH_RECON
-                                </Button>
+                                <div className="space-y-4">
+                                    <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 text-center">
+                                         <p className="text-[10px] text-neutral-500 font-mono">
+                                            No structural signals detected in this sector. Terrain is predominantly {getTerrain(selectedSector.x, selectedSector.y)}.
+                                         </p>
+                                    </div>
+                                    <Button 
+                                        variant="outline"
+                                        className="w-full border-2 border-white/5 py-8 rounded-3xl text-neutral-400 font-black uppercase"
+                                        onClick={() => setIsAttackModalOpen(true)}
+                                    >
+                                        ESTABLISH_EXPEDITION
+                                    </Button>
+                                </div>
                             )}
                         </div>
                     </motion.div>
@@ -395,7 +428,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                     isOpen={isAttackModalOpen}
                     onClose={() => setIsAttackModalOpen(false)}
                     origemBase={playerBase}
-                    destinoBase={selectedSector.base || { coordenada_x: selectedSector.x, coordenada_y: selectedSector.y, nome: 'Sector Neutro' }}
+                    destinoBase={selectedSector.base || { coordenada_x: selectedSector.x, coordenada_y: selectedSector.y, nome: 'Sector Vazio' }}
                     tropasDisponiveis={troops}
                     gameConfig={gameConfig}
                     onEnviar={handleSendAttack}

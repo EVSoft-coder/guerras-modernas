@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-C1c2nLJj.js";
+import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-Ct1-V7SL.js";
 const unitConfigs = {
   infantaria: {
     id: "infantaria",
@@ -241,8 +241,22 @@ class WorldSystem {
     this.generateEssentialSectors();
   }
   generateEssentialSectors() {
+    for (let y = 0; y < this.WORLD_SIZE; y++) {
+      for (let x = 0; x < this.WORLD_SIZE; x++) {
+        const biome = this.getBiomeAt(x, y);
+        this.createTile(x, y, biome);
+      }
+    }
     this.createTile(50, 50, "resource");
     this.createTile(52, 52, "resource");
+  }
+  getBiomeAt(x, y) {
+    if (y < 5 || y > 94 || x < 5 || x > 94) return "water";
+    const noise = (Math.sin(x * 0.12) + Math.cos(y * 0.15) + Math.sin(x * 0.3 + y * 0.2)) / 3;
+    if (noise > 0.5) return "mountain";
+    if (noise < -0.4) return "desert";
+    if (noise < -0.6) return "water";
+    return "grass";
   }
   createTile(x, y, type) {
     const key = `${x}:${y}`;
@@ -2475,4 +2489,4 @@ rebelCoords.forEach((coord, index) => {
 });
 stateManager.setState(GameState.PLAYING);
 Logger.info("--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---");
-//# sourceMappingURL=index-BhkD9TQX.js.map
+//# sourceMappingURL=index-ocVfw86g.js.map

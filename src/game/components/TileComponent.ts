@@ -4,7 +4,7 @@
  */
 import { Component } from '../../core/EntityManager';
 
-export type TileType = 'empty' | 'village' | 'resource' | 'obstacle';
+export type TileType = 'grass' | 'desert' | 'water' | 'mountain' | 'village' | 'resource' | 'obstacle';
 
 export class TileComponent implements Component {
     public readonly type = 'Tile';

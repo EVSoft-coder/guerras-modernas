@@ -1,11 +1,11 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-ByDYSMpu.css",
+    "file": "assets/app-7NH0ZhgH.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-C1c2nLJj.js",
+    "file": "assets/app-Ct1-V7SL.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -13,11 +13,11 @@
       "src/index.ts"
     ],
     "css": [
-      "assets/app-ByDYSMpu.css"
+      "assets/app-7NH0ZhgH.css"
     ]
   },
   "src/index.ts": {
-    "file": "assets/index-BhkD9TQX.js",
+    "file": "assets/index-ocVfw86g.js",
     "name": "index",
     "src": "src/index.ts",
     "isDynamicEntry": true,

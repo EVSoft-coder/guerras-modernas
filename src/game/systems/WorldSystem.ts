@@ -18,12 +18,34 @@ export class WorldSystem implements GameSystem {
     }
 
     private generateEssentialSectors(): void {
-        // Exemplo: Criar um setor de recursos
+        // Criar biomas iniciais baseados em geografia determinística
+        for (let y = 0; y < this.WORLD_SIZE; y++) {
+            for (let x = 0; x < this.WORLD_SIZE; x++) {
+                const biome = this.getBiomeAt(x, y);
+                this.createTile(x, y, biome);
+            }
+        }
+
+        // Adicionar recursos estrategicamente
         this.createTile(50, 50, 'resource');
         this.createTile(52, 52, 'resource');
     }
 
-    public createTile(x: number, y: number, type: any): void {
+    private getBiomeAt(x: number, y: number): TileType {
+        // O Mar envolve o mundo (Bordas)
+        if (y < 5 || y > 94 || x < 5 || x > 94) return 'water';
+        
+        // Pseudo-Noise determinístico para biomas
+        const noise = (Math.sin(x * 0.12) + Math.cos(y * 0.15) + Math.sin(x * 0.3 + y * 0.2)) / 3;
+        
+        if (noise > 0.5) return 'mountain';
+        if (noise < -0.4) return 'desert';
+        if (noise < -0.6) return 'water'; // Pequenos lagos internos
+
+        return 'grass';
+    }
+
+    public createTile(x: number, y: number, type: TileType): void {
         const key = `${x}:${y}`;
         if (this.chunkLoaded.has(key)) return;
 

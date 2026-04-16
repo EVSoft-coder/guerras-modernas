@@ -11862,7 +11862,7 @@ function AuthLayout({ children, title, description, ...props }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AuthSimpleLayout, { title, description, ...props, children });
 }
 function ConfirmPassword() {
-  const { data, setData, post, processing, errors, reset } = me$1({
+  const { data, setData, post, processing: processing2, errors, reset } = me$1({
     password: ""
   });
   const submit = (e) => {
@@ -11896,8 +11896,8 @@ function ConfirmPassword() {
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.password })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full", disabled: processing, children: [
-            processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full", disabled: processing2, children: [
+            processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
             "Confirm password"
           ] }) })
         ] }) })
@@ -11923,7 +11923,7 @@ function TextLink({ className = "", children, ...props }) {
   );
 }
 function ForgotPassword({ status }) {
-  const { data, setData, post, processing, errors } = me$1({
+  const { data, setData, post, processing: processing2, errors } = me$1({
     email: ""
   });
   const submit = (e) => {
@@ -11952,8 +11952,8 @@ function ForgotPassword({ status }) {
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.email })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "my-6 flex items-center justify-start", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full", disabled: processing, children: [
-          processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "my-6 flex items-center justify-start", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full", disabled: processing2, children: [
+          processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
           "Email password reset link"
         ] }) })
       ] }),
@@ -12430,7 +12430,7 @@ const Checkbox = reactExports.forwardRef(
 );
 Checkbox.displayName = Root$6.displayName;
 function Login({ status, canResetPassword }) {
-  const { data, setData, post, processing, errors, reset } = me$1({
+  const { data, setData, post, processing: processing2, errors, reset } = me$1({
     email: "",
     password: "",
     remember: false
@@ -12487,8 +12487,8 @@ function Login({ status, canResetPassword }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox, { id: "remember", name: "remember", tabIndex: 3 }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "remember", children: "Remember me" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-4 w-full", tabIndex: 4, disabled: processing, children: [
-          processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-4 w-full", tabIndex: 4, disabled: processing2, children: [
+          processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
           "Log in"
         ] })
       ] }),
@@ -12506,7 +12506,7 @@ const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   default: Login
 }, Symbol.toStringTag, { value: "Module" }));
 function Register() {
-  const { data, setData, post, processing, errors, reset } = me$1({
+  const { data, setData, post, processing: processing2, errors, reset } = me$1({
     name: "",
     email: "",
     password: "",
@@ -12535,7 +12535,7 @@ function Register() {
               autoComplete: "name",
               value: data.name,
               onChange: (e) => setData("name", e.target.value),
-              disabled: processing,
+              disabled: processing2,
               placeholder: "Full name"
             }
           ),
@@ -12553,7 +12553,7 @@ function Register() {
               autoComplete: "email",
               value: data.email,
               onChange: (e) => setData("email", e.target.value),
-              disabled: processing,
+              disabled: processing2,
               placeholder: "email@example.com"
             }
           ),
@@ -12571,7 +12571,7 @@ function Register() {
               autoComplete: "new-password",
               value: data.password,
               onChange: (e) => setData("password", e.target.value),
-              disabled: processing,
+              disabled: processing2,
               placeholder: "Password"
             }
           ),
@@ -12589,14 +12589,14 @@ function Register() {
               autoComplete: "new-password",
               value: data.password_confirmation,
               onChange: (e) => setData("password_confirmation", e.target.value),
-              disabled: processing,
+              disabled: processing2,
               placeholder: "Confirm password"
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.password_confirmation })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-2 w-full", tabIndex: 5, disabled: processing, children: [
-          processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-2 w-full", tabIndex: 5, disabled: processing2, children: [
+          processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
           "Create account"
         ] })
       ] }),
@@ -12613,7 +12613,7 @@ const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   default: Register
 }, Symbol.toStringTag, { value: "Module" }));
 function ResetPassword({ token: token2, email }) {
-  const { data, setData, post, processing, errors, reset } = me$1({
+  const { data, setData, post, processing: processing2, errors, reset } = me$1({
     token: token2,
     email,
     password: "",
@@ -12680,8 +12680,8 @@ function ResetPassword({ token: token2, email }) {
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.password_confirmation, className: "mt-2" })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-4 w-full", disabled: processing, children: [
-        processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-4 w-full", disabled: processing2, children: [
+        processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
         "Reset password"
       ] })
     ] }) })
@@ -12692,7 +12692,7 @@ const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   default: ResetPassword
 }, Symbol.toStringTag, { value: "Module" }));
 function VerifyEmail({ status }) {
-  const { post, processing } = me$1({});
+  const { post, processing: processing2 } = me$1({});
   const submit = (e) => {
     e.preventDefault();
     post(route("verification.send"));
@@ -12701,8 +12701,8 @@ function VerifyEmail({ status }) {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Le$1, { title: "Email verification" }),
     status === "verification-link-sent" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mb-4 text-center text-sm font-medium text-green-600", children: "A new verification link has been sent to the email address you provided during registration." }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: submit, className: "space-y-6 text-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { disabled: processing, variant: "secondary", children: [
-        processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { disabled: processing2, variant: "secondary", children: [
+        processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
         "Resend verification email"
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(TextLink, { href: route("logout"), method: "post", className: "mx-auto block text-sm", children: "Log out" })
@@ -30218,9 +30218,17 @@ const InfoBit = ({ label, value, color: color2 }) => /* @__PURE__ */ jsxRuntimeE
   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black text-neutral-600 uppercase block mb-0.5", children: label }),
   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-black uppercase tracking-tighter ${color2}`, children: value })
 ] });
+const getTerrain = (tx, ty) => {
+  if (ty < 5 || ty > 94 || tx < 5 || tx > 94) return "water";
+  const noise = (Math.sin(tx * 0.12) + Math.cos(ty * 0.15) + Math.sin(tx * 0.3 + ty * 0.2)) / 3;
+  if (noise > 0.5) return "mountain";
+  if (noise < -0.4) return "desert";
+  if (noise < -0.6) return "water";
+  return "grass";
+};
 function WorldMapView({ playerBase, troops = [], gameConfig }) {
-  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i, _j;
-  const [center, setCenter] = reactExports.useState({ x: (playerBase == null ? void 0 : playerBase.coordenada_x) || 500, y: (playerBase == null ? void 0 : playerBase.coordenada_y) || 500 });
+  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i;
+  const [center, setCenter] = reactExports.useState({ x: (playerBase == null ? void 0 : playerBase.coordenada_x) || 50, y: (playerBase == null ? void 0 : playerBase.coordenada_y) || 50 });
   const [selectedSector, setSelectedSector] = reactExports.useState(null);
   const [searchCoords, setSearchCoords] = reactExports.useState({ x: "", y: "" });
   const [isAttackModalOpen, setIsAttackModalOpen] = reactExports.useState(false);
@@ -30231,7 +30239,6 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
     return gameEntities.find((e) => e.id === selectedUnit);
   }, [gameEntities, selectedUnit]);
   const handleWheel = (e) => {
-    e.preventDefault();
     const delta = e.deltaY > 0 ? -0.05 : 0.05;
     setZoom((prev) => Math.min(Math.max(prev + delta, 0.4), 2.5));
   };
@@ -30263,7 +30270,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
     }
   }, [center]);
   const allBases = globalState.worldMapBases;
-  const rebelBasesCount = globalState.rebelCount;
+  globalState.rebelCount;
   const handleSearch = () => {
     const nx = parseInt(searchCoords.x);
     const ny = parseInt(searchCoords.y);
@@ -30275,7 +30282,6 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
   const jumpToPlayer = () => {
     if (playerBase) setCenter({ x: playerBase.coordenada_x, y: playerBase.coordenada_y });
   };
-  const { processing } = me$1();
   const handleSendAttack = (params) => {
     if (!playerBase) return;
     eventBus.emit(Events.ATTACK_LAUNCH, {
@@ -30286,7 +30292,6 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
       ownerId: playerBase.ownerId,
       troops: params.tropas,
       backendParams: { ...params, origem_id: playerBase.id }
-      // Pass meta for processing
     });
     setIsAttackModalOpen(false);
     setSelectedSector(null);
@@ -30325,7 +30330,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: "relative w-full h-full overflow-auto bg-neutral-900 custom-scrollbar",
+          className: "relative w-full h-full overflow-auto bg-[#0a0f1a] custom-scrollbar",
           onWheel: handleWheel,
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
@@ -30348,20 +30353,31 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                     const isPlayer = (baseAt == null ? void 0 : baseAt.ownerId) === (playerBase == null ? void 0 : playerBase.ownerId);
                     const isRebel = baseAt && !baseAt.ownerId;
                     const isEnemy = baseAt && baseAt.ownerId && baseAt.ownerId !== (playerBase == null ? void 0 : playerBase.ownerId);
+                    const terrain = getTerrain(x2, y2);
                     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Tooltip, { children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
                         "div",
                         {
-                          className: `absolute border border-white/[0.05] transition-all cursor-crosshair group flex items-center justify-center
-                                                        ${isSelected ? "border-sky-500 z-10 bg-sky-500/10 shadow-[0_0_30px_rgba(14,165,233,0.4)] ring-2 ring-sky-500/50" : "hover:bg-white/5"}
-                                                        ${isPlayer ? "bg-sky-500/10 border-sky-500/20" : ""}
-                                                        ${isEnemy ? "bg-red-500/10 border-red-500/20" : ""}
-                                                        ${isRebel ? "bg-red-600/20 border-red-600/40 z-[1000] opacity-100" : ""}
+                          className: `absolute border border-white/[0.05] transition-all cursor-crosshair group flex items-center justify-center overflow-hidden
+                                                        ${isSelected ? "border-sky-500 z-10 ring-2 ring-sky-500/50 shadow-[0_0_30px_rgba(14,165,233,0.4)]" : "hover:brightness-110"}
+                                                        ${isPlayer ? "ring-1 ring-inset ring-sky-500/30" : ""}
+                                                        ${isEnemy ? "ring-1 ring-inset ring-red-500/30" : ""}
+                                                        ${isRebel ? "ring-1 ring-inset ring-amber-500/30" : ""}
                                                     `,
                           onClick: () => setSelectedSector({ x: x2, y: y2, base: baseAt }),
-                          style: { left: ix * 80, top: iy * 80, width: 80, height: 80 },
+                          style: {
+                            left: ix * 80,
+                            top: iy * 80,
+                            width: 80,
+                            height: 80,
+                            backgroundImage: `url(/assets/terrains/${terrain}.png)`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            backgroundColor: terrain === "water" ? "#0a1d37" : "#1a1a1a"
+                          },
                           children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `absolute top-1 left-1 text-[7px] font-mono transition-opacity ${isSelected ? "text-sky-400 opacity-100" : "text-neutral-700 opacity-40 group-hover:opacity-100"}`, children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/10 transition-opacity group-hover:opacity-0" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `absolute top-1 left-1 text-[7px] font-mono transition-opacity z-20 ${isSelected ? "text-white opacity-100 bg-black/40 px-1" : "text-neutral-400 opacity-40 group-hover:opacity-100"}`, children: [
                               x2.toString().padStart(2, "0"),
                               ":",
                               y2.toString().padStart(2, "0")
@@ -30371,14 +30387,20 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                               {
                                 animate: isSelected ? { scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] } : {},
                                 transition: { repeat: Infinity, duration: 3 },
-                                className: `p-3 rounded-xl border-2 shadow-2xl relative
+                                className: `p-3 rounded-xl border-2 shadow-2xl relative z-10 backdrop-blur-xs
                                                                 ${isPlayer ? "bg-sky-500/20 text-sky-400 border-sky-500/40 shadow-sky-500/20" : ""}
                                                                 ${isEnemy ? "bg-red-500/20 text-red-400 border-red-500/40 shadow-red-500/20" : ""}
-                                                                ${isRebel ? "bg-red-600/40 text-red-100 border-red-600/60 shadow-red-600/40" : ""}
+                                                                ${isRebel ? "bg-amber-600/40 text-amber-100 border-amber-600/60 shadow-amber-600/40" : ""}
                                                             `,
                                 children: [
                                   /* @__PURE__ */ jsxRuntimeExports.jsx(House, { size: 24 }),
-                                  isSelected && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -inset-2 bg-sky-500/20 blur-xl rounded-full -z-10 animate-pulse" })
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    "div",
+                                    {
+                                      className: `absolute -bottom-1 -right-1 w-3 h-3 rounded-full border border-white/20 
+                                                                ${isPlayer ? "bg-sky-500" : isEnemy ? "bg-red-500" : "bg-amber-500"} animate-pulse`
+                                    }
+                                  )
                                 ]
                               }
                             )
@@ -30388,24 +30410,36 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                       /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipContent, { className: "bg-black/90 border-white/10 p-4 rounded-2xl shadow-2xl side-top", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
                           /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 12, className: isEnemy ? "text-red-500" : isRebel ? "text-amber-500" : "text-sky-500" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-white", children: isRebel ? "REBELDE" : (baseAt == null ? void 0 : baseAt.nome) || "Sector Neutro" })
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-white", children: isRebel ? "REBELDE: INSURGÊNCIA LOCAL" : (baseAt == null ? void 0 : baseAt.nome) || "SECTOR NEUTRO" })
                         ] }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between gap-4 text-[8px] font-mono text-neutral-500", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                            "COORD: ",
-                            x2,
-                            ":",
-                            y2
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1 text-[8px] font-mono text-neutral-400", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "COORDENADAS:" }),
+                            " ",
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white", children: [
+                              x2,
+                              ":",
+                              y2
+                            ] })
                           ] }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                            "LOYALTY: ",
-                            (baseAt == null ? void 0 : baseAt.loyalty) ?? 100,
-                            "%"
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "TERRENO:" }),
+                            " ",
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sky-400 uppercase", children: terrain })
                           ] }),
-                          (baseAt == null ? void 0 : baseAt.is_protected) && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-yellow-400 font-black animate-pulse", children: "UNDER_PROTECTION" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                            "OWNER: ",
-                            isRebel ? "NEUTRAL_INSURGENT" : ((_a3 = baseAt == null ? void 0 : baseAt.jogador) == null ? void 0 : _a3.username) || "NONE"
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "MORAL/LOYALTY:" }),
+                            " ",
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white", children: [
+                              (baseAt == null ? void 0 : baseAt.loyalty) ?? 100,
+                              "%"
+                            ] })
+                          ] }),
+                          (baseAt == null ? void 0 : baseAt.is_protected) && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-yellow-400 font-black animate-pulse mt-1", children: "SISTEMA_DE_PROTEÇÃO_ATIVO" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between border-t border-white/5 pt-1", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "COMANDANTE:" }),
+                            " ",
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: isRebel ? "NEUTRAL_FORCES" : ((_a3 = baseAt == null ? void 0 : baseAt.jogador) == null ? void 0 : _a3.username) || "NENHUM" })
                           ] })
                         ] })
                       ] }) })
@@ -30462,18 +30496,16 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 flex items-center gap-6 z-20", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-2 h-2 bg-sky-500 rounded-full animate-pulse" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] uppercase font-black tracking-widest text-neutral-400", children: "Scan Online" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] uppercase font-black tracking-widest text-neutral-400", children: "SIGINT Active" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-px h-3 bg-white/20" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-mono text-[10px] text-sky-400 tracking-tighter", children: [
-          "COORD_X: ",
+          "CENTRAL_X: ",
           center.x,
-          " | COORD_Y: ",
+          " | CENTRAL_Y: ",
           center.y,
-          " | BASES: ",
-          allBases.length,
-          " | REBELDES: ",
-          rebelBasesCount
+          " | OBJECTS: ",
+          allBases.length + gameEntities.length
         ] })
       ] })
     ] }),
@@ -30486,7 +30518,11 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
         className: "fixed right-10 top-32 bottom-32 w-96 bg-neutral-950/90 backdrop-blur-2xl rounded-[3rem] border-2 border-white/5 p-8 shadow-2xl z-40 overflow-hidden flex flex-col pointer-events-auto",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "mb-8", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2", children: ((_a2 = selectedSector.base) == null ? void 0 : _a2.nome) || "Sector Vazio" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-sky-500 font-mono uppercase tracking-widest mb-1", children: [
+              getTerrain(selectedSector.x, selectedSector.y),
+              " terrain detected"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2", children: ((_a2 = selectedSector.base) == null ? void 0 : _a2.nome) || "Sector Neutro" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-neutral-500 font-mono text-sm", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Crosshair, { size: 14 }),
               " ",
@@ -30502,7 +30538,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 space-y-8 overflow-auto custom-scrollbar", children: selectedSector.base ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-8", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-white/[0.03] rounded-3xl border border-white/5 space-y-4", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-neutral-500 uppercase font-black tracking-widest", children: "Territorial_Loyalty" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-neutral-500 uppercase font-black tracking-widest", children: "Territorial_Stability" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `text-xs font-black ${(((_b = selectedSector.base) == null ? void 0 : _b.loyalty) ?? 100) < 30 ? "text-red-500" : "text-sky-400"}`, children: [
                   ((_c = selectedSector.base) == null ? void 0 : _c.loyalty) ?? 100,
                   "%"
@@ -30515,37 +30551,39 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                   animate: { width: `${((_d = selectedSector.base) == null ? void 0 : _d.loyalty) ?? 100}%` },
                   className: `h-full transition-all duration-1000 ${(((_e2 = selectedSector.base) == null ? void 0 : _e2.loyalty) ?? 100) < 30 ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : (((_f = selectedSector.base) == null ? void 0 : _f.loyalty) ?? 100) < 60 ? "bg-amber-500" : "bg-sky-500"}`
                 }
-              ) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[8px] text-neutral-500 font-mono leading-tight", children: (((_g = selectedSector.base) == null ? void 0 : _g.loyalty) ?? 100) < 30 ? "CRITICAL_INSTABILITY: High risk of capitulation detected." : "Sovereignty status within operational parameters." })
+              ) })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-white/[0.03] rounded-3xl border border-white/5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-neutral-500 uppercase font-black block tracking-widest", children: "Commanding_Officer" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl font-black text-white tracking-tight", children: ((_h = selectedSector.base.jogador) == null ? void 0 : _h.username) || "NEUTRAL_INSURGENT" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-neutral-500 uppercase font-black block tracking-widest", children: "Base_Commander" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl font-black text-white tracking-tight", children: ((_g = selectedSector.base.jogador) == null ? void 0 : _g.username) || "NEUTRAL_FORCE" })
             ] }),
-            ((_i = selectedSector.base) == null ? void 0 : _i.is_protected) && selectedSector.base.protection_until && new Date(selectedSector.base.protection_until) > /* @__PURE__ */ new Date() ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-8 text-center border-2 border-dashed border-yellow-500/30 rounded-3xl bg-yellow-500/5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "text-yellow-500 animate-pulse", size: 32 }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-yellow-500 uppercase tracking-widest", children: "TACTICAL_TRUCE_ACTIVE" }),
-              selectedSector.base.protection_until && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-mono text-neutral-500 uppercase", children: [
-                "Remains: ",
-                new Date(selectedSector.base.protection_until).toLocaleTimeString()
-              ] })
-            ] }) }) : !((_j = selectedSector.base) == null ? void 0 : _j.ownerId) || selectedSector.base.ownerId !== (playerBase == null ? void 0 : playerBase.ownerId) ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            ((_h = selectedSector.base) == null ? void 0 : _h.is_protected) ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-8 text-center border-2 border-dashed border-yellow-500/30 rounded-3xl bg-yellow-500/5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "text-yellow-500 animate-pulse mx-auto mb-2", size: 32 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-yellow-500 uppercase tracking-widest", children: "DIPLOMATIC_TRUCE" })
+            ] }) : !((_i = selectedSector.base) == null ? void 0 : _i.ownerId) || selectedSector.base.ownerId !== (playerBase == null ? void 0 : playerBase.ownerId) ? /* @__PURE__ */ jsxRuntimeExports.jsx(
               Button,
               {
                 className: "w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-3xl shadow-xl shadow-red-600/20 active:scale-95 transition-all text-xs",
                 onClick: () => setIsAttackModalOpen(true),
-                children: "ENGAGE_COMBAT_SEQUENCE"
+                children: "INITIATE_ASSAULT"
               }
-            ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-6 text-center border-2 border-dashed border-sky-500/20 rounded-3xl bg-sky-500/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-sky-400 uppercase tracking-widest", children: "Friendly_Fire_Restricted" }) })
-          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Button,
-            {
-              variant: "outline",
-              className: "w-full border-2 border-white/5 py-8 rounded-3xl text-neutral-400 font-black uppercase",
-              onClick: () => setIsAttackModalOpen(true),
-              children: "DISPATCH_RECON"
-            }
-          ) })
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-6 text-center border-2 border-dashed border-sky-500/20 rounded-3xl bg-sky-500/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-sky-400 uppercase tracking-widest", children: "Command_Center_Link_Active" }) })
+          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-6 bg-white/[0.03] rounded-3xl border border-white/5 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] text-neutral-500 font-mono", children: [
+              "No structural signals detected in this sector. Terrain is predominantly ",
+              getTerrain(selectedSector.x, selectedSector.y),
+              "."
+            ] }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "outline",
+                className: "w-full border-2 border-white/5 py-8 rounded-3xl text-neutral-400 font-black uppercase",
+                onClick: () => setIsAttackModalOpen(true),
+                children: "ESTABLISH_EXPEDITION"
+              }
+            )
+          ] }) })
         ]
       }
     ) }),
@@ -30555,7 +30593,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
         isOpen: isAttackModalOpen,
         onClose: () => setIsAttackModalOpen(false),
         origemBase: playerBase,
-        destinoBase: selectedSector.base || { coordenada_x: selectedSector.x, coordenada_y: selectedSector.y, nome: "Sector Neutro" },
+        destinoBase: selectedSector.base || { coordenada_x: selectedSector.x, coordenada_y: selectedSector.y, nome: "Sector Vazio" },
         tropasDisponiveis: troops,
         gameConfig,
         onEnviar: handleSendAttack,
@@ -31820,7 +31858,7 @@ const breadcrumbs$1 = [
 function Password() {
   const passwordInput = reactExports.useRef(null);
   const currentPasswordInput = reactExports.useRef(null);
-  const { data, setData, errors, put, reset, processing, recentlySuccessful } = me$1({
+  const { data, setData, errors, put, reset, processing: processing2, recentlySuccessful } = me$1({
     current_password: "",
     password: "",
     password_confirmation: ""
@@ -31899,7 +31937,7 @@ function Password() {
           /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.password_confirmation })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { disabled: processing, children: "Save password" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { disabled: processing2, children: "Save password" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             ze,
             {
@@ -31922,7 +31960,7 @@ const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.de
 }, Symbol.toStringTag, { value: "Module" }));
 function DeleteUser() {
   const passwordInput = reactExports.useRef(null);
-  const { data, setData, delete: destroy, processing, reset, errors, clearErrors } = me$1({ password: "" });
+  const { data, setData, delete: destroy, processing: processing2, reset, errors, clearErrors } = me$1({ password: "" });
   const deleteUser = (e) => {
     e.preventDefault();
     destroy(route("profile.destroy"), {
@@ -31971,7 +32009,7 @@ function DeleteUser() {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(DialogClose, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: closeModal, children: "Cancel" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "destructive", disabled: processing, asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", children: "Delete account" }) })
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "destructive", disabled: processing2, asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", children: "Delete account" }) })
             ] })
           ] })
         ] })
@@ -31988,7 +32026,7 @@ const breadcrumbs = [
 function Profile({ mustVerifyEmail, status }) {
   var _a2, _b, _c, _d;
   const auth = ((_a2 = K$1().props) == null ? void 0 : _a2.auth) ?? null;
-  const { data, setData, patch, errors, processing, recentlySuccessful } = me$1({
+  const { data, setData, patch, errors, processing: processing2, recentlySuccessful } = me$1({
     name: ((_b = auth == null ? void 0 : auth.user) == null ? void 0 : _b.name) ?? "",
     email: ((_c = auth == null ? void 0 : auth.user) == null ? void 0 : _c.email) ?? ""
   });
@@ -32052,7 +32090,7 @@ function Profile({ mustVerifyEmail, status }) {
             status === "verification-link-sent" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-2 text-sm font-medium text-green-600", children: "A new verification link has been sent to your email address." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { disabled: processing, children: "Save" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { disabled: processing2, children: "Save" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               ze,
               {
@@ -44496,7 +44534,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-BhkD9TQX.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-ocVfw86g.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44532,4 +44570,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-C1c2nLJj.js.map
+//# sourceMappingURL=app-Ct1-V7SL.js.map
