@@ -4,7 +4,7 @@
  */
 import { entityManager } from '../../core/EntityManager';
 import { GameSystem } from './types';
-import { TileComponent } from '../components/TileComponent';
+import { TileComponent, TileType } from '../components/TileComponent';
 
 export class WorldSystem implements GameSystem {
     public readonly WORLD_SIZE = 100; // Grid 100x100
