@@ -29,10 +29,10 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
         ...construcoes.map(c => ({
             id: c.id,
             buildingType: 'construcao' as const,
-            label: c.buildingType?.replace(/_/g, ' ') || 'Estrutura',
-            sublabel: `Upgrade para Nível ${c.nivel_destino}`,
-            started_at: c.created_at,
-            ends_at: c.completado_em
+            label: (c.buildingType || c.type || 'Estrutura').replace(/_/g, ' '),
+            sublabel: `Upgrade para Nível ${c.nivel_destino || c.target_level}`,
+            started_at: c.created_at || c.started_at,
+            ends_at: c.completado_em || c.finishes_at
         })),
         ...treinos.map(t => ({
             id: t.id,

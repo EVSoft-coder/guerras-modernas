@@ -28813,17 +28813,14 @@ const ProductionQueue = ({
   gameConfig
 }) => {
   const unifiedQueue = [
-    ...construcoes.map((c2) => {
-      var _a2;
-      return {
-        id: c2.id,
-        buildingType: "construcao",
-        label: ((_a2 = c2.buildingType) == null ? void 0 : _a2.replace(/_/g, " ")) || "Estrutura",
-        sublabel: `Upgrade para Nível ${c2.nivel_destino}`,
-        started_at: c2.created_at,
-        ends_at: c2.completado_em
-      };
-    }),
+    ...construcoes.map((c2) => ({
+      id: c2.id,
+      buildingType: "construcao",
+      label: (c2.buildingType || c2.type || "Estrutura").replace(/_/g, " "),
+      sublabel: `Upgrade para Nível ${c2.nivel_destino || c2.target_level}`,
+      started_at: c2.created_at || c2.started_at,
+      ends_at: c2.completado_em || c2.finishes_at
+    })),
     ...treinos.map((t2) => {
       var _a2;
       return {
@@ -30510,7 +30507,14 @@ function VillageDashboard({
         gameMode === "WORLD_MAP" ? /* @__PURE__ */ jsxRuntimeExports.jsx(WorldMapView, { playerBase: base, troops: (base == null ? void 0 : base.tropas) ?? [], gameConfig }) : /* @__PURE__ */ jsxRuntimeExports.jsx(VillageView, { base, onBuildingClick: handleBuildingClick, gameConfig })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-4 flex flex-col gap-8", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ProductionQueue, { construcoes: base.construcoes || [], treinos: base.treinos || [], gameConfig }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ProductionQueue,
+          {
+            construcoes: (base == null ? void 0 : base.buildingQueue) || (base == null ? void 0 : base.construcoes) || [],
+            treinos: (base == null ? void 0 : base.treinos) || [],
+            gameConfig
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(GarrisonPanel, { tropas: (base == null ? void 0 : base.tropas) ?? [], gameConfig }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" }),
@@ -44266,7 +44270,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Cgo69fru.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CcKWWEzF.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44302,4 +44306,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CSfBDRqK.js.map
+//# sourceMappingURL=app-BvF2V2Y_.js.map

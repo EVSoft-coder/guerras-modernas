@@ -24,7 +24,7 @@ class DashboardController extends Controller
         if (!$user) return redirect('/login');
 
         // 1. Obter Base Selecionada (com todas as relações)
-        $bases = $user->bases()->with('recursos', 'edificios', 'construcoes', 'treinos', 'tropas')->get();
+        $bases = $user->bases()->with('recursos', 'edificios', 'buildingQueue', 'treinos', 'tropas')->get();
         $selectedBaseId = session('selected_base_id');
         $base = $bases->where('id', $selectedBaseId)->first() ?? $bases->first();
 
@@ -38,7 +38,7 @@ class DashboardController extends Controller
 
         // 4. RECARREGAR da DB após tick e processamento — DADOS REAIS
         $base->refresh();
-        $base->load(['recursos', 'edificios', 'construcoes', 'treinos', 'tropas']);
+        $base->load(['recursos', 'edificios', 'buildingQueue', 'treinos', 'tropas']);
         session(['selected_base_id' => $base->id]);
 
         // 5. Ler recursos DIRETO da relação (dados persistidos na DB)
@@ -89,6 +89,7 @@ class DashboardController extends Controller
                 'movements'  => [
                     'sent'     => \App\Models\Ataque::where('origem_base_id', $base->id)->where('processado', false)->get() ?? [],
                     'received' => \App\Models\Ataque::where('destino_base_id', $base->id)->where('processado', false)->get() ?? [],
+                    'queue'    => $base->buildingQueue,
                 ],
                 'rebels' => Base::whereNull('jogador_id')->with('recursos')->get()->map(function($b) {
                     return array_merge($b->toArray(), [

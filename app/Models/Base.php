@@ -71,6 +71,11 @@ class Base extends Model
         return $this->hasMany(Construcao::class, 'base_id');
     }
 
+    public function buildingQueue()
+    {
+        return $this->hasMany(BuildingQueue::class, 'base_id');
+    }
+
     public function treinos()
     {
         return $this->hasMany(Treino::class, 'base_id');

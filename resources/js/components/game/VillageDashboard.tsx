@@ -211,7 +211,11 @@ export function VillageDashboard({
                 </div>
 
                 <div className="lg:col-span-4 flex flex-col gap-8">
-                    <ProductionQueue construcoes={base.construcoes || []} treinos={base.treinos || []} gameConfig={gameConfig} />
+                    <ProductionQueue 
+                        construcoes={base?.buildingQueue || base?.construcoes || []} 
+                        treinos={base?.treinos || []} 
+                        gameConfig={gameConfig} 
+                    />
                     <GarrisonPanel tropas={base?.tropas ?? []} gameConfig={gameConfig} />
                     
                     <Card className="bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group">

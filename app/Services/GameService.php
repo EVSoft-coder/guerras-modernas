@@ -23,9 +23,11 @@ use App\Services\ResourceService;
 class GameService
 {
     protected $resourceService;
+    protected $buildingQueueService;
 
     public function __construct() {
         $this->resourceService = new ResourceService();
+        $this->buildingQueueService = new BuildingQueueService();
     }
     /**
      * Retorna o estado completo da base (Snapshot)
@@ -131,34 +133,12 @@ class GameService
             }
         }
 
-        return DB::transaction(function() use ($base, $tipo, $custos, $tempo, $nivelAtual, $posX, $posY) {
+        return DB::transaction(function() use ($base, $tipo, $custos, $posX, $posY) {
             if (!$this->consumirRecursos($base, $custos)) {
                 throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
             }
 
-            // Se for nível 0, criamos imediatamente com nível 1 (Doutrina de Fundação Instantânea)
-            if ($nivelAtual === 0) {
-                if ($tipo === BuildingType::QG) {
-                    $base->increment('qg_nivel');
-                } elseif ($tipo === BuildingType::MURALHA) {
-                    $base->increment('muralha_nivel');
-                } else {
-                    $base->edificios()->updateOrCreate(
-                        ['tipo' => $tipo],
-                        ['nivel' => 1, 'pos_x' => $posX, 'pos_y' => $posY]
-                    );
-                }
-                
-                broadcast(new \App\Events\BaseUpdated($base))->toOthers();
-                return null;
-            }
-
-            return Construcao::create([
-                'base_id' => $base->id,
-                'edificio_tipo' => $tipo,
-                'nivel_destino' => $nivelAtual + 1,
-                'completado_em' => now()->addSeconds($tempo),
-            ]);
+            return $this->buildingQueueService->startConstruction($base, $tipo, $posX, $posY);
         });
     }
 
@@ -204,35 +184,10 @@ class GameService
     {
         $mudou = false;
 
-        // 1. Processar Construções
-        $construcoes = $base->construcoes()->where('completado_em', '<=', now())->get();
-        foreach ($construcoes as $fila) {
-            $mudou = true;
-            DB::transaction(function() use ($base, $fila) {
-                $tipo = $fila->edificio_tipo;
-                if ($tipo === BuildingType::QG) {
-                    $base->increment('qg_nivel');
-                } elseif ($tipo === BuildingType::MURALHA) {
-                    $base->increment('muralha_nivel');
-                } else {
-                    $edificio = $base->edificios()->where('tipo', $tipo)->first();
-                    if ($edificio) {
-                        $edificio->increment('nivel');
-                    } else {
-                        $pos = $this->findNextAvailablePosition($base);
-                        $base->edificios()->create([
-                            'tipo' => $tipo, 
-                            'nivel' => 1,
-                            'pos_x' => $pos['x'],
-                            'pos_y' => $pos['y']
-                        ]);
-                    }
-                }
-                $fila->delete();
-            });
-        }
+        // 1. Processar Nova Fila de Construção
+        $this->buildingQueueService->processQueue($base);
 
-        // 2. Processar Treinos
+        // 2. Processar Treinos (Mantido por enquanto)
         $treinos = $base->treinos()->where('completado_em', '<=', now())->get();
         foreach ($treinos as $fila) {
             $mudou = true;
