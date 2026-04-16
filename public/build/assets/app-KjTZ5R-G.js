@@ -28809,9 +28809,6 @@ const ProductionQueue = ({
   treinos = [],
   gameConfig
 }) => {
-  reactExports.useEffect(() => {
-    console.log("[PRODUCTION_QUEUE] Data Sync:", { construcoes, treinos });
-  }, [construcoes, treinos]);
   const unifiedQueue = [
     ...construcoes.map((c2) => ({
       id: c2.id,
@@ -30396,10 +30393,11 @@ const QueueEntry = ({ item, isFirst }) => {
     }
   );
 };
+const STABLE_EMPTY_ARRAY = [];
 function VillageDashboard({
   jogador,
   base: initialBase,
-  bases: backendBases = [],
+  bases: backendBases = STABLE_EMPTY_ARRAY,
   taxasPerSecond,
   gameConfig,
   ataquesRecebidos,
@@ -30407,13 +30405,13 @@ function VillageDashboard({
   relatoriosGlobal,
   populacao,
   // deprecated props
-  buildings,
+  buildings = STABLE_EMPTY_ARRAY,
   population,
   resources,
-  buildingQueue,
-  unitQueue = [],
-  units = [],
-  unitTypes: unitTypes2 = []
+  buildingQueue = STABLE_EMPTY_ARRAY,
+  unitQueue = STABLE_EMPTY_ARRAY,
+  units = STABLE_EMPTY_ARRAY,
+  unitTypes: unitTypes2 = STABLE_EMPTY_ARRAY
 }) {
   const { globalState } = useGameEntities();
   const currentBuildings = buildings || (initialBase == null ? void 0 : initialBase.edificios) || [];
@@ -30580,16 +30578,16 @@ function VillageDashboard({
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           ProductionQueue,
           {
-            construcoes: buildingQueue || (base == null ? void 0 : base.buildingQueue) || (base == null ? void 0 : base.construcoes) || [],
-            treinos: [],
+            construcoes: buildingQueue || (base == null ? void 0 : base.buildingQueue) || (base == null ? void 0 : base.construcoes) || STABLE_EMPTY_ARRAY,
+            treinos: STABLE_EMPTY_ARRAY,
             gameConfig
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(UnitQueue, { queue: unitQueue }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(UnitQueue, { queue: unitQueue || STABLE_EMPTY_ARRAY }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(GarrisonPanel, { tropas: units.length > 0 ? units.map((u3) => {
           var _a2;
           return { unidade: (_a2 = u3.type) == null ? void 0 : _a2.name, quantidade: u3.quantity };
-        }) : (base == null ? void 0 : base.tropas) ?? [], gameConfig }),
+        }) : (base == null ? void 0 : base.tropas) ?? STABLE_EMPTY_ARRAY, gameConfig }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { className: "py-4 bg-white/[0.02] border-b border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center gap-2", children: [
@@ -44345,7 +44343,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-i45xvHcl.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DoPJhyGh.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44381,4 +44379,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CXrw8NZv.js.map
+//# sourceMappingURL=app-KjTZ5R-G.js.map

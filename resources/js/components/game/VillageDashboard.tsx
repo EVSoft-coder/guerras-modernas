@@ -16,14 +16,15 @@ import { WorldMapView } from '@/components/game/WorldMapView';
 import { Logger } from '@src/core/Logger';
 
 import { useGameEntities } from '@/hooks/use-game-entities';
-
 import { UnitQueue } from '@/components/game/UnitQueue';
 
+const STABLE_EMPTY_ARRAY: any[] = [];
+
 export function VillageDashboard({ 
-    jogador, base: initialBase, bases: backendBases = [], taxasPerSecond, gameConfig, 
+    jogador, base: initialBase, bases: backendBases = STABLE_EMPTY_ARRAY, taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal, populacao, // deprecated props
-    buildings, population, resources, buildingQueue,
-    unitQueue = [], units = [], unitTypes = []
+    buildings = STABLE_EMPTY_ARRAY, population, resources, buildingQueue = STABLE_EMPTY_ARRAY,
+    unitQueue = STABLE_EMPTY_ARRAY, units = STABLE_EMPTY_ARRAY, unitTypes = STABLE_EMPTY_ARRAY
 }: DashboardProps & { 
     bases?: any[], 
     populacao?: any, 
@@ -249,12 +250,12 @@ export function VillageDashboard({
 
                 <div className="lg:col-span-4 flex flex-col gap-8">
                     <ProductionQueue 
-                        construcoes={buildingQueue || base?.buildingQueue || base?.construcoes || []} 
-                        treinos={[]} 
+                        construcoes={buildingQueue || base?.buildingQueue || base?.construcoes || STABLE_EMPTY_ARRAY} 
+                        treinos={STABLE_EMPTY_ARRAY} 
                         gameConfig={gameConfig} 
                     />
-                    <UnitQueue queue={unitQueue} />
-                    <GarrisonPanel tropas={units.length > 0 ? units.map(u => ({ unidade: u.type?.name, quantidade: u.quantity })) : (base?.tropas ?? [])} gameConfig={gameConfig} />
+                    <UnitQueue queue={unitQueue || STABLE_EMPTY_ARRAY} />
+                    <GarrisonPanel tropas={units.length > 0 ? units.map((u: any) => ({ unidade: u.type?.name, quantidade: u.quantity })) : (base?.tropas ?? STABLE_EMPTY_ARRAY)} gameConfig={gameConfig} />
                     
                     <Card className="bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group">
                         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent"></div>

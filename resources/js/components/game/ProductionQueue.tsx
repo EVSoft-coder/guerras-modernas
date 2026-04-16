@@ -24,9 +24,7 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
     treinos = [], 
     gameConfig 
 }) => {
-    useEffect(() => {
-        console.log('[PRODUCTION_QUEUE] Data Sync:', { construcoes, treinos });
-    }, [construcoes, treinos]);
+    // PASSO 4 — REMOVER LOOPS (Consolidados em referências estáveis no dashboard)
 
     // Ordenar as filas pelo tempo de conclusão
     const unifiedQueue: QueueItemData[] = [
