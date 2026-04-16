@@ -112,14 +112,15 @@ export function VillageDashboard({
             currentBuilding = { buildingType: 'muralha', nome: 'Perímetro Defensivo', nivel: Number(base.muralha_nivel), base: base };
             fallbackLevel = Number(base.muralha_nivel);
         } else if (foundBuilding) {
-            currentBuilding = { ...foundBuilding, ...buildDef, nome: buildDef?.name || 'Estrutura' };
+            currentBuilding = { ...foundBuilding, ...buildDef, nome: buildDef?.name || 'Estrutura', base: base };
             fallbackLevel = foundBuilding.nivel;
         } else {
             currentBuilding = { 
                 ...buildDef, 
                 buildingType: selectedBuildingType, 
                 nome: buildDef?.name || 'Projeto Padrão', 
-                nivel: 0 
+                nivel: 0,
+                base: base
             };
         }
     }

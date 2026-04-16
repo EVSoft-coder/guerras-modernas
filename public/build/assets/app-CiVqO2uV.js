@@ -30440,14 +30440,15 @@ function VillageDashboard({
       currentBuilding = { buildingType: "muralha", nome: "Perímetro Defensivo", nivel: Number(base.muralha_nivel), base };
       Number(base.muralha_nivel);
     } else if (foundBuilding) {
-      currentBuilding = { ...foundBuilding, ...buildDef, nome: (buildDef == null ? void 0 : buildDef.name) || "Estrutura" };
+      currentBuilding = { ...foundBuilding, ...buildDef, nome: (buildDef == null ? void 0 : buildDef.name) || "Estrutura", base };
       foundBuilding.nivel;
     } else {
       currentBuilding = {
         ...buildDef,
         buildingType: selectedBuildingType,
         nome: (buildDef == null ? void 0 : buildDef.name) || "Projeto Padrão",
-        nivel: 0
+        nivel: 0,
+        base
       };
     }
   }
@@ -44269,7 +44270,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CwvGwJF9.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-PV1rfVm1.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44307,4 +44308,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-ZosuGejq.js.map
+//# sourceMappingURL=app-CiVqO2uV.js.map
