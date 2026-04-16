@@ -33,6 +33,8 @@ class BuildingQueueService
         $type = BuildingType::normalize($type);
         
         $nivelAtual = $this->getCurrentLevel($base, $type);
+        
+        // PASSO 4 — VALIDAR NÍVEL: target_level = current_level + 1
         $targetLevel = $nivelAtual + 1;
 
         $tempo = BuildingRules::calculateTime($type, $nivelAtual);
@@ -57,6 +59,7 @@ class BuildingQueueService
         // Selecionar IDs pendentes para evitar problemas de hidratação em coleções passadas por referência
         $pendingIds = BuildingQueue::where('base_id', $base->id)
             ->where('finishes_at', '<=', $now)
+            ->lockForUpdate() // PASSO 3 - LOCK FOR UPDATE
             ->pluck('id');
 
         if ($pendingIds->isEmpty()) return;

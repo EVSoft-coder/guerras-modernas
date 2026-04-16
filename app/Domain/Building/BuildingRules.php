@@ -41,8 +41,8 @@ class BuildingRules
         $timeBase = $config['time_base'] ?? 60;
         $speedMod = config('game.speed.construction', 1);
         
-        // Formula: (TimeBase * (1 + Level * 0.5)) / Speed
-        $timeSeconds = ($timeBase * (1 + ($currentLevel * 0.5))) / $speedMod;
+        // Formula: (TimeBase * pow(1.2, Level)) / Speed (Fase 4B - Passo 5)
+        $timeSeconds = ($timeBase * pow(1.2, $currentLevel)) / $speedMod;
  
         return (int) max(5, $timeSeconds);
     }
