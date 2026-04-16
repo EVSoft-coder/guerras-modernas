@@ -24,15 +24,10 @@ class SyncResources
 
     public function execute(Base $base): void
     {
-        DB::transaction(function() use ($base) {
-            // Lock para evitar updates concorrentes (Fase 2)
-            $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
-            
-            // Sincronizar Recursos
-            $this->gameService->tickResources($lockedBase);
-            
-            // Processar Filas
-            $this->gameService->processarFilas($lockedBase);
-        });
+        // Sincronizar Recursos (ResourceService tratará do lock e transação)
+        $this->gameService->tickResources($base);
+        
+        // Processar Filas
+        $this->gameService->processarFilas($base);
     }
 }
