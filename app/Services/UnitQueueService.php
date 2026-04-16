@@ -26,13 +26,16 @@ class UnitQueueService
     public function startRecruitment(Base $base, int $unitTypeId, int $quantity)
     {
         return DB::transaction(function() use ($base, $unitTypeId, $quantity) {
-            // 1. Validar Recursos e Tipo (PASSO 9)
+            // 1. Sincronizar Recursos para garantir base de cálculo real (Audit 1.0)
+            app(ResourceService::class)->sync($base);
+
+            // 2. Validar Recursos e Tipo
             $unitType = UnitType::findOrFail($unitTypeId);
             $totalCostSuprimentos = $unitType->cost_suprimentos * $quantity;
             $totalCostMunicoes = $unitType->cost_municoes * $quantity;
             $totalCostCombustivel = $unitType->cost_combustivel * $quantity;
 
-            // Bloquear se já existir queue ativa (Fase Inicial - PASSO 9)
+            // Bloquear se já existir queue ativa
             $activeQueue = UnitQueue::where('base_id', $base->id)->exists();
             if ($activeQueue) {
                 throw new \Exception("LOGÍSTICA: O quartel já está processando ordens. Aguarde a conclusão.");

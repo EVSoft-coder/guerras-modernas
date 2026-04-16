@@ -44,12 +44,11 @@ class GetDashboardData
             throw new \Exception("Base não localizada.");
         }
 
-        // PASSO 1 — BACKEND ORDEM CORRETA: chamar processQueue ANTES de qualquer query profunda
+        // 1. Processar todas as filas (Engenharia e Mobilização) antes de ler os dados
         $this->gameService->processarFilas($base);
-        app(UnitQueueService::class)->process($base);
 
-        // 2. Agora carregar os dados atualizados
-        $base->load(['recursos', 'edificios', 'buildingQueue', 'unitQueue', 'units', 'treinos', 'tropas']);
+        // 2. Agora carregar os dados atualizados (Apenas as tabelas modernas)
+        $base->load(['recursos', 'edificios', 'buildingQueue', 'unitQueue', 'units']);
 
         // 3. Recursos Formatados
         $recursos = $base->recursos;

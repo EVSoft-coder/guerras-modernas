@@ -23,17 +23,26 @@ class TrainUnits
     /**
      * @param Authenticatable $user
      */
-    public function execute(Authenticatable $user, int $baseId, string $unit, int $quantity): void
+    public function execute(Authenticatable $user, int $baseId, string|int $unitOrId, int $quantity): void
     {
         $base = Base::findOrFail($baseId);
 
-        // Validação de Ownership
         if ($base->jogador_id !== $user->getAuthIdentifier()) {
             throw new \Exception("Acesso Negado: A base especificada não está sob o seu comando.");
         }
 
-        DB::transaction(function() use ($base, $unit, $quantity) {
-            $this->gameService->iniciarTreino($base, $unit, $quantity);
+        DB::transaction(function() use ($base, $unitOrId, $quantity) {
+            // Se for ID numérico, carregar UnitType correspondente
+            if (is_numeric($unitOrId)) {
+                $this->gameService->iniciarTreino($base, (int)$unitOrId, $quantity);
+            } else {
+                // Caso legado: Procurar UnitType pelo nome aproximado (Harden Legacy)
+                $unitType = \App\Models\UnitType::where('name', 'like', "%{$unitOrId}%")->first();
+                if (!$unitType) {
+                    throw new \Exception("LOGÍSTICA: Unidade '{$unitOrId}' não reconhecida pelo comando central.");
+                }
+                $this->gameService->iniciarTreino($base, $unitType->id, $quantity);
+            }
         });
     }
 }

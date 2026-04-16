@@ -38,29 +38,38 @@ class BuildingQueueService
      */
     public function startConstruction(Base $base, string $type, int $posX = 0, int $posY = 0, ?int $buildingId = null)
     {
-        $type = BuildingType::normalize($type);
-        
-        $nivelSincronizado = $this->getCurrentLevel($base, $type);
-        
-        // PASSO 4 — VALIDAR NÍVEL: target_level = level_future + 1
-        $targetLevel = $nivelSincronizado + 1;
+        return DB::transaction(function() use ($base, $type, $posX, $posY, $buildingId) {
+            $type = BuildingType::normalize($type);
+            
+            // 1. Sincronizar Recursos para cálculo real (Audit 1.0)
+            app(ResourceService::class)->sync($base);
 
-        $tempo = BuildingRules::calculateTime($type, $nivelSincronizado);
-        $now = $this->timeService->now();
-        
-        // Calcular delay se já existir queue (sequencial)
-        $lastEntry = BuildingQueue::where('base_id', $base->id)->orderBy('finishes_at', 'desc')->first();
-        $startTime = ($lastEntry && $lastEntry->finishes_at > $now) ? $lastEntry->finishes_at : $now;
+            $nivelSincronizado = $this->getCurrentLevel($base, $type);
+            
+            // PASSO 4 — VALIDAR NÍVEL: target_level = level_future + 1
+            $targetLevel = $nivelSincronizado + 1;
 
-        // PASSO 3 - insertGetId / Create
-        return BuildingQueue::create([
-            'base_id' => $base->id,
-            'building_id' => $buildingId,
-            'type' => $type,
-            'target_level' => $targetLevel,
-            'started_at' => $startTime,
-            'finishes_at' => $startTime->copy()->addSeconds($tempo),
-        ]);
+            $tempo = BuildingRules::calculateTime($type, $nivelSincronizado);
+            $now = $this->timeService->now();
+            
+            // LOCK FOR UPDATE no seqüenciamento (Evitar Race Conditions - Audit 1.0)
+            $lastEntry = BuildingQueue::where('base_id', $base->id)
+                ->orderBy('finishes_at', 'desc')
+                ->lockForUpdate()
+                ->first();
+
+            $startTime = ($lastEntry && $lastEntry->finishes_at > $now) ? $lastEntry->finishes_at : $now;
+
+            // PASSO 3 - Create
+            return BuildingQueue::create([
+                'base_id' => $base->id,
+                'building_id' => $buildingId,
+                'type' => $type,
+                'target_level' => $targetLevel,
+                'started_at' => $startTime,
+                'finishes_at' => $startTime->copy()->addSeconds($tempo),
+            ]);
+        });
     }
 
     /**

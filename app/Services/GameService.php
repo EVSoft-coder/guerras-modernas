@@ -25,12 +25,14 @@ class GameService
 {
     protected $resourceService;
     protected $buildingQueueService;
+    protected $unitQueueService;
     protected $timeService;
 
     public function __construct(?TimeService $timeService = null) {
         $this->timeService = $timeService ?? new TimeService();
         $this->resourceService = new ResourceService($this->timeService);
         $this->buildingQueueService = new BuildingQueueService($this->timeService);
+        $this->unitQueueService = new UnitQueueService($this->timeService);
     }
 
     /**
@@ -152,56 +154,32 @@ class GameService
         return true;
     }
 
-    public function iniciarTreino(Base $base, string $unidade, int $quantidade): Treino
+    /**
+     * Inicia o recrutamento de uma unidade usando a UnitQueueService.
+     * PASSO 10 - Unificação
+     */
+    public function iniciarTreino(Base $base, int $unitTypeId, int $quantidade): \App\Models\UnitQueue
     {
+        // 1. Sync resources
         $this->syncResources($base);
 
-        $custos = UnitRules::calculateCost($unidade, $quantidade);
-        $tempo = UnitRules::calculateTime($unidade, $quantidade);
-
-        $stats = $this->obterEstatisticasPopulacao($base);
-        $popRequerida = $custos['pessoal'] ?? 0;
-
-        if ($stats['available'] < $popRequerida) {
-            throw new \Exception("LOGÍSTICA: Capacidade habitacional insuficiente. Expanda o Complexo Residencial.");
-        }
-
-        return DB::transaction(function() use ($base, $unidade, $quantidade, $custos, $tempo) {
-            if (!$this->consumirRecursos($base, $custos)) {
-                throw new \Exception("Suprimentos insuficientes para mobilização de tropas.");
-            }
-
-            return Treino::create([
-                'base_id' => $base->id,
-                'unidade' => $unidade,
-                'quantidade' => $quantidade,
-                'completado_em' => $this->timeService->now()->addSeconds($tempo),
-            ]);
-        });
+        // 2. Delegar para UnitQueueService
+        return $this->unitQueueService->startRecruitment($base, $unitTypeId, $quantidade);
     }
 
+    /**
+     * Processa todas as filas táticas (Engenharia e Mobilização).
+     */
     public function processarFilas(Base $base): void
     {
-        $mudou = false;
-
+        // 1. Processar Estruturas
         $this->buildingQueueService->processQueue($base);
 
-        $treinos = $base->treinos()->where('completado_em', '<=', $this->timeService->now())->get();
-        foreach ($treinos as $fila) {
-            $mudou = true;
-            DB::transaction(function() use ($base, $fila) {
-                $tropa = $base->tropas()->firstOrCreate(
-                    ['unidade' => $fila->unidade],
-                    ['quantidade' => 0]
-                );
-                $tropa->increment('quantidade', $fila->quantidade);
-                $fila->delete();
-            });
-        }
+        // 2. Processar Recrutamento
+        $this->unitQueueService->process($base);
 
-        if ($mudou) {
-            broadcast(new \App\Events\BaseUpdated($base))->toOthers();
-        }
+        // 3. Notificar via WebSocket (Se necessário no Laravel Echo)
+        // broadcast(new \App\Events\BaseUpdated($base))->toOthers();
     }
 
     public function consumirRecursos(Base $base, array $custos): bool
@@ -250,11 +228,11 @@ class GameService
         $usedByBuildings += ($configs['qg']['cost']['pessoal'] ?? 0) * $base->qg_nivel;
         $usedByBuildings += ($configs['muralha']['cost']['pessoal'] ?? 0) * $base->muralha_nivel;
 
-        $unitConfigs = config('game.units');
         $usedByTroops = 0;
-        foreach ($base->tropas as $tropa) {
-            $basePessoal = $unitConfigs[$tropa->unidade]['cost']['pessoal'] ?? 1;
-            $usedByTroops += $basePessoal * $tropa->quantidade;
+        foreach ($base->units as $unit) {
+            // No futuro, o custo de pessoal de cada unidade deve vir da unit_types.
+            // Para já, assumimos 1 por unidade para robustez.
+            $usedByTroops += $unit->quantity;
         }
 
         $used = $usedByBuildings + $usedByTroops;
