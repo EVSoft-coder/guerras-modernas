@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Target, Search, Crosshair, Navigation, Shield, Sword, Home, ShieldAlert, List, ChevronRight, ChevronLeft, User, Map as MapIcon } from 'lucide-react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AttackModal } from './AttackModal';
@@ -21,10 +21,11 @@ const TILE_SIZE = 80;
 const VIEWPORT_RANGE = 7; // Raio de tiles visuais (Total 15x15 aprox)
 
 const getTerrain = (tx: number, ty: number) => {
-    // Edge Oceans: Mais distantes agora
-    if (ty < 0 || ty > 100 || tx < 0 || tx > 100) return 'water';
-    if (ty < 2 || ty > 98 || tx < 2 || tx > 98) return 'water';
+    // World is now 1000x1000 (standard for global scale)
+    if (ty < 0 || ty > 1000 || tx < 0 || tx > 1000) return 'water';
+    if (ty < 3 || ty > 997 || tx < 3 || tx > 997) return 'water';
     
+    // Deterministic Pseudo-Noise
     const noise = (Math.sin(tx * 0.12) + Math.cos(ty * 0.15) + Math.sin(tx * 0.3 + ty * 0.2)) / 3;
     
     if (noise > 0.53) return 'mountain';
@@ -86,7 +87,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
         toast.success("ORDEM TRANSMITIDA: Tropas em movimento.");
     };
 
-    // Render tiles based on center + dragOffset
+    // Render tiles based on center 
     const tilesToRender = useMemo(() => {
         const tiles = [];
         const startX = Math.floor(center.x - VIEWPORT_RANGE);
@@ -114,10 +115,6 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                 <motion.div 
                     drag
                     dragMomentum={false}
-                    onDrag={(e, info) => {
-                        // Converter drag pixels para coordenadas se necessário, mas aqui apenas movemos o visual
-                        // Para um mapa infinito real, deveríamos atualizar o 'center' quando o drag ultrapassa um tile
-                    }}
                     style={{ 
                         width: '100%', 
                         height: '100%',
@@ -166,14 +163,20 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                                             <motion.div 
                                                 initial={{ scale: 0 }}
                                                 animate={{ scale: 1 }}
-                                                className={`p-2 rounded-lg border-2 backdrop-blur-sm relative
-                                                    ${isPlayer ? 'bg-sky-500/20 border-sky-400 text-sky-400' : ''}
-                                                    ${isEnemy ? 'bg-red-500/20 border-red-400 text-red-400' : ''}
-                                                    ${isRebel ? 'bg-amber-600/30 border-amber-400 text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.2)]' : ''}
+                                                className={`p-1 rounded-xl border-2 backdrop-blur-md relative shadow-2xl transition-all duration-500
+                                                    ${isPlayer ? 'bg-sky-500/30 border-sky-400/50 shadow-sky-500/20' : ''}
+                                                    ${isEnemy ? 'bg-red-500/30 border-red-400/50 shadow-red-500/20' : ''}
+                                                    ${isRebel ? 'bg-amber-600/30 border-amber-400/50 shadow-amber-600/20' : ''}
                                                 `}
                                             >
-                                                <Home size={20} />
-                                                <div className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border border-white/20 shadow-lg animate-pulse 
+                                                <img 
+                                                    src="/assets/structures/base.png" 
+                                                    className="w-12 h-12 object-contain"
+                                                    style={{ 
+                                                        filter: isPlayer ? 'drop-shadow(0 0 10px #0ea5e9)' : (isEnemy ? 'drop-shadow(0 0 10px #ef4444)' : 'drop-shadow(0 0 10px #f59e0b)')
+                                                    }}
+                                                />
+                                                <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white/40 shadow-lg animate-pulse 
                                                     ${isPlayer ? 'bg-sky-500' : (isEnemy ? 'bg-red-500' : 'bg-amber-500')}`} />
                                             </motion.div>
                                         </div>
@@ -276,10 +279,10 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                             className="w-full bg-black/80 backdrop-blur-3xl border border-white/10 p-6 rounded-[2.5rem] shadow-2xl flex items-center justify-between pointer-events-auto ring-1 ring-white/5"
                         >
                             <div className="flex items-center gap-6">
-                                <div className={`p-4 rounded-2xl border-2
+                                <div className={`p-4 rounded-2xl border-2 backdrop-blur-lg
                                     ${selectedSector.base?.ownerId === playerBase?.ownerId ? 'bg-sky-500/10 border-sky-500/40 text-sky-400' : 'bg-red-500/10 border-red-500/40 text-red-400'}
                                 `}>
-                                    <Home size={32} />
+                                    <img src="/assets/structures/base.png" className="w-12 h-12 object-contain" />
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-3">
@@ -312,7 +315,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                             <div className="flex gap-4">
                                 <Button 
                                     variant="outline"
-                                    className="border-white/10 hover:bg-white/10 text-[10px] font-black uppercase px-8 py-6 rounded-2xl"
+                                    className="border-white/10 hover:bg-white/10 text-[10px] font-black uppercase px-8 py-6 rounded-2xl text-neutral-400"
                                     onClick={() => setSelectedSector(null)}
                                 >
                                     Fugir

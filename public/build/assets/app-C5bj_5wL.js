@@ -30007,8 +30007,8 @@ function useGameEntities() {
 const TILE_SIZE = 80;
 const VIEWPORT_RANGE = 7;
 const getTerrain = (tx, ty) => {
-  if (ty < 0 || ty > 100 || tx < 0 || tx > 100) return "water";
-  if (ty < 2 || ty > 98 || tx < 2 || tx > 98) return "water";
+  if (ty < 0 || ty > 1e3 || tx < 0 || tx > 1e3) return "water";
+  if (ty < 3 || ty > 997 || tx < 3 || tx > 997) return "water";
   const noise = (Math.sin(tx * 0.12) + Math.cos(ty * 0.15) + Math.sin(tx * 0.3 + ty * 0.2)) / 3;
   if (noise > 0.53) return "mountain";
   if (noise < -0.45) return "desert";
@@ -30084,8 +30084,6 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
           {
             drag: true,
             dragMomentum: false,
-            onDrag: (e, info) => {
-            },
             style: {
               width: "100%",
               height: "100%",
@@ -30130,14 +30128,23 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                         {
                           initial: { scale: 0 },
                           animate: { scale: 1 },
-                          className: `p-2 rounded-lg border-2 backdrop-blur-sm relative
-                                                    ${isPlayer ? "bg-sky-500/20 border-sky-400 text-sky-400" : ""}
-                                                    ${isEnemy ? "bg-red-500/20 border-red-400 text-red-400" : ""}
-                                                    ${isRebel ? "bg-amber-600/30 border-amber-400 text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.2)]" : ""}
+                          className: `p-1 rounded-xl border-2 backdrop-blur-md relative shadow-2xl transition-all duration-500
+                                                    ${isPlayer ? "bg-sky-500/30 border-sky-400/50 shadow-sky-500/20" : ""}
+                                                    ${isEnemy ? "bg-red-500/30 border-red-400/50 shadow-red-500/20" : ""}
+                                                    ${isRebel ? "bg-amber-600/30 border-amber-400/50 shadow-amber-600/20" : ""}
                                                 `,
                           children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx(House, { size: 20 }),
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border border-white/20 shadow-lg animate-pulse 
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              "img",
+                              {
+                                src: "/assets/structures/base.png",
+                                className: "w-12 h-12 object-contain",
+                                style: {
+                                  filter: isPlayer ? "drop-shadow(0 0 10px #0ea5e9)" : isEnemy ? "drop-shadow(0 0 10px #ef4444)" : "drop-shadow(0 0 10px #f59e0b)"
+                                }
+                              }
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white/40 shadow-lg animate-pulse 
                                                     ${isPlayer ? "bg-sky-500" : isEnemy ? "bg-red-500" : "bg-amber-500"}` })
                           ]
                         }
@@ -30245,9 +30252,9 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
           className: "w-full bg-black/80 backdrop-blur-3xl border border-white/10 p-6 rounded-[2.5rem] shadow-2xl flex items-center justify-between pointer-events-auto ring-1 ring-white/5",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-6", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-4 rounded-2xl border-2
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-4 rounded-2xl border-2 backdrop-blur-lg
                                     ${((_a2 = selectedSector.base) == null ? void 0 : _a2.ownerId) === (playerBase == null ? void 0 : playerBase.ownerId) ? "bg-sky-500/10 border-sky-500/40 text-sky-400" : "bg-red-500/10 border-red-500/40 text-red-400"}
-                                `, children: /* @__PURE__ */ jsxRuntimeExports.jsx(House, { size: 32 }) }),
+                                `, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/assets/structures/base.png", className: "w-12 h-12 object-contain" }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-white uppercase tracking-tighter", children: ((_b = selectedSector.base) == null ? void 0 : _b.nome) || "Sector de Exploração" }),
@@ -30288,7 +30295,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
                 Button,
                 {
                   variant: "outline",
-                  className: "border-white/10 hover:bg-white/10 text-[10px] font-black uppercase px-8 py-6 rounded-2xl",
+                  className: "border-white/10 hover:bg-white/10 text-[10px] font-black uppercase px-8 py-6 rounded-2xl text-neutral-400",
                   onClick: () => setSelectedSector(null),
                   children: "Fugir"
                 }
@@ -44259,7 +44266,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-yWWiQSJr.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Cs90Juz9.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44295,4 +44302,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Dh8kfj_I.js.map
+//# sourceMappingURL=app-C5bj_5wL.js.map

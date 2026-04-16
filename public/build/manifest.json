@@ -1,11 +1,11 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CM_sG7Uh.css",
+    "file": "assets/app-ke7Ovm1W.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-Dh8kfj_I.js",
+    "file": "assets/app-C5bj_5wL.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -13,11 +13,11 @@
       "src/index.ts"
     ],
     "css": [
-      "assets/app-CM_sG7Uh.css"
+      "assets/app-ke7Ovm1W.css"
     ]
   },
   "src/index.ts": {
-    "file": "assets/index-yWWiQSJr.js",
+    "file": "assets/index-Cs90Juz9.js",
     "name": "index",
     "src": "src/index.ts",
     "isDynamicEntry": true,
