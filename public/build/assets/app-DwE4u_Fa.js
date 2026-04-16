@@ -28812,6 +28812,7 @@ const ProductionQueue = ({
   treinos = [],
   gameConfig
 }) => {
+  console.log("[PRODUCTION_QUEUE] Data:", { construcoes, treinos });
   const unifiedQueue = [
     ...construcoes.map((c2) => ({
       id: c2.id,
@@ -30362,7 +30363,8 @@ function VillageDashboard({
   // deprecated props
   buildings,
   population,
-  resources
+  resources,
+  buildingQueue
 }) {
   const { globalState } = useGameEntities();
   const currentBuildings = buildings || (initialBase == null ? void 0 : initialBase.edificios) || [];
@@ -30510,7 +30512,7 @@ function VillageDashboard({
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           ProductionQueue,
           {
-            construcoes: (base == null ? void 0 : base.buildingQueue) || (base == null ? void 0 : base.construcoes) || [],
+            construcoes: buildingQueue || (base == null ? void 0 : base.buildingQueue) || (base == null ? void 0 : base.construcoes) || [],
             treinos: (base == null ? void 0 : base.treinos) || [],
             gameConfig
           }
@@ -44270,7 +44272,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C3_VjI8A.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BdFJ5zrY.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44306,4 +44308,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CA3F4hv_.js.map
+//# sourceMappingURL=app-DwE4u_Fa.js.map

@@ -82,6 +82,7 @@ class GetDashboardData
             'relatorios'       => $relatorios,
             'relatoriosGlobal' => $relatoriosGlobal,
             'gameConfig'       => config('game'),
+            'buildingQueue'    => $base->buildingQueue,
             'gameData'         => [
                 'resources'  => $resources,
                 'units'      => $base->tropas,

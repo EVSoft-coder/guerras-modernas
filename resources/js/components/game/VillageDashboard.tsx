@@ -20,13 +20,14 @@ import { useGameEntities } from '@/hooks/use-game-entities';
 export function VillageDashboard({ 
     jogador, base: initialBase, bases: backendBases = [], taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal, populacao, // deprecated props
-    buildings, population, resources
+    buildings, population, resources, buildingQueue
 }: DashboardProps & { 
     bases?: any[], 
     populacao?: any, 
     buildings?: any[], 
     population?: any, 
     resources?: any,
+    buildingQueue?: any[],
     ataquesRecebidos?: any[],
     ataquesEnviados?: any[],
     relatoriosGlobal?: any[],
@@ -212,7 +213,7 @@ export function VillageDashboard({
 
                 <div className="lg:col-span-4 flex flex-col gap-8">
                     <ProductionQueue 
-                        construcoes={base?.buildingQueue || base?.construcoes || []} 
+                        construcoes={buildingQueue || base?.buildingQueue || base?.construcoes || []} 
                         treinos={base?.treinos || []} 
                         gameConfig={gameConfig} 
                     />

@@ -24,6 +24,8 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
     treinos = [], 
     gameConfig 
 }) => {
+    // PASSO 4 — DEBUG
+    console.log('[PRODUCTION_QUEUE] Data:', { construcoes, treinos });
     // Unificar e ordenar as filas pelo tempo de conclusão
     const unifiedQueue: QueueItemData[] = [
         ...construcoes.map(c => ({
