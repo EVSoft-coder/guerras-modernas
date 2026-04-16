@@ -54,6 +54,7 @@ export class SyncSystem implements GameSystem {
             // Garantir que a UI reflete a nova fila de construção
             const { router } = await import('@inertiajs/react');
             router.reload();
+            eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'UPGRADE' } });
 
             Logger.info('[ACTION] Structural upgrade authorized by Central Command.');
         } catch (err: any) {
@@ -85,6 +86,7 @@ export class SyncSystem implements GameSystem {
             // Re-hidratar ECS com dados puros do backend (Source of Truth)
             const { router } = await import('@inertiajs/react');
             router.reload();
+            eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'RECRUITMENT' } });
 
             Logger.info('[ACTION] Recruitment procedures online.');
         } catch (err: any) {

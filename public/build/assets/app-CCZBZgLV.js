@@ -29014,7 +29014,8 @@ const Events = {
   // Sincronização Externa
   LARAVEL_SYNC_ATTACKS: "LARAVEL:SYNC_ATTACKS",
   // UI/Feedbacks
-  UI_ALERT: "UI:ALERT"
+  UI_ALERT: "UI:ALERT",
+  ACTION_SUCCESS: "UI:ACTION_SUCCESS"
 };
 const AttackModal = ({
   isOpen,
@@ -30417,15 +30418,22 @@ function VillageDashboard({
       setGameMode(ev.data.mode);
     });
     const unsubAlert = eventBus.subscribe(Events.UI_ALERT, (ev) => {
-      addToast(ev.data.message, ev.data.type || "info");
+      addToast(ev.data.message, ev.data.type || "error");
       setIsUpgrading(false);
       setIsTraining(false);
+    });
+    const unsubSuccess = eventBus.subscribe(Events.ACTION_SUCCESS, (ev) => {
+      setIsUpgrading(false);
+      setIsTraining(false);
+      setSelectedBuildingId(null);
+      setSelectedBuildingType(null);
     });
     return () => {
       unsubArrived();
       unsubReturned();
       unsubMode();
       unsubAlert();
+      unsubSuccess();
     };
   }, [base, ataquesEnviados, ataquesRecebidos]);
   if (!base) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-10 text-white uppercase font-mono", children: "Connecting to Satellite..." });
@@ -30548,6 +30556,8 @@ function VillageDashboard({
         onClose: () => {
           setSelectedBuildingId(null);
           setSelectedBuildingType(null);
+          setIsUpgrading(false);
+          setIsTraining(false);
         },
         building: currentBuilding,
         gameConfig,
@@ -44270,7 +44280,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-PV1rfVm1.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-B4wIFkcl.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44308,4 +44318,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CiVqO2uV.js.map
+//# sourceMappingURL=app-CCZBZgLV.js.map

@@ -82,9 +82,16 @@ export function VillageDashboard({
         });
 
         const unsubAlert = eventBus.subscribe(Events.UI_ALERT, (ev) => {
-            addToast(ev.data.message, ev.data.type || 'info');
+            addToast(ev.data.message, ev.data.type || 'error');
             setIsUpgrading(false);
             setIsTraining(false);
+        });
+
+        const unsubSuccess = eventBus.subscribe(Events.ACTION_SUCCESS, (ev) => {
+            setIsUpgrading(false);
+            setIsTraining(false);
+            setSelectedBuildingId(null);
+            setSelectedBuildingType(null);
         });
 
         return () => {
@@ -92,6 +99,7 @@ export function VillageDashboard({
             unsubReturned();
             unsubMode();
             unsubAlert();
+            unsubSuccess();
         };
     }, [base, ataquesEnviados, ataquesRecebidos]);
 
@@ -242,6 +250,8 @@ export function VillageDashboard({
                 onClose={() => {
                     setSelectedBuildingId(null);
                     setSelectedBuildingType(null);
+                    setIsUpgrading(false);
+                    setIsTraining(false);
                 }}
                 building={currentBuilding}
                 gameConfig={gameConfig}

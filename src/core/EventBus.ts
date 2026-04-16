@@ -127,5 +127,6 @@ export const Events = {
     LARAVEL_SYNC_ATTACKS: 'LARAVEL:SYNC_ATTACKS',
 
     // UI/Feedbacks
-    UI_ALERT: 'UI:ALERT'
+    UI_ALERT: 'UI:ALERT',
+    ACTION_SUCCESS: 'UI:ACTION_SUCCESS'
 };

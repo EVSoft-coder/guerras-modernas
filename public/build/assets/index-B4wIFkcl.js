@@ -1,8 +1,8 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/app-CiVqO2uV.js","assets/app-UhBQb_-z.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/app-CCZBZgLV.js","assets/app-UhBQb_-z.css"])))=>i.map(i=>d[i]);
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, _ as __vitePreload, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-CiVqO2uV.js";
+import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, _ as __vitePreload, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-CCZBZgLV.js";
 const unitConfigs = {
   infantaria: {
     id: "infantaria",
@@ -1427,10 +1427,11 @@ class SyncSystem {
         throw new Error(resData.message || "Operation Denied");
       }
       const { router } = await __vitePreload(async () => {
-        const { router: router2 } = await import("./app-CiVqO2uV.js").then((n) => n.i);
+        const { router: router2 } = await import("./app-CCZBZgLV.js").then((n) => n.i);
         return { router: router2 };
       }, true ? __vite__mapDeps([0,1]) : void 0);
       router.reload();
+      eventBus.emit(Events.ACTION_SUCCESS, { data: { type: "UPGRADE" } });
       Logger.info("[ACTION] Structural upgrade authorized by Central Command.");
     } catch (err) {
       Logger.error("[ACTION_FAILURE] Building upgrade aborted", err);
@@ -1456,10 +1457,11 @@ class SyncSystem {
         throw new Error(resData.message || "Recruitment Failed");
       }
       const { router } = await __vitePreload(async () => {
-        const { router: router2 } = await import("./app-CiVqO2uV.js").then((n) => n.i);
+        const { router: router2 } = await import("./app-CCZBZgLV.js").then((n) => n.i);
         return { router: router2 };
       }, true ? __vite__mapDeps([0,1]) : void 0);
       router.reload();
+      eventBus.emit(Events.ACTION_SUCCESS, { data: { type: "RECRUITMENT" } });
       Logger.info("[ACTION] Recruitment procedures online.");
     } catch (err) {
       Logger.error("[ACTION_FAILURE] Recruitment aborted", err);
@@ -2478,4 +2480,4 @@ rebelCoords.forEach((coord, index) => {
 });
 stateManager.setState(GameState.PLAYING);
 Logger.info("--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---");
-//# sourceMappingURL=index-PV1rfVm1.js.map
+//# sourceMappingURL=index-B4wIFkcl.js.map
