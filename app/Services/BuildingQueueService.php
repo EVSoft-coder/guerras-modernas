@@ -26,8 +26,9 @@ class BuildingQueueService
      */
     public function validateAvailableQueue(Base $base): void
     {
-        if (BuildingQueue::where('base_id', $base->id)->exists()) {
-            throw new \Exception("ENGENHARIA: Equipa de construção ocupada. Aguarde a conclusão da obra atual.");
+        $count = BuildingQueue::where('base_id', $base->id)->count();
+        if ($count >= 5) {
+            throw new \Exception("ENGENHARIA: Fila de projetos saturada (Máx: 5). Aguarde a conclusão de uma obra.");
         }
     }
 
@@ -39,22 +40,26 @@ class BuildingQueueService
     {
         $type = BuildingType::normalize($type);
         
-        $nivelAtual = $this->getCurrentLevel($base, $type);
+        $nivelSincronizado = $this->getCurrentLevel($base, $type);
         
-        // PASSO 4 — VALIDAR NÍVEL: target_level = current_level + 1
-        $targetLevel = $nivelAtual + 1;
+        // PASSO 4 — VALIDAR NÍVEL: target_level = level_future + 1
+        $targetLevel = $nivelSincronizado + 1;
 
-        $tempo = BuildingRules::calculateTime($type, $nivelAtual);
+        $tempo = BuildingRules::calculateTime($type, $nivelSincronizado);
         $now = $this->timeService->now();
         
+        // Calcular delay se já existir queue (sequencial)
+        $lastEntry = BuildingQueue::where('base_id', $base->id)->orderBy('finishes_at', 'desc')->first();
+        $startTime = ($lastEntry && $lastEntry->finishes_at > $now) ? $lastEntry->finishes_at : $now;
+
         // PASSO 3 - insertGetId / Create
         return BuildingQueue::create([
             'base_id' => $base->id,
             'building_id' => $buildingId,
             'type' => $type,
             'target_level' => $targetLevel,
-            'started_at' => $now,
-            'finishes_at' => $now->copy()->addSeconds($tempo),
+            'started_at' => $startTime,
+            'finishes_at' => $startTime->copy()->addSeconds($tempo),
         ]);
     }
 
@@ -120,8 +125,17 @@ class BuildingQueueService
 
     private function getCurrentLevel(Base $base, string $type): int
     {
-        if ($type === BuildingType::QG) return (int) $base->qg_nivel;
-        if ($type === BuildingType::MURALHA) return (int) $base->muralha_nivel;
-        return (int) ($base->edificios()->where('tipo', $type)->first()?->nivel ?? 0);
+        $dbLevel = 0;
+        if ($type === BuildingType::QG) $dbLevel = (int) ($base->qg_nivel ?? 0);
+        elseif ($type === BuildingType::MURALHA) $dbLevel = (int) ($base->muralha_nivel ?? 0);
+        else $dbLevel = (int) ($base->edificios()->where('tipo', $type)->first()?->nivel ?? 0);
+
+        // Somar o número de upgrades deste tipo já na fila para obter o nível futuro
+        $maxQueueEntry = BuildingQueue::where('base_id', $base->id)
+            ->where('type', $type)
+            ->orderBy('target_level', 'desc')
+            ->first();
+
+        return (int) max($dbLevel, $maxQueueEntry ? $maxQueueEntry->target_level : 0);
     }
 }

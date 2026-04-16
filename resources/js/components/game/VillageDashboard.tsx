@@ -114,21 +114,30 @@ export function VillageDashboard({
     if (selectedBuildingType) {
         const buildDef = (gameConfig?.buildings || {})[selectedBuildingType];
         
+        // Calcular Nível Futuro (DB + Queue)
+        const dbLevel = selectedBuildingType === 'qg' ? Number(base.qg_nivel) : 
+                       (selectedBuildingType === 'muralha' ? Number(base.muralha_nivel) : 
+                       (foundBuilding?.nivel || 0));
+        
+        const queueEntries = (buildingQueue || []).filter(q => (q.buildingType || q.type) === selectedBuildingType);
+        const maxQueueLevel = queueEntries.length > 0 ? Math.max(...queueEntries.map(q => q.target_level)) : 0;
+        const futureLevel = Math.max(dbLevel, maxQueueLevel);
+
         if (selectedBuildingType === 'qg') {
-            currentBuilding = { buildingType: 'qg', nome: 'Quartel General', nivel: Number(base.qg_nivel), base: base };
-            fallbackLevel = Number(base.qg_nivel);
+            currentBuilding = { buildingType: 'qg', nome: 'Quartel General', nivel: futureLevel, base: base };
+            fallbackLevel = futureLevel;
         } else if (selectedBuildingType === 'muralha') {
-            currentBuilding = { buildingType: 'muralha', nome: 'Perímetro Defensivo', nivel: Number(base.muralha_nivel), base: base };
-            fallbackLevel = Number(base.muralha_nivel);
+            currentBuilding = { buildingType: 'muralha', nome: 'Perímetro Defensivo', nivel: futureLevel, base: base };
+            fallbackLevel = futureLevel;
         } else if (foundBuilding) {
-            currentBuilding = { ...foundBuilding, ...buildDef, nome: buildDef?.name || 'Estrutura', base: base };
-            fallbackLevel = foundBuilding.nivel;
+            currentBuilding = { ...foundBuilding, ...buildDef, nome: buildDef?.name || 'Estrutura', nivel: futureLevel, base: base };
+            fallbackLevel = futureLevel;
         } else {
             currentBuilding = { 
                 ...buildDef, 
                 buildingType: selectedBuildingType, 
                 nome: buildDef?.name || 'Projeto Padrão', 
-                nivel: 0,
+                nivel: futureLevel,
                 base: base
             };
         }

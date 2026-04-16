@@ -113,7 +113,8 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
                 if (isFirst) {
                     // Refresh automático do DASHBOARD quando o primeiro item da fila termina
                     setTimeout(() => {
-                        router.reload({ only: ['base', 'jogador'] });
+                        // Refresh completo para garantir que buildingQueue e níveis sincronizem
+                        router.reload();
                     }, 500);
                 }
             }
