@@ -28855,8 +28855,15 @@ const ProductionQueue = ({
   ] });
 };
 const QueueItem = ({ item, isFirst }) => {
+  const lastReloadTime = U$2.useRef(0);
   const [progress2, setProgress] = reactExports.useState(0);
   const [timeLeft, setTimeLeft] = reactExports.useState("");
+  const checkAndReload = () => {
+    const now2 = Date.now();
+    if (now2 - lastReloadTime.current < 5e3) return;
+    lastReloadTime.current = now2;
+    Sr.reload();
+  };
   reactExports.useEffect(() => {
     const calculateProgress = () => {
       const start = new Date(item.started_at).getTime();
@@ -28880,7 +28887,7 @@ const QueueItem = ({ item, isFirst }) => {
         setTimeLeft("CONCLUÍDO");
         if (isFirst) {
           setTimeout(() => {
-            Sr.reload();
+            checkAndReload();
           }, 500);
         }
       }
@@ -28888,7 +28895,7 @@ const QueueItem = ({ item, isFirst }) => {
     const timer = setInterval(calculateProgress, 1e3);
     calculateProgress();
     return () => clearInterval(timer);
-  }, [item, isFirst]);
+  }, [item.id, item.ends_at, isFirst]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
@@ -44273,7 +44280,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Bw5j4h0n.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DZyVESna.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44309,4 +44316,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BNKsXU8o.js.map
+//# sourceMappingURL=app-C-bbUHWH.js.map

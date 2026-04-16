@@ -81,7 +81,10 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
     );
 };
 
+const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean }) => {
     const lastReloadTime = React.useRef(0);
+    const [progress, setProgress] = useState(0);
+    const [timeLeft, setTimeLeft] = useState("");
 
     const checkAndReload = () => {
         const now = Date.now();
