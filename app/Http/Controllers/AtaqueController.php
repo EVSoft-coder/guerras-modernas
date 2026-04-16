@@ -35,8 +35,14 @@ class AtaqueController extends Controller
 
         try {
             $this->sendMission->execute(Auth::user(), $data);
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'success', 'message' => "ORDEM DE MARCHA: Operação tática iniciada com sucesso."]);
+            }
             return redirect()->back()->with('success', "ORDEM DE MARCHA: Operação tática iniciada com sucesso.");
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+            }
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }

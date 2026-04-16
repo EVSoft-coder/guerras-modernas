@@ -79,7 +79,7 @@ class GameService
         ];
     }
 
-    public function iniciarUpgrade(Base $base, string $tipoRaw, int $posX = 0, int $posY = 0): ?Construcao
+    public function iniciarUpgrade(Base $base, string $tipoRaw, int $posX = 0, int $posY = 0): ?\App\Models\BuildingQueue
     {
         $this->syncResources($base);
 
