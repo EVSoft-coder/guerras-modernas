@@ -31259,6 +31259,7 @@ function Mapa({ bases, x: x2, y: y2, raio, origemBase, gameConfig, ataquesEnviad
           setIsSending(true);
           const payload = {
             ...params,
+            origem_id: origemBase == null ? void 0 : origemBase.id,
             destino_id: selectedTarget == null ? void 0 : selectedTarget.id,
             destino_x: selectedTarget == null ? void 0 : selectedTarget.coordenada_x,
             destino_y: selectedTarget == null ? void 0 : selectedTarget.coordenada_y
@@ -44563,7 +44564,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CpmmS8PI.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-COl3wPX2.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44601,4 +44602,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Dvrpb5KF.js.map
+//# sourceMappingURL=app-DajYvqrW.js.map

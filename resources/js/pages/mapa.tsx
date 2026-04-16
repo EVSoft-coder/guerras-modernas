@@ -211,6 +211,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                     setIsSending(true);
                     const payload = {
                         ...params,
+                        origem_id: origemBase?.id,
                         destino_id: selectedTarget?.id,
                         destino_x: selectedTarget?.coordenada_x,
                         destino_y: selectedTarget?.coordenada_y
