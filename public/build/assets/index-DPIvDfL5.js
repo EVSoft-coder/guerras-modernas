@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-DKNNa4eo.js";
+import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-Boihu_aZ.js";
 const unitConfigs = {
   infantaria: {
     id: "infantaria",
@@ -2401,7 +2401,10 @@ entityManager.addComponent(playerUnit, new PlayerComponent());
 const villageEntity = entityManager.createEntity();
 entityManager.addComponent(villageEntity, new VillageComponent(
   playerUnit,
+  1001,
+  // dbId
   1,
+  // level
   { suprimentos: 5e3, combustivel: 5e3, municoes: 5e3, pessoal: 100, metal: 5e3, energia: 5e3 },
   "Vila Alfa"
 ));
@@ -2415,7 +2418,10 @@ entityManager.addComponent(villageEntity, {
 const villageBeta = entityManager.createEntity();
 entityManager.addComponent(villageBeta, new VillageComponent(
   playerUnit,
+  1002,
+  // dbId
   1,
+  // level 
   { suprimentos: 2e3, combustivel: 2e3, municoes: 2e3, pessoal: 50, metal: 2e3, energia: 2e3 },
   "Base Beta"
 ));
@@ -2478,6 +2484,8 @@ rebelCoords.forEach((coord, index) => {
   const rebelVillage = entityManager.createEntity();
   entityManager.addComponent(rebelVillage, new VillageComponent(
     null,
+    2e3 + index,
+    // dbId dummy
     Math.floor(Math.random() * 3) + 1,
     // Nível 1 a 3
     { suprimentos: 1e3, combustivel: 1e3, municoes: 1e3, pessoal: 20, metal: 1e3, energia: 1e3 },
@@ -2496,4 +2504,4 @@ rebelCoords.forEach((coord, index) => {
 });
 stateManager.setState(GameState.PLAYING);
 Logger.info("--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---");
-//# sourceMappingURL=index-BtC5mHYt.js.map
+//# sourceMappingURL=index-DPIvDfL5.js.map

@@ -38,7 +38,8 @@ entityManager.addComponent(playerUnit, new PlayerComponent());
 const villageEntity = entityManager.createEntity();
 entityManager.addComponent(villageEntity, new VillageComponent(
     playerUnit, 
-    1, 
+    1001, // dbId
+    1, // level
     { suprimentos: 5000, combustivel: 5000, municoes: 5000, pessoal: 100, metal: 5000, energia: 5000 }, 
     'Vila Alfa'
 ));
@@ -53,7 +54,8 @@ entityManager.addComponent(villageEntity, {
 const villageBeta = entityManager.createEntity();
 entityManager.addComponent(villageBeta, new VillageComponent(
     playerUnit, 
-    1, 
+    1002, // dbId
+    1, // level 
     { suprimentos: 2000, combustivel: 2000, municoes: 2000, pessoal: 50, metal: 2000, energia: 2000 }, 
     'Base Beta'
 ));
@@ -136,6 +138,7 @@ rebelCoords.forEach((coord, index) => {
     const rebelVillage = entityManager.createEntity();
     entityManager.addComponent(rebelVillage, new VillageComponent(
         null, 
+        2000 + index, // dbId dummy
         Math.floor(Math.random() * 3) + 1, // Nível 1 a 3
         { suprimentos: 1000, combustivel: 1000, municoes: 1000, pessoal: 20, metal: 1000, energia: 1000 }, 
         coord.name,
