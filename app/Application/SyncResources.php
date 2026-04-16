@@ -24,10 +24,7 @@ class SyncResources
 
     public function execute(Base $base): void
     {
-        // Sincronizar Recursos (ResourceService tratará do lock e transação)
+        // Orquestração centralizada no GameService (Fase 4 - Passo 3)
         $this->gameService->tickResources($base);
-        
-        // Processar Filas
-        $this->gameService->processarFilas($base);
     }
 }

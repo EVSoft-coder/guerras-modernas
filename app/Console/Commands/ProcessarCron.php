@@ -21,16 +21,13 @@ class ProcessarCron extends Command
 
         foreach ($bases as $base) {
             try {
-                // 1. Sincronizar Recursos (Persistência Passiva)
-                $gameService->syncResources($base);
+                // Orquestração Unificada (Fase 4 - Passo 3)
+                $gameService->tickResources($base);
 
-                // 2. Processar Fila de Construção e Treino
-                $gameService->processarFilas($base);
-
-                $this->info("Base [ID: {$base->id}] processada.");
+                $this->info("Operação concluída na Base [ID: {$base->id}].");
             } catch (\Exception $e) {
-                Log::error("Erro no Cron para Base {$base->id}: " . $e->getMessage());
-                $this->error("Falha na Base {$base->id}");
+                Log::error("FALHA CRÍTICA NO CRON (Base {$base->id}): " . $e->getMessage());
+                $this->error("Interrupção técnica na Base {$base->id}");
             }
         }
 

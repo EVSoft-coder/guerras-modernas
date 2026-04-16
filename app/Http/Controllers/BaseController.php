@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Application\UpgradeBuilding;
+use App\Application\TrainUnits;
+use App\Application\MarketTrade;
 use App\Models\Base;
 use App\Http\Requests\BuildingUpgradeRequest;
 use App\Http\Requests\TreinarRequest;
@@ -17,11 +19,19 @@ use Illuminate\Support\Facades\Auth;
 class BaseController extends Controller
 {
     private UpgradeBuilding $upgradeBuilding;
+    private TrainUnits $trainUnits;
+    private MarketTrade $marketTrade;
     private GameService $gameService;
 
-    public function __construct(UpgradeBuilding $upgradeBuilding, GameService $gameService)
-    {
+    public function __construct(
+        UpgradeBuilding $upgradeBuilding, 
+        TrainUnits $trainUnits,
+        MarketTrade $marketTrade,
+        GameService $gameService
+    ) {
         $this->upgradeBuilding = $upgradeBuilding;
+        $this->trainUnits = $trainUnits;
+        $this->marketTrade = $marketTrade;
         $this->gameService = $gameService;
     }
 
@@ -57,13 +67,13 @@ class BaseController extends Controller
      */
     public function treinar(TreinarRequest $request)
     {
-        $base = Base::findOrFail($request->base_id);
-        $this->authorize('update', $base);
-
         try {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request) {
-                $this->gameService->iniciarTreino($base, $request->unidade, $request->quantidade);
-            });
+            $this->trainUnits->execute(
+                Auth::user(),
+                $request->base_id,
+                $request->unidade,
+                $request->quantidade
+            );
 
             if ($request->wantsJson()) {
                 return response()->json(['status' => 'success', 'message' => "{$request->quantidade}x " . strtoupper($request->unidade) . " em alistamento."]);
@@ -97,23 +107,13 @@ class BaseController extends Controller
             'recebe'  => 'required|string'
         ]);
 
-        $base = Base::findOrFail($request->base_id);
-        $this->authorize('update', $base);
-
         try {
-            $this->gameService->syncResources($base);
-
-            \Illuminate\Support\Facades\DB::transaction(function () use ($base, $request) {
-                $custo = 300;
-                $ganho = 100;
-                if ($this->gameService->consumirRecursos($base, [$request->oferece => $custo])) {
-                    if ($base->recursos) {
-                        $base->recursos->increment($request->recebe, $ganho);
-                    }
-                } else {
-                    throw new \Exception('Recursos insuficientes para a troca no Mercado Negro.');
-                }
-            });
+            $this->marketTrade->execute(
+                Auth::user(),
+                $request->base_id,
+                $request->oferece,
+                $request->recebe
+            );
             return redirect()->back()->with('success', 'TRANSAÇÃO NO MERCADO NEGRO: Recursos trocados com sucesso.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);

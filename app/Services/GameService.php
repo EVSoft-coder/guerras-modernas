@@ -64,6 +64,7 @@ class GameService
 
     public function tickResources(Base $base): void
     {
+        $this->processarFilas($base);
         $this->syncResources($base);
     }
 
