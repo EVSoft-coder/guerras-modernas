@@ -432,7 +432,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                     tropasDisponiveis={troops}
                     gameConfig={gameConfig}
                     onEnviar={handleSendAttack}
-                    isSending={processing}
+                    isSending={false}
                 />
             )}
 

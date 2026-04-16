@@ -11862,7 +11862,7 @@ function AuthLayout({ children, title, description, ...props }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AuthSimpleLayout, { title, description, ...props, children });
 }
 function ConfirmPassword() {
-  const { data, setData, post, processing: processing2, errors, reset } = me$1({
+  const { data, setData, post, processing, errors, reset } = me$1({
     password: ""
   });
   const submit = (e) => {
@@ -11896,8 +11896,8 @@ function ConfirmPassword() {
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.password })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full", disabled: processing2, children: [
-            processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full", disabled: processing, children: [
+            processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
             "Confirm password"
           ] }) })
         ] }) })
@@ -11923,7 +11923,7 @@ function TextLink({ className = "", children, ...props }) {
   );
 }
 function ForgotPassword({ status }) {
-  const { data, setData, post, processing: processing2, errors } = me$1({
+  const { data, setData, post, processing, errors } = me$1({
     email: ""
   });
   const submit = (e) => {
@@ -11952,8 +11952,8 @@ function ForgotPassword({ status }) {
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.email })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "my-6 flex items-center justify-start", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full", disabled: processing2, children: [
-          processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "my-6 flex items-center justify-start", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full", disabled: processing, children: [
+          processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
           "Email password reset link"
         ] }) })
       ] }),
@@ -12430,7 +12430,7 @@ const Checkbox = reactExports.forwardRef(
 );
 Checkbox.displayName = Root$6.displayName;
 function Login({ status, canResetPassword }) {
-  const { data, setData, post, processing: processing2, errors, reset } = me$1({
+  const { data, setData, post, processing, errors, reset } = me$1({
     email: "",
     password: "",
     remember: false
@@ -12487,8 +12487,8 @@ function Login({ status, canResetPassword }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox, { id: "remember", name: "remember", tabIndex: 3 }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "remember", children: "Remember me" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-4 w-full", tabIndex: 4, disabled: processing2, children: [
-          processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-4 w-full", tabIndex: 4, disabled: processing, children: [
+          processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
           "Log in"
         ] })
       ] }),
@@ -12506,7 +12506,7 @@ const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   default: Login
 }, Symbol.toStringTag, { value: "Module" }));
 function Register() {
-  const { data, setData, post, processing: processing2, errors, reset } = me$1({
+  const { data, setData, post, processing, errors, reset } = me$1({
     name: "",
     email: "",
     password: "",
@@ -12535,7 +12535,7 @@ function Register() {
               autoComplete: "name",
               value: data.name,
               onChange: (e) => setData("name", e.target.value),
-              disabled: processing2,
+              disabled: processing,
               placeholder: "Full name"
             }
           ),
@@ -12553,7 +12553,7 @@ function Register() {
               autoComplete: "email",
               value: data.email,
               onChange: (e) => setData("email", e.target.value),
-              disabled: processing2,
+              disabled: processing,
               placeholder: "email@example.com"
             }
           ),
@@ -12571,7 +12571,7 @@ function Register() {
               autoComplete: "new-password",
               value: data.password,
               onChange: (e) => setData("password", e.target.value),
-              disabled: processing2,
+              disabled: processing,
               placeholder: "Password"
             }
           ),
@@ -12589,14 +12589,14 @@ function Register() {
               autoComplete: "new-password",
               value: data.password_confirmation,
               onChange: (e) => setData("password_confirmation", e.target.value),
-              disabled: processing2,
+              disabled: processing,
               placeholder: "Confirm password"
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.password_confirmation })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-2 w-full", tabIndex: 5, disabled: processing2, children: [
-          processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-2 w-full", tabIndex: 5, disabled: processing, children: [
+          processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
           "Create account"
         ] })
       ] }),
@@ -12613,7 +12613,7 @@ const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   default: Register
 }, Symbol.toStringTag, { value: "Module" }));
 function ResetPassword({ token: token2, email }) {
-  const { data, setData, post, processing: processing2, errors, reset } = me$1({
+  const { data, setData, post, processing, errors, reset } = me$1({
     token: token2,
     email,
     password: "",
@@ -12680,8 +12680,8 @@ function ResetPassword({ token: token2, email }) {
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.password_confirmation, className: "mt-2" })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-4 w-full", disabled: processing2, children: [
-        processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "submit", className: "mt-4 w-full", disabled: processing, children: [
+        processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
         "Reset password"
       ] })
     ] }) })
@@ -12692,7 +12692,7 @@ const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   default: ResetPassword
 }, Symbol.toStringTag, { value: "Module" }));
 function VerifyEmail({ status }) {
-  const { post, processing: processing2 } = me$1({});
+  const { post, processing } = me$1({});
   const submit = (e) => {
     e.preventDefault();
     post(route("verification.send"));
@@ -12701,8 +12701,8 @@ function VerifyEmail({ status }) {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Le$1, { title: "Email verification" }),
     status === "verification-link-sent" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mb-4 text-center text-sm font-medium text-green-600", children: "A new verification link has been sent to the email address you provided during registration." }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: submit, className: "space-y-6 text-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { disabled: processing2, variant: "secondary", children: [
-        processing2 && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { disabled: processing, variant: "secondary", children: [
+        processing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
         "Resend verification email"
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(TextLink, { href: route("logout"), method: "post", className: "mx-auto block text-sm", children: "Log out" })
@@ -30597,7 +30597,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
         tropasDisponiveis: troops,
         gameConfig,
         onEnviar: handleSendAttack,
-        isSending: processing
+        isSending: false
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -31858,7 +31858,7 @@ const breadcrumbs$1 = [
 function Password() {
   const passwordInput = reactExports.useRef(null);
   const currentPasswordInput = reactExports.useRef(null);
-  const { data, setData, errors, put, reset, processing: processing2, recentlySuccessful } = me$1({
+  const { data, setData, errors, put, reset, processing, recentlySuccessful } = me$1({
     current_password: "",
     password: "",
     password_confirmation: ""
@@ -31937,7 +31937,7 @@ function Password() {
           /* @__PURE__ */ jsxRuntimeExports.jsx(InputError, { message: errors.password_confirmation })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { disabled: processing2, children: "Save password" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { disabled: processing, children: "Save password" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             ze,
             {
@@ -31960,7 +31960,7 @@ const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.de
 }, Symbol.toStringTag, { value: "Module" }));
 function DeleteUser() {
   const passwordInput = reactExports.useRef(null);
-  const { data, setData, delete: destroy, processing: processing2, reset, errors, clearErrors } = me$1({ password: "" });
+  const { data, setData, delete: destroy, processing, reset, errors, clearErrors } = me$1({ password: "" });
   const deleteUser = (e) => {
     e.preventDefault();
     destroy(route("profile.destroy"), {
@@ -32009,7 +32009,7 @@ function DeleteUser() {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(DialogClose, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: closeModal, children: "Cancel" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "destructive", disabled: processing2, asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", children: "Delete account" }) })
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "destructive", disabled: processing, asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", children: "Delete account" }) })
             ] })
           ] })
         ] })
@@ -32026,7 +32026,7 @@ const breadcrumbs = [
 function Profile({ mustVerifyEmail, status }) {
   var _a2, _b, _c, _d;
   const auth = ((_a2 = K$1().props) == null ? void 0 : _a2.auth) ?? null;
-  const { data, setData, patch, errors, processing: processing2, recentlySuccessful } = me$1({
+  const { data, setData, patch, errors, processing, recentlySuccessful } = me$1({
     name: ((_b = auth == null ? void 0 : auth.user) == null ? void 0 : _b.name) ?? "",
     email: ((_c = auth == null ? void 0 : auth.user) == null ? void 0 : _c.email) ?? ""
   });
@@ -32090,7 +32090,7 @@ function Profile({ mustVerifyEmail, status }) {
             status === "verification-link-sent" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-2 text-sm font-medium text-green-600", children: "A new verification link has been sent to your email address." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { disabled: processing2, children: "Save" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { disabled: processing, children: "Save" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               ze,
               {
@@ -44534,7 +44534,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-ocVfw86g.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BqKo-EpH.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44570,4 +44570,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Ct1-V7SL.js.map
+//# sourceMappingURL=app-_mXKpU8e.js.map
