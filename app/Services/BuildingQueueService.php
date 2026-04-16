@@ -52,16 +52,28 @@ class BuildingQueueService
      */
     public function processQueue(Base $base)
     {
-        $pending = BuildingQueue::where('base_id', $base->id)
-            ->where('finishes_at', '<=', $this->timeService->now())
-            ->get();
+        $now = $this->timeService->now();
+        
+        // Selecionar IDs pendentes para evitar problemas de hidratação em coleções passadas por referência
+        $pendingIds = BuildingQueue::where('base_id', $base->id)
+            ->where('finishes_at', '<=', $now)
+            ->pluck('id');
 
-        if ($pending->isEmpty()) return;
+        if ($pendingIds->isEmpty()) return;
 
-        DB::transaction(function() use ($base, $pending) {
-            foreach ($pending as $entry) {
+        DB::transaction(function() use ($base, $pendingIds) {
+            foreach ($pendingIds as $id) {
+                $entry = BuildingQueue::find($id);
+                if (!$entry) continue;
+
                 $this->applyUpgrade($base, $entry->type, $entry->target_level);
                 $entry->delete();
+                
+                Log::info('[CONSTRUCTION_FINISHED]', [
+                    'base_id' => $base->id,
+                    'type' => $entry->type,
+                    'level' => $entry->target_level
+                ]);
             }
         });
     }
