@@ -67,6 +67,10 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
         if (!isNaN(nx) && !isNaN(ny)) jumpTo(nx, ny, allBases.find(b => b.coordenada_x === nx && b.coordenada_y === ny));
     };
 
+    const jumpToPlayer = () => {
+        if (playerBase) jumpTo(playerBase.coordenada_x, playerBase.coordenada_y, playerBase);
+    };
+
     const handleSendAttack = (params: any) => {
         if (!playerBase) return;
         eventBus.emit(Events.ATTACK_LAUNCH, {

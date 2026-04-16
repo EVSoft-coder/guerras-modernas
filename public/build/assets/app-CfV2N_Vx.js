@@ -30031,6 +30031,9 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
     const ny = parseInt(searchCoords.y);
     if (!isNaN(nx) && !isNaN(ny)) jumpTo(nx, ny, allBases.find((b2) => b2.coordenada_x === nx && b2.coordenada_y === ny));
   };
+  const jumpToPlayer = () => {
+    if (playerBase) jumpTo(playerBase.coordenada_x, playerBase.coordenada_y, playerBase);
+  };
   const handleSendAttack = (params) => {
     if (!playerBase) return;
     eventBus.emit(Events.ATTACK_LAUNCH, {
@@ -44245,7 +44248,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-4xv_Uru8.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CuXJOVlL.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44281,4 +44284,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CdldUIwr.js.map
+//# sourceMappingURL=app-CfV2N_Vx.js.map
