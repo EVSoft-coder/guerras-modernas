@@ -3,7 +3,7 @@
 namespace App\Application;
 
 use App\Models\Base;
-use App\Models\User;
+use App\Models\Jogador;
 use App\Services\GameService;
 use App\Services\TimeService;
 use Illuminate\Support\Facades\Log;
@@ -23,7 +23,7 @@ class GetDashboardData
         $this->timeService = $timeService;
     }
 
-    public function execute(User $user, ?int $selectedBaseId = null): array
+    public function execute(Jogador $user, ?int $selectedBaseId = null): array
     {
         // 1. Obter Bases
         $bases = $user->bases()

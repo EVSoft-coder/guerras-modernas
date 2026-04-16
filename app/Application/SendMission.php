@@ -3,7 +3,7 @@
 namespace App\Application;
 
 use App\Models\Base;
-use App\Models\User;
+use App\Models\Jogador;
 use App\Services\CombatService;
 use App\Services\TimeService;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +23,7 @@ class SendMission
         $this->timeService = $timeService;
     }
 
-    public function execute(User $user, array $data): void
+    public function execute(Jogador $user, array $data): void
     {
         $baseOrigem = Base::findOrFail($data['origem_id']);
         
