@@ -28532,34 +28532,31 @@ const BuildingModal = ({
   const tipoLower = (_c = building.buildingType) == null ? void 0 : _c.toLowerCase();
   const isMilitary = ["quartel", "aerodromo"].includes(tipoLower);
   const isAvailable = (key) => {
-    if (tipoLower === "quartel") return ["infantaria", "blindado_apc", "tanque_combate", "agente_espiao", "politico"].includes(key);
-    if (tipoLower === "aerodromo") return ["helicoptero_ataque"].includes(key);
+    const k2 = key.toLowerCase();
+    if (tipoLower === "quartel") return ["infantaria", "blindado", "tanque", "agente", "politico"].some((s2) => k2.includes(s2));
+    if (tipoLower === "aerodromo") return ["helicoptero", "drone"].some((s2) => k2.includes(s2));
     return false;
   };
-  const availableUnits = isMilitary ? Object.entries((gameConfig == null ? void 0 : gameConfig.units) || {}).filter(([key]) => isAvailable(key)) : [];
+  const availableUnits = isMilitary ? (unitTypes || []).filter((ut) => isAvailable(ut.name)) : [];
   reactExports.useEffect(() => {
     if (isMilitary && availableUnits.length > 0 && !selectedUnit) {
-      setSelectedUnit(availableUnits[0][0]);
+      setSelectedUnit(availableUnits[0].name);
     }
   }, [building.buildingType, isMilitary, availableUnits]);
-  const renderUnitCard = ([key, unit]) => {
-    const isSelected = selectedUnit === key;
-    Object.entries(unit.cost || {}).every(
-      ([res, amt]) => {
-        var _a3, _b2;
-        return parseResourceValue(((_b2 = (_a3 = building.base) == null ? void 0 : _a3.recursos) == null ? void 0 : _b2[res]) || 0) >= amt * trainQty;
-      }
-    );
+  const renderUnitCard = (unit) => {
+    var _a3, _b2, _c2, _d2, _e3, _f2;
+    const isSelected = selectedUnit === unit.name;
+    parseResourceValue(((_b2 = (_a3 = building.base) == null ? void 0 : _a3.recursos) == null ? void 0 : _b2.suprimentos) || 0) >= unit.cost_suprimentos * trainQty && parseResourceValue(((_d2 = (_c2 = building.base) == null ? void 0 : _c2.recursos) == null ? void 0 : _d2.municoes) || 0) >= unit.cost_municoes * trainQty && parseResourceValue(((_f2 = (_e3 = building.base) == null ? void 0 : _e3.recursos) == null ? void 0 : _f2.combustivel) || 0) >= unit.cost_combustivel * trainQty;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        onClick: () => setSelectedUnit(key),
-        className: `p-3 rounded-xl border transition-all cursor-pointer group ${isSelected ? "bg-sky-500/10 border-sky-500" : "bg-black/20 border-white/5 hover:border-white/20"}`,
+        onClick: () => setSelectedUnit(unit.name),
+        className: `p-3 rounded-xl border transition-all cursor-pointer group ${isSelected ? "bg-emerald-500/10 border-emerald-500" : "bg-black/20 border-white/5 hover:border-white/20"}`,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start mb-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-white truncate w-24", children: unit.name }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { className: "bg-neutral-800 text-neutral-400 text-[8px]", children: [
-              unit.time,
+              unit.build_time,
               "s"
             ] })
           ] }),
@@ -28570,16 +28567,16 @@ const BuildingModal = ({
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "DEF" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: unit.defense_general })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: unit.defense })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "CAP" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: unit.capacity || 0 })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: unit.carry_capacity || 0 })
             ] })
           ] })
         ]
       },
-      key
+      unit.id
     );
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "w-[95vw] max-w-2xl bg-neutral-950/95 border-white/10 text-white overflow-hidden backdrop-blur-2xl p-0 rounded-2xl md:rounded-3xl shadow-[0_0_80px_rgba(0,0,0,1)] max-h-[95vh] flex flex-col", children: [
@@ -30336,6 +30333,69 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
     )
   ] });
 }
+const UnitQueue = ({ queue = [] }) => {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { className: "py-4 bg-white/[0.02] border-b border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "text-emerald-500 animate-pulse", size: 16 }),
+      "Mobilização de Tropas"
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "py-6 space-y-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "popLayout", children: queue.length > 0 ? queue.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(QueueEntry, { item, isFirst: index2 === 0 }, item.id)) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center py-6 border-2 border-dashed border-white/5 rounded-2xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] uppercase font-black text-neutral-600 tracking-widest", children: "Quartel em Espera" }) }) }) })
+  ] });
+};
+const QueueEntry = ({ item, isFirst }) => {
+  var _a2;
+  const calculateProgress = () => {
+    const start = new Date(item.started_at).getTime();
+    const end = new Date(item.finishes_at).getTime();
+    const now2 = (/* @__PURE__ */ new Date()).getTime();
+    const total = end - start;
+    const elapsed = now2 - start;
+    const remaining = end - now2;
+    if (remaining <= 0) return null;
+    const percent22 = Math.min(100, Math.max(0, elapsed / total * 100));
+    const h2 = Math.floor(remaining / 36e5);
+    const m2 = Math.floor(remaining % 36e5 / 6e4);
+    const s2 = Math.floor(remaining % 6e4 / 1e3);
+    const timeStr2 = h2 > 0 ? `${h2}h ${m2}m` : `${m2}m ${s2}s`;
+    return { percent: percent22, timeStr: timeStr2 };
+  };
+  const result = calculateProgress();
+  if (!result) return null;
+  const { percent: percent2, timeStr } = result;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    motion.div,
+    {
+      initial: { x: 20, opacity: 0 },
+      animate: { x: 0, opacity: 1 },
+      className: `relative p-3 rounded-xl border border-white/5 bg-white/[0.01] ${!isFirst ? "opacity-40" : ""}`,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center mb-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-white uppercase", children: (_a2 = item.unitType) == null ? void 0 : _a2.name }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] text-neutral-500 ml-2 font-bold uppercase", children: [
+              "x",
+              item.quantity,
+              " Unidades"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 text-[10px] font-mono font-black text-emerald-400", children: [
+            isFirst && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "size-1 bg-emerald-500 rounded-full animate-ping" }),
+            timeStr
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1 bg-black/40 rounded-full overflow-hidden border border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          motion.div,
+          {
+            className: "h-full bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]",
+            initial: { width: 0 },
+            animate: { width: `${percent2}%` },
+            transition: { type: "spring", bounce: 0, duration: 1.5 }
+          }
+        ) })
+      ]
+    }
+  );
+};
 function VillageDashboard({
   jogador,
   base: initialBase,
@@ -30350,7 +30410,10 @@ function VillageDashboard({
   buildings,
   population,
   resources,
-  buildingQueue
+  buildingQueue,
+  unitQueue = [],
+  units = [],
+  unitTypes: unitTypes2 = []
 }) {
   const { globalState } = useGameEntities();
   const currentBuildings = buildings || (initialBase == null ? void 0 : initialBase.edificios) || [];
@@ -30445,12 +30508,30 @@ function VillageDashboard({
     addToast("Pedido de atualização estrutural enviado ao Comando.", "info");
   };
   const handleTrain = (unidade, quantidade) => {
-    eventBus.emit(Events.UNIT_TRAIN_REQUEST, {
-      base_id: base.id,
-      unidade,
-      quantidade
+    setIsTraining(true);
+    const unitType = unitTypes2.find(
+      (ut) => ut.name.toLowerCase().includes(unidade.toLowerCase())
+    );
+    if (!unitType) {
+      addToast("SÉRIE DE DADOS CORROMPIDA: Unidade não mapeada no registo central.", "error");
+      setIsTraining(false);
+      return;
+    }
+    Sr.post("/units/recruit", {
+      unit_type_id: unitType.id,
+      total_quantity: quantidade,
+      // The new controller expects 'quantity'
+      quantity: quantidade
+    }, {
+      onSuccess: () => {
+        setIsTraining(false);
+        addToast("Ordem de mobilização transmitida aos quartéis.", "success");
+      },
+      onError: (err) => {
+        setIsTraining(false);
+        addToast(Object.values(err)[0] || "Falha na mobilização.", "error");
+      }
     });
-    addToast("Ordem de mobilização transmitida aos quartéis.", "military");
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-1 flex-col gap-10 p-8 bg-neutral-950 text-white min-h-screen relative overflow-hidden", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 right-0 w-[60%] h-[60%] bg-sky-500/10 blur-[200px] pointer-events-none animate-pulse duration-[10s]" }),
@@ -30500,11 +30581,15 @@ function VillageDashboard({
           ProductionQueue,
           {
             construcoes: buildingQueue || (base == null ? void 0 : base.buildingQueue) || (base == null ? void 0 : base.construcoes) || [],
-            treinos: (base == null ? void 0 : base.treinos) || [],
+            treinos: [],
             gameConfig
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(GarrisonPanel, { tropas: (base == null ? void 0 : base.tropas) ?? [], gameConfig }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(UnitQueue, { queue: unitQueue }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(GarrisonPanel, { tropas: units.length > 0 ? units.map((u3) => {
+          var _a2;
+          return { unidade: (_a2 = u3.type) == null ? void 0 : _a2.name, quantidade: u3.quantity };
+        }) : (base == null ? void 0 : base.tropas) ?? [], gameConfig }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { className: "py-4 bg-white/[0.02] border-b border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center gap-2", children: [
@@ -30543,7 +30628,8 @@ function VillageDashboard({
         onTrain: handleTrain,
         isUpgrading,
         isTraining,
-        population: currentPopulation
+        population: currentPopulation,
+        unitTypes: unitTypes2
       }
     )
   ] });
@@ -44259,7 +44345,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DQPrP_dQ.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-i45xvHcl.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44295,4 +44381,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CN7uXshb.js.map
+//# sourceMappingURL=app-CXrw8NZv.js.map

@@ -17,10 +17,13 @@ import { Logger } from '@src/core/Logger';
 
 import { useGameEntities } from '@/hooks/use-game-entities';
 
+import { UnitQueue } from '@/components/game/UnitQueue';
+
 export function VillageDashboard({ 
     jogador, base: initialBase, bases: backendBases = [], taxasPerSecond, gameConfig, 
     ataquesRecebidos, ataquesEnviados, relatoriosGlobal, populacao, // deprecated props
-    buildings, population, resources, buildingQueue
+    buildings, population, resources, buildingQueue,
+    unitQueue = [], units = [], unitTypes = []
 }: DashboardProps & { 
     bases?: any[], 
     populacao?: any, 
@@ -28,6 +31,9 @@ export function VillageDashboard({
     population?: any, 
     resources?: any,
     buildingQueue?: any[],
+    unitQueue?: any[],
+    units?: any[],
+    unitTypes?: any[],
     ataquesRecebidos?: any[],
     ataquesEnviados?: any[],
     relatoriosGlobal?: any[],
@@ -159,12 +165,33 @@ export function VillageDashboard({
     };
 
     const handleTrain = (unidade: string, quantidade: number) => {
-        eventBus.emit(Events.UNIT_TRAIN_REQUEST, {
-            base_id: base.id,
-            unidade,
-            quantidade
+        setIsTraining(true);
+        
+        // Encontrar o unit_type_id correspondente
+        const unitType = unitTypes.find((ut: any) => 
+            ut.name.toLowerCase().includes(unidade.toLowerCase())
+        );
+
+        if (!unitType) {
+            addToast('SÉRIE DE DADOS CORROMPIDA: Unidade não mapeada no registo central.', 'error');
+            setIsTraining(false);
+            return;
+        }
+
+        router.post('/units/recruit', {
+            unit_type_id: unitType.id,
+            total_quantity: quantidade, // The new controller expects 'quantity'
+            quantity: quantidade
+        }, {
+            onSuccess: () => {
+                setIsTraining(false);
+                addToast('Ordem de mobilização transmitida aos quartéis.', 'success');
+            },
+            onError: (err) => {
+                setIsTraining(false);
+                addToast(Object.values(err)[0] as string || 'Falha na mobilização.', 'error');
+            }
         });
-        addToast('Ordem de mobilização transmitida aos quartéis.', 'military' as any);
     };
 
     return (
@@ -223,10 +250,11 @@ export function VillageDashboard({
                 <div className="lg:col-span-4 flex flex-col gap-8">
                     <ProductionQueue 
                         construcoes={buildingQueue || base?.buildingQueue || base?.construcoes || []} 
-                        treinos={base?.treinos || []} 
+                        treinos={[]} 
                         gameConfig={gameConfig} 
                     />
-                    <GarrisonPanel tropas={base?.tropas ?? []} gameConfig={gameConfig} />
+                    <UnitQueue queue={unitQueue} />
+                    <GarrisonPanel tropas={units.length > 0 ? units.map(u => ({ unidade: u.type?.name, quantidade: u.quantity })) : (base?.tropas ?? [])} gameConfig={gameConfig} />
                     
                     <Card className="bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group">
                         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent"></div>
@@ -274,6 +302,7 @@ export function VillageDashboard({
                 isUpgrading={isUpgrading}
                 isTraining={isTraining}
                 population={currentPopulation}
+                unitTypes={unitTypes}
             />
         </div>
     );

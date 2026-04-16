@@ -11,6 +11,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ManualController;
 use App\Http\Controllers\RelatorioController;
+use App\Http\Controllers\UnitRecruitmentController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -123,6 +124,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
     
     Route::post('/buildings/upgrade', [BaseController::class, 'upgrade'])->name('buildings.upgrade');
+    Route::post('/units/recruit', [UnitRecruitmentController::class, 'recruit'])->name('units.recruit');
     
     // Gestão de Base
     Route::prefix('base')->name('base.')->group(function () {

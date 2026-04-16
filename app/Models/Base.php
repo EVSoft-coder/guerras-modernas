@@ -81,6 +81,16 @@ class Base extends Model
         return $this->hasMany(Treino::class, 'base_id');
     }
 
+    public function units()
+    {
+        return $this->hasMany(Unit::class, 'base_id');
+    }
+
+    public function unitQueue()
+    {
+        return $this->hasMany(UnitQueue::class, 'base_id');
+    }
+
     /* Mapeamento Táctico para ECS Interface */
     public function getOwnerIdAttribute()
     {

@@ -18,6 +18,7 @@ interface BuildingModalProps {
     isUpgrading: boolean;
     isTraining: boolean;
     population: any;
+    unitTypes?: any[];
 }
 
 export const BuildingModal: React.FC<BuildingModalProps> = ({ 
@@ -125,37 +126,39 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     const isMilitary = ['quartel', 'aerodromo'].includes(tipoLower);
     
     const isAvailable = (key: string) => {
-        if (tipoLower === 'quartel') return ['infantaria', 'blindado_apc', 'tanque_combate', 'agente_espiao', 'politico'].includes(key);
-        if (tipoLower === 'aerodromo') return ['helicoptero_ataque'].includes(key);
+        const k = key.toLowerCase();
+        if (tipoLower === 'quartel') return ['infantaria', 'blindado', 'tanque', 'agente', 'politico'].some(s => k.includes(s));
+        if (tipoLower === 'aerodromo') return ['helicoptero', 'drone'].some(s => k.includes(s));
         return false;
     };
 
-    const availableUnits = isMilitary ? Object.entries(gameConfig?.units || {}).filter(([key]) => isAvailable(key)) : [];
+    const availableUnits = isMilitary ? (unitTypes || []).filter(ut => isAvailable(ut.name)) : [];
 
     // Escolher a primeira unidade por defeito quando o modal abre num edifício militar
     useEffect(() => {
         if (isMilitary && availableUnits.length > 0 && !selectedUnit) {
-            setSelectedUnit(availableUnits[0][0]);
+            setSelectedUnit(availableUnits[0].name);
         }
     }, [building.buildingType, isMilitary, availableUnits]);
 
-    const renderUnitCard = ([key, unit]: [string, any]) => {
-        const isSelected = selectedUnit === key;
-        const canAffordUnit = Object.entries(unit.cost || {}).every(([res, amt]) => 
-            parseResourceValue(building.base?.recursos?.[res] || 0) >= ((amt as number) * trainQty)
-        );
+    const renderUnitCard = (unit: any) => {
+        const isSelected = selectedUnit === unit.name;
+        const canAffordUnit = 
+            parseResourceValue(building.base?.recursos?.suprimentos || 0) >= (unit.cost_suprimentos * trainQty) &&
+            parseResourceValue(building.base?.recursos?.municoes || 0) >= (unit.cost_municoes * trainQty) &&
+            parseResourceValue(building.base?.recursos?.combustivel || 0) >= (unit.cost_combustivel * trainQty);
 
         return (
             <div 
-                key={key}
-                onClick={() => setSelectedUnit(key)}
+                key={unit.id}
+                onClick={() => setSelectedUnit(unit.name)}
                 className={`p-3 rounded-xl border transition-all cursor-pointer group ${
-                    isSelected ? 'bg-sky-500/10 border-sky-500' : 'bg-black/20 border-white/5 hover:border-white/20'
+                    isSelected ? 'bg-emerald-500/10 border-emerald-500' : 'bg-black/20 border-white/5 hover:border-white/20'
                 }`}
             >
                 <div className="flex justify-between items-start mb-2">
                     <span className="text-[10px] font-black uppercase text-white truncate w-24">{unit.name}</span>
-                    <Badge className="bg-neutral-800 text-neutral-400 text-[8px]">{unit.time}s</Badge>
+                    <Badge className="bg-neutral-800 text-neutral-400 text-[8px]">{unit.build_time}s</Badge>
                 </div>
                 <div className="grid grid-cols-3 gap-1 text-[8px] uppercase font-bold text-neutral-500">
                     <div className="flex flex-col">
@@ -164,11 +167,11 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                     </div>
                     <div className="flex flex-col">
                         <span>DEF</span>
-                        <span className="text-white">{unit.defense_general}</span>
+                        <span className="text-white">{unit.defense}</span>
                     </div>
                     <div className="flex flex-col">
                         <span>CAP</span>
-                        <span className="text-white">{unit.capacity || 0}</span>
+                        <span className="text-white">{unit.carry_capacity || 0}</span>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@ use App\Models\Base;
 use Illuminate\Contracts\Auth\Authenticatable;
 use App\Services\GameService;
 use App\Services\TimeService;
+use App\Services\UnitQueueService;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -45,9 +46,10 @@ class GetDashboardData
 
         // PASSO 1 — BACKEND ORDEM CORRETA: chamar processQueue ANTES de qualquer query profunda
         $this->gameService->processarFilas($base);
+        app(UnitQueueService::class)->process($base);
 
         // 2. Agora carregar os dados atualizados
-        $base->load(['recursos', 'edificios', 'buildingQueue', 'treinos', 'tropas']);
+        $base->load(['recursos', 'edificios', 'buildingQueue', 'unitQueue', 'units', 'treinos', 'tropas']);
 
         // 3. Recursos Formatados
         $recursos = $base->recursos;
@@ -89,15 +91,19 @@ class GetDashboardData
             'relatoriosGlobal' => $relatoriosGlobal,
             'gameConfig'       => config('game'),
             'buildingQueue'    => $base->buildingQueue,
+            'unitQueue'        => $base->unitQueue()->with('unitType')->get(),
+            'units'            => $base->units()->with('type')->get(),
+            'unitTypes'        => \App\Models\UnitType::all(),
             'gameData'         => [
                 'resources'  => $resources,
-                'units'      => $base->tropas,
+                'units'      => $base->units,
                 'buildings'  => $base->edificios,
                 'population' => $populacao,
                 'movements'  => [
                     'sent'     => \App\Models\Ataque::where('origem_base_id', $base->id)->where('processado', false)->get(),
                     'received' => \App\Models\Ataque::where('destino_base_id', $base->id)->where('processado', false)->get(),
                     'queue'    => $base->buildingQueue,
+                    'unitQueue'=> $base->unitQueue,
                 ],
                 'rebels' => Base::whereNull('jogador_id')->with('recursos')->get()->map(function($b) {
                     return array_merge($b->toArray(), [
