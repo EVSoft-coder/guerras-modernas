@@ -28812,7 +28812,9 @@ const ProductionQueue = ({
   treinos = [],
   gameConfig
 }) => {
-  console.log("[PRODUCTION_QUEUE] Data:", { construcoes, treinos });
+  reactExports.useEffect(() => {
+    console.log("[PRODUCTION_QUEUE] Data Sync:", { construcoes, treinos });
+  }, [construcoes, treinos]);
   const unifiedQueue = [
     ...construcoes.map((c2) => ({
       id: c2.id,
@@ -28855,47 +28857,24 @@ const ProductionQueue = ({
   ] });
 };
 const QueueItem = ({ item, isFirst }) => {
-  const lastReloadTime = U$2.useRef(0);
-  const [progress2, setProgress] = reactExports.useState(0);
-  const [timeLeft, setTimeLeft] = reactExports.useState("");
-  const checkAndReload = () => {
-    const now2 = Date.now();
-    if (now2 - lastReloadTime.current < 5e3) return;
-    lastReloadTime.current = now2;
-    Sr.reload();
+  const calculateProgress = () => {
+    const start = new Date(item.started_at).getTime();
+    const end = new Date(item.ends_at).getTime();
+    const now2 = (/* @__PURE__ */ new Date()).getTime();
+    const total = end - start;
+    const elapsed = now2 - start;
+    const remaining = end - now2;
+    const percent22 = Math.min(100, Math.max(0, elapsed / total * 100));
+    const h2 = Math.floor(remaining / 36e5);
+    const m2 = Math.floor(remaining % 36e5 / 6e4);
+    const s2 = Math.floor(remaining % 6e4 / 1e3);
+    let timeStr2 = "CONCLUÍDO";
+    if (remaining > 0) {
+      timeStr2 = h2 > 0 ? `${h2}h ${m2}m` : `${m2}m ${s2}s`;
+    }
+    return { percent: percent22, timeStr: timeStr2 };
   };
-  reactExports.useEffect(() => {
-    const calculateProgress = () => {
-      const start = new Date(item.started_at).getTime();
-      const end = new Date(item.ends_at).getTime();
-      const now2 = (/* @__PURE__ */ new Date()).getTime();
-      const total = end - start;
-      const elapsed = now2 - start;
-      const remaining = end - now2;
-      const percent2 = Math.min(100, Math.max(0, elapsed / total * 100));
-      setProgress(percent2);
-      if (remaining > 0) {
-        const h2 = Math.floor(remaining / 36e5);
-        const m2 = Math.floor(remaining % 36e5 / 6e4);
-        const s2 = Math.floor(remaining % 6e4 / 1e3);
-        if (h2 > 0) {
-          setTimeLeft(`${h2}h ${m2}m`);
-        } else {
-          setTimeLeft(`${m2}m ${s2}s`);
-        }
-      } else {
-        setTimeLeft("CONCLUÍDO");
-        if (isFirst) {
-          setTimeout(() => {
-            checkAndReload();
-          }, 500);
-        }
-      }
-    };
-    const timer = setInterval(calculateProgress, 1e3);
-    calculateProgress();
-    return () => clearInterval(timer);
-  }, [item.id, item.ends_at, isFirst]);
+  const { percent: percent2, timeStr } = calculateProgress();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
@@ -28911,7 +28890,7 @@ const QueueItem = ({ item, isFirst }) => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col items-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `text-[10px] font-mono font-black flex items-center gap-1.5 ${isFirst ? "text-white" : "text-neutral-500"}`, children: [
             isFirst && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "size-1 bg-red-500 rounded-full animate-ping" }),
-            timeLeft
+            timeStr
           ] }) })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative h-1 bg-neutral-900 rounded-full overflow-hidden shadow-inner border border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -28919,7 +28898,7 @@ const QueueItem = ({ item, isFirst }) => {
           {
             className: `absolute inset-y-0 left-0 ${item.buildingType === "construcao" ? "bg-gradient-to-r from-orange-600 to-orange-400" : "bg-gradient-to-r from-sky-600 to-sky-400"} shadow-[0_0_10px_rgba(14,165,233,0.3)]`,
             initial: { width: 0 },
-            animate: { width: `${progress2}%` },
+            animate: { width: `${percent2}%` },
             transition: { type: "spring", bounce: 0, duration: 1.5 }
           }
         ) }),
@@ -44280,7 +44259,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DZyVESna.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Cb-aVP9d.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44316,4 +44295,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-C-bbUHWH.js.map
+//# sourceMappingURL=app-Hegd1vPx.js.map

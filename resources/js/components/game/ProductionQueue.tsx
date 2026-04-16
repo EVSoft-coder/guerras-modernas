@@ -24,9 +24,11 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
     treinos = [], 
     gameConfig 
 }) => {
-    // PASSO 4 — DEBUG
-    console.log('[PRODUCTION_QUEUE] Data:', { construcoes, treinos });
-    // Unificar e ordenar as filas pelo tempo de conclusão
+    useEffect(() => {
+        console.log('[PRODUCTION_QUEUE] Data Sync:', { construcoes, treinos });
+    }, [construcoes, treinos]);
+
+    // Ordenar as filas pelo tempo de conclusão
     const unifiedQueue: QueueItemData[] = [
         ...construcoes.map(c => ({
             id: c.id,
@@ -82,58 +84,32 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
 };
 
 const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean }) => {
-    const lastReloadTime = React.useRef(0);
-    const [progress, setProgress] = useState(0);
-    const [timeLeft, setTimeLeft] = useState("");
 
-    const checkAndReload = () => {
-        const now = Date.now();
-        // Throttle: No more than 1 reload every 5 seconds
-        if (now - lastReloadTime.current < 5000) return;
+    // PASSO 4 — REMOVER LOOPS (Removido router.reload e setInterval sem controlo)
+    const calculateProgress = () => {
+        const start = new Date(item.started_at).getTime();
+        const end = new Date(item.ends_at).getTime();
+        const now = new Date().getTime();
+
+        const total = end - start;
+        const elapsed = now - start;
+        const remaining = end - now;
+
+        const percent = Math.min(100, Math.max(0, (elapsed / total) * 100));
         
-        lastReloadTime.current = now;
-        router.reload();
+        const h = Math.floor(remaining / 3600000);
+        const m = Math.floor((remaining % 3600000) / 60000);
+        const s = Math.floor((remaining % 60000) / 1000);
+        
+        let timeStr = "CONCLUÍDO";
+        if (remaining > 0) {
+            timeStr = h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`;
+        }
+
+        return { percent, timeStr };
     };
 
-    useEffect(() => {
-        const calculateProgress = () => {
-            const start = new Date(item.started_at).getTime();
-            const end = new Date(item.ends_at).getTime();
-            const now = new Date().getTime();
-
-            const total = end - start;
-            const elapsed = now - start;
-            const remaining = end - now;
-
-            const percent = Math.min(100, Math.max(0, (elapsed / total) * 100));
-            setProgress(percent);
-
-            if (remaining > 0) {
-                const h = Math.floor(remaining / 3600000);
-                const m = Math.floor((remaining % 3600000) / 60000);
-                const s = Math.floor((remaining % 60000) / 1000);
-                
-                if (h > 0) {
-                    setTimeLeft(`${h}h ${m}m`);
-                } else {
-                    setTimeLeft(`${m}m ${s}s`);
-                }
-            } else {
-                setTimeLeft("CONCLUÍDO");
-                if (isFirst) {
-                    // Refresh automático do DASHBOARD quando o primeiro item da fila termina
-                    setTimeout(() => {
-                        checkAndReload();
-                    }, 500);
-                }
-            }
-        };
-
-        const timer = setInterval(calculateProgress, 1000);
-        calculateProgress();
-
-        return () => clearInterval(timer);
-    }, [item.id, item.ends_at, isFirst]);
+    const { percent, timeStr } = calculateProgress();
 
     return (
         <motion.div 
@@ -154,7 +130,7 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
                 <div className="flex flex-col items-end">
                     <span className={`text-[10px] font-mono font-black flex items-center gap-1.5 ${isFirst ? 'text-white' : 'text-neutral-500'}`}>
                         {isFirst && <div className="size-1 bg-red-500 rounded-full animate-ping"></div>}
-                        {timeLeft}
+                        {timeStr}
                     </span>
                 </div>
             </div>
@@ -165,7 +141,7 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
                         item.buildingType === 'construcao' ? 'bg-gradient-to-r from-orange-600 to-orange-400' : 'bg-gradient-to-r from-sky-600 to-sky-400'
                     } shadow-[0_0_10px_rgba(14,165,233,0.3)]`}
                     initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
+                    animate={{ width: `${percent}%` }}
                     transition={{ type: "spring", bounce: 0, duration: 1.5 }}
                 />
             </div>
