@@ -82,46 +82,74 @@ class GameService
 
     public function iniciarUpgrade(Base $base, string $tipoRaw, int $posX = 0, int $posY = 0): ?\App\Models\BuildingQueue
     {
-        $this->syncResources($base);
-
         $tipo = BuildingType::normalize($tipoRaw);
-        $nivelAtual = $this->obterNivelEdificio($base, $tipo);
-        $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
+        
+        return DB::transaction(function() use ($base, $tipo, $posX, $posY) {
+            // 1. Verificar se jǭ existe queue (PASSO 2.1)
+            $this->buildingQueueService->validateAvailableQueue($base);
 
-        $stats = $this->obterEstatisticasPopulacao($base);
-        $popRequerida = config("game.buildings.{$tipo}.cost.pessoal") ?? 0;
+            // 2. Sync resources (PASSO 2.2)
+            $this->syncResources($base);
 
-        if ($stats['available'] < $popRequerida) {
-            throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente. Melhore o Complexo Residencial.");
-        }
+            $nivelAtual = $this->obterNivelEdificio($base, $tipo);
+            $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
 
-        if ($nivelAtual === 0 && !in_array($tipo, [BuildingType::QG, BuildingType::MURALHA])) {
-            if ($posX === 0 && $posY === 0) {
-                $pos = $this->findNextAvailablePosition($base);
-                $posX = $pos['x'];
-                $posY = $pos['y'];
+            // 3. Validar recursos e população (PASSO 2.3)
+            $stats = $this->obterEstatisticasPopulacao($base);
+            $popRequerida = config("game.buildings.{$tipo}.cost.pessoal") ?? 0;
+
+            if ($stats['available'] < $popRequerida) {
+                throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente. Melhore o Complexo Residencial.");
             }
 
-            $exists = DB::table('edificios')
-                ->where('base_id', $base->id)
-                ->where('pos_x', $posX)
-                ->where('pos_y', $posY)
-                ->exists();
-            
-            if ($exists) {
-                $pos = $this->findNextAvailablePosition($base);
-                $posX = $pos['x'];
-                $posY = $pos['y'];
-            }
-        }
-
-        return DB::transaction(function() use ($base, $tipo, $custos, $posX, $posY) {
-            if (!$this->consumirRecursos($base, $custos)) {
+            // 4. Deduzir recursos (PASSO 2.5)
+            if (!$this->consumirRecursosInternal($base, $custos)) {
+                \Illuminate\Support\Facades\Log::error('[BUILD_FAILED] Saldo insuficiente', ['base_id' => $base->id, 'tipo' => $tipo]);
                 throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
             }
 
-            return $this->buildingQueueService->startConstruction($base, $tipo, $posX, $posY);
+            // 5. Obter building_id (PASSO 5)
+            $buildingId = null;
+            if (!in_array($tipo, [BuildingType::QG, BuildingType::MURALHA])) {
+                $buildingId = $base->edificios()->where('tipo', $tipo)->first()?->id;
+            }
+
+            \Illuminate\Support\Facades\Log::info('[BUILD_START]', ['base_id' => $base->id, 'tipo' => $tipo]);
+
+            // 6. Criar queue (PASSO 2.4 / PASSO 3)
+            $queue = $this->buildingQueueService->startConstruction($base, $tipo, $posX, $posY, $buildingId);
+
+            if (!$queue) {
+                 \Illuminate\Support\Facades\Log::error('[BUILD_FAILED] Falha ao criar entrada na fila', ['base_id' => $base->id, 'tipo' => $tipo]);
+                 throw new \Exception("ERRO CRÍTICO: Não foi possível registar o plano de engenharia.");
+            }
+
+            \Illuminate\Support\Facades\Log::info('[BUILD_QUEUE_CREATED]', ['id' => $queue->id, 'base_id' => $base->id]);
+
+            return $queue;
         });
+    }
+
+    /**
+     * Versão interna sem transação própria (reaproveita a do chamador)
+     */
+    private function consumirRecursosInternal(Base $base, array $custos): bool
+    {
+        $rec = $base->recursos;
+        if (!$rec) return false;
+
+        foreach ($custos as $res => $qtd) {
+            if ($qtd <= 0) continue;
+            $available = (float)($rec->$res ?? 0);
+            if ($available < $qtd) return false;
+        }
+
+        foreach ($custos as $res => $qtd) {
+            if ($qtd <= 0) continue;
+            $rec->decrement($res, $qtd);
+        }
+
+        return true;
     }
 
     public function iniciarTreino(Base $base, string $unidade, int $quantidade): Treino

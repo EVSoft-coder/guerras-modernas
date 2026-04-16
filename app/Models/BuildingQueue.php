@@ -10,6 +10,7 @@ class BuildingQueue extends Model
 
     protected $fillable = [
         'base_id',
+        'building_id',
         'type',
         'target_level',
         'started_at',

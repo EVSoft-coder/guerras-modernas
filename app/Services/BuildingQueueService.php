@@ -21,15 +21,22 @@ class BuildingQueueService
     }
 
     /**
-     * Inicia uma nova construção na fila.
+     * Valida se a fila está livre para novas ordens.
+     * Fase Crítica - Passo 2.1
      */
-    public function startConstruction(Base $base, string $type, int $posX = 0, int $posY = 0)
+    public function validateAvailableQueue(Base $base): void
     {
-        // PASSO 4 — BLOQUEIOS: Impedir nova construção se já existir uma na fila
         if (BuildingQueue::where('base_id', $base->id)->exists()) {
             throw new \Exception("ENGENHARIA: Equipa de construção ocupada. Aguarde a conclusão da obra atual.");
         }
+    }
 
+    /**
+     * Inicia uma nova construção na fila.
+     * Passo 5: building_id validation
+     */
+    public function startConstruction(Base $base, string $type, int $posX = 0, int $posY = 0, ?int $buildingId = null)
+    {
         $type = BuildingType::normalize($type);
         
         $nivelAtual = $this->getCurrentLevel($base, $type);
@@ -40,8 +47,10 @@ class BuildingQueueService
         $tempo = BuildingRules::calculateTime($type, $nivelAtual);
         $now = $this->timeService->now();
         
+        // PASSO 3 - insertGetId / Create
         return BuildingQueue::create([
             'base_id' => $base->id,
+            'building_id' => $buildingId,
             'type' => $type,
             'target_level' => $targetLevel,
             'started_at' => $now,
