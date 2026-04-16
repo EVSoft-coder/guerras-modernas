@@ -101,11 +101,49 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                     </div>
                 </DialogHeader>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+                    {/* TARGET INTEL (NOVO) */}
+                    <div className="p-6 bg-red-950/20 border-r border-white/5 space-y-4">
+                        <h4 className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                            <Search size={12} /> Target Intelligence
+                        </h4>
+                        
+                        <div className="space-y-4">
+                            <div className="p-3 bg-black/40 rounded-xl border border-red-500/10">
+                                <span className="text-[8px] text-neutral-500 uppercase font-black block mb-1">Status Operacional</span>
+                                <div className="text-[10px] font-bold text-red-400 flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                    ALVO HOSTIL DETECTADO
+                                </div>
+                            </div>
+
+                            <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                                <span className="text-[8px] text-neutral-500 uppercase font-black block mb-1">Contexto Geográfico</span>
+                                <div className="text-[10px] font-mono text-white">
+                                    Distância: <span className="text-sky-400">{stats?.distancia} KM</span>
+                                </div>
+                                <div className="text-[10px] font-mono text-white mt-1">
+                                    Quadrante: <span className="text-sky-400">{destinoBase?.coordenada_x > 50 ? 'ESTE' : 'OESTE'} / {destinoBase?.coordenada_y > 50 ? 'SUL' : 'NORTE'}</span>
+                                </div>
+                            </div>
+
+                            <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                                <span className="text-[8px] text-neutral-500 uppercase font-black block mb-1">Defesas Estimadas</span>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <Shield size={12} className="text-neutral-500" />
+                                    <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                                        <div className="bg-red-500 h-full" style={{ width: '65%' }} />
+                                    </div>
+                                </div>
+                                <span className="text-[8px] text-neutral-600 mt-1 block italic text-right">Dados Reais ocultos pelo Radar</span>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* SELECÇÃO DE TROPAS */}
-                    <div className="p-6 border-r border-white/5 space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar bg-white/[0.02]">
+                    <div className="p-6 border-r border-white/5 space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar bg-white/[0.02]">
                         <h4 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                            <Sword size={12} /> Unidades de Combate
+                            <Sword size={12} /> Ordem de Batalha
                         </h4>
                         
                         {tropasDisponiveis.length === 0 ? (
@@ -113,27 +151,35 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                 <p className="text-[10px] text-neutral-600 uppercase">Guarnição Vazia</p>
                             </div>
                         ) : (
-                            tropasDisponiveis.map(tropa => (
-                                <div key={tropa.unidade} className="space-y-2 p-3 bg-black/40 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-[10px] font-bold uppercase tracking-wide text-neutral-300">
-                                            {tropa.unidade.replace(/_/g, ' ')}
-                                        </span>
-                                        <Badge variant="outline" className="text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400 font-mono">
-                                            {selectedTropas[tropa.unidade] || 0} / {tropa.quantidade}
-                                        </Badge>
+                            tropasDisponiveis.map(tropa => {
+                                const isArmored = ['tanque_combate', 'blindado_apc', 'helicoptero_ataque'].includes(tropa.unidade);
+                                return (
+                                    <div key={tropa.unidade} className="space-y-2 p-3 bg-black/40 rounded-xl border border-white/5 hover:border-white/10 transition-colors group">
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex flex-col">
+                                                <span className="text-[9px] font-black uppercase tracking-wide text-neutral-300 group-hover:text-sky-400 transition-colors">
+                                                    {tropa.unidade.replace(/_/g, ' ')}
+                                                </span>
+                                                <span className={`text-[7px] font-black ${isArmored ? 'text-orange-500' : 'text-emerald-500'} uppercase`}>
+                                                    {isArmored ? 'UNIT: ARMORED' : 'UNIT: INFANTRY'}
+                                                </span>
+                                            </div>
+                                            <Badge variant="outline" className="text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400 font-mono">
+                                                {selectedTropas[tropa.unidade] || 0} / {tropa.quantidade}
+                                            </Badge>
+                                        </div>
+                                        <input 
+                                            type="range"
+                                            min="0"
+                                            max={tropa.quantidade}
+                                            step="1"
+                                            value={selectedTropas[tropa.unidade] || 0}
+                                            onChange={(e) => handleTropaChange(tropa.unidade, parseInt(e.target.value))}
+                                            className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                                        />
                                     </div>
-                                    <input 
-                                        type="range"
-                                        min="0"
-                                        max={tropa.quantidade}
-                                        step="1"
-                                        value={selectedTropas[tropa.unidade] || 0}
-                                        onChange={(e) => handleTropaChange(tropa.unidade, parseInt(e.target.value))}
-                                        className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-500"
-                                    />
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
 

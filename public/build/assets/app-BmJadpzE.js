@@ -29093,34 +29093,81 @@ const AttackModal = ({
         ] })
       ] })
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-0", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 border-r border-white/5 space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar bg-white/[0.02]", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Sword, { size: 12 }),
-          " Unidades de Combate"
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-0", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-red-950/20 border-r border-white/5 space-y-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-[10px] font-black text-red-400 uppercase tracking-widest mb-2 flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { size: 12 }),
+          " Target Intelligence"
         ] }),
-        tropasDisponiveis.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-8 text-center border border-dashed border-white/10 rounded-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-neutral-600 uppercase", children: "Guarnição Vazia" }) }) : tropasDisponiveis.map((tropa) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 p-3 bg-black/40 rounded-xl border border-white/5 hover:border-white/10 transition-colors", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-bold uppercase tracking-wide text-neutral-300", children: tropa.unidade.replace(/_/g, " ") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { variant: "outline", className: "text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400 font-mono", children: [
-              selectedTropas[tropa.unidade] || 0,
-              " / ",
-              tropa.quantidade
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-black/40 rounded-xl border border-red-500/10", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] text-neutral-500 uppercase font-black block mb-1", children: "Status Operacional" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] font-bold text-red-400 flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" }),
+              "ALVO HOSTIL DETECTADO"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              type: "range",
-              min: "0",
-              max: tropa.quantidade,
-              step: "1",
-              value: selectedTropas[tropa.unidade] || 0,
-              onChange: (e) => handleTropaChange(tropa.unidade, parseInt(e.target.value)),
-              className: "w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-500"
-            }
-          )
-        ] }, tropa.unidade))
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-black/40 rounded-xl border border-white/5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] text-neutral-500 uppercase font-black block mb-1", children: "Contexto Geográfico" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] font-mono text-white", children: [
+              "Distância: ",
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sky-400", children: [
+                stats == null ? void 0 : stats.distancia,
+                " KM"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] font-mono text-white mt-1", children: [
+              "Quadrante: ",
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sky-400", children: [
+                (destinoBase == null ? void 0 : destinoBase.coordenada_x) > 50 ? "ESTE" : "OESTE",
+                " / ",
+                (destinoBase == null ? void 0 : destinoBase.coordenada_y) > 50 ? "SUL" : "NORTE"
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-black/40 rounded-xl border border-white/5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] text-neutral-500 uppercase font-black block mb-1", children: "Defesas Estimadas" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mt-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { size: 12, className: "text-neutral-500" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full bg-white/5 h-1 rounded-full overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-red-500 h-full", style: { width: "65%" } }) })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] text-neutral-600 mt-1 block italic text-right", children: "Dados Reais ocultos pelo Radar" })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 border-r border-white/5 space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar bg-white/[0.02]", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Sword, { size: 12 }),
+          " Ordem de Batalha"
+        ] }),
+        tropasDisponiveis.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-8 text-center border border-dashed border-white/10 rounded-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-neutral-600 uppercase", children: "Guarnição Vazia" }) }) : tropasDisponiveis.map((tropa) => {
+          const isArmored = ["tanque_combate", "blindado_apc", "helicoptero_ataque"].includes(tropa.unidade);
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 p-3 bg-black/40 rounded-xl border border-white/5 hover:border-white/10 transition-colors group", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black uppercase tracking-wide text-neutral-300 group-hover:text-sky-400 transition-colors", children: tropa.unidade.replace(/_/g, " ") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[7px] font-black ${isArmored ? "text-orange-500" : "text-emerald-500"} uppercase`, children: isArmored ? "UNIT: ARMORED" : "UNIT: INFANTRY" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { variant: "outline", className: "text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400 font-mono", children: [
+                selectedTropas[tropa.unidade] || 0,
+                " / ",
+                tropa.quantidade
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "range",
+                min: "0",
+                max: tropa.quantidade,
+                step: "1",
+                value: selectedTropas[tropa.unidade] || 0,
+                onChange: (e) => handleTropaChange(tropa.unidade, parseInt(e.target.value)),
+                className: "w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-500"
+              }
+            )
+          ] }, tropa.unidade);
+        })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-black/40 flex flex-col justify-between", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
@@ -44280,7 +44327,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-B4wIFkcl.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CrnpdIy7.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44318,4 +44365,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CCZBZgLV.js.map
+//# sourceMappingURL=app-BmJadpzE.js.map

@@ -96,21 +96,57 @@ class CombatService
                 return;
             }
 
-            // Cálculo de Forças
-            $forcaAtk = 0;
+            // 1. Cálculo de Pontos para Moral (Proporção de Poder)
+            $ptsAtk = $this->calculateCombatPoints($origem);
+            $ptsDef = $this->calculateCombatPoints($destino);
+            $morale = min(1.0, max(0.3, ($ptsDef / max(1, $ptsAtk)) * 3)); // Se atacante é 10x maior, moral desce
+
+            // 2. Sorte do Dia (-25% a +25%)
+            $luck = rand(-25, 25) / 100;
+
+            // 3. Especialização de Tropas (Sistema de Pesos Infantaria vs Blindados)
+            $unidadesConfig = config('game.units');
+            
+            $atkInfantry = 0;
+            $atkArmored = 0;
             $capacidadeSaqueTotal = 0;
+
             foreach ($ataque->tropas as $u => $q) {
-                $forcaAtk += $q * ($unidadesConfig[$u]['attack'] ?? 0);
+                $isArmored = in_array($u, ['tanque_combate', 'blindado_apc', 'helicoptero_ataque']);
+                if ($isArmored) {
+                    $atkArmored += $q * ($unidadesConfig[$u]['attack'] ?? 0);
+                } else {
+                    $atkInfantry += $q * ($unidadesConfig[$u]['attack'] ?? 0);
+                }
                 $capacidadeSaqueTotal += $q * ($unidadesConfig[$u]['capacity'] ?? 0);
             }
+
+            $totalAtkRaw = $atkInfantry + $atkArmored;
             
-            $forcaDef = $destino->muralha_nivel * 50; // Bónus de muralha
+            // Defensor: Proporção de Defesa Baseada na Composição do Atacante
+            $forcaDefRaw = 0;
+            $ratioAtkArmored = $totalAtkRaw > 0 ? ($atkArmored / $totalAtkRaw) : 0;
+
             foreach ($destino->tropas as $t) {
-                $forcaDef += $t->quantidade * ($unidadesConfig[$t->unidade]['defense_general'] ?? 0);
+                $comp = $unidadesConfig[$t->unidade] ?? [];
+                // Defesa ponderada: (Def_Gen * %Infantaria) + (Def_Arm * %Blindados)
+                $defPonderada = (($comp['defense_general'] ?? 10) * (1 - $ratioAtkArmored)) 
+                              + (($comp['defense_armored'] ?? 5) * $ratioAtkArmored);
+                
+                $forcaDefRaw += $t->quantidade * $defPonderada;
             }
 
-            // Resolução de Batalha
-            $resultado = CombatRules::resolveBattle($forcaAtk, $forcaDef);
+            // 4. Bónus de Perímetro (Muralha)
+            // Cada nível dá +4% de força e uma defesa base (ex: 50 por nível)
+            $wallBonus = 1 + ($destino->muralha_nivel * 0.04);
+            $forcaDefRaw += ($destino->muralha_nivel * 50);
+
+            // Resolução de Batalha Final
+            $resultado = CombatRules::resolveBattle($totalAtkRaw, $forcaDefRaw, [
+                'luck' => $luck,
+                'morale' => $morale,
+                'wallBonus' => $wallBonus
+            ]);
             $vitoria = $resultado['vitoriaAtacante'];
             $atrito = $resultado['atrito'];
 
@@ -169,6 +205,11 @@ class CombatService
                     'perdas_atacante' => $perdasAtacanteTotal,
                     'perdas_defensor' => $perdasDefensorTotal,
                     'saque' => $saque,
+                    'luck' => $luck,
+                    'morale' => $morale,
+                    'wallBonus' => $wallBonus,
+                    'totalAtk' => $resultado['totalAtk'],
+                    'totalDef' => $resultado['totalDef'],
                     'coords' => "{$ataque->destino_x}:{$ataque->destino_y}"
                 ]
             ]);
@@ -230,6 +271,18 @@ class CombatService
             }
             $ataque->delete();
         });
+    }
+
+    /**
+     * Calcula o valor estratégico (pontos) de uma base para fins de Moral.
+     */
+    private function calculateCombatPoints(Base $base)
+    {
+        $pts = ($base->qg_nivel * 10) 
+             + ($base->muralha_nivel * 20) 
+             + ($base->edificios()->sum('nivel') * 5);
+             
+        return max(1, $pts);
     }
 }
 

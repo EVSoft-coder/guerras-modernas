@@ -25,17 +25,39 @@ class CombatRules
  
     /**
      * Resolve o combate entre atacante e defensor.
-     * Retorna [vitoria_atacante, ratio_perdas, perdas_atacante, perdas_defensor]
+     * Incorpora factores de Sorte, Moral e Bónus de Muralha.
      */
-    public static function resolveBattle(float $forcaAtaque, float $forcaDefesa): array
+    public static function resolveBattle(float $forcaAtaque, float $forcaDefesa, array $params = []): array
     {
-        $vitoriaAtacante = $forcaAtaque > $forcaDefesa;
-        $ratio = $vitoriaAtacante ? ($forcaDefesa / max(1, $forcaAtaque)) : ($forcaAtaque / max(1, $forcaDefesa));
-        $atrito = min(1, $ratio * 1.2); 
- 
+        $luck = $params['luck'] ?? 0;        // -0.25 a +0.25
+        $morale = $params['morale'] ?? 1.0;  // 0.3 a 1.0
+        $wallBonus = $params['wallBonus'] ?? 1.0; 
+
+        // Atacante: Potência afectada por Sorte e Moral
+        $totalAtk = $forcaAtaque * (1 + $luck) * $morale;
+        
+        // Defensor: Potência afectada pela Muralha
+        $totalDef = $forcaDefesa * $wallBonus;
+
+        $vitoriaAtacante = $totalAtk > $totalDef;
+        
+        // Cálculo de atrito (perdas)
+        if ($vitoriaAtacante) {
+            $ratio = $totalDef / max(1, $totalAtk);
+            $atrito = pow($ratio, 1.5); // Perdas suavizadas para o vencedor
+        } else {
+            $ratio = $totalAtk / max(1, $totalDef);
+            $atrito = pow($ratio, 1.5);
+        }
+        
         return [
             'vitoriaAtacante' => $vitoriaAtacante,
-            'atrito' => $atrito
+            'atrito' => min(1, $atrito),
+            'luck' => $luck,
+            'morale' => $morale,
+            'wallBonus' => $wallBonus,
+            'totalAtk' => $totalAtk,
+            'totalDef' => $totalDef
         ];
     }
 }
