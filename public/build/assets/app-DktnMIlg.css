@@ -421,21 +421,26 @@
     display: none !important;
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    font-family: Outfit, sans-serif;
+  }
+
   *, :after, :before, ::backdrop {
-    border-color: var(--color-gray-200, currentColor);
+    border-color: var(--border, currentColor);
   }
 
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
+    border-color: var(--border, currentColor);
   }
 
   * {
-    border-color: var(--color-border);
+    border-color: var(--border);
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: Instrument Sans, sans-serif;
   }
 }
 
@@ -6988,33 +6993,23 @@
   }
 
   .sidebar-tactical-item {
-    border-left-style: var(--tw-border-style);
-    transition-property: all;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
-    --tw-duration: .3s;
+    border-width: 0 0 0 4px;
     border-color: #0000;
-    border-left-width: 4px;
+    transition-property: all;
     transition-duration: .3s;
-    animation-duration: .3s;
     background-color: #0000 !important;
   }
 
   .sidebar-tactical-item:hover, .sidebar-tactical-item[data-active="true"] {
-    border-color: var(--color-sky-400);
-    --tw-gradient-position: to right in oklab;
-    background-image: linear-gradient(var(--tw-gradient-stops));
-    --tw-gradient-from: color-mix(in oklab, var(--color-sky-400) 20%, transparent);
-    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
-    --tw-gradient-to: transparent;
     opacity: 1;
-    --tw-shadow: 0 0 #0000;
-    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow) !important;
+    background-image: linear-gradient(to right, #38bdf833, #0000);
+    border-color: #38bdf8;
+    box-shadow: none !important;
   }
 
   button[data-sidebar="menu-button"][data-active="true"] {
-    background-color: color-mix(in oklab, var(--color-sky-400) 10%, transparent) !important;
-    color: var(--color-white) !important;
+    color: #fff !important;
+    background-color: #38bdf81a !important;
   }
 
   .military-text-glitch {
@@ -7039,7 +7034,7 @@
   --accent-foreground: #171717;
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
-  --border: #ededed;
+  --border: #e5e5e5;
   --input: #e5e5e5;
   --ring: #0a0a0a;
   --chart-1: #e76e50;
@@ -7083,14 +7078,6 @@
   --chart-3: #e88c30;
   --chart-4: #af57db;
   --chart-5: #e23670;
-  --sidebar-background: #09090b;
-  --sidebar-foreground: #e4e4e7;
-  --sidebar-primary: #0af;
-  --sidebar-primary-foreground: #fff;
-  --sidebar-accent: #22222a;
-  --sidebar-accent-foreground: #3bf;
-  --sidebar-border: #1d1d20;
-  --sidebar-ring: #0af;
 }
 
 #GAME_SCREEN, #MAIN_MENU, #PAUSE_SCREEN, #village-view-container, #tactical-hud, #world-map-view {
@@ -7136,67 +7123,39 @@
 }
 
 .tactical-glass {
-  border-style: var(--tw-border-style);
-  border-width: 1px;
-  border-color: color-mix(in oklab, var(--color-white) 5%, transparent);
-  background-color: color-mix(in oklab, var(--color-neutral-950) 80%, transparent);
-  --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, #00000040);
-  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-  --tw-backdrop-blur: blur(var(--blur-2xl));
-  -webkit-backdrop-filter: var(--tw-backdrop-blur, ) var(--tw-backdrop-brightness, ) var(--tw-backdrop-contrast, ) var(--tw-backdrop-grayscale, ) var(--tw-backdrop-hue-rotate, ) var(--tw-backdrop-invert, ) var(--tw-backdrop-opacity, ) var(--tw-backdrop-saturate, ) var(--tw-backdrop-sepia, );
-  backdrop-filter: var(--tw-backdrop-blur, ) var(--tw-backdrop-brightness, ) var(--tw-backdrop-contrast, ) var(--tw-backdrop-grayscale, ) var(--tw-backdrop-hue-rotate, ) var(--tw-backdrop-invert, ) var(--tw-backdrop-opacity, ) var(--tw-backdrop-saturate, ) var(--tw-backdrop-sepia, );
+  -webkit-backdrop-filter: blur(40px);
+  backdrop-filter: blur(40px);
+  background-color: #0a0a0acc;
+  border: 1px solid #ffffff0d;
+  box-shadow: 0 25px 50px -12px #00000080;
 }
 
 .tactical-border-glow {
-  border-style: var(--tw-border-style);
-  border-width: 1px;
-  border-color: color-mix(in oklab, var(--color-sky-500) 30%, transparent);
-  --tw-shadow: 0 0 15px var(--tw-shadow-color, #0ea5e933);
-  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  border: 1px solid #0ea5e94d;
+  box-shadow: 0 0 15px #0ea5e933;
 }
 
 .cyber-button {
-  transition-property: all;
-  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-  transition-duration: var(--tw-duration, var(--default-transition-duration));
-  --tw-duration: .3s;
-  transition-duration: .3s;
-  animation-duration: .3s;
+  transition: all .3s;
   position: relative;
   overflow: hidden;
 }
 
 .cyber-button:active {
-  --tw-scale-x: 95%;
-  --tw-scale-y: 95%;
-  --tw-scale-z: 95%;
-  scale: var(--tw-scale-x) var(--tw-scale-y);
+  transform: scale(.95);
 }
 
 .cyber-button:after {
   content: "";
-  inset: calc(var(--spacing) * 0);
-  --tw-translate-x: -100%;
-  translate: var(--tw-translate-x) var(--tw-translate-y);
-  --tw-gradient-position: to right in oklab;
-  background-image: linear-gradient(var(--tw-gradient-stops));
-  --tw-gradient-from: transparent;
-  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
-  --tw-gradient-via: color-mix(in oklab, var(--color-white) 10%, transparent);
-  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
-  --tw-gradient-to: transparent;
-  transition-property: transform, translate, scale, rotate;
-  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-  transition-duration: var(--tw-duration, var(--default-transition-duration));
-  --tw-duration: .5s;
-  transition-duration: .5s;
-  animation-duration: .5s;
+  background: linear-gradient(to right, #0000, #ffffff1a, #0000);
+  transition: transform .5s;
   position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
 }
 
 .cyber-button:hover:after {
-  --tw-translate-x: 100%;
-  translate: var(--tw-translate-x) var(--tw-translate-y);
+  transform: translateX(100%);
 }
 
 .military-grid {

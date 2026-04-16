@@ -58,21 +58,17 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Outfit', sans-serif;
+    }
+    
     *,
     ::after,
     ::before,
     ::backdrop,
     ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
+        border-color: var(--border, currentColor);
     }
 }
 
@@ -93,7 +89,7 @@
     --accent-foreground: hsl(0, 0%, 9%);
     --destructive: hsl(0, 84.2%, 60.2%);
     --destructive-foreground: hsl(0, 0%, 98%);
-    --border: hsl(0, 0%, 92.8%);
+    --border: hsl(0, 0%, 89.8%);
     --input: hsl(0, 0%, 89.8%);
     --ring: hsl(0, 0%, 3.9%);
     --chart-1: hsl(12, 76%, 61%);
@@ -137,23 +133,17 @@
     --chart-3: hsl(30, 80%, 55%);
     --chart-4: hsl(280, 65%, 60%);
     --chart-5: hsl(340, 75%, 55%);
-    --sidebar-background: hsl(240, 10%, 4%);
-    --sidebar-foreground: hsl(240, 5%, 90%);
-    --sidebar-primary: hsl(200, 100%, 50%);
-    --sidebar-primary-foreground: hsl(0, 0%, 100%);
-    --sidebar-accent: hsl(240, 10%, 15%);
-    --sidebar-accent-foreground: hsl(200, 100%, 60%);
-    --sidebar-border: hsl(240, 5%, 12%);
-    --sidebar-ring: hsl(200, 100%, 50%);
 }
 
 @layer base {
     * {
-        @apply border-border;
+        border-color: var(--border);
     }
 
     body {
-        @apply bg-background text-foreground;
+        background-color: var(--background);
+        color: var(--foreground);
+        font-family: 'Instrument Sans', sans-serif;
     }
 }
 
@@ -163,31 +153,40 @@
     z-index: 400;
 }
 
-/* Só permite cliques se estiver visível E não for o GAME_SCREEN (que é fundo) */
-
 #MAIN_MENU, #PAUSE_SCREEN {
-    pointer-events: auto !important; /* Menus precisam de clique */
+    pointer-events: auto !important;
 }
 
 /* MILITARY UI UTILITIES */
 @layer utilities {
     .sidebar-tactical-item {
-        @apply transition-all duration-300 border-l-[4px] border-transparent !bg-transparent;
+        transition-property: all;
+        transition-duration: 300ms;
+        border-left-width: 4px;
+        border-right-width: 0px;
+        border-top-width: 0px;
+        border-bottom-width: 0px;
+        border-color: transparent;
+        background-color: transparent !important;
     }
     .sidebar-tactical-item:hover, .sidebar-tactical-item[data-active="true"] {
-        @apply border-sky-400 bg-linear-to-r from-sky-400/20 to-transparent !shadow-none opacity-100;
+        border-color: #38bdf8; /* sky-400 */
+        background-image: linear-gradient(to right, rgba(56, 189, 248, 0.2), transparent);
+        box-shadow: none !important;
+        opacity: 1;
     }
     
-    /* Override for SidebarMenuButton default active state */
     button[data-sidebar="menu-button"][data-active="true"] {
-        @apply !bg-sky-400/10 !text-white;
+        background-color: rgba(56, 189, 248, 0.1) !important;
+        color: white !important;
     }
+    
     .military-text-glitch {
         text-shadow: 0 0 5px rgba(14, 165, 233, 0.5);
     }
 }
 
-/* HIGH-END MILITARY EFECTS */
+/* HIGH-END MILITARY EFFECTS */
 @keyframes scanline {
     0% { transform: translateY(-100%); }
     100% { transform: translateY(100%); }
@@ -216,26 +215,40 @@
     pointer-events: none;
 }
 
-/* PREMIUM TACTICAL UTILITIES */
+/* PREMIUM TACTICAL UTILITIES - VANILLA CONVERSION */
 .tactical-glass {
-    @apply bg-neutral-950/80 backdrop-blur-2xl border border-white/5 shadow-2xl;
+    background-color: rgb(10 10 10 / 0.8);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .tactical-border-glow {
-    @apply border border-sky-500/30 shadow-[0_0_15px_rgba(14,165,233,0.2)];
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
 }
 
 .cyber-button {
-    @apply relative overflow-hidden transition-all duration-300 active:scale-95;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.cyber-button:active {
+    transform: scale(0.95);
 }
 
 .cyber-button::after {
     content: "";
-    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full transition-transform duration-500;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
 }
 
 .cyber-button:hover::after {
-    @apply translate-x-full;
+    transform: translateX(100%);
 }
 
 .military-grid {
