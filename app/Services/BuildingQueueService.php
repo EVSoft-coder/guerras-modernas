@@ -72,7 +72,7 @@ class BuildingQueueService
         
         // Selecionar IDs pendentes para evitar problemas de hidratação em coleções passadas por referência
         $pendingIds = BuildingQueue::where('base_id', $base->id)
-            ->where('finishes_at', '<=', $now)
+            ->where('finishes_at', '<=', $now->addSeconds(2))
             ->lockForUpdate() // PASSO 3 - LOCK FOR UPDATE
             ->pluck('id');
 

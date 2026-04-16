@@ -43,7 +43,14 @@ class GetDashboardData
             throw new \Exception("Base não localizada.");
         }
 
-        // 2. Recursos Formatados
+        // 2. Sincronizar Filas (Lógica Centralizada de Tempo)
+        // PASSO 3 - INTEGRAÇÃO: Garantir processamento antes da leitura final
+        $this->gameService->processarFilas($base);
+        
+        // Re-hidratar relações para garantir que o snapshot ignora o que foi processado
+        $base->load(['recursos', 'edificios', 'buildingQueue', 'treinos', 'tropas']);
+
+        // 3. Recursos Formatados
         $recursos = $base->recursos;
         $resources = $recursos ? [
             'id'           => $recursos->id,

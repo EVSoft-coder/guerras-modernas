@@ -81,9 +81,16 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
     );
 };
 
-const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean }) => {
-    const [progress, setProgress] = useState(0);
-    const [timeLeft, setTimeLeft] = useState("");
+    const lastReloadTime = React.useRef(0);
+
+    const checkAndReload = () => {
+        const now = Date.now();
+        // Throttle: No more than 1 reload every 5 seconds
+        if (now - lastReloadTime.current < 5000) return;
+        
+        lastReloadTime.current = now;
+        router.reload();
+    };
 
     useEffect(() => {
         const calculateProgress = () => {
@@ -113,8 +120,7 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
                 if (isFirst) {
                     // Refresh automático do DASHBOARD quando o primeiro item da fila termina
                     setTimeout(() => {
-                        // Refresh completo para garantir que buildingQueue e níveis sincronizem
-                        router.reload();
+                        checkAndReload();
                     }, 500);
                 }
             }
@@ -124,7 +130,7 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
         calculateProgress();
 
         return () => clearInterval(timer);
-    }, [item, isFirst]);
+    }, [item.id, item.ends_at, isFirst]);
 
     return (
         <motion.div 
