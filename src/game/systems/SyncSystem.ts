@@ -112,10 +112,14 @@ export class SyncSystem implements GameSystem {
             const resData = await response.json();
             Logger.backend('ATTACK_RESPONSE', { status: response.status, data: resData });
 
-            if (!response.ok) throw new Error('Expedition Aborted by Tactical HQ');
+            if (!response.ok) {
+                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join(' | ') : 'Expedition Aborted');
+                throw new Error(errorMsg);
+            }
             Logger.info('[ACTION] Expedition is en-route.');
-        } catch (err) {
+        } catch (err: any) {
             Logger.error('[ACTION_FAILURE] Military operation failed', err);
+            eventBus.emit(Events.UI_ALERT, { data: { message: err.message, type: 'error' } });
         }
     }
 
