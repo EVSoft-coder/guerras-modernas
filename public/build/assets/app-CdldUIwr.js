@@ -7980,7 +7980,7 @@ const createLucideIcon = (iconName, iconNode) => {
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$N = [
+const __iconNode$L = [
   [
     "path",
     {
@@ -7989,27 +7989,14 @@ const __iconNode$N = [
     }
   ]
 ];
-const Activity = createLucideIcon("Activity", __iconNode$N);
+const Activity = createLucideIcon("Activity", __iconNode$L);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$M = [
-  ["path", { d: "m16 3 4 4-4 4", key: "1x1c3m" }],
-  ["path", { d: "M20 7H4", key: "zbl0bi" }],
-  ["path", { d: "m8 21-4-4 4-4", key: "h9nckh" }],
-  ["path", { d: "M4 17h16", key: "g4d7ey" }]
-];
-const ArrowRightLeft = createLucideIcon("ArrowRightLeft", __iconNode$M);
-/**
- * @license lucide-react v0.475.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$L = [
+const __iconNode$K = [
   ["path", { d: "M12 7v14", key: "1akyts" }],
   [
     "path",
@@ -8019,14 +8006,14 @@ const __iconNode$L = [
     }
   ]
 ];
-const BookOpen = createLucideIcon("BookOpen", __iconNode$L);
+const BookOpen = createLucideIcon("BookOpen", __iconNode$K);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$K = [
+const __iconNode$J = [
   [
     "path",
     {
@@ -8035,14 +8022,14 @@ const __iconNode$K = [
     }
   ]
 ];
-const Book = createLucideIcon("Book", __iconNode$K);
+const Book = createLucideIcon("Book", __iconNode$J);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$J = [
+const __iconNode$I = [
   [
     "path",
     {
@@ -8074,20 +8061,7 @@ const __iconNode$J = [
   ["path", { d: "m12 8 4.74-2.85", key: "3rx089" }],
   ["path", { d: "M12 13.5V8", key: "1io7kd" }]
 ];
-const Boxes = createLucideIcon("Boxes", __iconNode$J);
-/**
- * @license lucide-react v0.475.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$I = [
-  ["path", { d: "M8 2v4", key: "1cmpym" }],
-  ["path", { d: "M16 2v4", key: "4m81vk" }],
-  ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
-  ["path", { d: "M3 10h18", key: "8toen8" }]
-];
-const Calendar = createLucideIcon("Calendar", __iconNode$I);
+const Boxes = createLucideIcon("Boxes", __iconNode$I);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8095,63 +8069,65 @@ const Calendar = createLucideIcon("Calendar", __iconNode$I);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$H = [
+  ["path", { d: "M8 2v4", key: "1cmpym" }],
+  ["path", { d: "M16 2v4", key: "4m81vk" }],
+  ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
+  ["path", { d: "M3 10h18", key: "8toen8" }]
+];
+const Calendar = createLucideIcon("Calendar", __iconNode$H);
+/**
+ * @license lucide-react v0.475.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$G = [
   ["path", { d: "M3 3v16a2 2 0 0 0 2 2h16", key: "c24i48" }],
   ["path", { d: "M18 17V9", key: "2bz60n" }],
   ["path", { d: "M13 17V5", key: "1frdt8" }],
   ["path", { d: "M8 17v-3", key: "17ska0" }]
 ];
-const ChartColumn = createLucideIcon("ChartColumn", __iconNode$H);
+const ChartColumn = createLucideIcon("ChartColumn", __iconNode$G);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$G = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("Check", __iconNode$G);
+const __iconNode$F = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("Check", __iconNode$F);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$F = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("ChevronDown", __iconNode$F);
+const __iconNode$E = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("ChevronDown", __iconNode$E);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$E = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-const ChevronLeft = createLucideIcon("ChevronLeft", __iconNode$E);
+const __iconNode$D = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+const ChevronLeft = createLucideIcon("ChevronLeft", __iconNode$D);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$D = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("ChevronRight", __iconNode$D);
+const __iconNode$C = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("ChevronRight", __iconNode$C);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$C = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-const ChevronUp = createLucideIcon("ChevronUp", __iconNode$C);
-/**
- * @license lucide-react v0.475.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$B = [
-  ["path", { d: "m7 15 5 5 5-5", key: "1hf1tw" }],
-  ["path", { d: "m7 9 5-5 5 5", key: "sgt6xg" }]
-];
-const ChevronsUpDown = createLucideIcon("ChevronsUpDown", __iconNode$B);
+const __iconNode$B = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+const ChevronUp = createLucideIcon("ChevronUp", __iconNode$B);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8159,29 +8135,29 @@ const ChevronsUpDown = createLucideIcon("ChevronsUpDown", __iconNode$B);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$A = [
+  ["path", { d: "m7 15 5 5 5-5", key: "1hf1tw" }],
+  ["path", { d: "m7 9 5-5 5 5", key: "sgt6xg" }]
+];
+const ChevronsUpDown = createLucideIcon("ChevronsUpDown", __iconNode$A);
+/**
+ * @license lucide-react v0.475.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$z = [
   ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
   ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
 ];
-const CircleCheckBig = createLucideIcon("CircleCheckBig", __iconNode$A);
+const CircleCheckBig = createLucideIcon("CircleCheckBig", __iconNode$z);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$z = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
-const Circle = createLucideIcon("Circle", __iconNode$z);
-/**
- * @license lucide-react v0.475.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$y = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["polyline", { points: "12 6 12 12 16 14", key: "68esgv" }]
-];
-const Clock = createLucideIcon("Clock", __iconNode$y);
+const __iconNode$y = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+const Circle = createLucideIcon("Circle", __iconNode$y);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8190,12 +8166,9 @@ const Clock = createLucideIcon("Clock", __iconNode$y);
  */
 const __iconNode$x = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["line", { x1: "22", x2: "18", y1: "12", y2: "12", key: "l9bcsi" }],
-  ["line", { x1: "6", x2: "2", y1: "12", y2: "12", key: "13hhkx" }],
-  ["line", { x1: "12", x2: "12", y1: "6", y2: "2", key: "10w3f3" }],
-  ["line", { x1: "12", x2: "12", y1: "22", y2: "18", key: "15g9kq" }]
+  ["polyline", { points: "12 6 12 12 16 14", key: "68esgv" }]
 ];
-const Crosshair = createLucideIcon("Crosshair", __iconNode$x);
+const Clock = createLucideIcon("Clock", __iconNode$x);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8203,10 +8176,13 @@ const Crosshair = createLucideIcon("Crosshair", __iconNode$x);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$w = [
-  ["path", { d: "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z", key: "i9b6wo" }],
-  ["line", { x1: "4", x2: "4", y1: "22", y2: "15", key: "1cm3nv" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["line", { x1: "22", x2: "18", y1: "12", y2: "12", key: "l9bcsi" }],
+  ["line", { x1: "6", x2: "2", y1: "12", y2: "12", key: "13hhkx" }],
+  ["line", { x1: "12", x2: "12", y1: "6", y2: "2", key: "10w3f3" }],
+  ["line", { x1: "12", x2: "12", y1: "22", y2: "18", key: "15g9kq" }]
 ];
-const Flag = createLucideIcon("Flag", __iconNode$w);
+const Crosshair = createLucideIcon("Crosshair", __iconNode$w);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8214,6 +8190,17 @@ const Flag = createLucideIcon("Flag", __iconNode$w);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$v = [
+  ["path", { d: "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z", key: "i9b6wo" }],
+  ["line", { x1: "4", x2: "4", y1: "22", y2: "15", key: "1cm3nv" }]
+];
+const Flag = createLucideIcon("Flag", __iconNode$v);
+/**
+ * @license lucide-react v0.475.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$u = [
   [
     "path",
     {
@@ -8222,14 +8209,14 @@ const __iconNode$v = [
     }
   ]
 ];
-const Folder = createLucideIcon("Folder", __iconNode$v);
+const Folder = createLucideIcon("Folder", __iconNode$u);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$u = [
+const __iconNode$t = [
   ["line", { x1: "3", x2: "15", y1: "22", y2: "22", key: "xegly4" }],
   ["line", { x1: "4", x2: "14", y1: "9", y2: "9", key: "xcnuvu" }],
   ["path", { d: "M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18", key: "16j0yd" }],
@@ -8241,14 +8228,14 @@ const __iconNode$u = [
     }
   ]
 ];
-const Fuel = createLucideIcon("Fuel", __iconNode$u);
+const Fuel = createLucideIcon("Fuel", __iconNode$t);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$t = [
+const __iconNode$s = [
   ["path", { d: "m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9", key: "eefl8a" }],
   ["path", { d: "m18 15 4-4", key: "16gjal" }],
   [
@@ -8259,14 +8246,14 @@ const __iconNode$t = [
     }
   ]
 ];
-const Hammer = createLucideIcon("Hammer", __iconNode$t);
+const Hammer = createLucideIcon("Hammer", __iconNode$s);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$s = [
+const __iconNode$r = [
   ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
   [
     "path",
@@ -8276,19 +8263,7 @@ const __iconNode$s = [
     }
   ]
 ];
-const House = createLucideIcon("House", __iconNode$s);
-/**
- * @license lucide-react v0.475.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$r = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M12 16v-4", key: "1dtifu" }],
-  ["path", { d: "M12 8h.01", key: "e9boi3" }]
-];
-const Info = createLucideIcon("Info", __iconNode$r);
+const House = createLucideIcon("House", __iconNode$r);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8296,6 +8271,18 @@ const Info = createLucideIcon("Info", __iconNode$r);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$q = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 16v-4", key: "1dtifu" }],
+  ["path", { d: "M12 8h.01", key: "e9boi3" }]
+];
+const Info = createLucideIcon("Info", __iconNode$q);
+/**
+ * @license lucide-react v0.475.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$p = [
   ["line", { x1: "3", x2: "21", y1: "22", y2: "22", key: "j8o0r" }],
   ["line", { x1: "6", x2: "6", y1: "18", y2: "11", key: "10tf0k" }],
   ["line", { x1: "10", x2: "10", y1: "18", y2: "11", key: "54lgf6" }],
@@ -8303,27 +8290,15 @@ const __iconNode$q = [
   ["line", { x1: "18", x2: "18", y1: "18", y2: "11", key: "1kevvc" }],
   ["polygon", { points: "12 2 20 7 4 7", key: "jkujk7" }]
 ];
-const Landmark = createLucideIcon("Landmark", __iconNode$q);
+const Landmark = createLucideIcon("Landmark", __iconNode$p);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$p = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-const LoaderCircle = createLucideIcon("LoaderCircle", __iconNode$p);
-/**
- * @license lucide-react v0.475.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$o = [
-  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }],
-  ["polyline", { points: "16 17 21 12 16 7", key: "1gabdz" }],
-  ["line", { x1: "21", x2: "9", y1: "12", y2: "12", key: "1uyos4" }]
-];
-const LogOut = createLucideIcon("LogOut", __iconNode$o);
+const __iconNode$o = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+const LoaderCircle = createLucideIcon("LoaderCircle", __iconNode$o);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8331,6 +8306,18 @@ const LogOut = createLucideIcon("LogOut", __iconNode$o);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$n = [
+  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }],
+  ["polyline", { points: "16 17 21 12 16 7", key: "1gabdz" }],
+  ["line", { x1: "21", x2: "9", y1: "12", y2: "12", key: "1uyos4" }]
+];
+const LogOut = createLucideIcon("LogOut", __iconNode$n);
+/**
+ * @license lucide-react v0.475.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$m = [
   [
     "path",
     {
@@ -8341,19 +8328,7 @@ const __iconNode$n = [
   ["path", { d: "M15 5.764v15", key: "1pn4in" }],
   ["path", { d: "M9 3.236v15", key: "1uimfh" }]
 ];
-const Map$1 = createLucideIcon("Map", __iconNode$n);
-/**
- * @license lucide-react v0.475.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$m = [
-  ["rect", { width: "20", height: "14", x: "2", y: "3", rx: "2", key: "48i651" }],
-  ["line", { x1: "8", x2: "16", y1: "21", y2: "21", key: "1svkeh" }],
-  ["line", { x1: "12", x2: "12", y1: "17", y2: "21", key: "vw1qmm" }]
-];
-const Monitor = createLucideIcon("Monitor", __iconNode$m);
+const Map$1 = createLucideIcon("Map", __iconNode$m);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8361,9 +8336,11 @@ const Monitor = createLucideIcon("Monitor", __iconNode$m);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$l = [
-  ["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z", key: "a7tn18" }]
+  ["rect", { width: "20", height: "14", x: "2", y: "3", rx: "2", key: "48i651" }],
+  ["line", { x1: "8", x2: "16", y1: "21", y2: "21", key: "1svkeh" }],
+  ["line", { x1: "12", x2: "12", y1: "17", y2: "21", key: "vw1qmm" }]
 ];
-const Moon = createLucideIcon("Moon", __iconNode$l);
+const Monitor = createLucideIcon("Monitor", __iconNode$l);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8371,9 +8348,9 @@ const Moon = createLucideIcon("Moon", __iconNode$l);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$k = [
-  ["polygon", { points: "3 11 22 2 13 21 11 13 3 11", key: "1ltx0t" }]
+  ["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z", key: "a7tn18" }]
 ];
-const Navigation = createLucideIcon("Navigation", __iconNode$k);
+const Moon = createLucideIcon("Moon", __iconNode$k);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8381,10 +8358,9 @@ const Navigation = createLucideIcon("Navigation", __iconNode$k);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$j = [
-  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }],
-  ["path", { d: "M9 3v18", key: "fh3hqa" }]
+  ["polygon", { points: "3 11 22 2 13 21 11 13 3 11", key: "1ltx0t" }]
 ];
-const PanelLeft = createLucideIcon("PanelLeft", __iconNode$j);
+const Navigation = createLucideIcon("Navigation", __iconNode$j);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8392,16 +8368,10 @@ const PanelLeft = createLucideIcon("PanelLeft", __iconNode$j);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$i = [
-  ["path", { d: "M2 22h20", key: "272qi7" }],
-  [
-    "path",
-    {
-      d: "M3.77 10.77 2 9l2-4.5 1.1.55c.55.28.9.84.9 1.45s.35 1.17.9 1.45L8 8.5l3-6 1.05.53a2 2 0 0 1 1.09 1.52l.72 5.4a2 2 0 0 0 1.09 1.52l4.4 2.2c.42.22.78.55 1.01.96l.6 1.03c.49.88-.06 1.98-1.06 2.1l-1.18.15c-.47.06-.95-.02-1.37-.24L4.29 11.15a2 2 0 0 1-.52-.38Z",
-      key: "1ma21e"
-    }
-  ]
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }],
+  ["path", { d: "M9 3v18", key: "fh3hqa" }]
 ];
-const PlaneLanding = createLucideIcon("PlaneLanding", __iconNode$i);
+const PanelLeft = createLucideIcon("PanelLeft", __iconNode$i);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8413,12 +8383,12 @@ const __iconNode$h = [
   [
     "path",
     {
-      d: "M6.36 17.4 4 17l-2-4 1.1-.55a2 2 0 0 1 1.8 0l.17.1a2 2 0 0 0 1.8 0L8 12 5 6l.9-.45a2 2 0 0 1 2.09.2l4.02 3a2 2 0 0 0 2.1.2l4.19-2.06a2.41 2.41 0 0 1 1.73-.17L21 7a1.4 1.4 0 0 1 .87 1.99l-.38.76c-.23.46-.6.84-1.07 1.08L7.58 17.2a2 2 0 0 1-1.22.18Z",
-      key: "fkigj9"
+      d: "M3.77 10.77 2 9l2-4.5 1.1.55c.55.28.9.84.9 1.45s.35 1.17.9 1.45L8 8.5l3-6 1.05.53a2 2 0 0 1 1.09 1.52l.72 5.4a2 2 0 0 0 1.09 1.52l4.4 2.2c.42.22.78.55 1.01.96l.6 1.03c.49.88-.06 1.98-1.06 2.1l-1.18.15c-.47.06-.95-.02-1.37-.24L4.29 11.15a2 2 0 0 1-.52-.38Z",
+      key: "1ma21e"
     }
   ]
 ];
-const PlaneTakeoff = createLucideIcon("PlaneTakeoff", __iconNode$h);
+const PlaneLanding = createLucideIcon("PlaneLanding", __iconNode$h);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8426,13 +8396,16 @@ const PlaneTakeoff = createLucideIcon("PlaneTakeoff", __iconNode$h);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$g = [
-  ["path", { d: "M4.9 19.1C1 15.2 1 8.8 4.9 4.9", key: "1vaf9d" }],
-  ["path", { d: "M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5", key: "u1ii0m" }],
-  ["circle", { cx: "12", cy: "12", r: "2", key: "1c9p78" }],
-  ["path", { d: "M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5", key: "1j5fej" }],
-  ["path", { d: "M19.1 4.9C23 8.8 23 15.1 19.1 19", key: "10b0cb" }]
+  ["path", { d: "M2 22h20", key: "272qi7" }],
+  [
+    "path",
+    {
+      d: "M6.36 17.4 4 17l-2-4 1.1-.55a2 2 0 0 1 1.8 0l.17.1a2 2 0 0 0 1.8 0L8 12 5 6l.9-.45a2 2 0 0 1 2.09.2l4.02 3a2 2 0 0 0 2.1.2l4.19-2.06a2.41 2.41 0 0 1 1.73-.17L21 7a1.4 1.4 0 0 1 .87 1.99l-.38.76c-.23.46-.6.84-1.07 1.08L7.58 17.2a2 2 0 0 1-1.22.18Z",
+      key: "fkigj9"
+    }
+  ]
 ];
-const Radio = createLucideIcon("Radio", __iconNode$g);
+const PlaneTakeoff = createLucideIcon("PlaneTakeoff", __iconNode$g);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8440,6 +8413,20 @@ const Radio = createLucideIcon("Radio", __iconNode$g);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$f = [
+  ["path", { d: "M4.9 19.1C1 15.2 1 8.8 4.9 4.9", key: "1vaf9d" }],
+  ["path", { d: "M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5", key: "u1ii0m" }],
+  ["circle", { cx: "12", cy: "12", r: "2", key: "1c9p78" }],
+  ["path", { d: "M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5", key: "1j5fej" }],
+  ["path", { d: "M19.1 4.9C23 8.8 23 15.1 19.1 19", key: "10b0cb" }]
+];
+const Radio = createLucideIcon("Radio", __iconNode$f);
+/**
+ * @license lucide-react v0.475.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$e = [
   [
     "path",
     {
@@ -8457,18 +8444,7 @@ const __iconNode$f = [
   ["path", { d: "M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0", key: "1f8sc4" }],
   ["path", { d: "M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5", key: "qeys4" }]
 ];
-const Rocket = createLucideIcon("Rocket", __iconNode$f);
-/**
- * @license lucide-react v0.475.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$e = [
-  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }],
-  ["path", { d: "m21 21-4.3-4.3", key: "1qie3q" }]
-];
-const Search = createLucideIcon("Search", __iconNode$e);
+const Rocket = createLucideIcon("Rocket", __iconNode$e);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8476,16 +8452,10 @@ const Search = createLucideIcon("Search", __iconNode$e);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$d = [
-  [
-    "path",
-    {
-      d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z",
-      key: "1qme2f"
-    }
-  ],
-  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }],
+  ["path", { d: "m21 21-4.3-4.3", key: "1qie3q" }]
 ];
-const Settings = createLucideIcon("Settings", __iconNode$d);
+const Search = createLucideIcon("Search", __iconNode$d);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -8496,14 +8466,13 @@ const __iconNode$c = [
   [
     "path",
     {
-      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
+      d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z",
+      key: "1qme2f"
     }
   ],
-  ["path", { d: "M12 8v4", key: "1got3b" }],
-  ["path", { d: "M12 16h.01", key: "1drbdi" }]
+  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const ShieldAlert = createLucideIcon("ShieldAlert", __iconNode$c);
+const Settings = createLucideIcon("Settings", __iconNode$c);
 /**
  * @license lucide-react v0.475.0 - ISC
  *
@@ -30024,263 +29993,43 @@ function useGameEntities() {
   }, []);
   return state;
 }
-const ActiveMovements = () => {
-  const { entities } = useGameEntities() || { entities: [] };
-  const movements = entities.filter((e) => e.march);
-  const [now2, setNow] = U$2.useState(Date.now());
-  U$2.useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 100);
-    return () => clearInterval(interval);
-  }, []);
-  if (movements.length === 0) return null;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pointer-events-auto space-y-3 mt-4", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 px-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 12, className: "text-red-500 animate-pulse" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-neutral-400 uppercase tracking-[0.3em]", children: "ACTIVE_MOVEMENTS" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-black/40 backdrop-blur-md border border-white/5 p-4 rounded-3xl shadow-2xl space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar", children: movements.map((m2) => {
-      var _a2, _b, _c, _d, _e2;
-      const remaining = Math.max(0, (((_a2 = m2.march) == null ? void 0 : _a2.arrivalTime) - now2) / 1e3);
-      const progress2 = Math.min(100, (1 - remaining / ((_b = m2.march) == null ? void 0 : _b.totalTime)) * 100);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-neutral-900/40 border border-white/5 p-3 rounded-2xl space-y-2 group transition-all hover:border-white/10", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-white uppercase truncate w-32 tracking-tighter", children: m2.status === "returning" ? "RETREAT_PROTOCOL" : "STRIKE_COMMAND" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `text-[8px] font-black px-1.5 py-0.5 rounded-full ${m2.status === "returning" ? "bg-sky-500/20 text-sky-400" : "bg-red-500/20 text-red-500"}`, children: ((_c = m2.status) == null ? void 0 : _c.toUpperCase()) || "TRANSIT" })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-neutral-500", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRightLeft, { size: 10, className: "group-hover:text-white transition-colors" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[9px] font-mono tracking-tighter", children: [
-            "GPS: ",
-            (_d = m2.march) == null ? void 0 : _d.target.x,
-            ":",
-            (_e2 = m2.march) == null ? void 0 : _e2.target.y
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 text-neutral-400", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 10 }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-mono font-bold tracking-widest text-white", children: [
-              remaining.toFixed(1),
-              "s"
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-1 bg-white/5 rounded-full overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            motion.div,
-            {
-              className: `h-full ${m2.status === "returning" ? "bg-sky-500" : "bg-red-500"}`,
-              animate: { width: `${progress2}%` },
-              transition: { ease: "linear", duration: 0.1 }
-            }
-          ) })
-        ] })
-      ] }, m2.id);
-    }) })
-  ] });
-};
-const StrategyHUD = ({
-  resources,
-  coordinates,
-  selectedEntity,
-  miniMapData,
-  villages,
-  onJump
-}) => {
-  var _a2;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 pointer-events-none z-50 flex flex-col justify-between p-8", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start w-full gap-8", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-1/4 pt-16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-black/60 backdrop-blur-md border border-white/5 p-4 rounded-3xl pointer-events-auto shadow-2xl space-y-3", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 px-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Map$1, { size: 12, className: "text-sky-500" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-neutral-400 uppercase tracking-[0.3em]", children: "ACTIVE_COLONIES" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-1.5", children: villages.map((v) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              onClick: () => onJump(v.x, v.y),
-              className: "bg-neutral-900/40 hover:bg-sky-500/10 border border-white/5 hover:border-sky-500/30 px-3 py-2.5 rounded-2xl flex items-center gap-3 transition-all group w-full",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-white uppercase tracking-tighter truncate", children: v.name }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] font-mono text-neutral-500 ml-auto group-hover:text-sky-400", children: [
-                  v.x,
-                  ":",
-                  v.y
-                ] })
-              ]
-            },
-            v.id
-          )) })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ActiveMovements, {})
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 pointer-events-auto bg-black/40 backdrop-blur-xl border border-white/10 p-2 rounded-[2rem] shadow-2xl", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ResourceNode, { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { size: 14 }), label: "SUP", value: resources.suprimentos, color: "text-sky-400" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ResourceNode, { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Fuel, { size: 14 }), label: "COMB", value: resources.combustivel, color: "text-orange-400" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ResourceNode, { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Boxes, { size: 14 }), label: "MET", value: resources.metal, color: "text-zinc-400" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ResourceNode, { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Rocket, { size: 14 }), label: "MUN", value: resources.municoes, color: "text-red-400" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ResourceNode, { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 14 }), label: "ENE", value: resources.energia, color: "text-yellow-400" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-black/80 backdrop-blur-2xl border border-sky-500/20 px-6 py-3 rounded-[2rem] flex items-center gap-4 pointer-events-auto shadow-2xl hover:border-sky-500/40 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Crosshair, { size: 18, className: "text-sky-500" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            motion.div,
-            {
-              animate: { scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] },
-              transition: { repeat: Infinity, duration: 2 },
-              className: "absolute inset-0 bg-sky-500 rounded-full"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-mono text-base text-white tracking-[0.2em] font-bold", children: [
-          coordinates.x,
-          ":",
-          coordinates.y
-        ] })
-      ] }) })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-end w-full gap-8", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-neutral-950/90 backdrop-blur-3xl border-2 border-white/5 p-3 rounded-[2.5rem] w-64 h-64 pointer-events-auto shadow-2xl relative overflow-hidden group", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(14,165,233,0.1),transparent_70%)]" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 opacity-20 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px]" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion.div,
-          {
-            animate: { rotate: 360 },
-            transition: { duration: 4, repeat: Infinity, ease: "linear" },
-            className: "absolute inset-0 bg-conic-to-r from-sky-500/20 via-transparent to-transparent opacity-40 pointer-events-none"
-          }
-        ),
-        miniMapData.map((e, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: `absolute w-1 h-1 rounded-full ${e.type === "unit" ? "bg-sky-400" : "bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]"}`,
-            style: {
-              left: `${e.x / 1e3 * 100}%`,
-              top: `${e.y / 1e3 * 100}%`
-            }
-          },
-          idx
-        )),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-black text-sky-500/50 uppercase tracking-[0.4em] flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-sky-500/50 animate-pulse" }),
-          "SCAN_ACTIVE"
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: selectedEntity && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { x: 100, opacity: 0 },
-          animate: { x: 0, opacity: 1 },
-          exit: { x: 100, opacity: 0 },
-          className: "bg-neutral-900/90 backdrop-blur-3xl border border-white/10 p-8 rounded-[3rem] w-96 pointer-events-auto shadow-2xl space-y-6",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-2 h-2 rounded-full bg-emerald-500" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-neutral-400 uppercase tracking-widest", children: "SIGNAL_DETECTED" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-3xl font-black text-white uppercase tracking-tighter leading-none", children: [
-                  ((_a2 = selectedEntity.type) == null ? void 0 : _a2.replace("Unit", "")) || "TARGET",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sky-500", children: "_SECURE" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] font-mono text-neutral-500 mt-1", children: [
-                  "UUID: ",
-                  selectedEntity.id.toString(16).toUpperCase()
-                ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 bg-sky-500/10 rounded-3xl border border-sky-500/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 24, className: "text-sky-400" }) })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(InfoBit, { label: "ARMOR_COV", value: "OPTIMAL", color: "text-sky-400" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(InfoBit, { label: "LOGISTICS", value: "ACTIVE", color: "text-emerald-400" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(InfoBit, { label: "POSITION", value: `${Math.round(selectedEntity.x)}:${Math.round(selectedEntity.y)}`, color: "text-white font-mono" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(InfoBit, { label: "THREAT_LVL", value: "MINIMAL", color: "text-neutral-500" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "w-full py-4 bg-sky-500 hover:bg-sky-400 text-black font-black uppercase text-xs rounded-2xl transition-all shadow-lg shadow-sky-500/20 active:scale-95", children: "EXECUTE_COMMAND_PROTOCOL" }) })
-          ]
-        }
-      ) })
-    ] })
-  ] });
-};
-const ResourceNode = ({ icon, label, value, color: color2 }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-neutral-900 border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-3 shadow-xl group hover:border-white/20 transition-all cursor-help relative", children: [
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-1.5 bg-white/5 rounded-lg ${color2}`, children: icon }),
-  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black text-neutral-500 uppercase block tracking-tighter", children: label }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-black text-white font-mono tracking-tighter", children: Math.floor(value).toLocaleString() })
-  ] }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-full mt-2 left-0 opacity-0 group-hover:opacity-100 transition-opacity bg-black/90 text-[8px] text-white p-2 rounded-lg border border-white/10 z-50 w-32", children: "Disponibilidade imediata de recursos para operaÃ§Ãµes de base." })
-] });
-const InfoBit = ({ label, value, color: color2 }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white/5 border border-white/5 p-2 rounded-xl", children: [
-  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black text-neutral-600 uppercase block mb-0.5", children: label }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-black uppercase tracking-tighter ${color2}`, children: value })
-] });
+const TILE_SIZE = 80;
+const VIEWPORT_RANGE = 7;
 const getTerrain = (tx, ty) => {
-  if (ty < 5 || ty > 94 || tx < 5 || tx > 94) return "water";
+  if (ty < 0 || ty > 100 || tx < 0 || tx > 100) return "water";
+  if (ty < 2 || ty > 98 || tx < 2 || tx > 98) return "water";
   const noise = (Math.sin(tx * 0.12) + Math.cos(ty * 0.15) + Math.sin(tx * 0.3 + ty * 0.2)) / 3;
-  if (noise > 0.5) return "mountain";
-  if (noise < -0.4) return "desert";
-  if (noise < -0.6) return "water";
+  if (noise > 0.53) return "mountain";
+  if (noise < -0.45) return "desert";
+  if (noise < -0.65) return "water";
   return "grass";
 };
 function WorldMapView({ playerBase, troops = [], gameConfig }) {
-  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i;
+  var _a2, _b, _c, _d, _e2, _f;
   const [center, setCenter] = reactExports.useState({ x: (playerBase == null ? void 0 : playerBase.coordenada_x) || 50, y: (playerBase == null ? void 0 : playerBase.coordenada_y) || 50 });
   const [selectedSector, setSelectedSector] = reactExports.useState(null);
   const [searchCoords, setSearchCoords] = reactExports.useState({ x: "", y: "" });
   const [isAttackModalOpen, setIsAttackModalOpen] = reactExports.useState(false);
   const [zoom, setZoom] = reactExports.useState(1);
   const [selectedUnit, setSelectedUnit] = reactExports.useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = reactExports.useState(true);
   const { entities: gameEntities, globalState } = useGameEntities();
-  const selectedEntityObj = reactExports.useMemo(() => {
-    return gameEntities.find((e) => e.id === selectedUnit);
-  }, [gameEntities, selectedUnit]);
-  const handleWheel = (e) => {
-    const delta = e.deltaY > 0 ? -0.05 : 0.05;
-    setZoom((prev) => Math.min(Math.max(prev + delta, 0.4), 2.5));
-  };
-  reactExports.useEffect(() => {
-    if (window.eventBus) {
-      const eb = window.eventBus;
-      const unsubCombat = eb.subscribe("COMBAT:RESULT", (payload) => {
-        const { vitoria, losses, loot } = payload.data;
-        if (vitoria) {
-          toast.success(`VITÓRIA MILITAR: Capturadas ${loot} unidades de recursos! Baixas: ${losses}`, {
-            icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Sword, { className: "text-emerald-500" })
-          });
-        } else {
-          toast.error(`DERROTA NO CAMPO: Forças repelidas com ${losses} baixas.`, {
-            icon: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldAlert, { className: "text-red-500" })
-          });
-        }
-      });
-      const unsubConquered = eb.subscribe("VILLAGE:CONQUERED", (payload) => {
-        toast.success("DOMÍNIO ABSOLUTO: Nova base anexada ao seu comando!", {
-          description: `Setor ${payload.data.villageId} agora sob sua soberania.`,
-          duration: 6e3
-        });
-      });
-      return () => {
-        unsubCombat();
-        unsubConquered();
-      };
-    }
-  }, [center]);
   const allBases = globalState.worldMapBases;
-  globalState.rebelCount;
+  const mapRef = reactExports.useRef(null);
+  const [dragOffset, setDragOffset] = reactExports.useState({ x: 0, y: 0 });
+  const handleWheel = (e) => {
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    setZoom((prev) => Math.min(Math.max(prev + delta, 0.4), 2));
+  };
+  const jumpTo = (x2, y2, base) => {
+    setCenter({ x: x2, y: y2 });
+    setSelectedSector({ x: x2, y: y2, base });
+    setDragOffset({ x: 0, y: 0 });
+  };
   const handleSearch = () => {
     const nx = parseInt(searchCoords.x);
     const ny = parseInt(searchCoords.y);
-    if (!isNaN(nx) && !isNaN(ny)) {
-      setCenter({ x: nx, y: ny });
-      setSelectedSector({ x: nx, y: ny, base: allBases.find((b2) => b2.coordenada_x === nx && b2.coordenada_y === ny) });
-    }
-  };
-  const jumpToPlayer = () => {
-    if (playerBase) setCenter({ x: playerBase.coordenada_x, y: playerBase.coordenada_y });
+    if (!isNaN(nx) && !isNaN(ny)) jumpTo(nx, ny, allBases.find((b2) => b2.coordenada_x === nx && b2.coordenada_y === ny));
   };
   const handleSendAttack = (params) => {
     if (!playerBase) return;
@@ -30294,328 +30043,290 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
       backendParams: { ...params, origem_id: playerBase.id }
     });
     setIsAttackModalOpen(false);
-    setSelectedSector(null);
-    toast.success("Ordem de ataque enviada ao Centro de Operações.");
+    toast.success("ORDEM TRANSMITIDA: Tropas em movimento.");
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col lg:flex-row gap-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-700 h-full overflow-hidden", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 bg-neutral-950 rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative h-[700px]", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute top-6 left-6 z-20 flex gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-1 flex items-center shadow-2xl pointer-events-auto", children: [
+  const tilesToRender = reactExports.useMemo(() => {
+    const tiles = [];
+    const startX = Math.floor(center.x - VIEWPORT_RANGE);
+    const endX = Math.ceil(center.x + VIEWPORT_RANGE);
+    const startY = Math.floor(center.y - VIEWPORT_RANGE);
+    const endY = Math.ceil(center.y + VIEWPORT_RANGE);
+    for (let y2 = startY; y2 <= endY; y2++) {
+      for (let x2 = startX; x2 <= endX; x2++) {
+        tiles.push({ x: x2, y: y2 });
+      }
+    }
+    return tiles;
+  }, [center]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative flex h-[800px] w-full gap-0 overflow-hidden rounded-[3rem] border border-white/10 bg-[#05080f] shadow-2xl", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        ref: mapRef,
+        className: "absolute inset-0 z-0 cursor-grab active:cursor-grabbing overflow-hidden",
+        onWheel: handleWheel,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.div,
+          {
+            drag: true,
+            dragMomentum: false,
+            onDrag: (e, info) => {
+            },
+            style: {
+              width: "100%",
+              height: "100%",
+              transform: `scale(${zoom})`,
+              transformOrigin: "center center"
+            },
+            className: "relative",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: tilesToRender.map(({ x: x2, y: y2 }) => {
+                const baseAt = allBases.find((b2) => b2.coordenada_x === x2 && b2.coordenada_y === y2);
+                const isSelected = (selectedSector == null ? void 0 : selectedSector.x) === x2 && (selectedSector == null ? void 0 : selectedSector.y) === y2;
+                const terrain = getTerrain(x2, y2);
+                const isPlayer = (baseAt == null ? void 0 : baseAt.ownerId) === (playerBase == null ? void 0 : playerBase.ownerId);
+                const isEnemy = baseAt && baseAt.ownerId && baseAt.ownerId !== (playerBase == null ? void 0 : playerBase.ownerId);
+                const isRebel = baseAt && !baseAt.ownerId;
+                const left = (x2 - center.x + VIEWPORT_RANGE) * TILE_SIZE;
+                const top = (y2 - center.y + VIEWPORT_RANGE) * TILE_SIZE;
+                return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    onClick: () => jumpTo(x2, y2, baseAt),
+                    className: `absolute transition-all duration-300 group
+                                        ${isSelected ? "z-20 ring-4 ring-sky-500 ring-offset-4 ring-offset-black/50" : "hover:brightness-125"}
+                                    `,
+                    style: {
+                      left,
+                      top,
+                      width: TILE_SIZE,
+                      height: TILE_SIZE,
+                      backgroundImage: `url(/assets/terrains/${terrain}.png)`,
+                      backgroundSize: "cover"
+                    },
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/5" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "absolute top-1 left-1 font-mono text-[7px] text-white/20 select-none", children: [
+                        x2,
+                        ":",
+                        y2
+                      ] }),
+                      baseAt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center w-full h-full", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        motion.div,
+                        {
+                          initial: { scale: 0 },
+                          animate: { scale: 1 },
+                          className: `p-2 rounded-lg border-2 backdrop-blur-sm relative
+                                                    ${isPlayer ? "bg-sky-500/20 border-sky-400 text-sky-400" : ""}
+                                                    ${isEnemy ? "bg-red-500/20 border-red-400 text-red-400" : ""}
+                                                    ${isRebel ? "bg-amber-600/30 border-amber-400 text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.2)]" : ""}
+                                                `,
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(House, { size: 20 }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border border-white/20 shadow-lg animate-pulse 
+                                                    ${isPlayer ? "bg-sky-500" : isEnemy ? "bg-red-500" : "bg-amber-500"}` })
+                          ]
+                        }
+                      ) })
+                    ]
+                  },
+                  `${x2}:${y2}`
+                );
+              }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-30", children: gameEntities.map((e) => {
+                const left = (e.x - center.x + VIEWPORT_RANGE) * TILE_SIZE;
+                const top = (e.y - center.y + VIEWPORT_RANGE) * TILE_SIZE;
+                return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  motion.div,
+                  {
+                    animate: { left, top },
+                    className: "absolute flex items-center justify-center",
+                    style: { width: TILE_SIZE, height: TILE_SIZE },
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative w-8 h-8 rounded-lg bg-black/80 border border-orange-500 flex items-center justify-center rotate-45 shadow-orange-500/20 shadow-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Navigation, { size: 14, className: "-rotate-45 text-orange-400" }) })
+                  },
+                  e.id
+                );
+              }) })
+            ]
+          }
+        )
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `absolute left-6 top-6 bottom-6 z-40 transition-all duration-500 flex gap-4 ${isSidebarOpen ? "w-[320px]" : "w-0"}`, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `flex-1 bg-black/60 backdrop-blur-3xl border border-white/10 rounded-[2rem] overflow-hidden flex flex-col shadow-2xl transition-opacity duration-300 ${isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 border-b border-white/5 bg-white/5 flex justify-between items-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 18, className: "text-orange-500" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-[10px] font-black uppercase tracking-[0.2em] text-white", children: "Objetivos Táticos" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-mono text-neutral-500", children: [
+            allBases.length,
+            " NÓS"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-auto custom-scrollbar p-3 space-y-1", children: allBases.map((b2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            onClick: () => jumpTo(b2.coordenada_x, b2.coordenada_y, b2),
+            className: `w-full group px-4 py-3 rounded-2xl border transition-all flex items-center justify-between
+                                    ${(selectedSector == null ? void 0 : selectedSector.x) === b2.coordenada_x && (selectedSector == null ? void 0 : selectedSector.y) === b2.coordenada_y ? "bg-sky-500 border-sky-400 text-white" : "bg-white/5 border-transparent hover:bg-white/10 text-neutral-400 hover:text-white"}
+                                `,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-start gap-0.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase truncate max-w-[120px]", children: b2.nome }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] font-mono opacity-60", children: [
+                  "[",
+                  b2.coordenada_x,
+                  ":",
+                  b2.coordenada_y,
+                  "]"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                !b2.ownerId && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-black", children: "REBEL" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { size: 14, className: "opacity-20 group-hover:opacity-100 transition-opacity" })
+              ] })
+            ]
+          },
+          b2.id
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 bg-black/40 border-t border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Input,
             {
-              className: "w-16 bg-transparent border-none text-center font-mono text-sky-400 placeholder:text-neutral-700 focus-visible:ring-0",
+              className: "bg-white/5 border-white/10 h-8 text-[10px] uppercase font-black",
               placeholder: "X",
               value: searchCoords.x,
               onChange: (e) => setSearchCoords((prev) => ({ ...prev, x: e.target.value }))
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-px h-4 bg-white/10" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Input,
             {
-              className: "w-16 bg-transparent border-none text-center font-mono text-sky-400 placeholder:text-neutral-700 focus-visible:ring-0",
+              className: "bg-white/5 border-white/10 h-8 text-[10px] uppercase font-black",
               placeholder: "Y",
               value: searchCoords.y,
               onChange: (e) => setSearchCoords((prev) => ({ ...prev, y: e.target.value }))
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "icon", className: "text-neutral-400 hover:text-white", onClick: handleSearch, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { size: 16 }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "outline", className: "bg-black/80 backdrop-blur-xl border-white/10 rounded-2xl text-[10px] font-black uppercase pointer-events-auto", onClick: jumpToPlayer, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Navigation, { size: 14, className: "mr-2 text-sky-500" }),
-          " Minha Base"
-        ] })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "icon", className: "h-8 w-12 bg-sky-600 hover:bg-sky-500", onClick: handleSearch, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { size: 14 }) })
+        ] }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
+        "button",
         {
-          className: "relative w-full h-full overflow-auto bg-[#0a0f1a] custom-scrollbar",
-          onWheel: handleWheel,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "relative transition-transform duration-200 ease-out",
-              style: {
-                width: `${20 * 80}px`,
-                height: `${20 * 80}px`,
-                transform: `scale(${zoom})`,
-                transformOrigin: "center center"
-              },
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Array.from({ length: 20 }).map((_2, iy) => {
-                  const y2 = center.y - 10 + iy;
-                  return Array.from({ length: 20 }).map((_22, ix) => {
-                    var _a3;
-                    const x2 = center.x - 10 + ix;
-                    const baseAt = allBases.find((b2) => b2.coordenada_x === x2 && b2.coordenada_y === y2);
-                    const isSelected = (selectedSector == null ? void 0 : selectedSector.x) === x2 && (selectedSector == null ? void 0 : selectedSector.y) === y2;
-                    const isPlayer = (baseAt == null ? void 0 : baseAt.ownerId) === (playerBase == null ? void 0 : playerBase.ownerId);
-                    const isRebel = baseAt && !baseAt.ownerId;
-                    const isEnemy = baseAt && baseAt.ownerId && baseAt.ownerId !== (playerBase == null ? void 0 : playerBase.ownerId);
-                    const terrain = getTerrain(x2, y2);
-                    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Tooltip, { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                        "div",
-                        {
-                          className: `absolute border border-white/[0.05] transition-all cursor-crosshair group flex items-center justify-center overflow-hidden
-                                                        ${isSelected ? "border-sky-500 z-10 ring-2 ring-sky-500/50 shadow-[0_0_30px_rgba(14,165,233,0.4)]" : "hover:brightness-110"}
-                                                        ${isPlayer ? "ring-1 ring-inset ring-sky-500/30" : ""}
-                                                        ${isEnemy ? "ring-1 ring-inset ring-red-500/30" : ""}
-                                                        ${isRebel ? "ring-1 ring-inset ring-amber-500/30" : ""}
-                                                    `,
-                          onClick: () => setSelectedSector({ x: x2, y: y2, base: baseAt }),
-                          style: {
-                            left: ix * 80,
-                            top: iy * 80,
-                            width: 80,
-                            height: 80,
-                            backgroundImage: `url(/assets/terrains/${terrain}.png)`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                            backgroundColor: terrain === "water" ? "#0a1d37" : "#1a1a1a"
-                          },
-                          children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/10 transition-opacity group-hover:opacity-0" }),
-                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `absolute top-1 left-1 text-[7px] font-mono transition-opacity z-20 ${isSelected ? "text-white opacity-100 bg-black/40 px-1" : "text-neutral-400 opacity-40 group-hover:opacity-100"}`, children: [
-                              x2.toString().padStart(2, "0"),
-                              ":",
-                              y2.toString().padStart(2, "0")
-                            ] }),
-                            baseAt && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                              motion.div,
-                              {
-                                animate: isSelected ? { scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] } : {},
-                                transition: { repeat: Infinity, duration: 3 },
-                                className: `p-3 rounded-xl border-2 shadow-2xl relative z-10 backdrop-blur-xs
-                                                                ${isPlayer ? "bg-sky-500/20 text-sky-400 border-sky-500/40 shadow-sky-500/20" : ""}
-                                                                ${isEnemy ? "bg-red-500/20 text-red-400 border-red-500/40 shadow-red-500/20" : ""}
-                                                                ${isRebel ? "bg-amber-600/40 text-amber-100 border-amber-600/60 shadow-amber-600/40" : ""}
-                                                            `,
-                                children: [
-                                  /* @__PURE__ */ jsxRuntimeExports.jsx(House, { size: 24 }),
-                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                                    "div",
-                                    {
-                                      className: `absolute -bottom-1 -right-1 w-3 h-3 rounded-full border border-white/20 
-                                                                ${isPlayer ? "bg-sky-500" : isEnemy ? "bg-red-500" : "bg-amber-500"} animate-pulse`
-                                    }
-                                  )
-                                ]
-                              }
-                            )
-                          ]
-                        }
-                      ) }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipContent, { className: "bg-black/90 border-white/10 p-4 rounded-2xl shadow-2xl side-top", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 12, className: isEnemy ? "text-red-500" : isRebel ? "text-amber-500" : "text-sky-500" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-white", children: isRebel ? "REBELDE: INSURGÊNCIA LOCAL" : (baseAt == null ? void 0 : baseAt.nome) || "SECTOR NEUTRO" })
-                        ] }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1 text-[8px] font-mono text-neutral-400", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between", children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "COORDENADAS:" }),
-                            " ",
-                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white", children: [
-                              x2,
-                              ":",
-                              y2
-                            ] })
-                          ] }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between", children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "TERRENO:" }),
-                            " ",
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sky-400 uppercase", children: terrain })
-                          ] }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between", children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "MORAL/LOYALTY:" }),
-                            " ",
-                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white", children: [
-                              (baseAt == null ? void 0 : baseAt.loyalty) ?? 100,
-                              "%"
-                            ] })
-                          ] }),
-                          (baseAt == null ? void 0 : baseAt.is_protected) && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-yellow-400 font-black animate-pulse mt-1", children: "SISTEMA_DE_PROTEÇÃO_ATIVO" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between border-t border-white/5 pt-1", children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "COMANDANTE:" }),
-                            " ",
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: isRebel ? "NEUTRAL_FORCES" : ((_a3 = baseAt == null ? void 0 : baseAt.jogador) == null ? void 0 : _a3.username) || "NENHUM" })
-                          ] })
-                        ] })
-                      ] }) })
-                    ] }, `${x2}-${y2}`);
-                  });
-                }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-30", children: gameEntities.map((e) => {
-                  var _a3;
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    motion.div,
-                    {
-                      style: {
-                        position: "absolute",
-                        left: e.x * 80,
-                        top: e.y * 80,
-                        width: 80,
-                        height: 80,
-                        pointerEvents: "auto"
-                      },
-                      className: "flex items-center justify-center",
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative group cursor-pointer", onClick: () => setSelectedUnit(e.id), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Tooltip, { children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `
-                                                    relative w-10 h-10 rounded-xl border-2 rotate-45 flex items-center justify-center transition-all
-                                                    ${e.type === "Army" ? "border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)]" : "border-sky-500/50 shadow-xl"}
-                                                    ${selectedUnit === e.id ? "bg-orange-500 border-white" : "bg-black/80 hover:border-sky-400"}
-                                                `, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "-rotate-45", children: e.type === "Army" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Navigation, { size: 18, className: `${selectedUnit === e.id ? "text-black" : "text-orange-400"} ${e.status === "returning" ? "rotate-180" : ""}` }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 18, className: selectedUnit === e.id ? "text-black" : "text-sky-400" }) }) }) }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipContent, { className: "bg-black/90 border-white/10 p-3 rounded-xl shadow-2xl z-[100]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[9px] font-black uppercase text-white flex items-center gap-2", children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx(Navigation, { size: 10, className: "text-orange-400" }),
-                            "EXPE_ID: ",
-                            e.id,
-                            " | ",
-                            ((_a3 = e.status) == null ? void 0 : _a3.toUpperCase()) || "OPERACIONAL"
-                          ] }),
-                          e.march && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[8px] font-mono text-neutral-500", children: [
-                            "ETA: ",
-                            Math.max(0, Math.floor(e.march.remainingTime)),
-                            "s | DEST: ",
-                            e.march.target.x,
-                            ":",
-                            e.march.target.y
-                          ] })
-                        ] }) })
-                      ] }) })
-                    },
-                    `entity-${e.id}`
-                  );
-                }) })
-              ]
-            }
-          )
+          onClick: () => setIsSidebarOpen(!isSidebarOpen),
+          className: "self-center bg-black/80 backdrop-blur-xl border border-white/10 w-8 h-12 rounded-xl flex items-center justify-center hover:bg-sky-600 transition-colors group",
+          children: isSidebarOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { size: 16 }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { size: 16 })
         }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 flex items-center gap-6 z-20", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-2 h-2 bg-sky-500 rounded-full animate-pulse" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] uppercase font-black tracking-widest text-neutral-400", children: "SIGINT Active" })
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full px-20 max-w-5xl pointer-events-none", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: selectedSector && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        motion.div,
+        {
+          initial: { y: 50, opacity: 0 },
+          animate: { y: 0, opacity: 1 },
+          exit: { y: 50, opacity: 0 },
+          className: "w-full bg-black/80 backdrop-blur-3xl border border-white/10 p-6 rounded-[2.5rem] shadow-2xl flex items-center justify-between pointer-events-auto ring-1 ring-white/5",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-6", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-4 rounded-2xl border-2
+                                    ${((_a2 = selectedSector.base) == null ? void 0 : _a2.ownerId) === (playerBase == null ? void 0 : playerBase.ownerId) ? "bg-sky-500/10 border-sky-500/40 text-sky-400" : "bg-red-500/10 border-red-500/40 text-red-400"}
+                                `, children: /* @__PURE__ */ jsxRuntimeExports.jsx(House, { size: 32 }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-white uppercase tracking-tighter", children: ((_b = selectedSector.base) == null ? void 0 : _b.nome) || "Sector de Exploração" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-3 py-1 bg-white/5 rounded-full text-[10px] font-mono text-sky-400 border border-white/5", children: [
+                    "[",
+                    selectedSector.x,
+                    ":",
+                    selectedSector.y,
+                    "]"
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 text-[10px] font-black uppercase text-neutral-500 tracking-[0.15em]", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Navigation, { size: 12, className: "text-orange-500" }),
+                    "Terrain: ",
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: getTerrain(selectedSector.x, selectedSector.y) })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1 h-1 bg-white/10 rounded-full" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { size: 12, className: "text-sky-500" }),
+                    "Stability: ",
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white", children: [
+                      ((_c = selectedSector.base) == null ? void 0 : _c.loyalty) ?? 100,
+                      "%"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1 h-1 bg-white/10 rounded-full" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(User, { size: 12, className: "text-neutral-400" }),
+                    "Intel: ",
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: ((_e2 = (_d = selectedSector.base) == null ? void 0 : _d.jogador) == null ? void 0 : _e2.username) || "NEUTRAL" })
+                  ] })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  variant: "outline",
+                  className: "border-white/10 hover:bg-white/10 text-[10px] font-black uppercase px-8 py-6 rounded-2xl",
+                  onClick: () => setSelectedSector(null),
+                  children: "Fugir"
+                }
+              ),
+              !((_f = selectedSector.base) == null ? void 0 : _f.ownerId) || selectedSector.base.ownerId !== (playerBase == null ? void 0 : playerBase.ownerId) ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Button,
+                {
+                  className: "bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest px-10 py-6 rounded-2xl shadow-xl shadow-red-600/30",
+                  onClick: () => setIsAttackModalOpen(true),
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Sword, { className: "mr-3", size: 16 }),
+                    " Lançar Assalto"
+                  ]
+                }
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { disabled: true, className: "bg-sky-600/20 text-sky-400 border-sky-500/20 text-[10px] font-black uppercase px-10 py-6 rounded-2xl", children: "Zona Aliada" })
+            ] })
+          ]
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-black/60 backdrop-blur-xl border border-white/10 px-8 py-3 rounded-full flex items-center gap-8 shadow-2xl pointer-events-auto", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: () => zoom > 0.5 && setZoom((z) => z - 0.2), className: "text-neutral-400", children: "-" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] text-neutral-500 font-black uppercase tracking-widest mb-1", children: "Satellite_Link_Active" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] font-mono text-sky-400", children: [
+            "MAGNIFICATION_LVL: ",
+            (zoom * 100).toFixed(0),
+            "%"
+          ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-px h-3 bg-white/20" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-mono text-[10px] text-sky-400 tracking-tighter", children: [
-          "CENTRAL_X: ",
-          center.x,
-          " | CENTRAL_Y: ",
-          center.y,
-          " | OBJECTS: ",
-          allBases.length + gameEntities.length
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: () => zoom < 1.8 && setZoom((z) => z + 0.2), className: "text-neutral-400", children: "+" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-px h-4 bg-white/10" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            onClick: jumpToPlayer,
+            className: "bg-sky-600/20 hover:bg-sky-600/40 text-sky-400 border border-sky-500/20 rounded-xl px-4 py-1.5 text-[9px] font-black uppercase",
+            children: "Home Target"
+          }
+        )
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: selectedSector && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      motion.div,
-      {
-        initial: { opacity: 0, x: 100 },
-        animate: { opacity: 1, x: 0 },
-        exit: { opacity: 0, x: 100 },
-        className: "fixed right-10 top-32 bottom-32 w-96 bg-neutral-950/90 backdrop-blur-2xl rounded-[3rem] border-2 border-white/5 p-8 shadow-2xl z-40 overflow-hidden flex flex-col pointer-events-auto",
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "mb-8", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-sky-500 font-mono uppercase tracking-widest mb-1", children: [
-              getTerrain(selectedSector.x, selectedSector.y),
-              " terrain detected"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2", children: ((_a2 = selectedSector.base) == null ? void 0 : _a2.nome) || "Sector Neutro" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-neutral-500 font-mono text-sm", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Crosshair, { size: 14 }),
-              " ",
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sky-500", children: [
-                "[",
-                selectedSector.x,
-                ":",
-                selectedSector.y,
-                "]"
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 space-y-8 overflow-auto custom-scrollbar", children: selectedSector.base ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-8", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-white/[0.03] rounded-3xl border border-white/5 space-y-4", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-neutral-500 uppercase font-black tracking-widest", children: "Territorial_Stability" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `text-xs font-black ${(((_b = selectedSector.base) == null ? void 0 : _b.loyalty) ?? 100) < 30 ? "text-red-500" : "text-sky-400"}`, children: [
-                  ((_c = selectedSector.base) == null ? void 0 : _c.loyalty) ?? 100,
-                  "%"
-                ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 bg-white/5 rounded-full overflow-hidden border border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                motion.div,
-                {
-                  initial: { width: 0 },
-                  animate: { width: `${((_d = selectedSector.base) == null ? void 0 : _d.loyalty) ?? 100}%` },
-                  className: `h-full transition-all duration-1000 ${(((_e2 = selectedSector.base) == null ? void 0 : _e2.loyalty) ?? 100) < 30 ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : (((_f = selectedSector.base) == null ? void 0 : _f.loyalty) ?? 100) < 60 ? "bg-amber-500" : "bg-sky-500"}`
-                }
-              ) })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-white/[0.03] rounded-3xl border border-white/5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-neutral-500 uppercase font-black block tracking-widest", children: "Base_Commander" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl font-black text-white tracking-tight", children: ((_g = selectedSector.base.jogador) == null ? void 0 : _g.username) || "NEUTRAL_FORCE" })
-            ] }),
-            ((_h = selectedSector.base) == null ? void 0 : _h.is_protected) ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-8 text-center border-2 border-dashed border-yellow-500/30 rounded-3xl bg-yellow-500/5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "text-yellow-500 animate-pulse mx-auto mb-2", size: 32 }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-yellow-500 uppercase tracking-widest", children: "DIPLOMATIC_TRUCE" })
-            ] }) : !((_i = selectedSector.base) == null ? void 0 : _i.ownerId) || selectedSector.base.ownerId !== (playerBase == null ? void 0 : playerBase.ownerId) ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Button,
-              {
-                className: "w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-3xl shadow-xl shadow-red-600/20 active:scale-95 transition-all text-xs",
-                onClick: () => setIsAttackModalOpen(true),
-                children: "INITIATE_ASSAULT"
-              }
-            ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-6 text-center border-2 border-dashed border-sky-500/20 rounded-3xl bg-sky-500/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-sky-400 uppercase tracking-widest", children: "Command_Center_Link_Active" }) })
-          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-6 bg-white/[0.03] rounded-3xl border border-white/5 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] text-neutral-500 font-mono", children: [
-              "No structural signals detected in this sector. Terrain is predominantly ",
-              getTerrain(selectedSector.x, selectedSector.y),
-              "."
-            ] }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Button,
-              {
-                variant: "outline",
-                className: "w-full border-2 border-white/5 py-8 rounded-3xl text-neutral-400 font-black uppercase",
-                onClick: () => setIsAttackModalOpen(true),
-                children: "ESTABLISH_EXPEDITION"
-              }
-            )
-          ] }) })
-        ]
-      }
-    ) }),
-    selectedSector && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
       AttackModal,
       {
         isOpen: isAttackModalOpen,
         onClose: () => setIsAttackModalOpen(false),
         origemBase: playerBase,
-        destinoBase: selectedSector.base || { coordenada_x: selectedSector.x, coordenada_y: selectedSector.y, nome: "Sector Vazio" },
+        destinoBase: (selectedSector == null ? void 0 : selectedSector.base) || { coordenada_x: selectedSector == null ? void 0 : selectedSector.x, coordenada_y: selectedSector == null ? void 0 : selectedSector.y, nome: "Sector Vazio" },
         tropasDisponiveis: troops,
         gameConfig,
         onEnviar: handleSendAttack,
         isSending: false
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      StrategyHUD,
-      {
-        resources: (playerBase == null ? void 0 : playerBase.recursos) || {
-          suprimentos: 0,
-          combustivel: 0,
-          municoes: 0,
-          metal: 0,
-          energia: 0,
-          pessoal: 0
-        },
-        coordinates: center,
-        selectedEntity: selectedEntityObj,
-        miniMapData: gameEntities,
-        villages: globalState.villages,
-        onJump: (x2, y2) => setCenter({ x: x2, y: y2 })
       }
     )
   ] });
@@ -44534,7 +44245,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CQxKj5uK.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-4xv_Uru8.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44570,4 +44281,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Ngmvrx4e.js.map
+//# sourceMappingURL=app-CdldUIwr.js.map

@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Map as MapIcon, Target, Search, Crosshair, Navigation, Shield, User, Zap, Sword, ChevronRight, Home, ShieldAlert } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Target, Search, Crosshair, Navigation, Shield, Sword, Home, ShieldAlert, List, ChevronRight, ChevronLeft, Map as MapIcon } from 'lucide-react';
+import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AttackModal } from './AttackModal';
-import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { useGameEntities } from '@/hooks/use-game-entities';
 import { StrategyHUD } from './StrategyHUD';
@@ -12,44 +11,25 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { eventBus, Events } from '@src/core/EventBus';
 import { Base } from '@/types';
 
-interface BaseMap {
-    id: number;
-    nome: string;
-    coordenada_x: number;
-    coordenada_y: number;
-    loyalty?: number;
-    is_protected?: boolean;
-    protection_until?: string;
-    ownerId: number | null;
-    nivel?: number;
-    jogador?: {
-        id: number;
-        username: string;
-        nome?: string;
-        alianca?: { tag: string };
-    };
-}
-
 interface WorldMapViewProps {
     playerBase?: Base;
     troops?: any[];
     gameConfig?: any;
 }
 
-/**
- * DETERMINISTIC GEOGRAPHY PROTOCOL:
- * Matches backend WorldSystem logic to render terrains without extra data transfer.
- */
+const TILE_SIZE = 80;
+const VIEWPORT_RANGE = 7; // Raio de tiles visuais (Total 15x15 aprox)
+
 const getTerrain = (tx: number, ty: number) => {
-    // Edge Oceans
-    if (ty < 5 || ty > 94 || tx < 5 || tx > 94) return 'water';
+    // Edge Oceans: Mais distantes agora
+    if (ty < 0 || ty > 100 || tx < 0 || tx > 100) return 'water';
+    if (ty < 2 || ty > 98 || tx < 2 || tx > 98) return 'water';
     
-    // Deterministic Pseudo-Noise
     const noise = (Math.sin(tx * 0.12) + Math.cos(ty * 0.15) + Math.sin(tx * 0.3 + ty * 0.2)) / 3;
     
-    if (noise > 0.5) return 'mountain';
-    if (noise < -0.4) return 'desert';
-    if (noise < -0.6) return 'water'; // Internal lakes
+    if (noise > 0.53) return 'mountain';
+    if (noise < -0.45) return 'desert';
+    if (noise < -0.65) return 'water';
     
     return 'grass';
 };
@@ -61,63 +41,30 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
     const [isAttackModalOpen, setIsAttackModalOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
     const [selectedUnit, setSelectedUnit] = useState<number | null>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    
     const { entities: gameEntities, globalState } = useGameEntities();
+    const allBases = globalState.worldMapBases;
 
-    const selectedEntityObj = useMemo(() => {
-        return gameEntities.find(e => e.id === selectedUnit);
-    }, [gameEntities, selectedUnit]);
+    // Draggable State
+    const mapRef = useRef<HTMLDivElement>(null);
+    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
     const handleWheel = (e: React.WheelEvent) => {
-        // Prevent default zoom if possible, but allow system scroll if needed
-        const delta = e.deltaY > 0 ? -0.05 : 0.05;
-        setZoom(prev => Math.min(Math.max(prev + delta, 0.4), 2.5));
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        setZoom(prev => Math.min(Math.max(prev + delta, 0.4), 2.0));
     };
 
-    useEffect(() => {
-        if ((window as any).eventBus) {
-            const eb = (window as any).eventBus;
-            
-            const unsubCombat = eb.subscribe('COMBAT:RESULT', (payload: any) => {
-                const { vitoria, losses, loot } = payload.data;
-                if (vitoria) {
-                    toast.success(`VITÓRIA MILITAR: Capturadas ${loot} unidades de recursos! Baixas: ${losses}`, {
-                        icon: <Sword className="text-emerald-500" />
-                    });
-                } else {
-                    toast.error(`DERROTA NO CAMPO: Forças repelidas com ${losses} baixas.`, {
-                        icon: <ShieldAlert className="text-red-500" />
-                    });
-                }
-            });
-
-            const unsubConquered = eb.subscribe('VILLAGE:CONQUERED', (payload: any) => {
-                toast.success("DOMÍNIO ABSOLUTO: Nova base anexada ao seu comando!", {
-                    description: `Setor ${payload.data.villageId} agora sob sua soberania.`,
-                    duration: 6000
-                });
-            });
-
-            return () => {
-                unsubCombat();
-                unsubConquered();
-            };
-        }
-    }, [center]);
-
-    const allBases = globalState.worldMapBases;
-    const rebelBasesCount = globalState.rebelCount;
+    const jumpTo = (x: number, y: number, base?: any) => {
+        setCenter({ x, y });
+        setSelectedSector({ x, y, base });
+        setDragOffset({ x: 0, y: 0 }); // Reset drag after jump
+    };
 
     const handleSearch = () => {
         const nx = parseInt(searchCoords.x);
         const ny = parseInt(searchCoords.y);
-        if (!isNaN(nx) && !isNaN(ny)) {
-            setCenter({ x: nx, y: ny });
-            setSelectedSector({ x: nx, y: ny, base: allBases.find(b => b.coordenada_x === nx && b.coordenada_y === ny) });
-        }
-    };
-
-    const jumpToPlayer = () => {
-        if (playerBase) setCenter({ x: playerBase.coordenada_x, y: playerBase.coordenada_y });
+        if (!isNaN(nx) && !isNaN(ny)) jumpTo(nx, ny, allBases.find(b => b.coordenada_x === nx && b.coordenada_y === ny));
     };
 
     const handleSendAttack = (params: any) => {
@@ -131,325 +78,285 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
             troops: params.tropas,
             backendParams: { ...params, origem_id: playerBase.id }
         });
-        
         setIsAttackModalOpen(false);
-        setSelectedSector(null);
-        toast.success("Ordem de ataque enviada ao Centro de Operações.");
+        toast.success("ORDEM TRANSMITIDA: Tropas em movimento.");
     };
 
+    // Render tiles based on center + dragOffset
+    const tilesToRender = useMemo(() => {
+        const tiles = [];
+        const startX = Math.floor(center.x - VIEWPORT_RANGE);
+        const endX = Math.ceil(center.x + VIEWPORT_RANGE);
+        const startY = Math.floor(center.y - VIEWPORT_RANGE);
+        const endY = Math.ceil(center.y + VIEWPORT_RANGE);
+
+        for (let y = startY; y <= endY; y++) {
+            for (let x = startX; x <= endX; x++) {
+                tiles.push({ x, y });
+            }
+        }
+        return tiles;
+    }, [center]);
+
     return (
-        <div className="flex flex-col lg:flex-row gap-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-700 h-full overflow-hidden">
-            <div className="flex-1 bg-neutral-950 rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative h-[700px]">
-                {/* HUD de Coordenadas e Busca */}
-                <div className="absolute top-6 left-6 z-20 flex gap-2">
-                    <div className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-1 flex items-center shadow-2xl pointer-events-auto">
-                        <Input 
-                            className="w-16 bg-transparent border-none text-center font-mono text-sky-400 placeholder:text-neutral-700 focus-visible:ring-0" 
-                            placeholder="X"
-                            value={searchCoords.x}
-                            onChange={e => setSearchCoords(prev => ({ ...prev, x: e.target.value }))}
-                        />
-                        <div className="w-px h-4 bg-white/10" />
-                        <Input 
-                            className="w-16 bg-transparent border-none text-center font-mono text-sky-400 placeholder:text-neutral-700 focus-visible:ring-0" 
-                            placeholder="Y"
-                            value={searchCoords.y}
-                            onChange={e => setSearchCoords(prev => ({ ...prev, y: e.target.value }))}
-                        />
-                        <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white" onClick={handleSearch}>
-                            <Search size={16} />
-                        </Button>
-                    </div>
-                    <Button variant="outline" className="bg-black/80 backdrop-blur-xl border-white/10 rounded-2xl text-[10px] font-black uppercase pointer-events-auto" onClick={jumpToPlayer}>
-                        <Navigation size={14} className="mr-2 text-sky-500" /> Minha Base
-                    </Button>
-                </div>
-
-                {/* Contentor do Mapa Digital */}
-                <div 
-                    className="relative w-full h-full overflow-auto bg-[#0a0f1a] custom-scrollbar"
-                    onWheel={handleWheel}
+        <div className="relative flex h-[800px] w-full gap-0 overflow-hidden rounded-[3rem] border border-white/10 bg-[#05080f] shadow-2xl">
+            
+            {/* MAP ENGINE (FULL BACKGROUND) */}
+            <div 
+                ref={mapRef}
+                className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing overflow-hidden"
+                onWheel={handleWheel}
+            >
+                <motion.div 
+                    drag
+                    dragMomentum={false}
+                    onDrag={(e, info) => {
+                        // Converter drag pixels para coordenadas se necessário, mas aqui apenas movemos o visual
+                        // Para um mapa infinito real, deveríamos atualizar o 'center' quando o drag ultrapassa um tile
+                    }}
+                    style={{ 
+                        width: '100%', 
+                        height: '100%',
+                        transform: `scale(${zoom})`,
+                        transformOrigin: 'center center'
+                    }}
+                    className="relative"
                 >
-                    <div 
-                        className="relative transition-transform duration-200 ease-out"
-                        style={{ 
-                            width: `${20 * 80}px`, 
-                            height: `${20 * 80}px`,
-                            transform: `scale(${zoom})`,
-                            transformOrigin: 'center center'
-                        }}
-                    >
-                        <TooltipProvider>
-                            {Array.from({ length: 20 }).map((_, iy) => {
-                                const y = center.y - 10 + iy;
-                                return Array.from({ length: 20 }).map((_, ix) => {
-                                    const x = center.x - 10 + ix;
-                                    const baseAt = allBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
-                                    const isSelected = selectedSector?.x === x && selectedSector?.y === y;
-                                    
-                                    const isPlayer = baseAt?.ownerId === playerBase?.ownerId;
-                                    const isRebel = baseAt && !baseAt.ownerId;
-                                    const isEnemy = baseAt && baseAt.ownerId && baseAt.ownerId !== playerBase?.ownerId;
+                    <TooltipProvider>
+                        {tilesToRender.map(({ x, y }) => {
+                            const baseAt = allBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
+                            const isSelected = selectedSector?.x === x && selectedSector?.y === y;
+                            const terrain = getTerrain(x, y);
+                            const isPlayer = baseAt?.ownerId === playerBase?.ownerId;
+                            const isEnemy = baseAt && baseAt.ownerId && baseAt.ownerId !== playerBase?.ownerId;
+                            const isRebel = baseAt && !baseAt.ownerId;
 
-                                    const terrain = getTerrain(x, y);
+                            // Calcular posição visual relativa ao centro
+                            const left = (x - center.x + VIEWPORT_RANGE) * TILE_SIZE;
+                            const top = (y - center.y + VIEWPORT_RANGE) * TILE_SIZE;
 
-                                    return (
-                                        <Tooltip key={`${x}-${y}`}>
-                                            <TooltipTrigger asChild>
-                                                <div 
-                                                    className={`absolute border border-white/[0.05] transition-all cursor-crosshair group flex items-center justify-center overflow-hidden
-                                                        ${isSelected ? 'border-sky-500 z-10 ring-2 ring-sky-500/50 shadow-[0_0_30px_rgba(14,165,233,0.4)]' : 'hover:brightness-110'}
-                                                        ${isPlayer ? 'ring-1 ring-inset ring-sky-500/30' : ''}
-                                                        ${isEnemy ? 'ring-1 ring-inset ring-red-500/30' : ''}
-                                                        ${isRebel ? 'ring-1 ring-inset ring-amber-500/30' : ''}
-                                                    `}
-                                                    onClick={() => setSelectedSector({ x, y, base: baseAt })}
-                                                    style={{ 
-                                                        left: ix * 80, 
-                                                        top: iy * 80, 
-                                                        width: 80, 
-                                                        height: 80,
-                                                        backgroundImage: `url(/assets/terrains/${terrain}.png)`,
-                                                        backgroundSize: 'cover',
-                                                        backgroundPosition: 'center',
-                                                        backgroundColor: terrain === 'water' ? '#0a1d37' : '#1a1a1a'
-                                                    }}
-                                                >
-                                                    {/* Sutil overlay para profundidade */}
-                                                    <div className="absolute inset-0 bg-black/10 transition-opacity group-hover:opacity-0" />
-                                                    
-                                                    {/* Coordenadas Digitais */}
-                                                    <span className={`absolute top-1 left-1 text-[7px] font-mono transition-opacity z-20 ${isSelected ? 'text-white opacity-100 bg-black/40 px-1' : 'text-neutral-400 opacity-40 group-hover:opacity-100'}`}>
-                                                        {x.toString().padStart(2, '0')}:{y.toString().padStart(2, '0')}
-                                                    </span>
-
-                                                    {/* Marcador de Base/Vila */}
-                                                    {baseAt && (
-                                                        <motion.div 
-                                                            animate={isSelected ? { scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] } : {}}
-                                                            transition={{ repeat: Infinity, duration: 3 }}
-                                                            className={`p-3 rounded-xl border-2 shadow-2xl relative z-10 backdrop-blur-xs
-                                                                ${isPlayer ? 'bg-sky-500/20 text-sky-400 border-sky-500/40 shadow-sky-500/20' : ''}
-                                                                ${isEnemy ? 'bg-red-500/20 text-red-400 border-red-500/40 shadow-red-500/20' : ''}
-                                                                ${isRebel ? 'bg-amber-600/40 text-amber-100 border-amber-600/60 shadow-amber-600/40' : ''}
-                                                            `}
-                                                        >
-                                                            <Home size={24} />
-                                                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border border-white/20 
-                                                                ${isPlayer ? 'bg-sky-500' : (isEnemy ? 'bg-red-500' : 'bg-amber-500')} animate-pulse`} 
-                                                            />
-                                                        </motion.div>
-                                                    )}
-                                                </div>
-                                            </TooltipTrigger>
-                                            <TooltipContent className="bg-black/90 border-white/10 p-4 rounded-2xl shadow-2xl side-top">
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <Target size={12} className={isEnemy ? 'text-red-500' : (isRebel ? 'text-amber-500' : 'text-sky-500')} />
-                                                        <span className="text-[10px] font-black uppercase text-white">
-                                                            {isRebel ? 'REBELDE: INSURGÊNCIA LOCAL' : (baseAt?.nome || 'SECTOR NEUTRO')}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex flex-col gap-1 text-[8px] font-mono text-neutral-400">
-                                                        <div className="flex justify-between"><span>COORDENADAS:</span> <span className="text-white">{x}:{y}</span></div>
-                                                        <div className="flex justify-between"><span>TERRENO:</span> <span className="text-sky-400 uppercase">{terrain}</span></div>
-                                                        <div className="flex justify-between"><span>MORAL/LOYALTY:</span> <span className="text-white">{baseAt?.loyalty ?? 100}%</span></div>
-                                                        {baseAt?.is_protected && (
-                                                            <span className="text-yellow-400 font-black animate-pulse mt-1">SISTEMA_DE_PROTEÇÃO_ATIVO</span>
-                                                        )}
-                                                        <div className="flex justify-between border-t border-white/5 pt-1">
-                                                            <span>COMANDANTE:</span> <span className="text-white">{isRebel ? 'NEUTRAL_FORCES' : (baseAt?.jogador?.username || 'NENHUM')}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    );
-                                })
-                            })}
-                        </TooltipProvider>
-
-                        {/* Camada de Entidades (Exércitos em Marcha) */}
-                        <div className="absolute inset-0 pointer-events-none z-30">
-                            {gameEntities.map(e => (
-                                <motion.div 
-                                    key={`entity-${e.id}`}
-                                    style={{
-                                        position: "absolute",
-                                        left: e.x * 80,
-                                        top: e.y * 80,
-                                        width: 80,
-                                        height: 80,
-                                        pointerEvents: "auto"
+                            return (
+                                <div 
+                                    key={`${x}:${y}`}
+                                    onClick={() => jumpTo(x, y, baseAt)}
+                                    className={`absolute transition-all duration-300 group
+                                        ${isSelected ? 'z-20 ring-4 ring-sky-500 ring-offset-4 ring-offset-black/50' : 'hover:brightness-125'}
+                                    `}
+                                    style={{ 
+                                        left, top, 
+                                        width: TILE_SIZE, 
+                                        height: TILE_SIZE,
+                                        backgroundImage: `url(/assets/terrains/${terrain}.png)`,
+                                        backgroundSize: 'cover'
                                     }}
-                                    className="flex items-center justify-center"
                                 >
-                                    <div className="relative group cursor-pointer" onClick={() => setSelectedUnit(e.id)}>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <div className={`
-                                                    relative w-10 h-10 rounded-xl border-2 rotate-45 flex items-center justify-center transition-all
-                                                    ${e.type === 'Army' ? 'border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)]' : 'border-sky-500/50 shadow-xl'}
-                                                    ${selectedUnit === e.id ? 'bg-orange-500 border-white' : 'bg-black/80 hover:border-sky-400'}
-                                                `}>
-                                                    <div className="-rotate-45">
-                                                        {e.type === 'Army' ? (
-                                                            <Navigation size={18} className={`${selectedUnit === e.id ? 'text-black' : 'text-orange-400'} ${e.status === 'returning' ? 'rotate-180' : ''}`} />
-                                                        ) : (
-                                                            <Target size={18} className={selectedUnit === e.id ? 'text-black' : 'text-sky-400'} />
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </TooltipTrigger>
-                                            <TooltipContent className="bg-black/90 border-white/10 p-3 rounded-xl shadow-2xl z-[100]">
-                                                <div className="space-y-1">
-                                                    <div className="text-[9px] font-black uppercase text-white flex items-center gap-2">
-                                                        <Navigation size={10} className="text-orange-400" /> 
-                                                        EXPE_ID: {e.id} | {e.status?.toUpperCase() || 'OPERACIONAL'}
-                                                    </div>
-                                                    {e.march && (
-                                                        <div className="text-[8px] font-mono text-neutral-500">
-                                                            ETA: {Math.max(0, Math.floor(e.march.remainingTime))}s |
-                                                            DEST: {e.march.target.x}:{e.march.target.y}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                                    {/* Overlay de coordenadas sutil */}
+                                    <div className="absolute inset-0 bg-black/5" />
+                                    <span className="absolute top-1 left-1 font-mono text-[7px] text-white/20 select-none">
+                                        {x}:{y}
+                                    </span>
 
-                {/* Barra de Status do Rodapé */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 flex items-center gap-6 z-20">
-                    <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-sky-500 rounded-full animate-pulse" />
-                        <span className="text-[10px] uppercase font-black tracking-widest text-neutral-400">SIGINT Active</span>
-                    </div>
-                    <div className="w-px h-3 bg-white/20" />
-                    <div className="font-mono text-[10px] text-sky-400 tracking-tighter">
-                        CENTRAL_X: {center.x} | CENTRAL_Y: {center.y} | OBJECTS: {allBases.length + gameEntities.length}
-                    </div>
-                </div>
-            </div>
-
-            {/* Painel de Detalhes do Sector (Sidebar Direita) */}
-            <AnimatePresence>
-                {selectedSector && (
-                    <motion.div 
-                        initial={{ opacity: 0, x: 100 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 100 }}
-                        className="fixed right-10 top-32 bottom-32 w-96 bg-neutral-950/90 backdrop-blur-2xl rounded-[3rem] border-2 border-white/5 p-8 shadow-2xl z-40 overflow-hidden flex flex-col pointer-events-auto"
-                    >
-                        <header className="mb-8">
-                            <div className="text-[10px] text-sky-500 font-mono uppercase tracking-widest mb-1">
-                                {getTerrain(selectedSector.x, selectedSector.y)} terrain detected
-                            </div>
-                            <h3 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-2">
-                                {selectedSector.base?.nome || 'Sector Neutro'}
-                            </h3>
-                            <div className="flex items-center gap-2 text-neutral-500 font-mono text-sm">
-                                <Crosshair size={14} /> <span className="text-sky-500">[{selectedSector.x}:{selectedSector.y}]</span>
-                            </div>
-                        </header>
-
-                        <div className="flex-1 space-y-8 overflow-auto custom-scrollbar">
-                            {selectedSector.base ? (
-                                <div className="space-y-8">
-                                    <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-[10px] text-neutral-500 uppercase font-black tracking-widest">Territorial_Stability</span>
-                                            <span className={`text-xs font-black ${(selectedSector.base?.loyalty ?? 100) < 30 ? 'text-red-500' : 'text-sky-400'}`}>
-                                                {selectedSector.base?.loyalty ?? 100}%
-                                            </span>
-                                        </div>
-                                        <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                    {/* Entidades no Mapa */}
+                                    {baseAt && (
+                                        <div className="flex items-center justify-center w-full h-full">
                                             <motion.div 
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${selectedSector.base?.loyalty ?? 100}%` }}
-                                                className={`h-full transition-all duration-1000 ${
-                                                    (selectedSector.base?.loyalty ?? 100) < 30 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 
-                                                    (selectedSector.base?.loyalty ?? 100) < 60 ? 'bg-amber-500' : 'bg-sky-500'
-                                                }`}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5">
-                                        <span className="text-[10px] text-neutral-500 uppercase font-black block tracking-widest">Base_Commander</span>
-                                        <span className="text-xl font-black text-white tracking-tight">{selectedSector.base.jogador?.username || 'NEUTRAL_FORCE'}</span>
-                                    </div>
-
-                                    {selectedSector.base?.is_protected ? (
-                                        <div className="py-8 text-center border-2 border-dashed border-yellow-500/30 rounded-3xl bg-yellow-500/5">
-                                            <Shield className="text-yellow-500 animate-pulse mx-auto mb-2" size={32} />
-                                            <span className="text-xs font-black text-yellow-500 uppercase tracking-widest">DIPLOMATIC_TRUCE</span>
-                                        </div>
-                                    ) : (!selectedSector.base?.ownerId || selectedSector.base.ownerId !== playerBase?.ownerId) ? (
-                                        <Button 
-                                            className="w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-[0.2em] py-8 rounded-3xl shadow-xl shadow-red-600/20 active:scale-95 transition-all text-xs"
-                                            onClick={() => setIsAttackModalOpen(true)}
-                                        >
-                                            INITIATE_ASSAULT
-                                        </Button>
-                                    ) : (
-                                        <div className="py-6 text-center border-2 border-dashed border-sky-500/20 rounded-3xl bg-sky-500/5">
-                                            <span className="text-xs font-black text-sky-400 uppercase tracking-widest">Command_Center_Link_Active</span>
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                className={`p-2 rounded-lg border-2 backdrop-blur-sm relative
+                                                    ${isPlayer ? 'bg-sky-500/20 border-sky-400 text-sky-400' : ''}
+                                                    ${isEnemy ? 'bg-red-500/20 border-red-400 text-red-400' : ''}
+                                                    ${isRebel ? 'bg-amber-600/30 border-amber-400 text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.2)]' : ''}
+                                                `}
+                                            >
+                                                <Home size={20} />
+                                                <div className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border border-white/20 shadow-lg animate-pulse 
+                                                    ${isPlayer ? 'bg-sky-500' : (isEnemy ? 'bg-red-500' : 'bg-amber-500')}`} />
+                                            </motion.div>
                                         </div>
                                     )}
                                 </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 text-center">
-                                         <p className="text-[10px] text-neutral-500 font-mono">
-                                            No structural signals detected in this sector. Terrain is predominantly {getTerrain(selectedSector.x, selectedSector.y)}.
-                                         </p>
+                            );
+                        })}
+                    </TooltipProvider>
+
+                    {/* Exércitos em Marcha */}
+                    <div className="absolute inset-0 pointer-events-none z-30">
+                        {gameEntities.map(e => {
+                            const left = (e.x - center.x + VIEWPORT_RANGE) * TILE_SIZE;
+                            const top = (e.y - center.y + VIEWPORT_RANGE) * TILE_SIZE;
+                            return (
+                                <motion.div 
+                                    key={e.id}
+                                    animate={{ left, top }}
+                                    className="absolute flex items-center justify-center"
+                                    style={{ width: TILE_SIZE, height: TILE_SIZE }}
+                                >
+                                    <div className="relative w-8 h-8 rounded-lg bg-black/80 border border-orange-500 flex items-center justify-center rotate-45 shadow-orange-500/20 shadow-xl">
+                                        <Navigation size={14} className="-rotate-45 text-orange-400" />
                                     </div>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* FLOATING INTERFACE: SIDEBAR ESQUERDA (ALVOS) */}
+            <div className={`absolute left-6 top-6 bottom-6 z-40 transition-all duration-500 flex gap-4 ${isSidebarOpen ? 'w-[320px]' : 'w-0'}`}>
+                <div className={`flex-1 bg-black/60 backdrop-blur-3xl border border-white/10 rounded-[2rem] overflow-hidden flex flex-col shadow-2xl transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                    <div className="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <Target size={18} className="text-orange-500" />
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Objetivos Táticos</h2>
+                        </div>
+                        <span className="text-[10px] font-mono text-neutral-500">{allBases.length} NÓS</span>
+                    </div>
+                    <div className="flex-1 overflow-auto custom-scrollbar p-3 space-y-1">
+                        {allBases.map(b => (
+                            <button 
+                                key={b.id}
+                                onClick={() => jumpTo(b.coordenada_x, b.coordenada_y, b)}
+                                className={`w-full group px-4 py-3 rounded-2xl border transition-all flex items-center justify-between
+                                    ${selectedSector?.x === b.coordenada_x && selectedSector?.y === b.coordenada_y 
+                                        ? 'bg-sky-500 border-sky-400 text-white' 
+                                        : 'bg-white/5 border-transparent hover:bg-white/10 text-neutral-400 hover:text-white'}
+                                `}
+                            >
+                                <div className="flex flex-col items-start gap-0.5">
+                                    <span className="text-[10px] font-black uppercase truncate max-w-[120px]">{b.nome}</span>
+                                    <span className="text-[8px] font-mono opacity-60">[{b.coordenada_x}:{b.coordenada_y}]</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    {!b.ownerId && <span className="text-[8px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-black">REBEL</span>}
+                                    <ChevronRight size={14} className="opacity-20 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                    <div className="p-4 bg-black/40 border-t border-white/5">
+                        <div className="flex gap-2">
+                             <Input 
+                                className="bg-white/5 border-white/10 h-8 text-[10px] uppercase font-black" 
+                                placeholder="X" 
+                                value={searchCoords.x} 
+                                onChange={e => setSearchCoords(prev => ({...prev, x: e.target.value})) }
+                             />
+                             <Input 
+                                className="bg-white/5 border-white/10 h-8 text-[10px] uppercase font-black" 
+                                placeholder="Y" 
+                                value={searchCoords.y} 
+                                onChange={e => setSearchCoords(prev => ({...prev, y: e.target.value})) }
+                             />
+                             <Button size="icon" className="h-8 w-12 bg-sky-600 hover:bg-sky-500" onClick={handleSearch}>
+                                <Search size={14} />
+                             </Button>
+                        </div>
+                    </div>
+                </div>
+                <button 
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="self-center bg-black/80 backdrop-blur-xl border border-white/10 w-8 h-12 rounded-xl flex items-center justify-center hover:bg-sky-600 transition-colors group"
+                >
+                    {isSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+                </button>
+            </div>
+
+            {/* SECTOR INFOBAR (BOTTOM HUD) */}
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full px-20 max-w-5xl pointer-events-none">
+                <AnimatePresence>
+                    {selectedSector && (
+                        <motion.div 
+                            initial={{ y: 50, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 50, opacity: 0 }}
+                            className="w-full bg-black/80 backdrop-blur-3xl border border-white/10 p-6 rounded-[2.5rem] shadow-2xl flex items-center justify-between pointer-events-auto ring-1 ring-white/5"
+                        >
+                            <div className="flex items-center gap-6">
+                                <div className={`p-4 rounded-2xl border-2
+                                    ${selectedSector.base?.ownerId === playerBase?.ownerId ? 'bg-sky-500/10 border-sky-500/40 text-sky-400' : 'bg-red-500/10 border-red-500/40 text-red-400'}
+                                `}>
+                                    <Home size={32} />
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-3">
+                                        <h3 className="text-2xl font-black text-white uppercase tracking-tighter">
+                                            {selectedSector.base?.nome || 'Sector de Exploração'}
+                                        </h3>
+                                        <span className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-mono text-sky-400 border border-white/5">
+                                            [{selectedSector.x}:{selectedSector.y}]
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-4 text-[10px] font-black uppercase text-neutral-500 tracking-[0.15em]">
+                                        <div className="flex items-center gap-2">
+                                            <Navigation size={12} className="text-orange-500" />
+                                            Terrain: <span className="text-white">{getTerrain(selectedSector.x, selectedSector.y)}</span>
+                                        </div>
+                                        <div className="w-1 h-1 bg-white/10 rounded-full" />
+                                        <div className="flex items-center gap-2">
+                                            <Shield size={12} className="text-sky-500" />
+                                            Stability: <span className="text-white">{selectedSector.base?.loyalty ?? 100}%</span>
+                                        </div>
+                                        <div className="w-1 h-1 bg-white/10 rounded-full" />
+                                        <div className="flex items-center gap-2">
+                                            <User size={12} className="text-neutral-400" />
+                                            Intel: <span className="text-white">{selectedSector.base?.jogador?.username || 'NEUTRAL'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <Button 
+                                    variant="outline"
+                                    className="border-white/10 hover:bg-white/10 text-[10px] font-black uppercase px-8 py-6 rounded-2xl"
+                                    onClick={() => setSelectedSector(null)}
+                                >
+                                    Fugir
+                                </Button>
+                                {(!selectedSector.base?.ownerId || selectedSector.base.ownerId !== playerBase?.ownerId) ? (
                                     <Button 
-                                        variant="outline"
-                                        className="w-full border-2 border-white/5 py-8 rounded-3xl text-neutral-400 font-black uppercase"
+                                        className="bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest px-10 py-6 rounded-2xl shadow-xl shadow-red-600/30"
                                         onClick={() => setIsAttackModalOpen(true)}
                                     >
-                                        ESTABLISH_EXPEDITION
+                                        <Sword className="mr-3" size={16} /> Lançar Assalto
                                     </Button>
-                                </div>
-                            )}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                                ) : (
+                                    <Button disabled className="bg-sky-600/20 text-sky-400 border-sky-500/20 text-[10px] font-black uppercase px-10 py-6 rounded-2xl">
+                                        Zona Aliada
+                                    </Button>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                
+                {/* HUD STATUS INDICATOR */}
+                <div className="bg-black/60 backdrop-blur-xl border border-white/10 px-8 py-3 rounded-full flex items-center gap-8 shadow-2xl pointer-events-auto">
+                    <Button variant="ghost" size="sm" onClick={() => zoom > 0.5 && setZoom(z => z - 0.2)} className="text-neutral-400">-</Button>
+                    <div className="flex flex-col items-center">
+                        <span className="text-[7px] text-neutral-500 font-black uppercase tracking-widest mb-1">Satellite_Link_Active</span>
+                        <div className="text-[10px] font-mono text-sky-400">MAGNIFICATION_LVL: {(zoom * 100).toFixed(0)}%</div>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => zoom < 1.8 && setZoom(z => z + 0.2)} className="text-neutral-400">+</Button>
+                    <div className="w-px h-4 bg-white/10" />
+                    <Button 
+                        onClick={jumpToPlayer}
+                        className="bg-sky-600/20 hover:bg-sky-600/40 text-sky-400 border border-sky-500/20 rounded-xl px-4 py-1.5 text-[9px] font-black uppercase"
+                    >
+                        Home Target
+                    </Button>
+                </div>
+            </div>
 
-            {selectedSector && (
-                <AttackModal 
-                    isOpen={isAttackModalOpen}
-                    onClose={() => setIsAttackModalOpen(false)}
-                    origemBase={playerBase}
-                    destinoBase={selectedSector.base || { coordenada_x: selectedSector.x, coordenada_y: selectedSector.y, nome: 'Sector Vazio' }}
-                    tropasDisponiveis={troops}
-                    gameConfig={gameConfig}
-                    onEnviar={handleSendAttack}
-                    isSending={false}
-                />
-            )}
-
-            <StrategyHUD 
-                resources={playerBase?.recursos || {
-                    suprimentos: 0,
-                    combustivel: 0,
-                    municoes: 0,
-                    metal: 0,
-                    energia: 0,
-                    pessoal: 0
-                } as any}
-                coordinates={center}
-                selectedEntity={selectedEntityObj}
-                miniMapData={gameEntities}
-                villages={globalState.villages}
-                onJump={(x, y) => setCenter({ x, y })}
+            <AttackModal 
+                isOpen={isAttackModalOpen}
+                onClose={() => setIsAttackModalOpen(false)}
+                origemBase={playerBase}
+                destinoBase={selectedSector?.base || { coordenada_x: selectedSector?.x, coordenada_y: selectedSector?.y, nome: 'Sector Vazio' }}
+                tropasDisponiveis={troops}
+                gameConfig={gameConfig}
+                onEnviar={handleSendAttack}
+                isSending={false}
             />
         </div>
     );
