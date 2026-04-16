@@ -85,7 +85,6 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
 
 const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean }) => {
 
-    // PASSO 4 — REMOVER LOOPS (Removido router.reload e setInterval sem controlo)
     const calculateProgress = () => {
         const start = new Date(item.started_at).getTime();
         const end = new Date(item.ends_at).getTime();
@@ -95,21 +94,23 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
         const elapsed = now - start;
         const remaining = end - now;
 
+        // Se o tempo acabou e não foi processado pelo backend ainda, omitimos da UI (PASSO 4)
+        if (remaining <= 0) return null;
+
         const percent = Math.min(100, Math.max(0, (elapsed / total) * 100));
         
         const h = Math.floor(remaining / 3600000);
         const m = Math.floor((remaining % 3600000) / 60000);
         const s = Math.floor((remaining % 60000) / 1000);
         
-        let timeStr = "CONCLUÍDO";
-        if (remaining > 0) {
-            timeStr = h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`;
-        }
+        const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`;
 
         return { percent, timeStr };
     };
 
-    const { percent, timeStr } = calculateProgress();
+    const result = calculateProgress();
+    if (!result) return null;
+    const { percent, timeStr } = result;
 
     return (
         <motion.div 

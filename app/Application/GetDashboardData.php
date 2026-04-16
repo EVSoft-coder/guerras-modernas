@@ -43,11 +43,10 @@ class GetDashboardData
             throw new \Exception("Base não localizada.");
         }
 
-        // 2. Sincronizar Filas (Lógica Centralizada de Tempo)
-        // PASSO 3 - INTEGRAÇÃO: Garantir processamento antes da leitura final
+        // PASSO 1 — BACKEND ORDEM CORRETA: chamar processQueue ANTES de qualquer query profunda
         $this->gameService->processarFilas($base);
-        
-        // Re-hidratar relações para garantir que o snapshot ignora o que foi processado
+
+        // 2. Agora carregar os dados atualizados
         $base->load(['recursos', 'edificios', 'buildingQueue', 'treinos', 'tropas']);
 
         // 3. Recursos Formatados

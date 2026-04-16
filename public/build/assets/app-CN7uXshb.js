@@ -28864,17 +28864,17 @@ const QueueItem = ({ item, isFirst }) => {
     const total = end - start;
     const elapsed = now2 - start;
     const remaining = end - now2;
+    if (remaining <= 0) return null;
     const percent22 = Math.min(100, Math.max(0, elapsed / total * 100));
     const h2 = Math.floor(remaining / 36e5);
     const m2 = Math.floor(remaining % 36e5 / 6e4);
     const s2 = Math.floor(remaining % 6e4 / 1e3);
-    let timeStr2 = "CONCLUÍDO";
-    if (remaining > 0) {
-      timeStr2 = h2 > 0 ? `${h2}h ${m2}m` : `${m2}m ${s2}s`;
-    }
+    const timeStr2 = h2 > 0 ? `${h2}h ${m2}m` : `${m2}m ${s2}s`;
     return { percent: percent22, timeStr: timeStr2 };
   };
-  const { percent: percent2, timeStr } = calculateProgress();
+  const result = calculateProgress();
+  if (!result) return null;
+  const { percent: percent2, timeStr } = result;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
@@ -44259,7 +44259,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Cb-aVP9d.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DQPrP_dQ.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44295,4 +44295,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Hegd1vPx.js.map
+//# sourceMappingURL=app-CN7uXshb.js.map
