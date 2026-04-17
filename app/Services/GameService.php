@@ -15,6 +15,7 @@ use App\Services\TimeService;
 use App\Services\ResourceService;
 use App\Services\BuildingQueueService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 
 /**
