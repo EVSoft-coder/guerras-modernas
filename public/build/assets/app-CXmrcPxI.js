@@ -28451,7 +28451,8 @@ const BuildingModal = ({
   onTrain,
   isUpgrading,
   isTraining,
-  population
+  population,
+  unitTypes
 }) => {
   var _a2, _b, _c, _d, _e2, _f, _g;
   if (!building) return null;
@@ -30407,7 +30408,7 @@ function VillageDashboard({
   buildingQueue = STABLE_EMPTY_ARRAY,
   unitQueue = STABLE_EMPTY_ARRAY,
   units = STABLE_EMPTY_ARRAY,
-  unitTypes: unitTypes2 = STABLE_EMPTY_ARRAY,
+  unitTypes = STABLE_EMPTY_ARRAY,
   ataquesRecebidos = STABLE_EMPTY_ARRAY,
   ataquesEnviados = STABLE_EMPTY_ARRAY
 }) {
@@ -30501,7 +30502,7 @@ function VillageDashboard({
   };
   const handleTrain = (unidade, quantidade) => {
     setIsTraining(true);
-    const unitType = unitTypes2.find(
+    const unitType = unitTypes.find(
       (ut) => ut.name.toLowerCase().includes(unidade.toLowerCase())
     );
     if (!unitType) {
@@ -30633,7 +30634,7 @@ function VillageDashboard({
         isUpgrading,
         isTraining,
         population,
-        unitTypes: unitTypes2
+        unitTypes
       }
     )
   ] });
@@ -44349,7 +44350,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C7gMY0-M.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-ByWwOO3b.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44385,4 +44386,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-D1Im9Zxz.js.map
+//# sourceMappingURL=app-CXmrcPxI.js.map

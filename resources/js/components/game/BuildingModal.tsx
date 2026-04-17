@@ -23,7 +23,7 @@ interface BuildingModalProps {
 
 export const BuildingModal: React.FC<BuildingModalProps> = ({ 
     isOpen, onClose, building, gameConfig, 
-    onUpgrade, onTrain, isUpgrading, isTraining, population
+    onUpgrade, onTrain, isUpgrading, isTraining, population, unitTypes
 }) => {
     if (!building) return null;
 
