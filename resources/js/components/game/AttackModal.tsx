@@ -158,7 +158,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                         <div className="flex justify-between items-center">
                                             <div className="flex flex-col">
                                                 <span className="text-[9px] font-black uppercase tracking-wide text-neutral-300 group-hover:text-sky-400 transition-colors">
-                                                    {tropa.unidade.replace(/_/g, ' ')}
+                                                    {(tropa.unidade || 'Desconhecida').replace(/_/g, ' ')}
                                                 </span>
                                                 <span className={`text-[7px] font-black ${isArmored ? 'text-orange-500' : 'text-emerald-500'} uppercase`}>
                                                     {isArmored ? 'UNIT: ARMORED' : 'UNIT: INFANTRY'}

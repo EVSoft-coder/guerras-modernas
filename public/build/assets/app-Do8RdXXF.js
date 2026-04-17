@@ -29272,7 +29272,7 @@ const AttackModal = ({
           return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 p-3 bg-black/40 rounded-xl border border-white/5 hover:border-white/10 transition-colors group", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black uppercase tracking-wide text-neutral-300 group-hover:text-sky-400 transition-colors", children: tropa.unidade.replace(/_/g, " ") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black uppercase tracking-wide text-neutral-300 group-hover:text-sky-400 transition-colors", children: (tropa.unidade || "Desconhecida").replace(/_/g, " ") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[7px] font-black ${isArmored ? "text-orange-500" : "text-emerald-500"} uppercase`, children: isArmored ? "UNIT: ARMORED" : "UNIT: INFANTRY" })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { variant: "outline", className: "text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400 font-mono", children: [
@@ -30773,7 +30773,10 @@ function Dashboard(props) {
         WorldMapView,
         {
           playerBase: currentBase,
-          troops: ((_e2 = props.gameData) == null ? void 0 : _e2.units) ?? ((_f = props.base) == null ? void 0 : _f.tropas),
+          troops: ((_e2 = props.gameData) == null ? void 0 : _e2.units) ? props.gameData.units.map((u3) => {
+            var _a3;
+            return { unidade: (_a3 = u3.type) == null ? void 0 : _a3.name, quantidade: u3.quantity };
+          }) : (_f = props.base) == null ? void 0 : _f.tropas,
           gameConfig: props.gameConfig
         }
       ),
@@ -44350,7 +44353,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-ByWwOO3b.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Cla2HXvO.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44386,4 +44389,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CXmrcPxI.js.map
+//# sourceMappingURL=app-Do8RdXXF.js.map

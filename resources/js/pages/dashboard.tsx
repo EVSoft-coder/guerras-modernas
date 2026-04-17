@@ -101,7 +101,7 @@ export default function Dashboard(props: DashboardProps) {
                 {props.base && (
                     <WorldMapView 
                         playerBase={currentBase} 
-                        troops={props.gameData?.units ?? props.base?.tropas} 
+                        troops={props.gameData?.units ? props.gameData.units.map((u: any) => ({ unidade: u.type?.name, quantidade: u.quantity })) : props.base?.tropas} 
                         gameConfig={props.gameConfig} 
                     />
                 )}
