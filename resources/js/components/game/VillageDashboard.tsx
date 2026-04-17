@@ -95,7 +95,7 @@ export function VillageDashboard({
     if (!base) return <div className="p-10 text-white uppercase font-mono">Connecting to Satellite...</div>;
 
     // Procura o edifício na base ou prepara um objeto Ghost baseado na config se necessário
-    const foundBuilding = (base.edificios || []).find(b => b.id === selectedBuildingId || b.buildingType === selectedBuildingType);
+    const foundBuilding = (buildings || []).find(b => b.id === selectedBuildingId || b.buildingType === selectedBuildingType);
     let currentBuilding: any = null;
     let fallbackLevel = 0;
 

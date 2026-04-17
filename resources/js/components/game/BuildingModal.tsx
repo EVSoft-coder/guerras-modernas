@@ -143,38 +143,41 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
     const renderUnitCard = (unit: any) => {
         const isSelected = selectedUnit === unit.name;
-        const canAffordUnit = 
-            parseResourceValue(building.base?.recursos?.suprimentos || 0) >= (unit.cost_suprimentos * trainQty) &&
-            parseResourceValue(building.base?.recursos?.municoes || 0) >= (unit.cost_municoes * trainQty) &&
-            parseResourceValue(building.base?.recursos?.combustivel || 0) >= (unit.cost_combustivel * trainQty);
-
         return (
-            <div 
+            <motion.div 
                 key={unit.id}
+                whileHover={{ scale: 1.02, y: -2 }}
                 onClick={() => setSelectedUnit(unit.name)}
-                className={`p-3 rounded-xl border transition-all cursor-pointer group ${
-                    isSelected ? 'bg-emerald-500/10 border-emerald-500' : 'bg-black/20 border-white/5 hover:border-white/20'
+                className={`p-4 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden ${
+                    isSelected 
+                        ? 'bg-emerald-500/10 border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]' 
+                        : 'bg-black/40 border-white/5 hover:border-white/20'
                 }`}
             >
-                <div className="flex justify-between items-start mb-2">
-                    <span className="text-[10px] font-black uppercase text-white truncate w-24">{unit.name}</span>
-                    <Badge className="bg-neutral-800 text-neutral-400 text-[8px]">{unit.build_time}s</Badge>
-                </div>
-                <div className="grid grid-cols-3 gap-1 text-[8px] uppercase font-bold text-neutral-500">
+                {isSelected && <div className="absolute top-0 right-0 w-8 h-8 bg-emerald-500 text-black flex items-center justify-center rounded-bl-xl"><Sword size={12} /></div>}
+                
+                <div className="flex justify-between items-start mb-3">
                     <div className="flex flex-col">
-                        <span>ATK</span>
-                        <span className="text-white">{unit.attack}</span>
-                    </div>
-                    <div className="flex flex-col">
-                        <span>DEF</span>
-                        <span className="text-white">{unit.defense}</span>
-                    </div>
-                    <div className="flex flex-col">
-                        <span>CAP</span>
-                        <span className="text-white">{unit.carry_capacity || 0}</span>
+                        <span className="text-[11px] font-black uppercase text-white tracking-widest">{unit.name}</span>
+                        <span className="text-[8px] text-neutral-500 font-bold uppercase">{unit.build_time}s Mobilização</span>
                     </div>
                 </div>
-            </div>
+                
+                <div className="grid grid-cols-3 gap-2 py-2 border-t border-white/5 mt-1">
+                    <div className="flex flex-col">
+                        <span className="text-[7px] text-neutral-600 font-black uppercase">Atk</span>
+                        <span className="text-[10px] font-mono font-black text-red-500">{unit.attack}</span>
+                    </div>
+                    <div className="flex flex-col border-x border-white/5 px-2">
+                        <span className="text-[7px] text-neutral-600 font-black uppercase">Def</span>
+                        <span className="text-[10px] font-mono font-black text-sky-400">{unit.defense}</span>
+                    </div>
+                    <div className="flex flex-col pl-2">
+                        <span className="text-[7px] text-neutral-600 font-black uppercase">Cap</span>
+                        <span className="text-[10px] font-mono font-black text-orange-400">{unit.carry_capacity || 0}</span>
+                    </div>
+                </div>
+            </motion.div>
         );
     };
 
@@ -206,22 +209,20 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                 >
                                     <X size={24} />
                                 </button>
-                                <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-                                
-                                <Badge className={`absolute top-6 left-6 ${building.nivel === 0 ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-sky-500/10 text-sky-400 border-sky-500/20'} font-black px-4 py-1.5 rounded-full text-[10px] tracking-widest uppercase flex items-center gap-2 shadow-2xl`}>
-                                    <span className={`w-1.5 h-1.5 ${building.nivel === 0 ? 'bg-orange-400' : 'bg-sky-400'} rounded-full animate-pulse`}></span>
+                                <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></di                                 <Badge className={`absolute top-6 left-6 ${building.nivel === 0 ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : 'bg-sky-500/20 text-sky-400 border-sky-500/30'} font-black px-4 py-2 rounded-full text-[10px] tracking-[0.2em] uppercase flex items-center gap-3 shadow-[0_0_20px_rgba(0,0,0,0.5)] backdrop-blur-md`}>
+                                    <span className={`w-2 h-2 ${building.nivel === 0 ? 'bg-orange-400 shadow-[0_0_8px_#fb923c]' : 'bg-sky-400 shadow-[0_0_8px_#38bdf8]'} rounded-full animate-pulse`}></span>
                                     {building.nivel === 0 ? 'STATUS: EM PLANEAMENTO' : 'STATUS: OPERACIONAL'}
                                 </Badge>
 
                                 <motion.div
                                     initial={{ rotate: -5, scale: 0.8, opacity: 0 }}
                                     animate={{ rotate: 0, scale: 1, opacity: 1 }}
-                                    className="relative mt-8 md:mt-0"
+                                    className="relative mt-8 md:mt-0 group"
                                 >
-                                    <div className="absolute inset-0 bg-sky-500/20 blur-[40px] md:blur-[60px] rounded-full animate-pulse"></div>
+                                    <div className="absolute inset-0 bg-sky-500/10 blur-[60px] md:blur-[100px] rounded-full animate-pulse group-hover:bg-sky-400/20 transition-all duration-700"></div>
                                     <img 
                                         src={currentImage} 
-                                        className="w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(14,165,233,0.5)]" 
+                                        className="w-56 h-56 md:w-72 md:h-72 object-contain relative z-10 drop-shadow-[0_0_40px_rgba(14,165,233,0.3)] transition-transform duration-700 group-hover:scale-110" 
                                         alt="Preview"
                                         onError={() => {
                                             if (!usePlaceholder) {
@@ -231,136 +232,167 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                     />
                                 </motion.div>
 
-                                <div className="mt-8 w-full space-y-4 z-10">
-                                    <div className="text-center">
-                                        <h2 className="text-sm font-black text-neutral-500 uppercase tracking-[0.3em]">Nível Estrutural</h2>
-                                        <div className="text-6xl font-black text-white italic drop-shadow-lg">{building.nivel || 0}</div>
+                                <div className="mt-12 w-full space-y-6 z-10">
+                                    <div className="text-center relative">
+                                        <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] mb-2 opacity-50">Assinatura de Nível</h2>
+                                        <div className="relative inline-block">
+                                            <div className="text-8xl font-black text-white italic tracking-tighter leading-none select-none drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                                                {building.nivel || 0}
+                                            </div>
+                                            <div className="absolute -inset-2 bg-gradient-to-t from-sky-500/10 to-transparent blur-xl -z-10"></div>
+                                        </div>
                                     </div>
                                     
-                                    <div className="flex items-center gap-2 justify-center">
-                                        {[1,2,3,4,5,6].map(lvl => (
-                                            <div key={lvl} className={`h-1.5 w-6 rounded-full transition-all duration-500 ${lvl <= building.nivel ? 'bg-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.5)]' : 'bg-white/10'}`}></div>
+                                    <div className="flex items-center gap-3 justify-center">
+                                        {[1,2,3,4,5,6,7,8,9,10].map(lvl => (
+                                            <div 
+                                                key={lvl} 
+                                                className={`h-1 rounded-full transition-all duration-700 ${
+                                                    lvl <= building.nivel 
+                                                        ? (lvl <= 3 ? 'w-8 bg-sky-500 shadow-[0_0_10px_#0ea5e9]' : 'w-8 bg-emerald-500 shadow-[0_0_10px_#10b981]') 
+                                                        : 'w-4 bg-white/5'
+                                                }`}
+                                            ></div>
                                         ))}
                                     </div>
                                 </div>
                             </div>
                             
                             {/* Lado Direito: Inteligência & Logística */}
-                            <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col bg-neutral-900/50">
-                                <DialogHeader className="mb-4 md:mb-6">
-                                    <div className="space-y-1">
-                                        <DialogTitle className="text-2xl md:text-4xl font-black uppercase tracking-tighter text-white leading-none">
+                            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col bg-neutral-900/30 backdrop-blur-md">
+                                <DialogHeader className="mb-6 md:mb-10">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <div className="w-8 h-[2px] bg-sky-500"></div>
+                                            <span className="text-[9px] font-black text-sky-500 uppercase tracking-[0.3em]">{building.buildingType?.replace?.('_', ' ') ?? 'ESTRUTURA'}</span>
+                                        </div>
+                                        <DialogTitle className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white leading-none">
                                             {config.name}
                                         </DialogTitle>
-                                        <p className="text-[10px] text-sky-500 font-bold uppercase tracking-widest flex items-center gap-2">
-                                            <Shield size={10} /> Setor de {building.buildingType?.replace?.('_', ' ')?.toUpperCase?.() ?? 'ESTRUTURA'}
-                                        </p>
                                     </div>
                                 </DialogHeader>
 
                                 {/* Dossiê Tático */}
-                                <div className="space-y-4 md:space-y-6 flex-1 overflow-y-auto md:pr-2 custom-scrollbar">
-                                    <div className="bg-black/40 p-5 rounded-2xl border-l-4 border-sky-600 flex gap-4 shadow-xl">
-                                        <Info className="text-sky-500 shrink-0" size={16} />
-                                        <p className="text-[10px] md:text-xs text-neutral-300 leading-relaxed italic">
-                                            {config.description}
-                                        </p>
+                                <div className="space-y-6 md:space-y-8 flex-1 overflow-y-auto md:pr-4 custom-scrollbar">
+                                    <div className="relative">
+                                        <div className="bg-black/40 p-6 rounded-2xl border border-white/5 flex gap-5 shadow-[0_10px_30px_rgba(0,0,0,0.3)] group hover:border-sky-500/20 transition-colors">
+                                            <div className="p-3 bg-sky-500/10 rounded-xl h-fit">
+                                                <Info className="text-sky-500" size={18} />
+                                            </div>
+                                            <p className="text-[11px] md:text-xs text-neutral-400 leading-relaxed font-medium">
+                                                {config.description}
+                                            </p>
+                                        </div>
+                                        <div className="absolute -left-1 top-4 bottom-4 w-1 bg-sky-500 rounded-full shadow-[0_0_10px_#0ea5e9]"></div>
                                     </div>
 
-                                    {/* Comparativos de Inteligência removidos (dependem de dados do backend) */}
+                                    {/* Seção Militar / Recrutamento Premium */}
+                                    {isMilitary ? (
+                                        <div className="space-y-6">
+                                            <div className="flex flex-col gap-1">
+                                                <h4 className="text-[10px] font-black uppercase text-white tracking-[0.2em] flex items-center gap-3">
+                                                    <div className="p-1.5 bg-sky-500/20 rounded-md">
+                                                        <Shield className="text-sky-500" size={12} />
+                                                    </div> 
+                                                    Mobilização de Ativos
+                                                </h4>
+                                                <div className="h-px bg-gradient-to-r from-sky-500/30 to-transparent mt-2"></div>
+                                            </div>
 
-                                    {/* Para edifícios não produtores (Quartel, etc) mostrar um bónus tático genérico */}
-                                    {!currentBonus && (
-                                        <div className="grid grid-cols-1 gap-3 md:gap-4">
-                                            <div className="bg-orange-600/10 p-4 rounded-2xl border border-orange-500/20 flex items-center justify-between">
-                                                <div>
-                                                    <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest block">Potencial Estratégico</span>
-                                                    <span className="text-xs text-neutral-400">Desbloqueia novas tecnologias e unidades de elite.</span>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                {availableUnits.map(renderUnitCard)}
+                                            </div>
+                                            
+                                            {selectedUnit && (
+                                                <div className="bg-black/60 p-6 rounded-2xl space-y-5 border border-white/5 shadow-2xl relative overflow-hidden group">
+                                                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                                                        <Sword size={80} className="text-emerald-500" />
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between relative z-10">
+                                                        <span className="text-[10px] uppercase font-black text-neutral-500 tracking-widest">Contingente Operacional</span>
+                                                        <div className="flex items-center gap-4 bg-black/40 px-4 py-2 rounded-xl border border-white/10">
+                                                            <button 
+                                                                onClick={() => setTrainQty(Math.max(1, trainQty - 10))} 
+                                                                className="text-neutral-500 hover:text-sky-400 transition-colors font-black"
+                                                            >-</button>
+                                                            <input 
+                                                                type="number" 
+                                                                value={trainQty} 
+                                                                onChange={(e) => setTrainQty(Math.max(1, parseInt(e.target.value) || 1))}
+                                                                className="w-16 bg-transparent border-none focus:ring-0 p-0 text-center font-mono text-sm text-sky-400 font-bold"
+                                                            />
+                                                            <button 
+                                                                onClick={() => setTrainQty(trainQty + 10)} 
+                                                                className="text-neutral-500 hover:text-sky-400 transition-colors font-black"
+                                                            >+</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <Button 
+                                                        onClick={() => selectedUnit && onTrain(selectedUnit, trainQty)}
+                                                        disabled={isTraining}
+                                                        className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-xl shadow-[0_10px_20px_rgba(5,150,105,0.3)] flex items-center justify-center gap-3 transition-all active:scale-95 group"
+                                                    >
+                                                        {isTraining ? <Loader2 size={16} className="animate-spin" /> : <Sword size={16} className="group-hover:rotate-12 transition-transform" />}
+                                                        {isTraining ? 'A RECRUTAR...' : 'AUTORIZAR MOBILIZAÇÃO'}
+                                                    </Button>
                                                 </div>
-                                                <Zap className="text-orange-500" size={24} />
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-6">
+                                            <div className="flex items-center justify-between">
+                                                <h4 className="text-[10px] font-black uppercase text-white tracking-[0.2em] flex items-center gap-3">
+                                                     <div className="p-1.5 bg-orange-500/20 rounded-md">
+                                                        <Hammer className="text-orange-500" size={12} />
+                                                    </div>
+                                                    Logística de Expansão
+                                                </h4>
+                                                <Badge className="bg-orange-500/10 text-orange-500 border-none font-mono text-[10px] px-3 py-1">
+                                                    <Clock size={10} className="mr-2 inline" /> ETA: {timeFormatted}
+                                                </Badge>
+                                            </div>
+                                            <div className="grid grid-cols-1 gap-3">
+                                                {config.cost ? Object.entries(config.cost).map(([type, amount]: any) => renderCost(type, amount)) : null}
                                             </div>
                                         </div>
                                     )}
-
-                                    {/* Logística de Recursos / Recrutamento */}
-                                    <div className="space-y-3 md:space-y-4">
-                                        {isMilitary ? (
-                                            <div className="space-y-4">
-                                                <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                                                    <h4 className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
-                                                        <Shield className="w-2.5 h-2.5 md:w-3 md:h-3 text-sky-500" /> Mobilização de Tropas
-                                                    </h4>
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    {availableUnits.map(renderUnitCard)}
-                                                </div>
-                                                
-                                                {selectedUnit && (
-                                                    <div className="bg-black/40 p-4 rounded-xl space-y-3 border border-white/5">
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="text-[10px] uppercase font-black text-neutral-400">Quantidade</span>
-                                                            <div className="flex items-center gap-3">
-                                                                <button onClick={() => setTrainQty(Math.max(1, trainQty - 10))} className="text-neutral-500 hover:text-white">-10</button>
-                                                                <input 
-                                                                    type="number" 
-                                                                    value={trainQty} 
-                                                                    onChange={(e) => setTrainQty(Math.max(1, parseInt(e.target.value) || 1))}
-                                                                    className="w-16 bg-black border border-white/10 rounded px-2 py-1 text-center font-mono text-xs text-sky-400 font-bold"
-                                                                />
-                                                                <button onClick={() => setTrainQty(trainQty + 10)} className="text-neutral-500 hover:text-white">+10</button>
-                                                            </div>
-                                                        </div>
-                                                        <Button 
-                                                            onClick={() => selectedUnit && onTrain(selectedUnit, trainQty)}
-                                                            disabled={isTraining}
-                                                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] py-4 rounded-lg shadow-lg flex items-center justify-center gap-2"
-                                                        >
-                                                            {isTraining ? <Loader2 size={14} className="animate-spin" /> : <Sword size={14} />}
-                                                            {isTraining ? 'A RECRUTAR...' : 'INICIAR RECRUTAMENTO'}
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                                                    <h4 className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
-                                                        <Hammer className="w-2.5 h-2.5 md:w-3 md:h-3 text-orange-500" /> Logística de Campanha
-                                                    </h4>
-                                                    <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black text-orange-500 uppercase font-mono">
-                                                        <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" /> {timeFormatted}
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-1 gap-2 md:gap-3">
-                                                    {config.cost ? Object.entries(config.cost).map(([type, amount]: any) => renderCost(type, amount)) : null}
-                                                </div>
-                                            </>
-                                        )}
-                                    </div>
                                 </div>
 
-                                <DialogFooter className="mt-6 md:mt-8">
+                                <DialogFooter className="mt-8 md:mt-12">
                                     <Button 
                                         onClick={() => onUpgrade(building.buildingType)}
                                         disabled={isUpgrading || !canAfford}
-                                        className={`w-full font-black uppercase tracking-[0.15em] md:tracking-[0.2em] py-6 md:py-8 rounded-xl md:rounded-2xl flex items-center justify-center gap-2 md:gap-3 group transition-all shadow-2xl ${
+                                        className={`w-full h-20 md:h-24 font-black uppercase tracking-[0.25em] py-8 rounded-2xl flex flex-col items-center justify-center gap-1 group transition-all shadow-2xl overflow-hidden relative ${
                                             canAfford 
-                                                ? (building.nivel === 0 ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-t border-white/20 shadow-emerald-900/40' : 'bg-sky-600 hover:bg-sky-500 text-white border-t border-white/20 shadow-sky-900/40') 
-                                                : 'bg-neutral-800 text-neutral-500 cursor-not-allowed border-none'
+                                                ? (building.nivel === 0 ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/40' : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sky-900/40') 
+                                                : 'bg-neutral-800 text-neutral-600 cursor-not-allowed border-none opacity-50'
                                         }`}
                                     >
-                                        <span className="text-base md:text-xl group-hover:translate-x-1 transition-transform flex items-center gap-2">
-                                            {isUpgrading && <Loader2 size={20} className="animate-spin" />}
-                                            {isUpgrading 
-                                                 ? 'AUTORIZANDO...' 
-                                                 : (canAfford 
-                                                     ? (building.nivel === 0 ? 'CONSTRUIR' : `UPGRADE PARA NÍVEL ${building.nivel + 1}`) 
-                                                     : (!hasPopulation ? 'ESPAÇO HABITACIONAL INSUFICIENTE' : 'RECURSOS INSUFICIENTES')
-                                                   )
-                                             }
-                                        </span>
-                                        {!isUpgrading && canAfford && <ChevronRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" />}
-                                        {!canAfford && !isUpgrading && <AlertTriangle className="w-4 h-4 md:w-5 md:h-5" />}
+                                        <div className="flex items-center gap-3 z-10">
+                                            {isUpgrading && <Loader2 size={18} className="animate-spin" />}
+                                            <span className="text-lg md:text-xl">
+                                                {isUpgrading 
+                                                     ? 'INICIALIZANDO...' 
+                                                     : (canAfford 
+                                                         ? (building.nivel === 0 ? 'CONSTRUIR AGORA' : `MODERNIZAR PARA LVL ${building.nivel + 1}`) 
+                                                         : 'CAPACIDADE INSUFICIENTE'
+                                                       )
+                                                 }
+                                            </span>
+                                            {!isUpgrading && canAfford && <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+                                        </div>
+                                        {!canAfford && !isUpgrading && (
+                                            <span className="text-[8px] opacity-60 tracking-widest z-10">
+                                                {!hasPopulation ? 'AVISO: REQUISITO POPULACIONAL NÃO ATINGIDO' : 'ERRO: FALTA DE RECURSOS EM STOCK'}
+                                            </span>
+                                        )}
+                                        
+                                        {/* Efeito de brilho no hover */}
+                                        {canAfford && (
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></div>
+                                        )}
                                     </Button>
                                 </DialogFooter>
                             </div>
