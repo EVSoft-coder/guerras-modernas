@@ -17,10 +17,12 @@ use Illuminate\Support\Facades\Log;
 class MovementService
 {
     private MapService $mapService;
+    private CombatService $combatService;
 
-    public function __construct(MapService $mapService)
+    public function __construct(MapService $mapService, ?CombatService $combatService = null)
     {
         $this->mapService = $mapService;
+        $this->combatService = $combatService ?? new CombatService();
     }
 
     /**
@@ -138,13 +140,72 @@ class MovementService
             $this->transferUnitsToGarrison($movement, $base);
         }
 
-        // Se for ataque, apenas marcamos como chegado. O combate será na Fase 9.
+        if ($movement->type === 'attack') {
+            $this->handleCombat($movement, $base);
+        }
+
+        // Marcar como processado
         $movement->update([
             'status' => 'arrived',
             'processed_at' => now()
         ]);
 
-        Log::channel('game')->info("[MOVEMENT_FINAL_HARDEN] Movimento {$movement->id} ({$movement->type}) processado com isolamento total.");
+        Log::channel('game')->info("[MOVEMENT_FINAL_HARDEN] Movimento {$movement->id} ({$movement->type}) processado.");
+    }
+
+    /**
+     * Gere o combate entre atacante e defensor (Fase 9).
+     */
+    private function handleCombat(Movement $movement, Base $base): void
+    {
+        // 1. Mapear Atacantes
+        $atkUnits = $movement->units->map(fn($u) => [
+            'id' => $u->unit_type_id,
+            'name' => $u->type->name,
+            'attack' => $u->type->attack,
+            'defense' => $u->type->defense,
+            'quantity' => $u->quantity
+        ])->toArray();
+
+        // 2. Mapear Defensores
+        $defUnits = Tropas::where('base_id', $base->id)->get()->map(function($t) {
+            $type = UnitType::where('name', $t->unidade)->first();
+            return [
+                'id' => $type?->id,
+                'name' => $t->unidade,
+                'attack' => $type?->attack ?? 0,
+                'defense' => $type?->defense ?? 0,
+                'quantity' => $t->quantidade
+            ];
+        })->filter(fn($u) => $u['quantity'] > 0)->toArray();
+
+        // 3. Resolver Batalha
+        $result = $this->combatService->resolveBattle($atkUnits, $defUnits);
+
+        // 4. Aplicar Perdas no Defensor (Garrison)
+        foreach ($result['defender_units'] as $unit) {
+            Tropas::where('base_id', $base->id)
+                ->where('unidade', $unit['name'])
+                ->update(['quantidade' => $unit['quantity']]);
+        }
+
+        // 5. Atualizar unidades sobreviventes no movimento (para histórico ou retorno futuro)
+        foreach ($result['attacker_units'] as $unit) {
+            MovementUnit::where('movement_id', $movement->id)
+                ->where('unit_type_id', $unit['id'])
+                ->update(['quantity' => $unit['quantity']]);
+        }
+
+        // 6. Gerar Relatório
+        \App\Models\Relatorio::create([
+            'atacante_id' => $movement->origin->jogador_id,
+            'defensor_id' => $base->jogador_id,
+            'vencedor_id' => $result['attacker_won'] ? $movement->origin->jogador_id : $base->jogador_id,
+            'titulo' => "Batalha em " . $base->nome,
+            'origem_nome' => $movement->origin->nome,
+            'destino_nome' => $base->nome,
+            'detalhes' => $result
+        ]);
     }
 
     /**
