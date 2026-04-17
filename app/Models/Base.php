@@ -22,6 +22,8 @@ class Base extends Model
         'nome',
         'coordenada_x',
         'coordenada_y',
+        'x',
+        'y',
         'qg_nivel',
         'muralha_nivel',
         'ultimo_update',

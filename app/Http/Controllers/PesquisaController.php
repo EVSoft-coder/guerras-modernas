@@ -6,6 +6,7 @@ use App\Models\Base;
 use App\Services\ResearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
  
 class PesquisaController extends Controller
 {
@@ -26,13 +27,15 @@ class PesquisaController extends Controller
             'tech' => 'required|string'
         ]);
  
-        $base = Base::findOrFail($request->base_id);
         $jogador = Auth::user();
-        
-        if ($base->jogador_id !== $jogador->id) abort(403);
- 
+
         try {
-            $this->researchService->pesquisar($jogador, $base, $request->tech);
+            DB::transaction(function() use ($request, $jogador) {
+                $base = Base::where('id', $request->base_id)->lockForUpdate()->firstOrFail();
+                $this->authorize('update', $base);
+
+                $this->researchService->pesquisar($jogador, $base, $request->tech);
+            });
             return redirect()->back()->with('success', "CENTRO DE PESQUISA: Protótipos de " . strtoupper($request->tech) . " em desenvolvimento.");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);

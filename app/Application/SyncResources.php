@@ -24,7 +24,7 @@ class SyncResources
 
     public function execute(Base $base): void
     {
-        // Orquestração centralizada no GameService (Fase 4 - Passo 3)
-        $this->gameService->tickResources($base);
+        // Orquestração centralizada no GameEngine (Fase Crítica - Passo 2)
+        \App\Services\GameEngine::process($base);
     }
 }

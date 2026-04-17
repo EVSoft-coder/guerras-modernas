@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\DB;
 class ResearchService
 {
     protected $economyService;
+    protected $timeService;
  
-    public function __construct(EconomyService $economyService)
+    public function __construct(EconomyService $economyService, ?TimeService $timeService = null)
     {
         $this->economyService = $economyService;
+        $this->timeService = $timeService ?? new TimeService();
     }
  
     /**
@@ -35,7 +37,7 @@ class ResearchService
                 'jogador_id' => $jogador->id,
                 'tech' => $tech,
                 'nivel' => $currentLevel + 1,
-                'completado_em' => now()->addSeconds($tempo),
+                'completado_em' => $this->timeService->now()->addSeconds($tempo),
             ]);
         });
     }

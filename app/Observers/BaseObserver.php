@@ -22,7 +22,7 @@ class BaseObserver
                 'metal' => 0,
                 'energia' => 0,
                 'cap' => 10000,
-                'last_update' => now()
+                'last_update' => app(\App\Services\TimeService::class)->now()
             ]);
         }
     }

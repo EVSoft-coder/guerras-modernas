@@ -64,12 +64,6 @@ class GameService
         $this->resourceService->sync($base);
     }
 
-    public function tickResources(Base $base): void
-    {
-        $this->processarFilas($base);
-        $this->syncResources($base);
-    }
-
     public function obterTaxasProducao(Base $base): array
     {
         return [
@@ -87,17 +81,20 @@ class GameService
         $tipo = BuildingType::normalize($tipoRaw);
         
         return DB::transaction(function() use ($base, $tipo, $posX, $posY) {
-            // 1. Verificar se jǭ existe queue (PASSO 2.1)
-            $this->buildingQueueService->validateAvailableQueue($base);
+            // LOCK GLOBAL DA BASE (Fase Crítica)
+            $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
+
+            // 1. Verificar se já existe queue (PASSO 2.1)
+            $this->buildingQueueService->validateAvailableQueue($lockedBase);
 
             // 2. Sync resources (PASSO 2.2)
-            $this->syncResources($base);
+            $this->syncResources($lockedBase);
 
-            $nivelAtual = $this->obterNivelEdificio($base, $tipo);
+            $nivelAtual = $this->obterNivelEdificio($lockedBase, $tipo);
             $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
 
             // 3. Validar recursos e população (PASSO 2.3)
-            $stats = $this->obterEstatisticasPopulacao($base);
+            $stats = $this->obterEstatisticasPopulacao($lockedBase);
             $popRequerida = config("game.buildings.{$tipo}.cost.pessoal") ?? 0;
 
             if ($stats['available'] < $popRequerida) {
@@ -105,28 +102,28 @@ class GameService
             }
 
             // 4. Deduzir recursos (PASSO 2.5)
-            if (!$this->consumirRecursosInternal($base, $custos)) {
-                \Illuminate\Support\Facades\Log::error('[BUILD_FAILED] Saldo insuficiente', ['base_id' => $base->id, 'tipo' => $tipo]);
+            if (!$this->consumirRecursosInternal($lockedBase, $custos)) {
+                Log::channel('game')->error('[BUILD_FAILED] Saldo insuficiente', ['base_id' => $lockedBase->id, 'tipo' => $tipo]);
                 throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
             }
 
             // 5. Obter building_id (PASSO 5)
             $buildingId = null;
             if (!in_array($tipo, [BuildingType::QG, BuildingType::MURALHA])) {
-                $buildingId = $base->edificios()->where('tipo', $tipo)->first()?->id;
+                $buildingId = $lockedBase->edificios()->where('tipo', $tipo)->first()?->id;
             }
 
-            \Illuminate\Support\Facades\Log::info('[BUILD_START]', ['base_id' => $base->id, 'tipo' => $tipo]);
+            Log::channel('game')->info('[BUILD_START]', ['base_id' => $lockedBase->id, 'tipo' => $tipo]);
 
             // 6. Criar queue (PASSO 2.4 / PASSO 3)
-            $queue = $this->buildingQueueService->startConstruction($base, $tipo, $posX, $posY, $buildingId);
+            $queue = $this->buildingQueueService->startConstruction($lockedBase, $tipo, $posX, $posY, $buildingId);
 
             if (!$queue) {
-                 \Illuminate\Support\Facades\Log::error('[BUILD_FAILED] Falha ao criar entrada na fila', ['base_id' => $base->id, 'tipo' => $tipo]);
+                 Log::channel('game')->error('[BUILD_FAILED] Falha ao criar entrada na fila', ['base_id' => $lockedBase->id, 'tipo' => $tipo]);
                  throw new \Exception("ERRO CRÍTICO: Não foi possível registar o plano de engenharia.");
             }
 
-            \Illuminate\Support\Facades\Log::info('[BUILD_QUEUE_CREATED]', ['id' => $queue->id, 'base_id' => $base->id]);
+            Log::channel('game')->info('[BUILD_QUEUE_CREATED]', ['id' => $queue->id, 'base_id' => $lockedBase->id]);
 
             return $queue;
         });
@@ -160,26 +157,16 @@ class GameService
      */
     public function iniciarTreino(Base $base, int $unitTypeId, int $quantidade): \App\Models\UnitQueue
     {
-        // 1. Sync resources
-        $this->syncResources($base);
+        return DB::transaction(function() use ($base, $unitTypeId, $quantidade) {
+            // LOCK GLOBAL DA BASE (Fase Crítica)
+            $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
+            
+            // 1. Sync resources
+            $this->syncResources($lockedBase);
 
-        // 2. Delegar para UnitQueueService
-        return $this->unitQueueService->startRecruitment($base, $unitTypeId, $quantidade);
-    }
-
-    /**
-     * Processa todas as filas táticas (Engenharia e Mobilização).
-     */
-    public function processarFilas(Base $base): void
-    {
-        // 1. Processar Estruturas
-        $this->buildingQueueService->processQueue($base);
-
-        // 2. Processar Recrutamento
-        $this->unitQueueService->process($base);
-
-        // 3. Notificar via WebSocket (Se necessário no Laravel Echo)
-        // broadcast(new \App\Events\BaseUpdated($base))->toOthers();
+            // 2. Delegar para UnitQueueService
+            return $this->unitQueueService->startRecruitment($lockedBase, $unitTypeId, $quantidade);
+        });
     }
 
     public function consumirRecursos(Base $base, array $custos): bool

@@ -127,6 +127,13 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'game' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/game.log'),
+            'level' => 'info',
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

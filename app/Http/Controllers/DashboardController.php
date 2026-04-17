@@ -14,12 +14,8 @@ use App\Models\Base;
  */
 class DashboardController extends Controller
 {
-    private SyncResources $syncResources;
-    private GetDashboardData $getDashboardData;
-
-    public function __construct(SyncResources $syncResources, GetDashboardData $getDashboardData)
+    public function __construct(GetDashboardData $getDashboardData)
     {
-        $this->syncResources = $syncResources;
         $this->getDashboardData = $getDashboardData;
     }
 
@@ -34,8 +30,11 @@ class DashboardController extends Controller
 
         if (!$base) return redirect('/login');
 
-        // 2. Executar Lógica de Negócio (Sync)
-        $this->syncResources->execute($base);
+        // Autorização via Policy
+        $this->authorize('view', $base);
+
+        // 2. Executar Motor Global (Fase Crítica - Passo 2)
+        \App\Services\GameEngine::process($base);
 
         // 3. Obter Dados de Vista
         $data = $this->getDashboardData->execute($user, $base->id);

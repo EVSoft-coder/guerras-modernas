@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class UnitRecruitmentController extends Controller
 {
-    private UnitQueueService $unitQueueService;
+    private \App\Application\TrainUnits $trainUnits;
 
-    public function __construct(UnitQueueService $unitQueueService)
+    public function __construct(\App\Application\TrainUnits $trainUnits)
     {
-        $this->unitQueueService = $unitQueueService;
+        $this->trainUnits = $trainUnits;
     }
 
     /**
@@ -34,9 +34,12 @@ class UnitRecruitmentController extends Controller
             ? Base::where('jogador_id', $user->id)->findOrFail($baseId)
             : Base::where('jogador_id', $user->id)->first();
 
+        $this->authorize('update', $base);
+
         try {
-            $this->unitQueueService->startRecruitment(
-                $base, 
+            $this->trainUnits->execute(
+                $user, 
+                $base->id, 
                 $request->unit_type_id, 
                 $request->quantity
             );

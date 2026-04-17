@@ -28954,8 +28954,8 @@ const ToastItem = ({ toast: toast2, onRemove }) => {
   );
 };
 const ArmyMovementPanel = ({
-  ataquesEnviados,
-  ataquesRecebidos,
+  ataquesEnviados: ataquesEnviados2,
+  ataquesRecebidos: ataquesRecebidos2,
   gameConfig
 }) => {
   const [now2, setNow] = reactExports.useState(Date.now());
@@ -28969,7 +28969,7 @@ const ArmyMovementPanel = ({
     const secs = Math.floor(diff % 6e4 / 1e3);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
-  const hasMovements = ((ataquesEnviados == null ? void 0 : ataquesEnviados.length) ?? 0) > 0 || ((ataquesRecebidos == null ? void 0 : ataquesRecebidos.length) ?? 0) > 0;
+  const hasMovements = ((ataquesEnviados2 == null ? void 0 : ataquesEnviados2.length) ?? 0) > 0 || ((ataquesRecebidos2 == null ? void 0 : ataquesRecebidos2.length) ?? 0) > 0;
   if (!hasMovements) return null;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden mb-8 rounded-[1.5rem] shadow-2xl relative group", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-red-500/20 to-transparent" }),
@@ -28978,7 +28978,7 @@ const ArmyMovementPanel = ({
       "Monitor de Espaço Aéreo e Fronteira"
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "p-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "divide-y divide-white/5", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesRecebidos == null ? void 0 : ataquesRecebidos.map((atk) => {
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesRecebidos2 == null ? void 0 : ataquesRecebidos2.map((atk) => {
         var _a2;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
@@ -29012,7 +29012,7 @@ const ArmyMovementPanel = ({
           atk.id
         );
       }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesEnviados == null ? void 0 : ataquesEnviados.map((atk) => {
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesEnviados2 == null ? void 0 : ataquesEnviados2.map((atk) => {
         var _a2;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
@@ -30400,11 +30400,7 @@ function VillageDashboard({
   bases: backendBases = STABLE_EMPTY_ARRAY,
   taxasPerSecond,
   gameConfig,
-  ataquesRecebidos,
-  ataquesEnviados,
   relatoriosGlobal,
-  populacao,
-  // deprecated props
   buildings = STABLE_EMPTY_ARRAY,
   population,
   resources,
@@ -30414,17 +30410,13 @@ function VillageDashboard({
   unitTypes: unitTypes2 = STABLE_EMPTY_ARRAY
 }) {
   const { globalState } = useGameEntities();
-  const currentBuildings = buildings || (initialBase == null ? void 0 : initialBase.edificios) || [];
-  const currentResources = resources || (initialBase == null ? void 0 : initialBase.recursos) || {};
-  const currentPopulation = population || populacao || null;
-  const base = U$2.useMemo(() => {
-    if (!initialBase) return null;
-    return {
-      ...initialBase,
-      edificios: currentBuildings,
-      recursos: currentResources
-    };
-  }, [initialBase, currentBuildings, currentResources]);
+  const base = U$2.useMemo(() => ({
+    ...initialBase,
+    edificios: buildings,
+    recursos: resources,
+    buildingQueue,
+    unitQueue
+  }), [initialBase, buildings, resources, buildingQueue, unitQueue]);
   const displayBases = (globalState.worldMapBases.length > 0 ? globalState.worldMapBases.filter((b2) => b2.ownerId === jogador.id) : backendBases.map((b2) => ({ id: b2.id, nome: b2.nome }))) || [];
   const { addToast } = useToasts();
   const [selectedBuildingId, setSelectedBuildingId] = reactExports.useState(null);
@@ -30535,7 +30527,7 @@ function VillageDashboard({
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 right-0 w-[60%] h-[60%] bg-sky-500/10 blur-[200px] pointer-events-none animate-pulse duration-[10s]" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-0 left-0 w-[40%] h-[40%] bg-orange-500/5 blur-[150px] pointer-events-none" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Le$1, { title: "Centro de Comando Tático" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ResourceBar, { recursos: currentResources, taxasPerSecond: taxasPerSecond ?? {}, populacao: currentPopulation }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ResourceBar, { recursos: resources, taxasPerSecond: taxasPerSecond ?? {}, populacao: population }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-12 gap-10 flex-1 relative z-10", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-8 flex flex-col gap-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center px-4", children: [
@@ -30578,8 +30570,8 @@ function VillageDashboard({
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           ProductionQueue,
           {
-            construcoes: buildingQueue || (base == null ? void 0 : base.buildingQueue) || (base == null ? void 0 : base.construcoes) || STABLE_EMPTY_ARRAY,
-            treinos: STABLE_EMPTY_ARRAY,
+            construcoes: buildingQueue,
+            treinos: unitQueue,
             gameConfig
           }
         ),
@@ -30626,7 +30618,7 @@ function VillageDashboard({
         onTrain: handleTrain,
         isUpgrading,
         isTraining,
-        population: currentPopulation,
+        population,
         unitTypes: unitTypes2
       }
     )
@@ -30860,7 +30852,7 @@ const breadcrumbs$4 = [
   { title: "Dashboard", href: "/dashboard" },
   { title: "Mapa TÃ¡tico", href: "/mapa" }
 ];
-function Mapa({ bases, x: x2, y: y2, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos }) {
+function Mapa({ bases, x: x2, y: y2, raio, origemBase, gameConfig, ataquesEnviados: ataquesEnviados2, ataquesRecebidos: ataquesRecebidos2 }) {
   const { addToast } = useToasts();
   const [selectedTarget, setSelectedTarget] = U$2.useState(null);
   const [isSending, setIsSending] = U$2.useState(false);
@@ -30868,8 +30860,8 @@ function Mapa({ bases, x: x2, y: y2, raio, origemBase, gameConfig, ataquesEnviad
   const [jumpY, setJumpY] = U$2.useState(y2);
   const [entities, setEntities] = U$2.useState(gameStateService.getGameState());
   U$2.useEffect(() => {
-    if (ataquesEnviados) gameStateService.syncAttacks(ataquesEnviados);
-    if (ataquesRecebidos) gameStateService.syncAttacks(ataquesRecebidos);
+    if (ataquesEnviados2) gameStateService.syncAttacks(ataquesEnviados2);
+    if (ataquesRecebidos2) gameStateService.syncAttacks(ataquesRecebidos2);
     const unsubArrived = eventBus.subscribe(Events.ATTACK_ARRIVED, (ev) => {
       const res = ev.data.result === "VICTORY" ? "VITÃ“RIA" : "MISSÃƒO CONCLUÃDA";
       addToast(`OFENSIVA: ${res} em [${ev.data.targetId || "Sector"}]. Saque iniciado.`, "success");
@@ -30889,7 +30881,7 @@ function Mapa({ bases, x: x2, y: y2, raio, origemBase, gameConfig, ataquesEnviad
       unsubArrived();
       unsubReturned();
     };
-  }, [ataquesEnviados, ataquesRecebidos]);
+  }, [ataquesEnviados2, ataquesRecebidos2]);
   if (typeof window !== "undefined") {
     window.gameConfig = gameConfig;
   }
@@ -44343,7 +44335,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DoPJhyGh.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CefxJMtn.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44379,4 +44371,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-KjTZ5R-G.js.map
+//# sourceMappingURL=app-v42h3GPf.js.map

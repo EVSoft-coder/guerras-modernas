@@ -18,6 +18,7 @@ class Recurso extends Model
         'metal',
         'energia',
         'cap',
+        'storage_capacity',
         'updated_at',
     ];
 

@@ -41,7 +41,7 @@ class ResourceService
             ];
         }
 
-        $cap = (int)($resource->cap ?? 10000);
+        $cap = (int)($resource->storage_capacity ?? 10000);
         $lastUpdate = $base->ultimo_update ?? $base->created_at;
         $lastUpdateCarbon = Carbon::parse($lastUpdate);
         
@@ -51,7 +51,7 @@ class ResourceService
             $elapsed = $diff;
         }
 
-        Log::info('[RESOURCE_CALC]', [
+        Log::channel('game')->info('[RESOURCE_CALC]', [
             'base_id' => $base->id,
             'before' => $resource->suprimentos,
             'rate_min' => $taxasMinuto['suprimentos'] ?? 0,
@@ -91,7 +91,7 @@ class ResourceService
             $taxasMinuto = $this->getRates($lockedBase);
             $calculated = $this->calculate($lockedBase->recursos, $now, $taxasMinuto);
             
-            Log::info('[RESOURCE_SYNC]', [
+            Log::channel('game')->info('[RESOURCE_SYNC]', [
                 'base_id' => $base->id,
                 'calculated' => $calculated
             ]);
@@ -122,29 +122,25 @@ class ResourceService
     
     private function getRates(Base $base): array
     {
-        $edificios = $base->edificios;
-        $getLevel = function($type) use ($edificios) {
-            return (int)($edificios->filter(function($e) use ($type) {
-                return \App\Domain\Building\BuildingType::normalize($e->tipo) === $type;
-            })->first()?->nivel ?? 0);
-        };
-
-        $levels = [
-            'mina_metal' => $getLevel(\App\Domain\Building\BuildingType::MINA_METAL),
-            'central_energia' => $getLevel(\App\Domain\Building\BuildingType::CENTRAL_ENERGIA),
-            'mina_suprimentos' => $getLevel(\App\Domain\Building\BuildingType::MINA_SUPRIMENTOS),
-            'refinaria' => $getLevel(\App\Domain\Building\BuildingType::REFINARIA),
-            'fabrica_municoes' => $getLevel(\App\Domain\Building\BuildingType::FABRICA_MUNICOES),
-            'posto_recrutamento' => $getLevel(\App\Domain\Building\BuildingType::POSTO_RECRUTAMENTO),
+        $taxas = [
+            'suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 
+            'metal' => 0, 'energia' => 0, 'pessoal' => 0
         ];
 
-        return [
-            'metal' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('metal', $levels['mina_metal']),
-            'energia' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('energia', $levels['central_energia']),
-            'suprimentos' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('suprimentos', $levels['mina_suprimentos']),
-            'combustivel' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('combustivel', $levels['refinaria']),
-            'municoes' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('municoes', $levels['fabrica_municoes']),
-            'pessoal' => \App\Domain\Economy\EconomyRules::calculateProductionPerMinute('pessoal', $levels['posto_recrutamento']),
-        ];
+        // Carregar edifícios com seus tipos para cálculo normalizado (Passo 2)
+        $edificios = $base->edificios()->with('type')->get();
+
+        foreach ($edificios as $edificio) {
+            $type = $edificio->type;
+            if (!$type || !$type->production_type) continue;
+
+            $prodType = $type->production_type;
+            if (array_key_exists($prodType, $taxas)) {
+                // FÓRMULA PASSO 2: produção = (base_production * level)
+                $taxas[$prodType] += ($type->base_production * $edificio->nivel);
+            }
+        }
+
+        return $taxas;
     }
 }

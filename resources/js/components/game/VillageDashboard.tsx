@@ -22,40 +22,20 @@ const STABLE_EMPTY_ARRAY: any[] = [];
 
 export function VillageDashboard({ 
     jogador, base: initialBase, bases: backendBases = STABLE_EMPTY_ARRAY, taxasPerSecond, gameConfig, 
-    ataquesRecebidos, ataquesEnviados, relatoriosGlobal, populacao, // deprecated props
-    buildings = STABLE_EMPTY_ARRAY, population, resources, buildingQueue = STABLE_EMPTY_ARRAY,
+    relatoriosGlobal, buildings = STABLE_EMPTY_ARRAY, population, resources, buildingQueue = STABLE_EMPTY_ARRAY,
     unitQueue = STABLE_EMPTY_ARRAY, units = STABLE_EMPTY_ARRAY, unitTypes = STABLE_EMPTY_ARRAY
-}: DashboardProps & { 
-    bases?: any[], 
-    populacao?: any, 
-    buildings?: any[], 
-    population?: any, 
-    resources?: any,
-    buildingQueue?: any[],
-    unitQueue?: any[],
-    units?: any[],
-    unitTypes?: any[],
-    ataquesRecebidos?: any[],
-    ataquesEnviados?: any[],
-    relatoriosGlobal?: any[],
-    taxasPerSecond?: Record<string, number>
-}) {
-    // 0. ECS ENGINE INTEGRATION - BARKING STATE
+}: DashboardProps) {
+    // 0. ECS ENGINE INTEGRATION
     const { globalState } = useGameEntities();
 
-    // 1. DATA PROJECTOR — Usar props diretamente (estado gerido pelo parent dashboard.tsx)
-    const currentBuildings = buildings || initialBase?.edificios || [];
-    const currentResources = resources || initialBase?.recursos || {};
-    const currentPopulation = population || populacao || null;
-
-    const base = React.useMemo(() => {
-        if (!initialBase) return null;
-        return {
-            ...initialBase,
-            edificios: currentBuildings,
-            recursos: currentResources
-        };
-    }, [initialBase, currentBuildings, currentResources]);
+    // 1. DATA PROJECTOR — Usar props diretamente do backend (Passo 9)
+    const base = React.useMemo(() => ({
+        ...initialBase,
+        edificios: buildings,
+        recursos: resources,
+        buildingQueue: buildingQueue,
+        unitQueue: unitQueue
+    }), [initialBase, buildings, resources, buildingQueue, unitQueue]);
 
     // Use logic villages from ECS instead of backend props for switcher
     const displayBases = (globalState.worldMapBases.length > 0 
@@ -202,7 +182,7 @@ export function VillageDashboard({
             <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-orange-500/5 blur-[150px] pointer-events-none"></div>
 
             <Head title="Centro de Comando Tático" />
-            <ResourceBar recursos={currentResources} taxasPerSecond={taxasPerSecond ?? {}} populacao={currentPopulation} />
+            <ResourceBar recursos={resources} taxasPerSecond={taxasPerSecond ?? {}} populacao={population} />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 flex-1 relative z-10">
                 <div className="lg:col-span-8 flex flex-col gap-6">
@@ -250,8 +230,8 @@ export function VillageDashboard({
 
                 <div className="lg:col-span-4 flex flex-col gap-8">
                     <ProductionQueue 
-                        construcoes={buildingQueue || base?.buildingQueue || base?.construcoes || STABLE_EMPTY_ARRAY} 
-                        treinos={STABLE_EMPTY_ARRAY} 
+                        construcoes={buildingQueue} 
+                        treinos={unitQueue} 
                         gameConfig={gameConfig} 
                     />
                     <UnitQueue queue={unitQueue || STABLE_EMPTY_ARRAY} />
@@ -302,7 +282,7 @@ export function VillageDashboard({
                 onTrain={handleTrain}
                 isUpgrading={isUpgrading}
                 isTraining={isTraining}
-                population={currentPopulation}
+                population={population}
                 unitTypes={unitTypes}
             />
         </div>

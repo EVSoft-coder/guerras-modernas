@@ -21,8 +21,8 @@ class ProcessarCron extends Command
 
         foreach ($bases as $base) {
             try {
-                // Orquestração Unificada (Fase 4 - Passo 3)
-                $gameService->tickResources($base);
+                // Orquestração Global Determinística (Fase Crítica - Passo 2)
+                \App\Services\GameEngine::process($base);
 
                 $this->info("Operação concluída na Base [ID: {$base->id}].");
             } catch (\Exception $e) {

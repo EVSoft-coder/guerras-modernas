@@ -10,11 +10,17 @@ class Edificio extends Model
 
     protected $fillable = [
         'base_id',
+        'building_type_id',
         'tipo',
         'nivel',
         'pos_x',
         'pos_y',
     ];
+
+    public function type()
+    {
+        return $this->belongsTo(BuildingType::class, 'building_type_id');
+    }
 
     protected $appends = ['buildingType'];
 

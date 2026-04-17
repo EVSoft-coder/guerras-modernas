@@ -40,9 +40,6 @@ class BuildingQueueService
     {
         return DB::transaction(function() use ($base, $type, $posX, $posY, $buildingId) {
             $type = BuildingType::normalize($type);
-            
-            // 1. Sincronizar Recursos para cálculo real (Audit 1.0)
-            app(ResourceService::class)->sync($base);
 
             $nivelSincronizado = $this->getCurrentLevel($base, $type);
             
@@ -95,7 +92,7 @@ class BuildingQueueService
                 $this->applyUpgrade($base, $entry->type, $entry->target_level);
                 $entry->delete();
                 
-                Log::info('[CONSTRUCTION_FINISHED]', [
+                Log::channel('game')->info('[CONSTRUCTION_FINISHED]', [
                     'base_id' => $base->id,
                     'type' => $entry->type,
                     'level' => $entry->target_level

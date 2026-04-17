@@ -26,8 +26,6 @@ class UnitQueueService
     public function startRecruitment(Base $base, int $unitTypeId, int $quantity)
     {
         return DB::transaction(function() use ($base, $unitTypeId, $quantity) {
-            // 1. Sincronizar Recursos para garantir base de cálculo real (Audit 1.0)
-            app(ResourceService::class)->sync($base);
 
             // 2. Validar Recursos e Tipo
             $unitType = UnitType::findOrFail($unitTypeId);
@@ -49,8 +47,12 @@ class UnitQueueService
                 throw new \Exception("Suprimentos insuficientes para mobilização.");
             }
 
-            // 2. Calcular tempo: build_time * quantity (PASSO 3)
-            $totalTime = $unitType->build_time * $quantity;
+            // 2. Calcular tempo: build_time * quantity (Passo 4)
+            // Regra: tempo = base_time / (1 + level * 0.1)
+            $quartelLevel = (int) ($base->edificios()->where('tipo', \App\Domain\Building\BuildingType::QUARTEL)->first()?->nivel ?? 0);
+            $baseTime = $unitType->build_time * $quantity;
+            $totalTime = (int) ($baseTime / (1 + $quartelLevel * 0.1));
+
             $now = $this->timeService->now();
 
             // 3. Deduzir recursos (PASSO 3)
@@ -58,7 +60,13 @@ class UnitQueueService
             $recursos->decrement('municoes', $totalCostMunicoes);
             $recursos->decrement('combustivel', $totalCostCombustivel);
 
-            Log::info('[RECRUIT_START]', ['base_id' => $base->id, 'unit' => $unitType->name, 'qty' => $quantity]);
+            Log::channel('game')->info('[RECRUIT_START]', [
+                'base_id' => $base->id, 
+                'unit' => $unitType->name, 
+                'qty' => $quantity,
+                'quartel_level' => $quartelLevel,
+                'duration' => $totalTime
+            ]);
 
             // 4. Inserir na queue (PASSO 3)
             return UnitQueue::create([
@@ -95,7 +103,7 @@ class UnitQueueService
                 );
                 $unit->increment('quantity', $queue->quantity);
 
-                Log::info('[RECRUIT_FINISHED]', ['base_id' => $base->id, 'unit_type_id' => $queue->unit_type_id, 'qty' => $queue->quantity]);
+                Log::channel('game')->info('[RECRUIT_FINISHED]', ['base_id' => $base->id, 'unit_type_id' => $queue->unit_type_id, 'qty' => $queue->quantity]);
 
                 // Remover da queue
                 $queue->delete();

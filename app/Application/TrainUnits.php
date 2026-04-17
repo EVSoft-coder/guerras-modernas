@@ -25,13 +25,15 @@ class TrainUnits
      */
     public function execute(Authenticatable $user, int $baseId, string|int $unitOrId, int $quantity): void
     {
-        $base = Base::findOrFail($baseId);
+        DB::transaction(function() use ($user, $baseId, $unitOrId, $quantity) {
+            // 1. Lock Global da Base (Fase Crítica - Passo 3)
+            $base = Base::where('id', $baseId)->lockForUpdate()->firstOrFail();
 
-        if ($base->jogador_id !== $user->getAuthIdentifier()) {
-            throw new \Exception("Acesso Negado: A base especificada não está sob o seu comando.");
-        }
+            // 2. Validação via Policy (Fase Crítica - Passo 5)
+            if ($user->cannot('update', $base)) {
+                throw new \Exception("Acesso Negado: A base especificada não está sob o seu comando.");
+            }
 
-        DB::transaction(function() use ($base, $unitOrId, $quantity) {
             // Se for ID numérico, carregar UnitType correspondente
             if (is_numeric($unitOrId)) {
                 $this->gameService->iniciarTreino($base, (int)$unitOrId, $quantity);
