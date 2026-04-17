@@ -30551,12 +30551,24 @@ function VillageDashboard({
                 b2.id
               )) })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mt-1", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-2 h-2 rounded-full bg-emerald-500 animate-pulse" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] text-neutral-500 font-black uppercase tracking-widest", children: [
-                "Sistemas On-line / Comando ",
-                displayBases.length > 1 ? "Múltiplo" : "Único",
-                " Ativo"
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 mt-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-2 h-2 rounded-full bg-emerald-500 animate-pulse" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-neutral-500 font-black uppercase tracking-widest", children: "Sistemas On-line" })
+              ] }),
+              (base == null ? void 0 : base.loyalty) !== void 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 bg-black/40 px-3 py-1 rounded-sm border border-white/5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-orange-500 font-black uppercase tracking-widest", children: "Controlo Civil:" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 h-1.5 bg-neutral-800 rounded-full overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    className: "h-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)] transition-all duration-1000",
+                    style: { width: `${base.loyalty}%` }
+                  }
+                ) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] text-white font-mono font-bold", children: [
+                  base.loyalty,
+                  "%"
+                ] })
               ] })
             ] })
           ] }),
@@ -44337,7 +44349,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-LC5p3J76.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-C7gMY0-M.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44373,4 +44385,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CqU3MRzC.js.map
+//# sourceMappingURL=app-D1Im9Zxz.js.map

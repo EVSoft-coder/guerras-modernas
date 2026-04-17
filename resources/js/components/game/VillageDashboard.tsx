@@ -210,9 +210,24 @@ export function VillageDashboard({
                                     </div>
                                 )}
                             </h2>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">Sistemas On-line / Comando {displayBases.length > 1 ? 'Múltiplo' : 'Único'} Ativo</span>
+                            <div className="flex items-center gap-4 mt-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">Sistemas On-line</span>
+                                </div>
+                                
+                                {base?.loyalty !== undefined && (
+                                     <div className="flex items-center gap-2 bg-black/40 px-3 py-1 rounded-sm border border-white/5">
+                                        <div className="text-[10px] text-orange-500 font-black uppercase tracking-widest">Controlo Civil:</div>
+                                        <div className="w-24 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)] transition-all duration-1000" 
+                                                style={{ width: `${base.loyalty}%` }}
+                                            ></div>
+                                        </div>
+                                        <span className="text-[10px] text-white font-mono font-bold">{base.loyalty}%</span>
+                                     </div>
+                                )}
                             </div>
                          </div>
                          <div className="text-[10px] text-neutral-700 font-mono bg-white/5 px-3 py-1 rounded-full border border-white/5">

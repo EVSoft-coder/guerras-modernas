@@ -199,6 +199,9 @@ class MovementService
             $loot = [];
             if ($result['attacker_won']) {
                 $loot = $this->calculateLoot($result['attacker_units'], $targetBase);
+                
+                // PASSO 3, 4, 5 - TRATAR CONQUISTA POLÍTICA (Fase 13)
+                $this->handlePoliticalAction($movement, $targetBase, $result['attacker_units']);
             }
 
             // 5. Tratar Sobreviventes Atacantes (PASSO 2 - Fase 10)
@@ -219,6 +222,57 @@ class MovementService
                 'detalhes' => array_merge($result, ['loot' => $loot])
             ]);
         });
+    }
+
+    /**
+     * Resolve ações de conquista política baseadas na presença de unidades especiais (Fase 13).
+     */
+    private function handlePoliticalAction(Movement $movement, Base $targetBase, array $attackerUnits): void
+    {
+        // 1. Detetar Políticos (Passo 3)
+        $politicoCount = 0;
+        foreach ($attackerUnits as $unit) {
+            if (strtolower($unit['name']) === 'politico') {
+                $politicoCount += $unit['quantity'];
+            }
+        }
+
+        if ($politicoCount <= 0) return;
+
+        // 2. Redução de Lealdade (Passo 4)
+        $reduction = rand(20, 35) * $politicoCount;
+        $oldLoyalty = $targetBase->loyalty;
+        $newLoyalty = max(0, $oldLoyalty - $reduction);
+        
+        $targetBase->update(['loyalty' => $newLoyalty]);
+
+        Log::channel('game')->info("[LOYALTY_REDUCED] Base {$targetBase->id}: {$oldLoyalty} -> {$newLoyalty} (-{$reduction})");
+
+        // 3. Conquista (Passo 5)
+        if ($newLoyalty <= 0) {
+            $this->executeConquest($movement, $targetBase);
+        }
+    }
+
+    /**
+     * Executa a transferência de posse da base (Fase 13 - Passo 5).
+     */
+    private function executeConquest(Movement $movement, Base $targetBase): void
+    {
+        $newOwnerId = $movement->origin->jogador_id;
+        $oldOwnerId = $targetBase->jogador_id;
+
+        // 1. Mudar Owner e Reset Lealdade
+        $targetBase->update([
+            'jogador_id' => $newOwnerId,
+            'loyalty' => rand(25, 35), // Reset parcial
+            'nome' => "Província de " . $movement->origin->jogador->username,
+        ]);
+
+        // 2. Remover Unidades Defensoras Restantes
+        Tropas::where('base_id', $targetBase->id)->delete();
+
+        Log::channel('game')->warning("[CONQUEST_EVENT] Base {$targetBase->id} CONQUISTADA por Jogador {$newOwnerId} (Ex-dono: {$oldOwnerId})");
     }
 
     /**
