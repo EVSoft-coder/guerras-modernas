@@ -238,7 +238,12 @@ export function VillageDashboard({
                     <ArmyMovementPanel ataquesEnviados={ataquesEnviados ?? []} ataquesRecebidos={ataquesRecebidos ?? []} gameConfig={gameConfig} />
                     
                     {gameMode === 'WORLD_MAP' ? (
-                        <WorldMapView playerBase={base} troops={base?.tropas ?? []} gameConfig={gameConfig} />
+                        <WorldMapView 
+                        playerBase={base} 
+                        troops={units.length > 0 ? units.map((u: any) => ({ tipo: u.type?.name, quantidade: u.quantity })) : (base?.tropas ?? [])} 
+                        gameConfig={gameConfig} 
+                        unitTypes={unitTypes}
+                    />
                     ) : (
                         <VillageView base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} />
                     )}

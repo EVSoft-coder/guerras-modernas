@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\DB;
  */
 class SendMission
 {
-    private CombatService $combatService;
+    private MovementService $movementService;
     private TimeService $timeService;
 
-    public function __construct(CombatService $combatService, TimeService $timeService)
+    public function __construct(MovementService $movementService, TimeService $timeService)
     {
-        $this->combatService = $combatService;
+        $this->movementService = $movementService;
         $this->timeService = $timeService;
     }
 
@@ -51,7 +51,12 @@ class SendMission
                 }
             }
 
-            $this->combatService->iniciarAtaque($baseOrigem, $baseDestino, $data['tropas'], $data['tipo'], $coords);
+            if ($baseDestino) {
+                $this->movementService->sendTroops($baseOrigem, $baseDestino, $data['tropas'], $data['tipo']);
+            } else {
+                // TODO: Implementar ataque a coordenadas se necessário (implementação atual foca em bases)
+                throw new \Exception("COORDENADAS: O comando central ainda não autorizou ataques a setores sem estruturas detetadas.");
+            }
         });
     }
 }

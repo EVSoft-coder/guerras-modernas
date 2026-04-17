@@ -29170,7 +29170,8 @@ const AttackModal = ({
   tropasDisponiveis,
   onEnviar,
   isSending,
-  gameConfig
+  gameConfig,
+  unitTypes
 }) => {
   const [selectedTropas, setSelectedTropas] = reactExports.useState({});
   const [missionType, setMissionType] = reactExports.useState("ataque");
@@ -29178,44 +29179,44 @@ const AttackModal = ({
     if (isOpen) {
       const initial = {};
       tropasDisponiveis.forEach((t2) => {
-        initial[t2.unidade] = 0;
+        const ut = unitTypes == null ? void 0 : unitTypes.find((u3) => u3.name === t2.tipo || u3.name === t2.unidade);
+        if (ut) initial[ut.id] = 0;
       });
       setSelectedTropas(initial);
       setMissionType("ataque");
     }
-  }, [isOpen]);
-  const handleTropaChange = (unidade, value) => {
-    setSelectedTropas((prev) => ({ ...prev, [unidade]: value }));
+  }, [isOpen, tropasDisponiveis, unitTypes]);
+  const handleTropaChange = (unitId, value) => {
+    setSelectedTropas((prev) => ({ ...prev, [unitId]: value }));
   };
   const hasTropasSelected = Object.values(selectedTropas).some((v) => v > 0);
   const stats = reactExports.useMemo(() => {
-    var _a2;
-    if (!destinoBase || !origemBase) return null;
-    const dx = destinoBase.coordenada_x - origemBase.coordenada_x;
-    const dy = destinoBase.coordenada_y - origemBase.coordenada_y;
+    if (!destinoBase || !origemBase || !unitTypes) return null;
+    const dx = (destinoBase.coordenada_x || 0) - (origemBase.coordenada_x || 0);
+    const dy = (destinoBase.coordenada_y || 0) - (origemBase.coordenada_y || 0);
     const distancia = Math.sqrt(dx * dx + dy * dy);
     let minSpeed = 999;
     let totalAttack = 0;
     let totalCapacity = 0;
-    Object.entries(selectedTropas).forEach(([unidade, qtd]) => {
-      var _a3;
+    Object.entries(selectedTropas).forEach(([id2, qtd]) => {
       if (qtd > 0) {
-        const config = ((_a3 = gameConfig == null ? void 0 : gameConfig.units) == null ? void 0 : _a3[unidade]) || {};
-        if (config.speed < minSpeed) minSpeed = config.speed;
-        totalAttack += qtd * (config.attack || 0);
-        totalCapacity += qtd * (config.capacity || 0);
+        const config = unitTypes.find((u3) => u3.id === parseInt(id2));
+        if (config) {
+          if (config.speed < minSpeed) minSpeed = config.speed;
+          totalAttack += qtd * (config.attack || 0);
+          totalCapacity += qtd * (config.carry_capacity || 0);
+        }
       }
     });
-    if (minSpeed === 999) minSpeed = 10;
-    const speedTravel = ((_a2 = gameConfig == null ? void 0 : gameConfig.speed) == null ? void 0 : _a2.travel) || 1;
-    const segundos = Math.max(30, distancia * 100 / (minSpeed * speedTravel));
+    if (minSpeed === 999) minSpeed = 1;
+    const seconds = Math.max(60, Math.ceil(distancia / (minSpeed * 0.01)));
     return {
       distancia: distancia.toFixed(1),
-      tempo: Math.floor(segundos),
+      tempo: Math.floor(seconds),
       ataque: totalAttack,
       capacidade: totalCapacity
     };
-  }, [destinoBase, origemBase, selectedTropas]);
+  }, [destinoBase, origemBase, selectedTropas, unitTypes]);
   const formatTime = (s2) => {
     const mins = Math.floor(s2 / 60);
     const secs = s2 % 60;
@@ -29286,15 +29287,19 @@ const AttackModal = ({
           " Ordem de Batalha"
         ] }),
         tropasDisponiveis.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-8 text-center border border-dashed border-white/10 rounded-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-neutral-600 uppercase", children: "Guarnição Vazia" }) }) : tropasDisponiveis.map((tropa) => {
-          const isArmored = ["tanque_combate", "blindado_apc", "helicoptero_ataque"].includes(tropa.unidade);
+          var _a2;
+          const utId = (_a2 = unitTypes == null ? void 0 : unitTypes.find((u3) => u3.name === tropa.tipo || u3.name === tropa.unidade)) == null ? void 0 : _a2.id;
+          if (!utId) return null;
+          const unitName = tropa.tipo || tropa.unidade || "Desconhecida";
+          const isArmored = ["tanque", "blindado", "helicoptero"].some((s2) => unitName.toLowerCase().includes(s2));
           return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 p-3 bg-black/40 rounded-xl border border-white/5 hover:border-white/10 transition-colors group", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black uppercase tracking-wide text-neutral-300 group-hover:text-sky-400 transition-colors", children: (tropa.unidade || "Desconhecida").replace(/_/g, " ") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black uppercase tracking-wide text-neutral-300 group-hover:text-sky-400 transition-colors", children: unitName.replace(/_/g, " ") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[7px] font-black ${isArmored ? "text-orange-500" : "text-emerald-500"} uppercase`, children: isArmored ? "UNIT: ARMORED" : "UNIT: INFANTRY" })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { variant: "outline", className: "text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400 font-mono", children: [
-                selectedTropas[tropa.unidade] || 0,
+                selectedTropas[utId] || 0,
                 " / ",
                 tropa.quantidade
               ] })
@@ -29306,12 +29311,12 @@ const AttackModal = ({
                 min: "0",
                 max: tropa.quantidade,
                 step: "1",
-                value: selectedTropas[tropa.unidade] || 0,
-                onChange: (e) => handleTropaChange(tropa.unidade, parseInt(e.target.value)),
+                value: selectedTropas[utId] || 0,
+                onChange: (e) => handleTropaChange(utId.toString(), parseInt(e.target.value)),
                 className: "w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-500"
               }
             )
-          ] }, tropa.unidade);
+          ] }, utId);
         })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-black/40 flex flex-col justify-between", children: [
@@ -30012,7 +30017,7 @@ const getTerrain = (tx, ty) => {
   if (noise < -0.65) return "water";
   return "grass";
 };
-function WorldMapView({ playerBase, troops = [], gameConfig }) {
+function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes }) {
   var _a2, _b, _c, _d, _e2, _f;
   const [center, setCenter] = reactExports.useState({ x: (playerBase == null ? void 0 : playerBase.coordenada_x) || 50, y: (playerBase == null ? void 0 : playerBase.coordenada_y) || 50 });
   const [selectedSector, setSelectedSector] = reactExports.useState(null);
@@ -30343,6 +30348,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig }) {
         destinoBase: (selectedSector == null ? void 0 : selectedSector.base) || { coordenada_x: selectedSector == null ? void 0 : selectedSector.x, coordenada_y: selectedSector == null ? void 0 : selectedSector.y, nome: "Sector Vazio" },
         tropasDisponiveis: troops,
         gameConfig,
+        unitTypes,
         onEnviar: handleSendAttack,
         isSending: false
       }
@@ -30597,7 +30603,18 @@ function VillageDashboard({
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(ArmyMovementPanel, { ataquesEnviados: ataquesEnviados ?? [], ataquesRecebidos: ataquesRecebidos ?? [], gameConfig }),
-        gameMode === "WORLD_MAP" ? /* @__PURE__ */ jsxRuntimeExports.jsx(WorldMapView, { playerBase: base, troops: (base == null ? void 0 : base.tropas) ?? [], gameConfig }) : /* @__PURE__ */ jsxRuntimeExports.jsx(VillageView, { base, onBuildingClick: handleBuildingClick, gameConfig })
+        gameMode === "WORLD_MAP" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorldMapView,
+          {
+            playerBase: base,
+            troops: units.length > 0 ? units.map((u3) => {
+              var _a2;
+              return { tipo: (_a2 = u3.type) == null ? void 0 : _a2.name, quantidade: u3.quantity };
+            }) : (base == null ? void 0 : base.tropas) ?? [],
+            gameConfig,
+            unitTypes
+          }
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx(VillageView, { base, onBuildingClick: handleBuildingClick, gameConfig })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-4 flex flex-col gap-8", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -44377,7 +44394,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-D7E4PRez.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-D7yoNkyF.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44413,4 +44430,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-V8ZSPaSt.js.map
+//# sourceMappingURL=app-DCBM5XkE.js.map

@@ -15,6 +15,7 @@ interface WorldMapViewProps {
     playerBase?: Base;
     troops?: any[];
     gameConfig?: any;
+    unitTypes?: any[];
 }
 
 const TILE_SIZE = 80;
@@ -35,7 +36,7 @@ const getTerrain = (tx: number, ty: number) => {
     return 'grass';
 };
 
-export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapViewProps) {
+export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes }: WorldMapViewProps) {
     const [center, setCenter] = useState({ x: playerBase?.coordenada_x || 50, y: playerBase?.coordenada_y || 50 });
     const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: any } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
@@ -362,6 +363,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig }: WorldMapVi
                 destinoBase={selectedSector?.base || { coordenada_x: selectedSector?.x, coordenada_y: selectedSector?.y, nome: 'Sector Vazio' }}
                 tropasDisponiveis={troops}
                 gameConfig={gameConfig}
+                unitTypes={unitTypes}
                 onEnviar={handleSendAttack}
                 isSending={false}
             />

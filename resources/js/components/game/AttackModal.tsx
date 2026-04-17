@@ -14,10 +14,11 @@ interface AttackModalProps {
     onEnviar: (params: { destino_id: number | null; destino_x?: number; destino_y?: number; tropas: Record<string, number>; tipo: string }) => void;
     isSending: boolean;
     gameConfig: any;
+    unitTypes?: any[];
 }
 
 export const AttackModal: React.FC<AttackModalProps> = ({ 
-    isOpen, onClose, origemBase, destinoBase, tropasDisponiveis, onEnviar, isSending, gameConfig 
+    isOpen, onClose, origemBase, destinoBase, tropasDisponiveis, onEnviar, isSending, gameConfig, unitTypes 
 }) => {
     const [selectedTropas, setSelectedTropas] = useState<Record<string, number>>({});
     const [missionType, setMissionType] = useState<string>('ataque');
@@ -27,25 +28,26 @@ export const AttackModal: React.FC<AttackModalProps> = ({
         if (isOpen) {
             const initial: Record<string, number> = {};
             tropasDisponiveis.forEach(t => {
-                initial[t.unidade] = 0;
+                const ut = unitTypes?.find(u => u.name === t.tipo || u.name === t.unidade);
+                if (ut) initial[ut.id] = 0;
             });
             setSelectedTropas(initial);
             setMissionType('ataque');
         }
-    }, [isOpen]);
+    }, [isOpen, tropasDisponiveis, unitTypes]);
 
-    const handleTropaChange = (unidade: string, value: number) => {
-        setSelectedTropas(prev => ({ ...prev, [unidade]: value }));
+    const handleTropaChange = (unitId: string, value: number) => {
+        setSelectedTropas(prev => ({ ...prev, [unitId]: value }));
     };
 
     const hasTropasSelected = Object.values(selectedTropas).some(v => v > 0);
 
     // Cálculos Tácticos
     const stats = useMemo(() => {
-        if (!destinoBase || !origemBase) return null;
+        if (!destinoBase || !origemBase || !unitTypes) return null;
         
-        const dx = destinoBase.coordenada_x - origemBase.coordenada_x;
-        const dy = destinoBase.coordenada_y - origemBase.coordenada_y;
+        const dx = (destinoBase.coordenada_x || 0) - (origemBase.coordenada_x || 0);
+        const dy = (destinoBase.coordenada_y || 0) - (origemBase.coordenada_y || 0);
         const distancia = Math.sqrt(dx * dx + dy * dy);
         
         // Encontrar unidade mais lenta
@@ -53,28 +55,31 @@ export const AttackModal: React.FC<AttackModalProps> = ({
         let totalAttack = 0;
         let totalCapacity = 0;
         
-        Object.entries(selectedTropas).forEach(([unidade, qtd]) => {
+        Object.entries(selectedTropas).forEach(([id, qtd]) => {
             if (qtd > 0) {
-                const config = gameConfig?.units?.[unidade] || {};
-                if (config.speed < minSpeed) minSpeed = config.speed;
-                totalAttack += qtd * (config.attack || 0);
-                totalCapacity += qtd * (config.capacity || 0);
+                const config = unitTypes.find(u => u.id === parseInt(id));
+                if (config) {
+                    if (config.speed < minSpeed) minSpeed = config.speed;
+                    totalAttack += qtd * (config.attack || 0);
+                    totalCapacity += qtd * (config.carry_capacity || 0);
+                }
             }
         });
 
-        if (minSpeed === 999) minSpeed = 10;
+        if (minSpeed === 999) minSpeed = 1;
 
-        // Formula igual ao GameService
-        const speedTravel = gameConfig?.speed?.travel || 1;
-        const segundos = Math.max(30, (distancia * 100) / (minSpeed * speedTravel));
+        // Formula igual ao GameService / MapService
+        // No backend MapService: $seconds = (int) ceil($distance / $speed);
+        // Mas aqui usamos a escala visual (distancia * 100)
+        const seconds = Math.max(60, Math.ceil(distancia / (minSpeed * 0.01)));
 
         return {
             distancia: distancia.toFixed(1),
-            tempo: Math.floor(segundos),
+            tempo: Math.floor(seconds),
             ataque: totalAttack,
             capacidade: totalCapacity
         };
-    }, [destinoBase, origemBase, selectedTropas]);
+    }, [destinoBase, origemBase, selectedTropas, unitTypes]);
 
     const formatTime = (s: number) => {
         const mins = Math.floor(s / 60);
@@ -152,20 +157,25 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                             </div>
                         ) : (
                             tropasDisponiveis.map(tropa => {
-                                const isArmored = ['tanque_combate', 'blindado_apc', 'helicoptero_ataque'].includes(tropa.unidade);
+                                const utId = unitTypes?.find(u => u.name === tropa.tipo || u.name === tropa.unidade)?.id;
+                                if (!utId) return null;
+
+                                const unitName = (tropa.tipo || tropa.unidade || 'Desconhecida');
+                                const isArmored = ['tanque', 'blindado', 'helicoptero'].some(s => unitName.toLowerCase().includes(s));
+                                
                                 return (
-                                    <div key={tropa.unidade} className="space-y-2 p-3 bg-black/40 rounded-xl border border-white/5 hover:border-white/10 transition-colors group">
+                                    <div key={utId} className="space-y-2 p-3 bg-black/40 rounded-xl border border-white/5 hover:border-white/10 transition-colors group">
                                         <div className="flex justify-between items-center">
                                             <div className="flex flex-col">
                                                 <span className="text-[9px] font-black uppercase tracking-wide text-neutral-300 group-hover:text-sky-400 transition-colors">
-                                                    {(tropa.unidade || 'Desconhecida').replace(/_/g, ' ')}
+                                                    {unitName.replace(/_/g, ' ')}
                                                 </span>
                                                 <span className={`text-[7px] font-black ${isArmored ? 'text-orange-500' : 'text-emerald-500'} uppercase`}>
                                                     {isArmored ? 'UNIT: ARMORED' : 'UNIT: INFANTRY'}
                                                 </span>
                                             </div>
                                             <Badge variant="outline" className="text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400 font-mono">
-                                                {selectedTropas[tropa.unidade] || 0} / {tropa.quantidade}
+                                                {selectedTropas[utId] || 0} / {tropa.quantidade}
                                             </Badge>
                                         </div>
                                         <input 
@@ -173,8 +183,8 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                             min="0"
                                             max={tropa.quantidade}
                                             step="1"
-                                            value={selectedTropas[tropa.unidade] || 0}
-                                            onChange={(e) => handleTropaChange(tropa.unidade, parseInt(e.target.value))}
+                                            value={selectedTropas[utId] || 0}
+                                            onChange={(e) => handleTropaChange(utId.toString(), parseInt(e.target.value))}
                                             className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-500"
                                         />
                                     </div>

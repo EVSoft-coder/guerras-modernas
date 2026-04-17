@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('departure_time');
             $table->timestamp('arrival_time');
             $table->string('type', 20)->default('attack'); // attack, support
+            $table->string('status', 20)->default('moving'); // moving, arrived, returning
             $table->timestamps();
         });
 
