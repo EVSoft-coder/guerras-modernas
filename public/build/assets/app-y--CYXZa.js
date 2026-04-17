@@ -28954,8 +28954,8 @@ const ToastItem = ({ toast: toast2, onRemove }) => {
   );
 };
 const ArmyMovementPanel = ({
-  ataquesEnviados: ataquesEnviados2,
-  ataquesRecebidos: ataquesRecebidos2,
+  ataquesEnviados,
+  ataquesRecebidos,
   gameConfig
 }) => {
   const [now2, setNow] = reactExports.useState(Date.now());
@@ -28969,7 +28969,7 @@ const ArmyMovementPanel = ({
     const secs = Math.floor(diff % 6e4 / 1e3);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
-  const hasMovements = ((ataquesEnviados2 == null ? void 0 : ataquesEnviados2.length) ?? 0) > 0 || ((ataquesRecebidos2 == null ? void 0 : ataquesRecebidos2.length) ?? 0) > 0;
+  const hasMovements = ((ataquesEnviados == null ? void 0 : ataquesEnviados.length) ?? 0) > 0 || ((ataquesRecebidos == null ? void 0 : ataquesRecebidos.length) ?? 0) > 0;
   if (!hasMovements) return null;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden mb-8 rounded-[1.5rem] shadow-2xl relative group", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-red-500/20 to-transparent" }),
@@ -28978,7 +28978,7 @@ const ArmyMovementPanel = ({
       "Monitor de Espaço Aéreo e Fronteira"
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "p-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "divide-y divide-white/5", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesRecebidos2 == null ? void 0 : ataquesRecebidos2.map((atk) => {
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesRecebidos == null ? void 0 : ataquesRecebidos.map((atk) => {
         var _a2;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
@@ -29012,7 +29012,7 @@ const ArmyMovementPanel = ({
           atk.id
         );
       }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesEnviados2 == null ? void 0 : ataquesEnviados2.map((atk) => {
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesEnviados == null ? void 0 : ataquesEnviados.map((atk) => {
         var _a2;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
@@ -30407,7 +30407,9 @@ function VillageDashboard({
   buildingQueue = STABLE_EMPTY_ARRAY,
   unitQueue = STABLE_EMPTY_ARRAY,
   units = STABLE_EMPTY_ARRAY,
-  unitTypes: unitTypes2 = STABLE_EMPTY_ARRAY
+  unitTypes: unitTypes2 = STABLE_EMPTY_ARRAY,
+  ataquesRecebidos = STABLE_EMPTY_ARRAY,
+  ataquesEnviados = STABLE_EMPTY_ARRAY
 }) {
   const { globalState } = useGameEntities();
   const base = U$2.useMemo(() => ({
@@ -30852,7 +30854,7 @@ const breadcrumbs$4 = [
   { title: "Dashboard", href: "/dashboard" },
   { title: "Mapa TÃ¡tico", href: "/mapa" }
 ];
-function Mapa({ bases, x: x2, y: y2, raio, origemBase, gameConfig, ataquesEnviados: ataquesEnviados2, ataquesRecebidos: ataquesRecebidos2 }) {
+function Mapa({ bases, x: x2, y: y2, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos }) {
   const { addToast } = useToasts();
   const [selectedTarget, setSelectedTarget] = U$2.useState(null);
   const [isSending, setIsSending] = U$2.useState(false);
@@ -30860,8 +30862,8 @@ function Mapa({ bases, x: x2, y: y2, raio, origemBase, gameConfig, ataquesEnviad
   const [jumpY, setJumpY] = U$2.useState(y2);
   const [entities, setEntities] = U$2.useState(gameStateService.getGameState());
   U$2.useEffect(() => {
-    if (ataquesEnviados2) gameStateService.syncAttacks(ataquesEnviados2);
-    if (ataquesRecebidos2) gameStateService.syncAttacks(ataquesRecebidos2);
+    if (ataquesEnviados) gameStateService.syncAttacks(ataquesEnviados);
+    if (ataquesRecebidos) gameStateService.syncAttacks(ataquesRecebidos);
     const unsubArrived = eventBus.subscribe(Events.ATTACK_ARRIVED, (ev) => {
       const res = ev.data.result === "VICTORY" ? "VITÃ“RIA" : "MISSÃƒO CONCLUÃDA";
       addToast(`OFENSIVA: ${res} em [${ev.data.targetId || "Sector"}]. Saque iniciado.`, "success");
@@ -30881,7 +30883,7 @@ function Mapa({ bases, x: x2, y: y2, raio, origemBase, gameConfig, ataquesEnviad
       unsubArrived();
       unsubReturned();
     };
-  }, [ataquesEnviados2, ataquesRecebidos2]);
+  }, [ataquesEnviados, ataquesRecebidos]);
   if (typeof window !== "undefined") {
     window.gameConfig = gameConfig;
   }
@@ -44335,7 +44337,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CefxJMtn.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-VFsoQd6I.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44371,4 +44373,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-v42h3GPf.js.map
+//# sourceMappingURL=app-y--CYXZa.js.map
