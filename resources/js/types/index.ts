@@ -96,6 +96,7 @@ export interface Base {
     edificios: Edificio[];
     buildingQueue?: BuildingQueueMember[];
     construcoes: FilaConstrucao[];
+    loyalty: number;
     treinos: any[];
     tropas: any[];
 }
