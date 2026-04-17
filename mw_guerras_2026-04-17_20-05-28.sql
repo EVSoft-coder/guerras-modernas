@@ -108,9 +108,12 @@ CREATE TABLE `bases` (
   `recursos_energia` decimal(20,2) NOT NULL DEFAULT 1000.00,
   `recursos_comida` decimal(20,2) NOT NULL DEFAULT 1000.00,
   `last_update_at` timestamp NULL DEFAULT current_timestamp(),
+  `x` int(11) DEFAULT 0,
+  `y` int(11) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `bases_coordenadas_unique` (`coordenada_x`,`coordenada_y`),
   KEY `jogador_id` (`jogador_id`),
+  KEY `idx_coordinates` (`x`,`y`),
   CONSTRAINT `bases_ibfk_1` FOREIGN KEY (`jogador_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -122,17 +125,17 @@ CREATE TABLE `bases` (
 LOCK TABLES `bases` WRITE;
 /*!40000 ALTER TABLE `bases` DISABLE KEYS */;
 INSERT INTO `bases` VALUES
-(1,1,'Base Principal',111,608,11,4,'2026-04-16 20:50:24','2026-04-07 20:55:47','2026-04-16 20:50:24',0,NULL,100,0.00,0.00,0.00,'2026-04-14 21:28:00'),
-(2,2,'Base Principal',193,662,1,1,'2026-04-11 08:49:37','2026-04-11 07:49:37','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,2801.00,'2026-04-11 08:49:37'),
-(3,3,'Base Principal',743,246,1,1,'2026-04-11 08:51:28','2026-04-11 07:51:28','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,2796.00,'2026-04-11 08:51:28'),
-(4,4,'Base Principal',593,694,1,1,'2026-04-11 08:59:45','2026-04-11 07:59:45','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,1500.00,'2026-04-11 08:59:45'),
-(5,5,'Base Principal',477,513,1,1,'2026-04-11 09:03:36','2026-04-11 08:03:36','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,2823.00,'2026-04-11 09:03:36'),
-(6,6,'Base Principal',447,634,1,1,'2026-04-11 09:10:06','2026-04-11 08:10:06','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,2766.00,'2026-04-11 09:10:06'),
-(7,NULL,'Reduto Insurgente A',108,613,2,1,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23'),
-(8,NULL,'Reduto Insurgente B',111,613,2,2,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23'),
-(9,NULL,'Reduto Insurgente C',106,603,3,1,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23'),
-(10,NULL,'Reduto Insurgente D',116,613,1,2,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23'),
-(11,NULL,'Reduto Insurgente E',112,612,5,1,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23');
+(1,1,'Base Principal',111,608,11,5,'2026-04-17 12:09:46','2026-04-07 20:55:47','2026-04-17 12:09:46',0,NULL,100,0.00,0.00,0.00,'2026-04-14 21:28:00',0,0),
+(2,2,'Base Principal',193,662,1,1,'2026-04-11 08:49:37','2026-04-11 07:49:37','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,2801.00,'2026-04-11 08:49:37',0,0),
+(3,3,'Base Principal',743,246,1,1,'2026-04-11 08:51:28','2026-04-11 07:51:28','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,2796.00,'2026-04-11 08:51:28',0,0),
+(4,4,'Base Principal',593,694,1,1,'2026-04-11 08:59:45','2026-04-11 07:59:45','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,1500.00,'2026-04-11 08:59:45',0,0),
+(5,5,'Base Principal',477,513,1,1,'2026-04-11 09:03:36','2026-04-11 08:03:36','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,2823.00,'2026-04-11 09:03:36',0,0),
+(6,6,'Base Principal',447,634,1,1,'2026-04-11 09:10:06','2026-04-11 08:10:06','2026-04-14 21:43:40',0,NULL,100,0.00,0.00,2766.00,'2026-04-11 09:10:06',0,0),
+(7,NULL,'Reduto Insurgente A',108,613,2,1,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23',0,0),
+(8,NULL,'Reduto Insurgente B',111,613,2,2,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23',0,0),
+(9,NULL,'Reduto Insurgente C',106,603,3,1,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23',0,0),
+(10,NULL,'Reduto Insurgente D',116,613,1,2,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23',0,0),
+(11,NULL,'Reduto Insurgente E',112,612,5,1,'2026-04-14 22:46:23','2026-04-14 21:46:23','2026-04-14 21:46:23',0,NULL,100,1000.00,1000.00,1000.00,'2026-04-14 22:46:23',0,0);
 /*!40000 ALTER TABLE `bases` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,6 +149,7 @@ DROP TABLE IF EXISTS `building_queue`;
 CREATE TABLE `building_queue` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `base_id` bigint(20) unsigned NOT NULL,
+  `building_id` bigint(20) unsigned DEFAULT NULL,
   `type` varchar(255) NOT NULL,
   `target_level` int(11) NOT NULL,
   `started_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -153,9 +157,9 @@ CREATE TABLE `building_queue` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `building_queue_base_id_foreign` (`base_id`),
+  UNIQUE KEY `unique_base_queue` (`base_id`),
   CONSTRAINT `building_queue_base_id_foreign` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -164,7 +168,48 @@ CREATE TABLE `building_queue` (
 
 LOCK TABLES `building_queue` WRITE;
 /*!40000 ALTER TABLE `building_queue` DISABLE KEYS */;
+INSERT INTO `building_queue` VALUES
+(12,1,25,'mina_metal',5,'2026-04-17 12:09:38','2026-04-17 12:10:02','2026-04-17 12:09:38','2026-04-17 12:09:38');
 /*!40000 ALTER TABLE `building_queue` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `building_types`
+--
+
+DROP TABLE IF EXISTS `building_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `building_types` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `base_production` int(11) DEFAULT 0,
+  `production_type` varchar(50) DEFAULT NULL,
+  `base_build_time` int(11) DEFAULT 60,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `building_types`
+--
+
+LOCK TABLES `building_types` WRITE;
+/*!40000 ALTER TABLE `building_types` DISABLE KEYS */;
+INSERT INTO `building_types` VALUES
+(1,'Quartel General',0,NULL,120,'2026-04-17 12:59:20','2026-04-17 12:59:20'),
+(2,'Mina de Suprimentos',10,'suprimentos',60,'2026-04-17 12:59:20','2026-04-17 12:59:20'),
+(3,'Refinaria de Combustível',8,'combustivel',80,'2026-04-17 12:59:20','2026-04-17 12:59:20'),
+(4,'Fábrica de Munições',12,'municoes',90,'2026-04-17 12:59:20','2026-04-17 12:59:20'),
+(5,'Mina de Metal',15,'metal',100,'2026-04-17 12:59:20','2026-04-17 12:59:20'),
+(6,'Central de Energia',20,'energia',70,'2026-04-17 12:59:20','2026-04-17 12:59:20'),
+(7,'Posto de Recrutamento',5,'pessoal',50,'2026-04-17 12:59:20','2026-04-17 12:59:20'),
+(8,'Quartel',0,NULL,120,'2026-04-17 12:59:20','2026-04-17 12:59:20'),
+(9,'Perímetro Defensivo',0,NULL,150,'2026-04-17 12:59:20','2026-04-17 12:59:20'),
+(10,'Plataforma Habitacional',0,NULL,45,'2026-04-17 12:59:20','2026-04-17 12:59:20');
+/*!40000 ALTER TABLE `building_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -284,6 +329,7 @@ DROP TABLE IF EXISTS `edificios`;
 CREATE TABLE `edificios` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `base_id` bigint(20) unsigned NOT NULL,
+  `building_type_id` bigint(20) unsigned DEFAULT NULL,
   `tipo` varchar(50) NOT NULL,
   `nivel` tinyint(3) unsigned NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
@@ -292,7 +338,9 @@ CREATE TABLE `edificios` (
   `pos_y` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `edificios_base_tipo_unique` (`base_id`,`tipo`),
-  CONSTRAINT `edificios_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
+  KEY `fk_edificios_building_type` (`building_type_id`),
+  CONSTRAINT `edificios_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_edificios_building_type` FOREIGN KEY (`building_type_id`) REFERENCES `building_types` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -303,33 +351,33 @@ CREATE TABLE `edificios` (
 LOCK TABLES `edificios` WRITE;
 /*!40000 ALTER TABLE `edificios` DISABLE KEYS */;
 INSERT INTO `edificios` VALUES
-(1,1,'QG',1,'2026-04-07 20:55:47','2026-04-15 21:17:18',1,0),
-(2,1,'Quartel',5,'2026-04-07 20:55:47','2026-04-15 21:17:18',2,0),
-(3,1,'Muralha',1,'2026-04-07 20:55:47','2026-04-15 21:17:18',3,0),
-(4,1,'mina_suprimentos',7,'2026-04-07 21:00:08','2026-04-16 20:50:15',0,1),
-(5,1,'refinaria',5,'2026-04-07 21:05:56','2026-04-15 21:17:18',1,1),
-(6,1,'fabrica_municoes',4,'2026-04-07 21:13:22','2026-04-15 21:17:18',2,1),
-(7,1,'posto_recrutamento',4,'2026-04-07 21:14:03','2026-04-16 19:31:19',3,1),
-(8,1,'radar_estrategico',4,'2026-04-09 22:27:04','2026-04-15 21:17:18',0,2),
-(9,1,'aerodromo',4,'2026-04-10 05:38:18','2026-04-15 21:17:18',1,2),
-(10,2,'mina_suprimentos',1,'2026-04-11 07:49:37','2026-04-11 07:49:37',0,0),
-(11,2,'quartel',1,'2026-04-11 07:49:37','2026-04-11 07:49:37',0,0),
-(12,2,'posto_recrutamento',1,'2026-04-11 07:49:37','2026-04-11 07:49:37',0,0),
-(13,3,'mina_suprimentos',1,'2026-04-11 07:51:28','2026-04-11 07:51:28',0,0),
-(14,3,'quartel',1,'2026-04-11 07:51:28','2026-04-11 07:51:28',0,0),
-(15,3,'posto_recrutamento',1,'2026-04-11 07:51:28','2026-04-11 07:51:28',0,0),
-(16,4,'mina_suprimentos',1,'2026-04-11 07:59:45','2026-04-11 07:59:45',0,0),
-(17,4,'quartel',1,'2026-04-11 07:59:45','2026-04-11 07:59:45',0,0),
-(18,4,'posto_recrutamento',1,'2026-04-11 07:59:45','2026-04-11 07:59:45',0,0),
-(19,5,'mina_suprimentos',1,'2026-04-11 08:03:36','2026-04-11 08:03:36',0,0),
-(20,5,'quartel',1,'2026-04-11 08:03:36','2026-04-11 08:03:36',0,0),
-(21,5,'posto_recrutamento',1,'2026-04-11 08:03:36','2026-04-11 08:03:36',0,0),
-(22,6,'mina_suprimentos',1,'2026-04-11 08:10:06','2026-04-11 08:10:06',0,0),
-(23,6,'quartel',1,'2026-04-11 08:10:06','2026-04-11 08:10:06',0,0),
-(24,6,'posto_recrutamento',1,'2026-04-11 08:10:06','2026-04-11 08:10:06',0,0),
-(25,1,'mina_metal',2,'2026-04-13 21:40:57','2026-04-16 19:27:48',1,6),
-(26,1,'housing',13,'2026-04-13 21:54:09','2026-04-16 19:03:44',2,6),
-(27,1,'central_energia',1,'2026-04-13 22:02:06','2026-04-15 21:17:18',3,6);
+(1,1,NULL,'QG',1,'2026-04-07 20:55:47','2026-04-15 21:17:18',1,0),
+(2,1,NULL,'Quartel',5,'2026-04-07 20:55:47','2026-04-15 21:17:18',2,0),
+(3,1,NULL,'Muralha',1,'2026-04-07 20:55:47','2026-04-15 21:17:18',3,0),
+(4,1,NULL,'mina_suprimentos',7,'2026-04-07 21:00:08','2026-04-16 20:50:15',0,1),
+(5,1,NULL,'refinaria',5,'2026-04-07 21:05:56','2026-04-15 21:17:18',1,1),
+(6,1,NULL,'fabrica_municoes',5,'2026-04-07 21:13:22','2026-04-17 05:40:47',2,1),
+(7,1,NULL,'posto_recrutamento',4,'2026-04-07 21:14:03','2026-04-16 19:31:19',3,1),
+(8,1,NULL,'radar_estrategico',4,'2026-04-09 22:27:04','2026-04-15 21:17:18',0,2),
+(9,1,NULL,'aerodromo',4,'2026-04-10 05:38:18','2026-04-15 21:17:18',1,2),
+(10,2,NULL,'mina_suprimentos',1,'2026-04-11 07:49:37','2026-04-11 07:49:37',0,0),
+(11,2,NULL,'quartel',1,'2026-04-11 07:49:37','2026-04-11 07:49:37',0,0),
+(12,2,NULL,'posto_recrutamento',1,'2026-04-11 07:49:37','2026-04-11 07:49:37',0,0),
+(13,3,NULL,'mina_suprimentos',1,'2026-04-11 07:51:28','2026-04-11 07:51:28',0,0),
+(14,3,NULL,'quartel',1,'2026-04-11 07:51:28','2026-04-11 07:51:28',0,0),
+(15,3,NULL,'posto_recrutamento',1,'2026-04-11 07:51:28','2026-04-11 07:51:28',0,0),
+(16,4,NULL,'mina_suprimentos',1,'2026-04-11 07:59:45','2026-04-11 07:59:45',0,0),
+(17,4,NULL,'quartel',1,'2026-04-11 07:59:45','2026-04-11 07:59:45',0,0),
+(18,4,NULL,'posto_recrutamento',1,'2026-04-11 07:59:45','2026-04-11 07:59:45',0,0),
+(19,5,NULL,'mina_suprimentos',1,'2026-04-11 08:03:36','2026-04-11 08:03:36',0,0),
+(20,5,NULL,'quartel',1,'2026-04-11 08:03:36','2026-04-11 08:03:36',0,0),
+(21,5,NULL,'posto_recrutamento',1,'2026-04-11 08:03:36','2026-04-11 08:03:36',0,0),
+(22,6,NULL,'mina_suprimentos',1,'2026-04-11 08:10:06','2026-04-11 08:10:06',0,0),
+(23,6,NULL,'quartel',1,'2026-04-11 08:10:06','2026-04-11 08:10:06',0,0),
+(24,6,NULL,'posto_recrutamento',1,'2026-04-11 08:10:06','2026-04-11 08:10:06',0,0),
+(25,1,NULL,'mina_metal',4,'2026-04-13 21:40:57','2026-04-16 21:32:41',1,6),
+(26,1,NULL,'housing',13,'2026-04-13 21:54:09','2026-04-16 19:03:44',2,6),
+(27,1,NULL,'central_energia',4,'2026-04-13 22:02:06','2026-04-16 21:37:58',3,6);
 /*!40000 ALTER TABLE `edificios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -541,7 +589,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -579,8 +627,44 @@ INSERT INTO `migrations` VALUES
 (26,'2026_04_14_200436_add_resource_calculation_fields_to_bases_table',10),
 (27,'2026_04_15_212112_add_unique_base_id_to_recursos_table',11),
 (28,'2026_04_15_224032_change_resource_columns_to_double',12),
-(29,'2026_04_16_204637_create_building_queue_table',13);
+(29,'2026_04_16_204637_create_building_queue_table',13),
+(30,'2026_04_16_215446_add_unique_base_id_to_building_queue_table',14),
+(31,'2026_04_16_220135_add_building_id_to_building_queue_table',15);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `movements`
+--
+
+DROP TABLE IF EXISTS `movements`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `movements` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `origin_id` bigint(20) unsigned NOT NULL,
+  `target_id` bigint(20) unsigned NOT NULL,
+  `units` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`units`)),
+  `departure_time` timestamp NOT NULL,
+  `arrival_time` timestamp NOT NULL,
+  `type` varchar(20) DEFAULT 'attack',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `fk_movements_origin` (`origin_id`),
+  KEY `fk_movements_target` (`target_id`),
+  CONSTRAINT `fk_movements_origin` FOREIGN KEY (`origin_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_movements_target` FOREIGN KEY (`target_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `movements`
+--
+
+LOCK TABLES `movements` WRITE;
+/*!40000 ALTER TABLE `movements` DISABLE KEYS */;
+/*!40000 ALTER TABLE `movements` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -693,6 +777,7 @@ CREATE TABLE `recursos` (
   `municoes_por_hora` int(11) NOT NULL DEFAULT 0,
   `metal_por_hora` int(11) NOT NULL DEFAULT 0,
   `energia_por_hora` int(11) NOT NULL DEFAULT 0,
+  `storage_capacity` int(11) DEFAULT 10000,
   PRIMARY KEY (`id`),
   UNIQUE KEY `base_id_2` (`base_id`),
   UNIQUE KEY `recursos_base_id_unique` (`base_id`),
@@ -708,17 +793,17 @@ CREATE TABLE `recursos` (
 LOCK TABLES `recursos` WRITE;
 /*!40000 ALTER TABLE `recursos` DISABLE KEYS */;
 INSERT INTO `recursos` VALUES
-(1,1,4854.2646210059,9751.4174049775,9253.188284117,28381,3727.0790872808,2306.1111111151,10000,'2026-04-07 20:55:47','2026-04-16 20:50:24','2026-04-15 20:58:21',3600,1800,1200,900,1500),
-(3,2,2801,1416,1112,1120,0,0,10000,'2026-04-11 07:49:37','2026-04-11 08:52:04','2026-04-15 20:58:21',0,0,0,0,0),
-(4,3,2796,1415,1111,1118,0,0,10000,'2026-04-11 07:51:28','2026-04-11 08:53:41','2026-04-15 20:58:21',0,0,0,0,0),
-(5,4,1500,1000,800,600,0,0,10000,'2026-04-11 07:59:45','2026-04-11 07:59:45','2026-04-15 20:58:21',0,0,0,0,0),
-(6,5,2823,1423,1117,1129,0,0,10000,'2026-04-11 08:03:36','2026-04-11 09:07:04','2026-04-15 20:58:21',0,0,0,0,0),
-(7,6,2766,1405,1104,1106,0,0,10000,'2026-04-11 08:10:06','2026-04-11 09:10:52','2026-04-15 20:58:21',0,0,0,0,0),
-(8,7,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0),
-(9,8,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0),
-(10,9,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0),
-(11,10,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0),
-(12,11,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0);
+(1,1,7900,9300,10000,28038,10000,9944.2132139423,10000,'2026-04-07 20:55:47','2026-04-17 12:09:46','2026-04-15 20:58:21',3600,1800,1200,900,1500,10000),
+(3,2,2801,1416,1112,1120,0,0,10000,'2026-04-11 07:49:37','2026-04-11 08:52:04','2026-04-15 20:58:21',0,0,0,0,0,10000),
+(4,3,2796,1415,1111,1118,0,0,10000,'2026-04-11 07:51:28','2026-04-11 08:53:41','2026-04-15 20:58:21',0,0,0,0,0,10000),
+(5,4,1500,1000,800,600,0,0,10000,'2026-04-11 07:59:45','2026-04-11 07:59:45','2026-04-15 20:58:21',0,0,0,0,0,10000),
+(6,5,2823,1423,1117,1129,0,0,10000,'2026-04-11 08:03:36','2026-04-11 09:07:04','2026-04-15 20:58:21',0,0,0,0,0,10000),
+(7,6,2766,1405,1104,1106,0,0,10000,'2026-04-11 08:10:06','2026-04-11 09:10:52','2026-04-15 20:58:21',0,0,0,0,0,10000),
+(8,7,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0,10000),
+(9,8,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0,10000),
+(10,9,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0,10000),
+(11,10,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0,10000),
+(12,11,5000,5000,5000,1000,0,0,10000,'2026-04-14 21:46:23','2026-04-14 21:46:23','2026-04-15 20:58:21',0,0,0,0,0,10000);
 /*!40000 ALTER TABLE `recursos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -820,6 +905,109 @@ INSERT INTO `tropas` VALUES
 UNLOCK TABLES;
 
 --
+-- Table structure for table `unit_queue`
+--
+
+DROP TABLE IF EXISTS `unit_queue`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `unit_queue` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `base_id` bigint(20) unsigned NOT NULL,
+  `unit_type_id` bigint(20) unsigned NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `status` varchar(255) DEFAULT 'PENDING',
+  `started_at` timestamp NOT NULL,
+  `finishes_at` timestamp NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `base_id` (`base_id`),
+  KEY `finishes_at` (`finishes_at`),
+  KEY `unit_type_id` (`unit_type_id`),
+  CONSTRAINT `unit_queue_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `unit_queue_ibfk_2` FOREIGN KEY (`unit_type_id`) REFERENCES `unit_types` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `unit_queue`
+--
+
+LOCK TABLES `unit_queue` WRITE;
+/*!40000 ALTER TABLE `unit_queue` DISABLE KEYS */;
+/*!40000 ALTER TABLE `unit_queue` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `unit_types`
+--
+
+DROP TABLE IF EXISTS `unit_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `unit_types` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `attack` int(11) NOT NULL,
+  `defense` int(11) NOT NULL,
+  `speed` float NOT NULL,
+  `carry_capacity` int(11) NOT NULL,
+  `cost_suprimentos` int(11) NOT NULL,
+  `cost_municoes` int(11) NOT NULL,
+  `cost_combustivel` int(11) NOT NULL,
+  `build_time` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `unit_types`
+--
+
+LOCK TABLES `unit_types` WRITE;
+/*!40000 ALTER TABLE `unit_types` DISABLE KEYS */;
+INSERT INTO `unit_types` VALUES
+(1,'Infantaria',10,15,10,20,100,20,0,30,'2026-04-16 22:51:20','2026-04-16 22:51:20'),
+(2,'Veículo leve (APC)',20,40,25,100,300,50,100,120,'2026-04-16 22:51:20','2026-04-16 22:51:20'),
+(3,'Tanque de Combate (MBT)',150,100,20,50,800,200,300,600,'2026-04-16 22:51:20','2026-04-16 22:51:20');
+/*!40000 ALTER TABLE `unit_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `units`
+--
+
+DROP TABLE IF EXISTS `units`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `units` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `base_id` bigint(20) unsigned NOT NULL,
+  `unit_type_id` bigint(20) unsigned NOT NULL,
+  `quantity` int(11) DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `base_id` (`base_id`),
+  KEY `unit_type_id` (`unit_type_id`),
+  CONSTRAINT `units_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `units_ibfk_2` FOREIGN KEY (`unit_type_id`) REFERENCES `unit_types` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `units`
+--
+
+LOCK TABLES `units` WRITE;
+/*!40000 ALTER TABLE `units` DISABLE KEYS */;
+/*!40000 ALTER TABLE `units` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping routines for database 'mw_guerras'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -832,4 +1020,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-04-16 22:51:26
+-- Dump completed on 2026-04-17 20:05:33

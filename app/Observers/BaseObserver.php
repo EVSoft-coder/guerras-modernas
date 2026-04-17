@@ -7,6 +7,23 @@ use App\Models\Base;
 class BaseObserver
 {
     /**
+     * PASSO 4 - Atribuição Automática
+     */
+    public function creating(Base $base): void
+    {
+        // Se x ou y não forem definidos manualmente (ex: via teste), gerar auto
+        if (is_null($base->x) || is_null($base->y)) {
+            $coords = app(\App\Services\MapService::class)->generateBasePosition();
+            $base->x = $coords['x'];
+            $base->y = $coords['y'];
+            
+            // Sincronizar coordenadas legadas se necessário
+            $base->coordenada_x = $coords['x'];
+            $base->coordenada_y = $coords['y'];
+        }
+    }
+
+    /**
      * Handle the Base "created" event.
      * Inicializa os recursos de uma nova base.
      */

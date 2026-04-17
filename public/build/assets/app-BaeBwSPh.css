@@ -36,6 +36,10 @@
     --color-emerald-600: oklch(.596 .145 163.225);
     --color-emerald-900: oklch(.378 .077 168.94);
     --color-emerald-950: oklch(.262 .051 172.552);
+    --color-cyan-100: oklch(.956 .045 203.388);
+    --color-cyan-400: oklch(.789 .154 211.53);
+    --color-cyan-500: oklch(.715 .143 215.221);
+    --color-cyan-600: oklch(.609 .126 221.723);
     --color-sky-300: oklch(.828 .111 230.318);
     --color-sky-400: oklch(.746 .16 232.661);
     --color-sky-500: oklch(.685 .169 237.323);
@@ -1024,6 +1028,10 @@
 
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
+  }
+
+  .ml-3 {
+    margin-left: calc(var(--spacing) * 3);
   }
 
   .ml-4 {
@@ -2080,6 +2088,10 @@
     --tw-divide-y-reverse: 1;
   }
 
+  :where(.divide-cyan-500\/10 > :not(:last-child)) {
+    border-color: color-mix(in oklab, var(--color-cyan-500) 10%, transparent);
+  }
+
   :where(.divide-neutral-200 > :not(:last-child)) {
     border-color: var(--color-neutral-200);
   }
@@ -2370,6 +2382,14 @@
     border-color: var(--color-black);
   }
 
+  .border-cyan-500\/20 {
+    border-color: color-mix(in oklab, var(--color-cyan-500) 20%, transparent);
+  }
+
+  .border-cyan-500\/30 {
+    border-color: color-mix(in oklab, var(--color-cyan-500) 30%, transparent);
+  }
+
   .border-destructive\/50 {
     border-color: color-mix(in oklab, var(--color-destructive) 50%, transparent);
   }
@@ -2614,6 +2634,10 @@
     background-color: var(--color-amber-500);
   }
 
+  .bg-amber-500\/20 {
+    background-color: color-mix(in oklab, var(--color-amber-500) 20%, transparent);
+  }
+
   .bg-amber-600 {
     background-color: var(--color-amber-600);
   }
@@ -2692,6 +2716,14 @@
 
   .bg-card {
     background-color: var(--color-card);
+  }
+
+  .bg-cyan-500\/5 {
+    background-color: color-mix(in oklab, var(--color-cyan-500) 5%, transparent);
+  }
+
+  .bg-cyan-500\/10 {
+    background-color: color-mix(in oklab, var(--color-cyan-500) 10%, transparent);
   }
 
   .bg-destructive {
@@ -3677,6 +3709,14 @@
     color: var(--color-accent-foreground);
   }
 
+  .text-amber-400 {
+    color: var(--color-amber-400);
+  }
+
+  .text-amber-500 {
+    color: var(--color-amber-500);
+  }
+
   .text-amber-700 {
     color: var(--color-amber-700);
   }
@@ -3703,6 +3743,26 @@
 
   .text-current {
     color: currentColor;
+  }
+
+  .text-cyan-100\/80 {
+    color: color-mix(in oklab, var(--color-cyan-100) 80%, transparent);
+  }
+
+  .text-cyan-400 {
+    color: var(--color-cyan-400);
+  }
+
+  .text-cyan-500 {
+    color: var(--color-cyan-500);
+  }
+
+  .text-cyan-500\/60 {
+    color: color-mix(in oklab, var(--color-cyan-500) 60%, transparent);
+  }
+
+  .text-cyan-600 {
+    color: var(--color-cyan-600);
   }
 
   .text-destructive {
