@@ -118,6 +118,10 @@ export interface DashboardProps {
     gameConfig: any;
     ataquesRecebidos: any[];
     ataquesEnviados: any[];
+    buildingQueue?: any[];
+    unitQueue?: any[];
+    units?: any[];
+    unitTypes?: any[];
     gameData?: {
         resources: Recurso;
         units: any[];
