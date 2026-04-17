@@ -138,6 +138,11 @@ class MovementService
         // PASSO 4 - APLICAR EFEITOS
         if ($movement->type === 'support' || $movement->type === 'return') {
             $this->transferUnitsToGarrison($movement, $base);
+            
+            // PASSO 7 - ARRIVAL RETURN: Adicionar Loot à base (Fase 11)
+            if ($movement->type === 'return') {
+                $this->transferLootToBase($movement, $base);
+            }
         }
 
         if ($movement->type === 'attack') {
@@ -150,29 +155,27 @@ class MovementService
             'processed_at' => now()
         ]);
 
-        Log::channel('game')->info("[MOVEMENT_FINAL_HARDEN] Movimento {$movement->id} ({$movement->type}) processado.");
+        Log::channel('game')->info("[MOVEMENT_PROCESSED] Movimento {$movement->id} ({$movement->type}) processado.");
     }
 
     /**
-     * Gere o combate entre atacante e defensor (Fase 9.1 - Harden).
+     * Gere o combate entre atacante e defensor (Fase 9.1 - Harden + Fase 11 - Loot).
      */
     private function handleCombat(Movement $movement, Base $base): void
     {
         DB::transaction(function() use ($movement, $base) {
-            // LOCKS AGRESSIVOS (PASSO 2)
             $originBase = Base::where('id', $movement->origin_id)->lockForUpdate()->first();
             $targetBase = Base::where('id', $base->id)->lockForUpdate()->first();
             
-            // 1. Mapear Atacantes
             $atkUnits = $movement->units->map(fn($u) => [
                 'id' => $u->unit_type_id,
                 'name' => $u->type->name,
                 'attack' => $u->type->attack,
                 'defense' => $u->type->defense,
+                'carry_capacity' => $u->type->carry_capacity,
                 'quantity' => $u->quantity
             ])->toArray();
 
-            // 2. Mapear Defensores
             $defUnits = Tropas::where('base_id', $targetBase->id)->get()->map(function($t) {
                 $type = UnitType::where('name', $t->unidade)->first();
                 return [
@@ -184,21 +187,25 @@ class MovementService
                 ];
             })->filter(fn($u) => $u['quantity'] > 0)->toArray();
 
-            // 3. Resolver Batalha
             $result = $this->combatService->resolveBattle($atkUnits, $defUnits);
 
-            // 4. Aplicar Perdas no Defensor (Atomic - Passo 5)
             foreach ($result['defender_units'] as $unit) {
                 Tropas::where('base_id', $targetBase->id)
                     ->where('unidade', $unit['name'])
-                    ->update(['quantidade' => max(0, (int)$unit['quantity'])]); // PASSO 3 - SEM NEGATIVOS
+                    ->update(['quantidade' => max(0, (int)$unit['quantity'])]);
+            }
+
+            // PASSO 1, 2, 3 - CALCULAR LOOT (Fase 11)
+            $loot = [];
+            if ($result['attacker_won']) {
+                $loot = $this->calculateLoot($result['attacker_units'], $targetBase);
             }
 
             // 5. Tratar Sobreviventes Atacantes (PASSO 2 - Fase 10)
             $survivors = collect($result['attacker_units'])->filter(fn($u) => $u['quantity'] > 0);
             
             if ($survivors->isNotEmpty()) {
-                $this->createReturnMovement($movement, $targetBase, $originBase, $survivors);
+                $this->createReturnMovement($movement, $targetBase, $originBase, $survivors, $loot);
             }
 
             // 6. Gerar Relatório
@@ -206,32 +213,63 @@ class MovementService
                 'atacante_id' => $originBase->jogador_id,
                 'defensor_id' => $targetBase->jogador_id,
                 'vencedor_id' => $result['attacker_won'] ? $originBase->jogador_id : $targetBase->jogador_id,
-                'titulo' => "COMBAT_RESULT: " . $targetBase->nome,
+                'titulo' => "Batalha em " . $targetBase->nome,
                 'origem_nome' => $originBase->nome,
                 'destino_nome' => $targetBase->nome,
-                'detalhes' => $result
+                'detalhes' => array_merge($result, ['loot' => $loot])
             ]);
-
-            Log::channel('game')->info("[COMBAT_RESULT] Resolvido entre Base {$originBase->id} e {$targetBase->id}", $result['stats']);
         });
     }
 
     /**
-     * Cria o movimento de regresso das tropas (Fase 10).
+     * Calcula o saque baseado na capacidade das unidades (Fase 11).
      */
-    private function createReturnMovement(Movement $originalMovement, Base $currentBase, Base $homeBase, $survivors): void
+    private function calculateLoot(array $attackerUnits, Base $targetBase): array
+    {
+        $totalCapacity = 0;
+        foreach ($attackerUnits as $unit) {
+            $totalCapacity += ($unit['carry_capacity'] ?? 10) * $unit['quantity'];
+        }
+
+        $resources = $targetBase->recursos;
+        if (!$resources) return [];
+
+        $loot = [];
+        $types = ['suprimentos', 'combustivel', 'municoes', 'metal', 'energia'];
+
+        // Saque proporcional aos recursos disponíveis
+        foreach ($types as $type) {
+            $available = $resources->{$type};
+            // Saque 50% do disponível no máximo para não secar a base logo
+            $stolen = min($available * 0.5, $totalCapacity / count($types));
+            
+            $loot["loot_{$type}"] = (float) $stolen;
+            
+            // Deduzir da base alvo (Passo 4)
+            $resources->decrement($type, $stolen);
+        }
+
+        return $loot;
+    }
+
+    /**
+     * Cria o movimento de regresso das tropas (Fase 10 + 11 Loot).
+     */
+    private function createReturnMovement(Movement $originalMovement, Base $currentBase, Base $homeBase, $survivors, array $loot = []): void
     {
         $travelTimeSeconds = (int) $originalMovement->departure_time->diffInSeconds($originalMovement->arrival_time);
         $arrival = now()->addSeconds($travelTimeSeconds);
 
-        $returnMovement = Movement::create([
+        $data = array_merge([
             'origin_id' => $currentBase->id,
             'target_id' => $homeBase->id,
             'departure_time' => now(),
             'arrival_time' => $arrival,
             'status' => 'moving',
             'type' => 'return'
-        ]);
+        ], $loot);
+
+        $returnMovement = Movement::create($data);
 
         foreach ($survivors as $unit) {
             MovementUnit::create([
@@ -240,8 +278,23 @@ class MovementService
                 'quantity' => $unit['quantity']
             ]);
         }
+    }
 
-        Log::channel('game')->info("[MOVEMENT_RETURN] Tropas sobreviventes da base {$homeBase->id} estão a regressar.");
+    /**
+     * Transfere o loot do movimento para os recursos da base.
+     */
+    private function transferLootToBase(Movement $movement, Base $base): void
+    {
+        $resources = $base->recursos;
+        if (!$resources) return;
+
+        $types = ['suprimentos', 'combustivel', 'municoes', 'metal', 'energia'];
+        foreach ($types as $type) {
+            $amount = $movement->{"loot_{$type}"};
+            if ($amount > 0) {
+                $resources->increment($type, $amount);
+            }
+        }
     }
 
     /**
