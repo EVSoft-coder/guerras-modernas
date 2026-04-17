@@ -120,7 +120,7 @@ class ResourceService
         self::$syncedBases[] = $base->id;
     }
     
-    private function getRates(Base $base): array
+    public function getRates(Base $base): array
     {
         $taxas = [
             'suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 

@@ -44,8 +44,8 @@ class GetDashboardData
             throw new \Exception("Base não localizada.");
         }
 
-        // 1. Processar todas as filas (Engenharia e Mobilização) antes de ler os dados
-        $this->gameService->processarFilas($base);
+        // 1. Processar todas as filas (Engenharia e Mobilização) via Motor Central (Fase Crítica - Passo 2)
+        \App\Services\GameEngine::process($base);
 
         // 2. Agora carregar os dados atualizados (Apenas as tabelas modernas)
         $base->load(['recursos', 'edificios', 'buildingQueue', 'unitQueue', 'units']);
@@ -61,7 +61,7 @@ class GetDashboardData
             'metal'        => (float) $recursos->metal,
             'energia'      => (float) $recursos->energia,
             'pessoal'      => (float) $recursos->pessoal,
-            'cap'          => (int) ($recursos->cap ?? 10000),
+            'cap'          => (int) ($recursos->storage_capacity ?? 10000),
             'updated_at'   => $recursos->updated_at,
         ] : null;
 
