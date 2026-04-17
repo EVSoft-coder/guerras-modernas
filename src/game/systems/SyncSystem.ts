@@ -37,6 +37,7 @@ export class SyncSystem implements GameSystem {
             Logger.building('UPGRADE_REQUEST', data);
             const response = await fetch('/buildings/upgrade', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -68,6 +69,7 @@ export class SyncSystem implements GameSystem {
             Logger.building('TRAINING_REQUEST', data);
             const response = await fetch('/base/treinar', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -100,6 +102,7 @@ export class SyncSystem implements GameSystem {
             
             const response = await fetch('/base/atacar', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -126,6 +129,7 @@ export class SyncSystem implements GameSystem {
         try {
             await fetch('/api/relatorios/store', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',

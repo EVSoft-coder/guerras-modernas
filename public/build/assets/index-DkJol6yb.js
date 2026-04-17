@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-CoJVBLuK.js";
+import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-DU3axyc6.js";
 const unitConfigs = {
   infantaria: {
     id: "infantaria",
@@ -1432,6 +1432,7 @@ class SyncSystem {
       Logger.building("UPGRADE_REQUEST", data);
       const response = await fetch("/buildings/upgrade", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
@@ -1458,6 +1459,7 @@ class SyncSystem {
       Logger.building("TRAINING_REQUEST", data);
       const response = await fetch("/base/treinar", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
@@ -1484,6 +1486,7 @@ class SyncSystem {
       Logger.info("[ACTION] Launching Military Expedition...");
       const response = await fetch("/base/atacar", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
@@ -1508,6 +1511,7 @@ class SyncSystem {
     try {
       await fetch("/api/relatorios/store", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
@@ -2504,4 +2508,4 @@ rebelCoords.forEach((coord, index) => {
 });
 stateManager.setState(GameState.PLAYING);
 Logger.info("--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---");
-//# sourceMappingURL=index-C0figypd.js.map
+//# sourceMappingURL=index-DkJol6yb.js.map
