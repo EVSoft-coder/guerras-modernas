@@ -30,9 +30,9 @@ class TickResourcesMiddleware
             // Garante que o usuário tem as bases carregadas
             if (!$user->wasRecentlyCreated && $user->bases) {
                 foreach ($user->bases as $base) {
-                    $this->gameService->tickResources($base);
+                    \App\Services\GameEngine::process($base);
                 }
-                Log::info('Tick executed for user ' . $user->id);
+                Log::channel('game')->info('Middleware Tick executed for user ' . $user->id);
             }
         }
 
