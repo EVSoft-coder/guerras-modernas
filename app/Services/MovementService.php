@@ -194,11 +194,11 @@ class MovementService
                     ->update(['quantidade' => max(0, (int)$unit['quantity'])]); // PASSO 3 - SEM NEGATIVOS
             }
 
-            // 5. Atualizar unidades sobreviventes no movimento
-            foreach ($result['attacker_units'] as $unit) {
-                MovementUnit::where('movement_id', $movement->id)
-                    ->where('unit_type_id', $unit['id'])
-                    ->update(['quantity' => max(0, (int)$unit['quantity'])]);
+            // 5. Tratar Sobreviventes Atacantes (PASSO 2 - Fase 10)
+            $survivors = collect($result['attacker_units'])->filter(fn($u) => $u['quantity'] > 0);
+            
+            if ($survivors->isNotEmpty()) {
+                $this->createReturnMovement($movement, $targetBase, $originBase, $survivors);
             }
 
             // 6. Gerar Relatório
@@ -214,6 +214,34 @@ class MovementService
 
             Log::channel('game')->info("[COMBAT_RESULT] Resolvido entre Base {$originBase->id} e {$targetBase->id}", $result['stats']);
         });
+    }
+
+    /**
+     * Cria o movimento de regresso das tropas (Fase 10).
+     */
+    private function createReturnMovement(Movement $originalMovement, Base $currentBase, Base $homeBase, $survivors): void
+    {
+        $travelTimeSeconds = (int) $originalMovement->departure_time->diffInSeconds($originalMovement->arrival_time);
+        $arrival = now()->addSeconds($travelTimeSeconds);
+
+        $returnMovement = Movement::create([
+            'origin_id' => $currentBase->id,
+            'target_id' => $homeBase->id,
+            'departure_time' => now(),
+            'arrival_time' => $arrival,
+            'status' => 'moving',
+            'type' => 'return'
+        ]);
+
+        foreach ($survivors as $unit) {
+            MovementUnit::create([
+                'movement_id' => $returnMovement->id,
+                'unit_type_id' => $unit['id'],
+                'quantity' => $unit['quantity']
+            ]);
+        }
+
+        Log::channel('game')->info("[MOVEMENT_RETURN] Tropas sobreviventes da base {$homeBase->id} estão a regressar.");
     }
 
     /**
