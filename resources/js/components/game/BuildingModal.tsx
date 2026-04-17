@@ -209,7 +209,8 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                 >
                                     <X size={24} />
                                 </button>
-                                <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></di                                 <Badge className={`absolute top-6 left-6 ${building.nivel === 0 ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : 'bg-sky-500/20 text-sky-400 border-sky-500/30'} font-black px-4 py-2 rounded-full text-[10px] tracking-[0.2em] uppercase flex items-center gap-3 shadow-[0_0_20px_rgba(0,0,0,0.5)] backdrop-blur-md`}>
+                                <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] shadow-inner"></div>
+                                <Badge className={`absolute top-6 left-6 ${building.nivel === 0 ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : 'bg-sky-500/20 text-sky-400 border-sky-500/30'} font-black px-4 py-2 rounded-full text-[10px] tracking-[0.2em] uppercase flex items-center gap-3 shadow-[0_0_20px_rgba(0,0,0,0.5)] backdrop-blur-md`}>
                                     <span className={`w-2 h-2 ${building.nivel === 0 ? 'bg-orange-400 shadow-[0_0_8px_#fb923c]' : 'bg-sky-400 shadow-[0_0_8px_#38bdf8]'} rounded-full animate-pulse`}></span>
                                     {building.nivel === 0 ? 'STATUS: EM PLANEAMENTO' : 'STATUS: OPERACIONAL'}
                                 </Badge>

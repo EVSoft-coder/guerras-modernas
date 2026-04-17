@@ -28454,7 +28454,7 @@ const BuildingModal = ({
   population,
   unitTypes
 }) => {
-  var _a2, _b, _c, _d, _e2, _f, _g;
+  var _a2, _b, _c, _d, _e2;
   if (!building) return null;
   const buildingsConfig = (gameConfig == null ? void 0 : gameConfig.buildings) || {};
   const config = buildingsConfig[building.buildingType] || {
@@ -28545,34 +28545,34 @@ const BuildingModal = ({
     }
   }, [building.buildingType, isMilitary, availableUnits]);
   const renderUnitCard = (unit) => {
-    var _a3, _b2, _c2, _d2, _e3, _f2;
     const isSelected = selectedUnit === unit.name;
-    parseResourceValue(((_b2 = (_a3 = building.base) == null ? void 0 : _a3.recursos) == null ? void 0 : _b2.suprimentos) || 0) >= unit.cost_suprimentos * trainQty && parseResourceValue(((_d2 = (_c2 = building.base) == null ? void 0 : _c2.recursos) == null ? void 0 : _d2.municoes) || 0) >= unit.cost_municoes * trainQty && parseResourceValue(((_f2 = (_e3 = building.base) == null ? void 0 : _e3.recursos) == null ? void 0 : _f2.combustivel) || 0) >= unit.cost_combustivel * trainQty;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
+      motion.div,
       {
+        whileHover: { scale: 1.02, y: -2 },
         onClick: () => setSelectedUnit(unit.name),
-        className: `p-3 rounded-xl border transition-all cursor-pointer group ${isSelected ? "bg-emerald-500/10 border-emerald-500" : "bg-black/20 border-white/5 hover:border-white/20"}`,
+        className: `p-4 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden ${isSelected ? "bg-emerald-500/10 border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "bg-black/40 border-white/5 hover:border-white/20"}`,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start mb-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-white truncate w-24", children: unit.name }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { className: "bg-neutral-800 text-neutral-400 text-[8px]", children: [
+          isSelected && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 right-0 w-8 h-8 bg-emerald-500 text-black flex items-center justify-center rounded-bl-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 12 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-start mb-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-black uppercase text-white tracking-widest", children: unit.name }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] text-neutral-500 font-bold uppercase", children: [
               unit.build_time,
-              "s"
+              "s Mobilização"
             ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-3 gap-1 text-[8px] uppercase font-bold text-neutral-500", children: [
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-3 gap-2 py-2 border-t border-white/5 mt-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "ATK" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: unit.attack })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] text-neutral-600 font-black uppercase", children: "Atk" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono font-black text-red-500", children: unit.attack })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "DEF" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: unit.defense })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col border-x border-white/5 px-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] text-neutral-600 font-black uppercase", children: "Def" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono font-black text-sky-400", children: unit.defense })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "CAP" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: unit.carry_capacity || 0 })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col pl-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] text-neutral-600 font-black uppercase", children: "Cap" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono font-black text-orange-400", children: unit.carry_capacity || 0 })
             ] })
           ] })
         ]
@@ -28607,9 +28607,9 @@ const BuildingModal = ({
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 24 })
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { className: `absolute top-6 left-6 ${building.nivel === 0 ? "bg-orange-500/10 text-orange-400 border-orange-500/20" : "bg-sky-500/10 text-sky-400 border-sky-500/20"} font-black px-4 py-1.5 rounded-full text-[10px] tracking-widest uppercase flex items-center gap-2 shadow-2xl`, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `w-1.5 h-1.5 ${building.nivel === 0 ? "bg-orange-400" : "bg-sky-400"} rounded-full animate-pulse` }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] shadow-inner" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { className: `absolute top-6 left-6 ${building.nivel === 0 ? "bg-orange-500/20 text-orange-400 border-orange-500/30" : "bg-sky-500/20 text-sky-400 border-sky-500/30"} font-black px-4 py-2 rounded-full text-[10px] tracking-[0.2em] uppercase flex items-center gap-3 shadow-[0_0_20px_rgba(0,0,0,0.5)] backdrop-blur-md`, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `w-2 h-2 ${building.nivel === 0 ? "bg-orange-400 shadow-[0_0_8px_#fb923c]" : "bg-sky-400 shadow-[0_0_8px_#38bdf8]"} rounded-full animate-pulse` }),
               building.nivel === 0 ? "STATUS: EM PLANEAMENTO" : "STATUS: OPERACIONAL"
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -28617,14 +28617,14 @@ const BuildingModal = ({
               {
                 initial: { rotate: -5, scale: 0.8, opacity: 0 },
                 animate: { rotate: 0, scale: 1, opacity: 1 },
-                className: "relative mt-8 md:mt-0",
+                className: "relative mt-8 md:mt-0 group",
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-sky-500/20 blur-[40px] md:blur-[60px] rounded-full animate-pulse" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-sky-500/10 blur-[60px] md:blur-[100px] rounded-full animate-pulse group-hover:bg-sky-400/20 transition-all duration-700" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "img",
                     {
                       src: currentImage,
-                      className: "w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(14,165,233,0.5)]",
+                      className: "w-56 h-56 md:w-72 md:h-72 object-contain relative z-10 drop-shadow-[0_0_40px_rgba(14,165,233,0.3)] transition-transform duration-700 group-hover:scale-110",
                       alt: "Preview",
                       onError: () => {
                         if (!usePlaceholder) {
@@ -28636,56 +28636,78 @@ const BuildingModal = ({
                 ]
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-8 w-full space-y-4 z-10", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-sm font-black text-neutral-500 uppercase tracking-[0.3em]", children: "Nível Estrutural" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-6xl font-black text-white italic drop-shadow-lg", children: building.nivel || 0 })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-12 w-full space-y-6 z-10", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center relative", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] mb-2 opacity-50", children: "Assinatura de Nível" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative inline-block", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-8xl font-black text-white italic tracking-tighter leading-none select-none drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]", children: building.nivel || 0 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -inset-2 bg-gradient-to-t from-sky-500/10 to-transparent blur-xl -z-10" })
+                ] })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 justify-center", children: [1, 2, 3, 4, 5, 6].map((lvl) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `h-1.5 w-6 rounded-full transition-all duration-500 ${lvl <= building.nivel ? "bg-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.5)]" : "bg-white/10"}` }, lvl)) })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-3 justify-center", children: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((lvl) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: `h-1 rounded-full transition-all duration-700 ${lvl <= building.nivel ? lvl <= 3 ? "w-8 bg-sky-500 shadow-[0_0_10px_#0ea5e9]" : "w-8 bg-emerald-500 shadow-[0_0_10px_#10b981]" : "w-4 bg-white/5"}`
+                },
+                lvl
+              )) })
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full md:w-1/2 p-6 md:p-8 flex flex-col bg-neutral-900/50", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { className: "mb-4 md:mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "text-2xl md:text-4xl font-black uppercase tracking-tighter text-white leading-none", children: config.name }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] text-sky-500 font-bold uppercase tracking-widest flex items-center gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { size: 10 }),
-                " Setor de ",
-                ((_g = (_f = (_e2 = (_d = building.buildingType) == null ? void 0 : _d.replace) == null ? void 0 : _e2.call(_d, "_", " ")) == null ? void 0 : _f.toUpperCase) == null ? void 0 : _g.call(_f)) ?? "ESTRUTURA"
-              ] })
-            ] }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 md:space-y-6 flex-1 overflow-y-auto md:pr-2 custom-scrollbar", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-black/40 p-5 rounded-2xl border-l-4 border-sky-600 flex gap-4 shadow-xl", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Info, { className: "text-sky-500 shrink-0", size: 16 }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] md:text-xs text-neutral-300 leading-relaxed italic", children: config.description })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full md:w-1/2 p-6 md:p-10 flex flex-col bg-neutral-900/30 backdrop-blur-md", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { className: "mb-6 md:mb-10", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-[2px] bg-sky-500" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black text-sky-500 uppercase tracking-[0.3em]", children: ((_e2 = (_d = building.buildingType) == null ? void 0 : _d.replace) == null ? void 0 : _e2.call(_d, "_", " ")) ?? "ESTRUTURA" })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 gap-3 md:gap-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-orange-600/10 p-4 rounded-2xl border border-orange-500/20 flex items-center justify-between", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black text-orange-500 uppercase tracking-widest block", children: "Potencial Estratégico" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-neutral-400", children: "Desbloqueia novas tecnologias e unidades de elite." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "text-3xl md:text-5xl font-black uppercase tracking-tighter text-white leading-none", children: config.name })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6 md:space-y-8 flex-1 overflow-y-auto md:pr-4 custom-scrollbar", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-black/40 p-6 rounded-2xl border border-white/5 flex gap-5 shadow-[0_10px_30px_rgba(0,0,0,0.3)] group hover:border-sky-500/20 transition-colors", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-3 bg-sky-500/10 rounded-xl h-fit", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Info, { className: "text-sky-500", size: 18 }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] md:text-xs text-neutral-400 leading-relaxed font-medium", children: config.description })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "text-orange-500", size: 24 })
-              ] }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3 md:space-y-4", children: isMilitary ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between border-b border-white/10 pb-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-2.5 h-2.5 md:w-3 md:h-3 text-sky-500" }),
-                  " Mobilização de Tropas"
-                ] }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 gap-2", children: availableUnits.map(renderUnitCard) }),
-                selectedUnit && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-black/40 p-4 rounded-xl space-y-3 border border-white/5", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] uppercase font-black text-neutral-400", children: "Quantidade" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setTrainQty(Math.max(1, trainQty - 10)), className: "text-neutral-500 hover:text-white", children: "-10" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -left-1 top-4 bottom-4 w-1 bg-sky-500 rounded-full shadow-[0_0_10px_#0ea5e9]" })
+              ] }),
+              isMilitary ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-[10px] font-black uppercase text-white tracking-[0.2em] flex items-center gap-3", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-1.5 bg-sky-500/20 rounded-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "text-sky-500", size: 12 }) }),
+                    "Mobilização de Ativos"
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-px bg-gradient-to-r from-sky-500/30 to-transparent mt-2" })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 gap-3", children: availableUnits.map(renderUnitCard) }),
+                selectedUnit && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-black/60 p-6 rounded-2xl space-y-5 border border-white/5 shadow-2xl relative overflow-hidden group", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 80, className: "text-emerald-500" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between relative z-10", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] uppercase font-black text-neutral-500 tracking-widest", children: "Contingente Operacional" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 bg-black/40 px-4 py-2 rounded-xl border border-white/10", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          onClick: () => setTrainQty(Math.max(1, trainQty - 10)),
+                          className: "text-neutral-500 hover:text-sky-400 transition-colors font-black",
+                          children: "-"
+                        }
+                      ),
                       /* @__PURE__ */ jsxRuntimeExports.jsx(
                         "input",
                         {
                           type: "number",
                           value: trainQty,
                           onChange: (e) => setTrainQty(Math.max(1, parseInt(e.target.value) || 1)),
-                          className: "w-16 bg-black border border-white/10 rounded px-2 py-1 text-center font-mono text-xs text-sky-400 font-bold"
+                          className: "w-16 bg-transparent border-none focus:ring-0 p-0 text-center font-mono text-sm text-sky-400 font-bold"
                         }
                       ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setTrainQty(trainQty + 10), className: "text-neutral-500 hover:text-white", children: "+10" })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          onClick: () => setTrainQty(trainQty + 10),
+                          className: "text-neutral-500 hover:text-sky-400 transition-colors font-black",
+                          children: "+"
+                        }
+                      )
                     ] })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -28693,42 +28715,43 @@ const BuildingModal = ({
                     {
                       onClick: () => selectedUnit && onTrain(selectedUnit, trainQty),
                       disabled: isTraining,
-                      className: "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] py-4 rounded-lg shadow-lg flex items-center justify-center gap-2",
+                      className: "w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-xl shadow-[0_10px_20px_rgba(5,150,105,0.3)] flex items-center justify-center gap-3 transition-all active:scale-95 group",
                       children: [
-                        isTraining ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { size: 14, className: "animate-spin" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 14 }),
-                        isTraining ? "A RECRUTAR..." : "INICIAR RECRUTAMENTO"
+                        isTraining ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { size: 16, className: "animate-spin" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 16, className: "group-hover:rotate-12 transition-transform" }),
+                        isTraining ? "A RECRUTAR..." : "AUTORIZAR MOBILIZAÇÃO"
                       ]
                     }
                   )
                 ] })
-              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between border-b border-white/10 pb-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-[9px] md:text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(Hammer, { className: "w-2.5 h-2.5 md:w-3 md:h-3 text-orange-500" }),
-                    " Logística de Campanha"
+              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-[10px] font-black uppercase text-white tracking-[0.2em] flex items-center gap-3", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-1.5 bg-orange-500/20 rounded-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Hammer, { className: "text-orange-500", size: 12 }) }),
+                    "Logística de Expansão"
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 text-[9px] md:text-[10px] font-black text-orange-500 uppercase font-mono", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "w-2.5 h-2.5 md:w-3 md:h-3" }),
-                    " ",
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { className: "bg-orange-500/10 text-orange-500 border-none font-mono text-[10px] px-3 py-1", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 10, className: "mr-2 inline" }),
+                    " ETA: ",
                     timeFormatted
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 gap-2 md:gap-3", children: config.cost ? Object.entries(config.cost).map(([type2, amount]) => renderCost(type2, amount)) : null })
-              ] }) })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 gap-3", children: config.cost ? Object.entries(config.cost).map(([type2, amount]) => renderCost(type2, amount)) : null })
+              ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DialogFooter, { className: "mt-6 md:mt-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(DialogFooter, { className: "mt-8 md:mt-12", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
               Button,
               {
                 onClick: () => onUpgrade(building.buildingType),
                 disabled: isUpgrading || !canAfford,
-                className: `w-full font-black uppercase tracking-[0.15em] md:tracking-[0.2em] py-6 md:py-8 rounded-xl md:rounded-2xl flex items-center justify-center gap-2 md:gap-3 group transition-all shadow-2xl ${canAfford ? building.nivel === 0 ? "bg-emerald-600 hover:bg-emerald-500 text-white border-t border-white/20 shadow-emerald-900/40" : "bg-sky-600 hover:bg-sky-500 text-white border-t border-white/20 shadow-sky-900/40" : "bg-neutral-800 text-neutral-500 cursor-not-allowed border-none"}`,
+                className: `w-full h-20 md:h-24 font-black uppercase tracking-[0.25em] py-8 rounded-2xl flex flex-col items-center justify-center gap-1 group transition-all shadow-2xl overflow-hidden relative ${canAfford ? building.nivel === 0 ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/40" : "bg-sky-600 hover:bg-sky-500 text-white shadow-sky-900/40" : "bg-neutral-800 text-neutral-600 cursor-not-allowed border-none opacity-50"}`,
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-base md:text-xl group-hover:translate-x-1 transition-transform flex items-center gap-2", children: [
-                    isUpgrading && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { size: 20, className: "animate-spin" }),
-                    isUpgrading ? "AUTORIZANDO..." : canAfford ? building.nivel === 0 ? "CONSTRUIR" : `UPGRADE PARA NÍVEL ${building.nivel + 1}` : !hasPopulation ? "ESPAÇO HABITACIONAL INSUFICIENTE" : "RECURSOS INSUFICIENTES"
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 z-10", children: [
+                    isUpgrading && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { size: 18, className: "animate-spin" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-lg md:text-xl", children: isUpgrading ? "INICIALIZANDO..." : canAfford ? building.nivel === 0 ? "CONSTRUIR AGORA" : `MODERNIZAR PARA LVL ${building.nivel + 1}` : "CAPACIDADE INSUFICIENTE" }),
+                    !isUpgrading && canAfford && /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-5 h-5 group-hover:translate-x-1 transition-transform" })
                   ] }),
-                  !isUpgrading && canAfford && /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" }),
-                  !canAfford && !isUpgrading && /* @__PURE__ */ jsxRuntimeExports.jsx(TriangleAlert, { className: "w-4 h-4 md:w-5 md:h-5" })
+                  !canAfford && !isUpgrading && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] opacity-60 tracking-widest z-10", children: !hasPopulation ? "AVISO: REQUISITO POPULACIONAL NÃO ATINGIDO" : "ERRO: FALTA DE RECURSOS EM STOCK" }),
+                  canAfford && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" })
                 ]
               }
             ) })
@@ -30463,7 +30486,7 @@ function VillageDashboard({
     };
   }, [base, ataquesEnviados, ataquesRecebidos]);
   if (!base) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-10 text-white uppercase font-mono", children: "Connecting to Satellite..." });
-  const foundBuilding = (base.edificios || []).find((b2) => b2.id === selectedBuildingId || b2.buildingType === selectedBuildingType);
+  const foundBuilding = (buildings || []).find((b2) => b2.id === selectedBuildingId || b2.buildingType === selectedBuildingType);
   let currentBuilding = null;
   if (selectedBuildingType) {
     const buildDef = ((gameConfig == null ? void 0 : gameConfig.buildings) || {})[selectedBuildingType];
@@ -44353,7 +44376,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Cla2HXvO.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CH3Ds1ff.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44389,4 +44412,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Do8RdXXF.js.map
+//# sourceMappingURL=app-CoxBM5t_.js.map
