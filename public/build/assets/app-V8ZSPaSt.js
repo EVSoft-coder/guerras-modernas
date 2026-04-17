@@ -28178,7 +28178,6 @@ const getBuildingAsset = (type2, level = 1) => {
   return `/images/edificios/${assetFolder}/lvl_${level}.png`;
 };
 const getUnitAsset = (type2) => {
-  if (!type2) return "/assets/placeholders/unit_unknown.svg";
   const t2 = type2.toLowerCase();
   const placeholders = [];
   if (placeholders.includes(t2)) {
@@ -28781,47 +28780,43 @@ const GarrisonPanel = ({ tropas = [], gameConfig }) => {
       /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { className: "text-emerald-500", size: 16 }),
       "Guarnição Ativa"
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "py-6 min-h-[150px]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 gap-3", children: [
-      (tropas || []).map((t2) => {
-        const config = unitsConfig[t2.tipo] || { name: t2.tipo };
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "py-6 min-h-[150px]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3", children: [
+      (tropas || []).map((t2, idx) => {
+        const unitName = t2.tipo || t2.unidade || "Unidade";
+        const config = unitsConfig[unitName] || { name: unitName };
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
           motion.div,
           {
-            initial: { opacity: 0, y: 10 },
-            animate: { opacity: 1, y: 0 },
-            className: "bg-white/[0.03] p-4 rounded-2xl border border-white/5 group hover:border-emerald-500/30 transition-all duration-300 relative overflow-hidden",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center mb-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4 items-center", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 bg-black/40 rounded-xl border border-white/5 flex items-center justify-center p-1 group-hover:border-emerald-500/30 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: getUnitAsset(t2.tipo), className: "w-full h-full object-contain brightness-75 group-hover:brightness-110 transition-all", alt: config.name }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-white tracking-tight", children: config.name }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1.5 mt-1 opacity-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] text-neutral-400 font-bold uppercase tracking-widest leading-none", children: "Status: Prontidão Operacional" }) })
-                  ] })
+            initial: { opacity: 0, scale: 0.95 },
+            animate: { opacity: 1, scale: 1 },
+            transition: { delay: idx * 0.05 },
+            className: "bg-white/[0.03] p-3 rounded-2xl border border-white/5 group hover:border-emerald-500/30 transition-all duration-300 relative overflow-hidden",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 bg-black/40 rounded-xl border border-white/5 flex items-center justify-center p-1 group-hover:border-emerald-500/30 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
+                {
+                  src: getUnitAsset(unitName),
+                  className: "w-full h-full object-contain brightness-75 group-hover:brightness-110 transition-all",
+                  alt: config.name,
+                  onError: (e) => e.currentTarget.src = "/assets/placeholders/unit_unknown.svg"
+                }
+              ) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col flex-1 min-w-0", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black uppercase text-white tracking-tight truncate", children: config.name }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-mono font-black text-emerald-400", children: t2.quantidade })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-end", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl font-mono font-black text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.3)]", children: t2.quantidade }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] text-neutral-600 font-black uppercase", children: "Unidades" })
-                ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-[1px] bg-white/5 mb-2" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 text-[8px] font-black uppercase text-neutral-500", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { size: 10, className: "text-emerald-600" }),
-                  "Potencial Defensivo: ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: "ALTO" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[8px] font-mono text-emerald-500/50 group-hover:text-emerald-500 transition-colors", children: [
-                  "REF_",
-                  Math.random().toString(36).substr(2, 4).toUpperCase()
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 mt-0.5", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { size: 8, className: "text-emerald-600/50" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] text-neutral-600 font-bold uppercase tracking-widest", children: "Guarnição" })
                 ] })
               ] })
-            ]
+            ] })
           },
-          t2.id
+          idx
         );
       }),
-      (!tropas || tropas.length === 0) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "col-span-1 py-12 text-center border border-dashed border-white/5 rounded-2xl bg-white/[0.01]", children: [
+      (!tropas || tropas.length === 0) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "col-span-full py-12 text-center border border-dashed border-white/5 rounded-2xl bg-white/[0.01]", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { className: "mx-auto text-neutral-800 mb-3 opacity-20", size: 32 }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] uppercase font-black text-neutral-600 tracking-[0.2em] block", children: "Setor Desguarnecido" })
       ] })
@@ -28847,10 +28842,10 @@ const ProductionQueue = ({
       return {
         id: t2.id,
         buildingType: "treino",
-        label: ((_a2 = t2.unidade) == null ? void 0 : _a2.replace(/_/g, " ")) || "Unidade",
-        sublabel: `Recrutamento: ${t2.quantidade}x`,
-        started_at: t2.created_at,
-        ends_at: t2.completado_em
+        label: (((_a2 = t2.unitType) == null ? void 0 : _a2.name) || t2.unidade || "Unidade").replace(/_/g, " "),
+        sublabel: `Recrutamento: ${t2.quantity || t2.quantidade}x`,
+        started_at: t2.started_at || t2.created_at,
+        ends_at: t2.finishes_at || t2.completado_em
       };
     })
   ].sort((a, b2) => new Date(a.ends_at).getTime() - new Date(b2.ends_at).getTime());
@@ -30614,10 +30609,16 @@ function VillageDashboard({
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(UnitQueue, { queue: unitQueue || STABLE_EMPTY_ARRAY }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(GarrisonPanel, { tropas: units.length > 0 ? units.map((u3) => {
-          var _a2;
-          return { unidade: (_a2 = u3.type) == null ? void 0 : _a2.name, quantidade: u3.quantity };
-        }) : (base == null ? void 0 : base.tropas) ?? STABLE_EMPTY_ARRAY, gameConfig }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          GarrisonPanel,
+          {
+            tropas: units.length > 0 ? units.map((u3) => {
+              var _a2;
+              return { tipo: (_a2 = u3.type) == null ? void 0 : _a2.name, quantidade: u3.quantity };
+            }) : ((base == null ? void 0 : base.tropas) || []).map((t2) => ({ tipo: t2.unidade || t2.tipo, quantidade: t2.quantidade })),
+            gameConfig
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { className: "py-4 bg-white/[0.02] border-b border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center gap-2", children: [
@@ -44376,7 +44377,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DkJol6yb.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-D7E4PRez.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44412,4 +44413,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DU3axyc6.js.map
+//# sourceMappingURL=app-V8ZSPaSt.js.map

@@ -3821,6 +3821,10 @@
     color: var(--color-emerald-600);
   }
 
+  .text-emerald-600\/50 {
+    color: color-mix(in oklab, var(--color-emerald-600) 50%, transparent);
+  }
+
   .text-emerald-900 {
     color: var(--color-emerald-900);
   }

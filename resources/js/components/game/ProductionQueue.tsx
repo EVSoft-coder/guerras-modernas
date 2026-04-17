@@ -39,10 +39,10 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
         ...treinos.map(t => ({
             id: t.id,
             buildingType: 'treino' as const,
-            label: t.unidade?.replace(/_/g, ' ') || 'Unidade',
-            sublabel: `Recrutamento: ${t.quantidade}x`,
-            started_at: t.created_at,
-            ends_at: t.completado_em
+            label: (t.unitType?.name || t.unidade || 'Unidade').replace(/_/g, ' '),
+            sublabel: `Recrutamento: ${t.quantity || t.quantidade}x`,
+            started_at: t.started_at || t.created_at,
+            ends_at: t.finishes_at || t.completado_em
         }))
     ].sort((a, b) => new Date(a.ends_at).getTime() - new Date(b.ends_at).getTime());
 

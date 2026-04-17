@@ -251,7 +251,13 @@ export function VillageDashboard({
                         gameConfig={gameConfig} 
                     />
                     <UnitQueue queue={unitQueue || STABLE_EMPTY_ARRAY} />
-                    <GarrisonPanel tropas={units.length > 0 ? units.map((u: any) => ({ unidade: u.type?.name, quantidade: u.quantity })) : (base?.tropas ?? STABLE_EMPTY_ARRAY)} gameConfig={gameConfig} />
+                    <GarrisonPanel 
+                        tropas={units.length > 0 
+                            ? units.map((u: any) => ({ tipo: u.type?.name, quantidade: u.quantity })) 
+                            : (base?.tropas || []).map((t: any) => ({ tipo: t.unidade || t.tipo, quantidade: t.quantidade }))
+                        } 
+                        gameConfig={gameConfig} 
+                    />
                     
                     <Card className="bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group">
                         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent"></div>

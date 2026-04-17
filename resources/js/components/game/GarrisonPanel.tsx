@@ -23,54 +23,49 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameC
                 </CardTitle>
             </CardHeader>
             <CardContent className="py-6 min-h-[150px]">
-                <div className="grid grid-cols-1 gap-3">
-                    {(tropas || []).map((t) => {
-                        const config = unitsConfig[t.tipo] || { name: t.tipo };
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {(tropas || []).map((t, idx) => {
+                        const unitName = t.tipo || t.unidade || 'Unidade';
+                        const config = unitsConfig[unitName] || { name: unitName };
                         return (
                             <motion.div 
-                                key={t.id} 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-white/[0.03] p-4 rounded-2xl border border-white/5 group hover:border-emerald-500/30 transition-all duration-300 relative overflow-hidden"
+                                key={idx} 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: idx * 0.05 }}
+                                className="bg-white/[0.03] p-3 rounded-2xl border border-white/5 group hover:border-emerald-500/30 transition-all duration-300 relative overflow-hidden"
                             >
-                                <div className="flex justify-between items-center mb-3">
-                                    <div className="flex gap-4 items-center">
-                                        <div className="w-12 h-12 bg-black/40 rounded-xl border border-white/5 flex items-center justify-center p-1 group-hover:border-emerald-500/30 transition-all">
-                                            <img src={getUnitAsset(t.tipo)} className="w-full h-full object-contain brightness-75 group-hover:brightness-110 transition-all" alt={config.name} />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-[10px] font-black uppercase text-white tracking-tight">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-black/40 rounded-xl border border-white/5 flex items-center justify-center p-1 group-hover:border-emerald-500/30 transition-all">
+                                        <img 
+                                            src={getUnitAsset(unitName)} 
+                                            className="w-full h-full object-contain brightness-75 group-hover:brightness-110 transition-all" 
+                                            alt={config.name}
+                                            onError={(e) => (e.currentTarget.src = "/assets/placeholders/unit_unknown.svg")}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col flex-1 min-w-0">
+                                        <div className="flex justify-between items-start">
+                                            <span className="text-[9px] font-black uppercase text-white tracking-tight truncate">
                                                 {config.name}
                                             </span>
-                                            <div className="flex items-center gap-1.5 mt-1 opacity-50">
-                                                <span className="text-[8px] text-neutral-400 font-bold uppercase tracking-widest leading-none">
-                                                    Status: Prontidão Operacional
-                                                </span>
-                                            </div>
+                                            <span className="text-sm font-mono font-black text-emerald-400">
+                                                {t.quantidade}
+                                            </span>
                                         </div>
-                                    </div>
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-xl font-mono font-black text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.3)]">
-                                            {t.quantidade}
-                                        </span>
-                                        <span className="text-[7px] text-neutral-600 font-black uppercase">Unidades</span>
-                                    </div>
-                                </div>
-                                <div className="w-full h-[1px] bg-white/5 mb-2"></div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5 text-[8px] font-black uppercase text-neutral-500">
-                                        <Shield size={10} className="text-emerald-600" /> 
-                                        Potencial Defensivo: <span className="text-white">ALTO</span>
-                                    </div>
-                                    <div className="text-[8px] font-mono text-emerald-500/50 group-hover:text-emerald-500 transition-colors">
-                                        REF_{Math.random().toString(36).substr(2, 4).toUpperCase()}
+                                        <div className="flex items-center gap-1 mt-0.5">
+                                            <Shield size={8} className="text-emerald-600/50" />
+                                            <span className="text-[7px] text-neutral-600 font-bold uppercase tracking-widest">
+                                                Guarnição
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>
                         );
                     })}
                     {(!tropas || tropas.length === 0) && (
-                        <div className="col-span-1 py-12 text-center border border-dashed border-white/5 rounded-2xl bg-white/[0.01]">
+                        <div className="col-span-full py-12 text-center border border-dashed border-white/5 rounded-2xl bg-white/[0.01]">
                             <Target className="mx-auto text-neutral-800 mb-3 opacity-20" size={32} />
                             <span className="text-[9px] uppercase font-black text-neutral-600 tracking-[0.2em] block">
                                 Setor Desguarnecido

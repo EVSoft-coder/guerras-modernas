@@ -1,11 +1,11 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CciVoPRV.css",
+    "file": "assets/app-CgRS-eEG.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-DU3axyc6.js",
+    "file": "assets/app-V8ZSPaSt.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -13,11 +13,11 @@
       "src/index.ts"
     ],
     "css": [
-      "assets/app-CciVoPRV.css"
+      "assets/app-CgRS-eEG.css"
     ]
   },
   "src/index.ts": {
-    "file": "assets/index-DkJol6yb.js",
+    "file": "assets/index-D7E4PRez.js",
     "name": "index",
     "src": "src/index.ts",
     "isDynamicEntry": true,
