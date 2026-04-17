@@ -101,36 +101,50 @@ class MovementService
      */
     public function processMovements(Base $base): void
     {
-        // 1. Movimentos que têm esta base como destino e já deviam ter chegado
-        $movements = Movement::where('target_id', $base->id)
+        // 1. Selecionamos IDs candidatos (sem lock ainda para não prender a query global)
+        $candidateIds = Movement::where('target_id', $base->id)
             ->where('status', 'moving')
             ->where('arrival_time', '<=', now())
-            ->whereNull('processed_at') // PASSO 3 - IDPOTÊNCIA
-            ->get();
+            ->whereNull('processed_at')
+            ->pluck('id');
 
-        foreach ($movements as $movement) {
-            DB::transaction(function() use ($movement, $base) {
-                // LOCK SEGURO (PASSO 1)
-                $lockedMovement = Movement::where('id', $movement->id)
+        foreach ($candidateIds as $id) {
+            DB::transaction(function() use ($id, $base) {
+                // LOCK MOVEMENT (PASSO 1)
+                $lockedMovement = Movement::where('id', $id)
                     ->lockForUpdate()
                     ->first();
 
                 if (!$lockedMovement || $lockedMovement->processed_at) return;
 
-                // PASSO 4 - APLICAR EFEITO (TRANSFERIR UNIDADES EM CASO DE SUPORTE)
-                if ($lockedMovement->type === 'support') {
-                    $this->transferUnitsToGarrison($lockedMovement, $base);
-                }
+                // LOCK UNITS (PASSO 3)
+                $lockedMovement->load(['units' => function($q) {
+                    $q->lockForUpdate();
+                }]);
 
-                // Se for ataque, apenas marcamos como chegado. O combate será resolvido na Fase 9.
-                $lockedMovement->update([
-                    'status' => 'arrived',
-                    'processed_at' => now()
-                ]);
-
-                Log::channel('game')->info("[MOVEMENT_PROCESSED] Movimento {$movement->id} chegou e foi processado na base {$base->id}.");
+                // APLICAR CHEGADA (PASSO 4)
+                $this->applyArrival($lockedMovement, $base);
             });
         }
+    }
+
+    /**
+     * Aplica o efeito da chegada de um movimento (Passo 4).
+     */
+    private function applyArrival(Movement $movement, Base $base): void
+    {
+        // PASSO 4 - APLICAR EFEITOS
+        if ($movement->type === 'support' || $movement->type === 'return') {
+            $this->transferUnitsToGarrison($movement, $base);
+        }
+
+        // Se for ataque, apenas marcamos como chegado. O combate será na Fase 9.
+        $movement->update([
+            'status' => 'arrived',
+            'processed_at' => now()
+        ]);
+
+        Log::channel('game')->info("[MOVEMENT_FINAL_HARDEN] Movimento {$movement->id} ({$movement->type}) processado com isolamento total.");
     }
 
     /**
