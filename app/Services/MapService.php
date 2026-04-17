@@ -11,26 +11,31 @@ use App\Models\Base;
 class MapService
 {
     /**
-     * Gera uma posição livre aleatória no mapa (0 - 1000).
-     * PASSO 3 - range 0-1000 + collision check
+     * Gera uma posição aleatória (sem check de BD - Atomic Step).
+     * PASSO 2 - REMOVER CHECKS PRÉVIOS
      */
-    public function generateBasePosition(int $range = 1000): array
+    public function generateBasePosition(): array
     {
-        $maxAttempts = 100;
-        $attempt = 0;
+        $range = config('game.map.width', 1000);
+        return [
+            'x' => rand(0, $range),
+            'y' => rand(0, $range)
+        ];
+    }
 
-        while ($attempt < $maxAttempts) {
-            $x = rand(0, $range);
-            $y = rand(0, $range);
+    /**
+     * Calcula o tempo de viagem entre bases.
+     * PASSO 4 - calculateTravelTime
+     */
+    public function calculateTravelTime(Base $baseA, Base $baseB, ?float $speed = null): int
+    {
+        $distance = $this->calculateDistance($baseA, $baseB);
+        $speed = $speed ?? config('game.movement.base_speed', 1.0);
+        
+        $seconds = (int) ceil($distance / $speed);
+        $minTime = config('game.movement.min_travel_time', 60);
 
-            $exists = Base::where('x', $x)->where('y', $y)->exists();
-            if (!$exists) {
-                return ['x' => $x, 'y' => $y];
-            }
-            $attempt++;
-        }
-
-        throw new \Exception("CONGESTIONAMENTO GEOESPACIAL: Não foi possível localizar coordenadas livres no setor.");
+        return max($minTime, $seconds);
     }
 
     /**

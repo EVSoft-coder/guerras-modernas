@@ -11,20 +11,31 @@ return new class extends Migration
      */
     public function run(): void
     {
-        Schema::create('movements', function (Blueprint $blueprint) {
-            $blueprint->id();
-            $blueprint->foreignId('origin_id')->constrained('bases')->onDelete('cascade');
-            $blueprint->foreignId('target_id')->constrained('bases')->onDelete('cascade');
-            $blueprint->json('units');
-            $blueprint->timestamp('departure_time');
-            $blueprint->timestamp('arrival_time');
-            $blueprint->string('type', 20)->default('attack'); // attack, support
-            $blueprint->timestamps();
+        // 1. Criar tabela movements (Normalizada)
+        Schema::create('movements', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('origin_id')->constrained('bases')->onDelete('cascade');
+            $table->foreignId('target_id')->constrained('bases')->onDelete('cascade');
+            $table->timestamp('departure_time');
+            $table->timestamp('arrival_time');
+            $table->string('type', 20)->default('attack'); // attack, support
+            $table->timestamps();
         });
 
+        // 2. Criar tabela movement_units (Passo 6)
+        Schema::create('movement_units', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('movement_id')->constrained('movements')->onDelete('cascade');
+            $table->foreignId('unit_type_id')->constrained('unit_types')->onDelete('cascade');
+            $table->integer('quantity')->unsigned();
+            $table->timestamps();
+        });
+
+        // 3. Adicionar UNIQUE CONSTRAINT em bases (Passo 1)
         Schema::table('bases', function (Blueprint $table) {
-            // Index para coordenadas únicas (Passo 1 e 2)
-            $table->index(['x', 'y'], 'idx_coordinates');
+            // Removemos o índice antigo se existir e adicionamos a constraint única
+            try { $table->dropIndex('idx_coordinates'); } catch(\Exception $e) {}
+            $table->unique(['x', 'y'], 'unique_coordinates');
         });
     }
 
@@ -33,9 +44,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('movement_units');
         Schema::dropIfExists('movements');
         Schema::table('bases', function (Blueprint $table) {
-            $table->dropIndex('idx_coordinates');
+            $table->dropUnique('unique_coordinates');
         });
     }
 };

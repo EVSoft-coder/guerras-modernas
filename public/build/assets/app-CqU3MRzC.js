@@ -28978,8 +28978,8 @@ const ArmyMovementPanel = ({
       "Monitor de Espaço Aéreo e Fronteira"
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "p-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "divide-y divide-white/5", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesRecebidos == null ? void 0 : ataquesRecebidos.map((atk) => {
-        var _a2;
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesRecebidos == null ? void 0 : ataquesRecebidos.map((movement) => {
+        var _a2, _b;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
           {
@@ -28994,7 +28994,7 @@ const ArmyMovementPanel = ({
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mt-1", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[9px] text-neutral-500 uppercase font-mono tracking-tighter", children: [
                       "Vetor de Ataque: ",
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: (_a2 = atk.origem) == null ? void 0 : _a2.username })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white", children: ((_b = (_a2 = movement.origin) == null ? void 0 : _a2.jogador) == null ? void 0 : _b.username) || "REBELDES" })
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1 h-1 bg-red-500 rounded-full animate-ping" })
                   ] })
@@ -29003,17 +29003,17 @@ const ArmyMovementPanel = ({
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-end gap-1.5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-mono text-2xl font-black text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.6)]", children: [
                   "-",
-                  getTimeLeft(atk.chegada_em)
+                  getTimeLeft(movement.arrival_time)
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[7px] text-neutral-600 font-black uppercase tracking-[0.2em] opacity-50", children: "Tempo até Impacto" })
               ] })
             ]
           },
-          atk.id
+          movement.id
         );
       }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesEnviados == null ? void 0 : ataquesEnviados.map((atk) => {
-        var _a2;
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesEnviados == null ? void 0 : ataquesEnviados.map((movement) => {
+        var _a2, _b, _c;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
           {
@@ -29027,14 +29027,14 @@ const ArmyMovementPanel = ({
                   /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-[11px] font-black text-white uppercase tracking-tight group-hover/of:text-sky-400 transition-colors", children: "Ofensiva em Curso" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mt-1", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[9px] text-neutral-500 uppercase font-mono", children: [
                     "Missão: ",
-                    atk.tipo.replace(/_/g, " "),
+                    movement.type.toUpperCase(),
                     " / Alvo: ",
-                    (_a2 = atk.destino) == null ? void 0 : _a2.username
+                    ((_b = (_a2 = movement.target) == null ? void 0 : _a2.jogador) == null ? void 0 : _b.username) || ((_c = movement.target) == null ? void 0 : _c.nome) || "SETOR DESCONHECIDO"
                   ] }) })
                 ] })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-end gap-1.5", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-mono text-2xl font-black text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]", children: getTimeLeft(atk.chegada_em) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-mono text-2xl font-black text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]", children: getTimeLeft(movement.arrival_time) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 opacity-50", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] text-neutral-600 font-black uppercase tracking-[0.2em]", children: "ETR_TIME" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { size: 8, className: "text-sky-500 animate-slide-right" })
@@ -29042,7 +29042,7 @@ const ArmyMovementPanel = ({
               ] })
             ]
           },
-          atk.id
+          movement.id
         );
       }) })
     ] }) })
@@ -44337,7 +44337,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-1EYctIy-.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-LC5p3J76.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44373,4 +44373,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BHUJ_q-U.js.map
+//# sourceMappingURL=app-CqU3MRzC.js.map

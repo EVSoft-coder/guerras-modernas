@@ -43,9 +43,9 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
                 <div className="divide-y divide-white/5">
                     {/* ATAQUES RECEBIDOS (AMEAÇAS) */}
                     <AnimatePresence>
-                        {ataquesRecebidos?.map(atk => (
+                        {ataquesRecebidos?.map(movement => (
                             <motion.div 
-                                key={atk.id} 
+                                key={movement.id} 
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 className="p-5 flex items-center justify-between bg-red-950/20 group/atk hover:bg-red-900/30 transition-all duration-500"
@@ -55,14 +55,14 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
                                     <div>
                                         <h4 className="text-[11px] font-black text-red-400 uppercase tracking-tight">Invasão Hostil Detetada</h4>
                                         <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-[9px] text-neutral-500 uppercase font-mono tracking-tighter">Vetor de Ataque: <span className="text-white">{atk.origem?.username}</span></span>
+                                            <span className="text-[9px] text-neutral-500 uppercase font-mono tracking-tighter">Vetor de Ataque: <span className="text-white">{movement.origin?.jogador?.username || 'REBELDES'}</span></span>
                                             <div className="w-1 h-1 bg-red-500 rounded-full animate-ping"></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end gap-1.5">
                                     <div className="font-mono text-2xl font-black text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.6)]">
-                                        -{getTimeLeft(atk.chegada_em)}
+                                        -{getTimeLeft(movement.arrival_time)}
                                     </div>
                                     <div className="text-[7px] text-neutral-600 font-black uppercase tracking-[0.2em] opacity-50">Tempo até Impacto</div>
                                 </div>
@@ -70,11 +70,11 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
                         ))}
                     </AnimatePresence>
 
-                    {/* ATAQUES ENVIADOS (OFENSIVAS) */}
+                    {/* MOVIMENTOS ENVIADOS */}
                     <AnimatePresence>
-                        {ataquesEnviados?.map(atk => (
+                        {ataquesEnviados?.map(movement => (
                             <motion.div 
-                                key={atk.id} 
+                                key={movement.id} 
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 className="p-5 flex items-center justify-between group/of hover:bg-white/[0.02] transition-all duration-500"
@@ -84,13 +84,13 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
                                     <div>
                                         <h4 className="text-[11px] font-black text-white uppercase tracking-tight group-hover/of:text-sky-400 transition-colors">Ofensiva em Curso</h4>
                                         <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-[9px] text-neutral-500 uppercase font-mono">Missão: {atk.tipo.replace(/_/g, ' ')} / Alvo: {atk.destino?.username}</span>
+                                            <span className="text-[9px] text-neutral-500 uppercase font-mono">Missão: {movement.type.toUpperCase()} / Alvo: {movement.target?.jogador?.username || movement.target?.nome || 'SETOR DESCONHECIDO'}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end gap-1.5">
                                     <div className="font-mono text-2xl font-black text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]">
-                                        {getTimeLeft(atk.chegada_em)}
+                                        {getTimeLeft(movement.arrival_time)}
                                     </div>
                                     <div className="flex items-center gap-1 opacity-50">
                                         <span className="text-[7px] text-neutral-600 font-black uppercase tracking-[0.2em]">ETR_TIME</span>

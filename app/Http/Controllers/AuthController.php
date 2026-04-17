@@ -126,17 +126,37 @@ class AuthController extends Controller
                     'password' => Hash::make($request->password),
                 ]);
  
-                // Criação de Base Inicial
-                $base = Base::create([
-                    'jogador_id' => $jogador->id,
-                    'nome' => 'Setor Primário',
-                    'coordenada_x' => rand(100, 900),
-                    'coordenada_y' => rand(100, 900),
-                    'qg_nivel' => 1,
-                    'muralha_nivel' => 1,
-                    'ultimo_update' => now(),
-                ]);
+                // Criação de Base Inicial com Retry Tático (Passo 3 - Harden)
+                $maxRetries = 20;
+                $base = null;
+                $mapService = app(\App\Services\MapService::class);
 
+                for ($i = 0; $i < $maxRetries; $i++) {
+                    try {
+                        $coords = $mapService->generateBasePosition();
+                        $base = Base::create([
+                            'jogador_id' => $jogador->id,
+                            'nome' => 'Setor Primário',
+                            'x' => $coords['x'],
+                            'y' => $coords['y'],
+                            'coordenada_x' => $coords['x'],
+                            'coordenada_y' => $coords['y'],
+                            'qg_nivel' => 1,
+                            'muralha_nivel' => 1,
+                            'ultimo_update' => now(),
+                        ]);
+                        break;
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        // SQLSTATE 23000: Unique constraint violation
+                        if ($e->getCode() == '23000' && $i < $maxRetries - 1) {
+                            continue;
+                        }
+                        throw $e;
+                    }
+                }
+
+                if (!$base) throw new \Exception("Falha ao localizar setor seguro após $maxRetries tentativas.");
+                
                 // Criar recursos iniciais na tabela recursos (fonte de verdade)
                 $base->recursos()->firstOrCreate(['base_id' => $base->id], [
                     'suprimentos' => 1000,
