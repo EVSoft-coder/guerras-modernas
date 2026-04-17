@@ -97,25 +97,55 @@ class MovementService
     }
 
     /**
-     * Processa movimentos que chegaram ao destino (Passo 4).
+     * Processa movimentos que chegaram ao destino (Passo 4 - Harden).
      */
     public function processMovements(Base $base): void
     {
-        // Movimentos que têm esta base como destino e já deviam ter chegado
+        // 1. Movimentos que têm esta base como destino e já deviam ter chegado
         $movements = Movement::where('target_id', $base->id)
             ->where('status', 'moving')
             ->where('arrival_time', '<=', now())
+            ->whereNull('processed_at') // PASSO 3 - IDPOTÊNCIA
             ->get();
 
         foreach ($movements as $movement) {
-            DB::transaction(function() use ($movement) {
-                $movement->update(['status' => 'arrived']);
-                
-                Log::channel('game')->info("[MOVEMENT_ARRIVED] Movimento {$movement->id} chegou ao destino.");
-                
-                // NOTA: Combate ou Reforço será implementado na próxima fase.
-                // Por agora, as tropas ficam "congeladas" no status arrived no destino.
+            DB::transaction(function() use ($movement, $base) {
+                // LOCK SEGURO (PASSO 1)
+                $lockedMovement = Movement::where('id', $movement->id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$lockedMovement || $lockedMovement->processed_at) return;
+
+                // PASSO 4 - APLICAR EFEITO (TRANSFERIR UNIDADES EM CASO DE SUPORTE)
+                if ($lockedMovement->type === 'support') {
+                    $this->transferUnitsToGarrison($lockedMovement, $base);
+                }
+
+                // Se for ataque, apenas marcamos como chegado. O combate será resolvido na Fase 9.
+                $lockedMovement->update([
+                    'status' => 'arrived',
+                    'processed_at' => now()
+                ]);
+
+                Log::channel('game')->info("[MOVEMENT_PROCESSED] Movimento {$movement->id} chegou e foi processado na base {$base->id}.");
             });
+        }
+    }
+
+    /**
+     * Transfere as unidades do movimento para a guarnição da base destino.
+     */
+    private function transferUnitsToGarrison(Movement $movement, Base $base): void
+    {
+        foreach ($movement->units as $mUnit) {
+            $unitName = $mUnit->type->name;
+            
+            // Adicionar à base destino
+            Tropas::updateOrCreate(
+                ['base_id' => $base->id, 'unidade' => $unitName],
+                ['quantidade' => DB::raw("quantidade + {$mUnit->quantity}")]
+            );
         }
     }
 }
