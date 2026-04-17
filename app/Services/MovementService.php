@@ -222,7 +222,7 @@ class MovementService
     }
 
     /**
-     * Calcula o saque baseado na capacidade das unidades (Fase 11).
+     * Calcula o saque baseado na capacidade das unidades (Fase 11 + 12 Harden).
      */
     private function calculateLoot(array $attackerUnits, Base $targetBase): array
     {
@@ -232,21 +232,31 @@ class MovementService
         }
 
         $resources = $targetBase->recursos;
-        if (!$resources) return [];
+        if (!$resources || $totalCapacity <= 0) return [];
 
         $loot = [];
         $types = ['suprimentos', 'combustivel', 'municoes', 'metal', 'energia'];
+        
+        // Calcular Total de Recursos Disponíveis (para distribuição proporcional - Passo 4)
+        $totalAvailable = 0;
+        foreach ($types as $type) $totalAvailable += max(0, $resources->{$type});
 
-        // Saque proporcional aos recursos disponíveis
+        if ($totalAvailable <= 0) return [];
+
+        // Distribuímos a capacidade total proporcionalmente ao que existe na base
+        $actualLootTotal = min($totalCapacity, $totalAvailable * 0.5); // Saqueamos no máximo 50%
+
         foreach ($types as $type) {
-            $available = $resources->{$type};
-            // Saque 50% do disponível no máximo para não secar a base logo
-            $stolen = min($available * 0.5, $totalCapacity / count($types));
+            $available = max(0, $resources->{$type});
+            $ratio = $available / $totalAvailable;
+            $stolen = min($available, $actualLootTotal * $ratio);
             
             $loot["loot_{$type}"] = (float) $stolen;
             
-            // Deduzir da base alvo (Passo 4)
-            $resources->decrement($type, $stolen);
+            // Deduzir da base alvo (Passo 4/5 - Sanitizado)
+            if ($stolen > 0) {
+                $resources->decrement($type, $stolen);
+            }
         }
 
         return $loot;
@@ -281,7 +291,7 @@ class MovementService
     }
 
     /**
-     * Transfere o loot do movimento para os recursos da base.
+     * Transfere o loot do movimento para os recursos da base (Fase 12 Harden).
      */
     private function transferLootToBase(Movement $movement, Base $base): void
     {
@@ -289,12 +299,23 @@ class MovementService
         if (!$resources) return;
 
         $types = ['suprimentos', 'combustivel', 'municoes', 'metal', 'energia'];
+        $capacity = (int) ($resources->storage_capacity ?? 10000); // Passo 6
+
         foreach ($types as $type) {
-            $amount = $movement->{"loot_{$type}"};
+            $amount = (float) $movement->{"loot_{$type}"};
             if ($amount > 0) {
-                $resources->increment($type, $amount);
+                $current = $resources->{$type};
+                $canReceive = max(0, $capacity - $current);
+                $toAdd = min($amount, $canReceive);
+                
+                $resources->increment($type, $toAdd);
             }
         }
+
+        Log::channel('game')->info("[LOOT_APPLIED] Saque entregue na base {$base->id}", [
+            'movement_id' => $movement->id,
+            'loot' => $movement->only(['loot_suprimentos', 'loot_combustivel', 'loot_municoes'])
+        ]);
     }
 
     /**
