@@ -173,8 +173,8 @@ class BuildingQueueService
                 ->first();
 
             if ($prev) {
-                $prev->update(['position' => $item->position]);
-                $item->update(['position' => $item->position - 1]);
+                DB::table('building_queue')->where('id', $prev->id)->update(['position' => $item->position]);
+                DB::table('building_queue')->where('id', $item->id)->update(['position' => $item->position - 1]);
                 $this->refreshQueue($item->base_id);
             }
 
@@ -196,8 +196,8 @@ class BuildingQueueService
                 ->first();
 
             if ($next) {
-                $next->update(['position' => $item->position]);
-                $item->update(['position' => $item->position + 1]);
+                DB::table('building_queue')->where('id', $next->id)->update(['position' => $item->position]);
+                DB::table('building_queue')->where('id', $item->id)->update(['position' => $item->position + 1]);
                 $this->refreshQueue($item->base_id);
             }
 
@@ -233,7 +233,7 @@ class BuildingQueueService
                 $update['finishes_at'] = null;
             }
 
-            $item->update($update);
+            DB::table('building_queue')->where('id', $item->id)->update($update);
             $pos++;
         }
     }
