@@ -49,12 +49,25 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const left = layout.x - (width / 2);
     const top = layout.y - height; // Forçado para Bottom Alignment
 
-    const assetPath = layout.assetName 
-        ? `/images/buildings/${layout.assetName}`
-        : null;
-
     // Z-INDEX TÁTICO: BASEADO NO LIMITE INFERIOR (Y)
     const staticZ = Math.floor(layout.y);
+
+    // SELEÇÃO DE ASSET POR TIER (V20 — REPLICAÇÃO TRIBAL)
+    let finalAssetName = layout.assetName;
+    if (layout.tiers) {
+        // Encontrar o maior tier que o nível atual atingiu
+        const activeTier = [...layout.tiers]
+            .sort((a, b) => b.minLevel - a.minLevel)
+            .find(t => level >= t.minLevel);
+        
+        if (activeTier) {
+            finalAssetName = activeTier.assetName;
+        }
+    }
+
+    const assetPath = finalAssetName 
+        ? `/images/buildings/${finalAssetName}`
+        : null;
 
     return (
         <div 
@@ -76,6 +89,31 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 onClick();
             }}
         >
+            {/* INDICADOR DE CONSTRUÇÃO (ANDAIMES V20) */}
+            {isConstructing && (
+                <div style={{ 
+                    position: 'absolute',
+                    inset: '-10px',
+                    border: '2px solid rgba(249,115,22,0.4)',
+                    background: 'radial-gradient(circle, rgba(249,115,22,0.1) 0%, transparent 70%)',
+                    zIndex: 10,
+                    pointerEvents: 'none',
+                    animation: 'pulse 2s infinite ease-in-out'
+                }}>
+                    <div style={{
+                        position: 'absolute',
+                        top: '0',
+                        left: '0',
+                        fontSize: '8px',
+                        color: '#f97316',
+                        fontFamily: 'monospace',
+                        fontWeight: 'black',
+                        background: 'rgba(0,0,0,0.8)',
+                        padding: '1px 4px'
+                    }}>CONST_MODE_ACTIVE</div>
+                </div>
+            )}
+
             {/* MARCADOR DE ASSENTAMENTO (DEBUG) */}
             <div style={{ 
                 position: 'absolute',
@@ -87,7 +125,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 borderRadius: '50%',
                 transform: 'translateX(-50%)',
                 zIndex: 100,
-                boxShadow: '0 0 4px #00f'
+                boxShadow: '0 0 4px #00f',
+                opacity: 0.5
             }} />
 
             {assetPath && (

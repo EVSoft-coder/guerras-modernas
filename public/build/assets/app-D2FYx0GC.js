@@ -28177,9 +28177,32 @@ const AnimatedNumber = ({ value, customValue }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
 const BUILDING_LAYOUT = {
-  // LAYOUT DETERMINÍSTICO V13.2 — ASSENTAMENTO FINAL (terrain_v12)
-  qg: { x: 550, y: 415, w: 260, h: 260, anchor: "bottom", assetName: "qg.png" },
-  quartel: { x: 730, y: 375, w: 120, h: 120, anchor: "bottom", assetName: "quartel.png" },
+  // LAYOUT TRIBAL V20 — EVOLUÇÃO POR PATAMARES
+  qg: {
+    x: 550,
+    y: 415,
+    w: 260,
+    h: 260,
+    anchor: "bottom",
+    assetName: "qg.png",
+    tiers: [
+      { minLevel: 1, assetName: "qg.png" },
+      { minLevel: 10, assetName: "qg_v2.png" },
+      { minLevel: 20, assetName: "qg_v3.png" }
+    ]
+  },
+  quartel: {
+    x: 730,
+    y: 375,
+    w: 120,
+    h: 120,
+    anchor: "bottom",
+    assetName: "quartel.png",
+    tiers: [
+      { minLevel: 1, assetName: "quartel.png" },
+      { minLevel: 15, assetName: "quartel_v2.png" }
+    ]
+  },
   fabrica_municoes: { x: 440, y: 565, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
   central_energia: { x: 440, y: 240, w: 90, h: 90, anchor: "bottom", assetName: "central_energia.png" },
   centro_pesquisa: { x: 765, y: 255, w: 90, h: 90, anchor: "bottom", assetName: "centro_pesquisa.png" },
@@ -28190,7 +28213,18 @@ const BUILDING_LAYOUT = {
   refinaria: { x: 860, y: 575, w: 130, h: 130, anchor: "bottom", assetName: "fabrica_municoes.png" },
   mina_suprimentos: { x: 340, y: 575, w: 110, h: 110, anchor: "bottom", assetName: "mine.png" },
   mina_metal: { x: 505, y: 575, w: 110, h: 110, anchor: "bottom", assetName: "mine.png" },
-  housing: { x: 190, y: 235, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" },
+  housing: {
+    x: 190,
+    y: 235,
+    w: 110,
+    h: 110,
+    anchor: "bottom",
+    assetName: "housing.png",
+    tiers: [
+      { minLevel: 1, assetName: "housing.png" },
+      { minLevel: 20, assetName: "housing_v2.png" }
+    ]
+  },
   posto_recrutamento: { x: 855, y: 235, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" }
 };
 const BUILDING_ASSETS = {
@@ -28272,8 +28306,15 @@ const BuildingNode = ({
   const height = assetConfig.height;
   const left = layout2.x - width / 2;
   const top = layout2.y - height;
-  const assetPath = layout2.assetName ? `/images/buildings/${layout2.assetName}` : null;
   const staticZ = Math.floor(layout2.y);
+  let finalAssetName = layout2.assetName;
+  if (layout2.tiers) {
+    const activeTier = [...layout2.tiers].sort((a, b2) => b2.minLevel - a.minLevel).find((t2) => level >= t2.minLevel);
+    if (activeTier) {
+      finalAssetName = activeTier.assetName;
+    }
+  }
+  const assetPath = finalAssetName ? `/images/buildings/${finalAssetName}` : null;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
@@ -28295,6 +28336,25 @@ const BuildingNode = ({
         onClick();
       },
       children: [
+        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+          position: "absolute",
+          inset: "-10px",
+          border: "2px solid rgba(249,115,22,0.4)",
+          background: "radial-gradient(circle, rgba(249,115,22,0.1) 0%, transparent 70%)",
+          zIndex: 10,
+          pointerEvents: "none",
+          animation: "pulse 2s infinite ease-in-out"
+        }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+          position: "absolute",
+          top: "0",
+          left: "0",
+          fontSize: "8px",
+          color: "#f97316",
+          fontFamily: "monospace",
+          fontWeight: "black",
+          background: "rgba(0,0,0,0.8)",
+          padding: "1px 4px"
+        }, children: "CONST_MODE_ACTIVE" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
           position: "absolute",
           bottom: "0",
@@ -28305,7 +28365,8 @@ const BuildingNode = ({
           borderRadius: "50%",
           transform: "translateX(-50%)",
           zIndex: 100,
-          boxShadow: "0 0 4px #00f"
+          boxShadow: "0 0 4px #00f",
+          opacity: 0.5
         } }),
         assetPath && /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
@@ -44564,7 +44625,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Ceo6cPc0.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-C1IxiZLc.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44600,4 +44661,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-C3Wsq6GN.js.map
+//# sourceMappingURL=app-D2FYx0GC.js.map
