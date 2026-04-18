@@ -29,8 +29,8 @@ class UpgradeBuilding
             // 1. Lock Global da Base (Fase Crítica - Passo 3)
             $base = Base::where('id', $baseId)->lockForUpdate()->firstOrFail();
 
-            // 2. Validação via Policy (Fase Crítica - Passo 5)
-            if ($user->cannot('update', $base)) {
+            // 2. Validação via Gate (Fase Crítica - Passo 5)
+            if (\Illuminate\Support\Facades\Gate::forUser($user)->denies('update', $base)) {
                 throw new \Exception("Acesso Negado: A base especificada não está sob o seu comando.");
             }
 

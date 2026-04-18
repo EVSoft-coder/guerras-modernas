@@ -33,8 +33,8 @@ class SendMission
             // 1. Lock Global da Base de Origem (Fase Crítica - Passo 3)
             $baseOrigem = Base::where('id', $data['origem_id'])->lockForUpdate()->firstOrFail();
             
-            // 2. Validação via Policy (Fase Crítica - Passo 5)
-            if ($user->cannot('command', $baseOrigem)) {
+            // 2. Validação via Gate (Fase Crítica - Passo 5)
+            if (\Illuminate\Support\Facades\Gate::forUser($user)->denies('command', $baseOrigem)) {
                 throw new \Exception("Acesso Negado: Você não tem autoridade sobre esta unidade de comando.");
             }
 
