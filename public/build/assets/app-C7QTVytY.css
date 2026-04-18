@@ -5383,6 +5383,10 @@
       scale: 1.02;
     }
 
+    .hover\:scale-\[1\.08\]:hover {
+      scale: 1.08;
+    }
+
     .hover\:border-\[\#1915014a\]:hover {
       border-color: #1915014a;
     }
