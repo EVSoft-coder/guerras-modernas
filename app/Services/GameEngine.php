@@ -52,7 +52,7 @@ class GameEngine
             $this->buildingQueueService->processQueue($lockedBase);
 
             // 3. Processar Fila de Unidades
-            $this->unitQueueService->process($lockedBase);
+            $this->unitQueueService->processQueue($lockedBase);
 
             // 4. Processar Movimentos Militares (Passo 5 - Fase 8)
             $this->movementService->processMovements($lockedBase);
