@@ -55,9 +55,9 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 zIndex: dynamicZIndex
             }}
         >
-            {/* PASSO 4 — SHADOW SYSTEM (GROUND BLUR) */}
+            {/* PASSO 4 — SHADOW SYSTEM (GROUND BLUR) - VISIBILIDADE FIXA */}
             <div 
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-[60%] h-[15%] bg-black/50 blur-[10px] rounded-[100%] z-[-1] opacity-0 group-hover/node:opacity-100 transition-opacity" 
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-[60%] h-[15%] bg-black/60 blur-[10px] rounded-[100%] z-[-1] opacity-60" 
                 style={{ transform: 'translateX(-50%)' }}
             />
 
