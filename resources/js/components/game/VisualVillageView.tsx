@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Base } from '@/types';
 import { BuildingNode } from './BuildingNode';
-import { BUILDING_LAYOUT, REFERENCE_WIDTH } from '@/config/buildingLayout';
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { BUILDING_LAYOUT } from '@/config/buildingLayout';
 
 interface VillageViewProps {
     base: Base;
@@ -11,17 +10,8 @@ interface VillageViewProps {
     buildingQueue: any[];
 }
 
-/**
- * VillageCanvas — FASE UI PROFISSIONAL (Passo 1)
- * Sistema de renderização absoluta independente (Passo 9)
- */
-/**
- * VillageCanvas — FASE CORE DETERMINÍSTICO
- * Proibido: % , flex, grid, margin-auto para posicionamento interno.
- */
 export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-
+    
     const getBuildingLevel = (type: string) => {
         if (type === 'qg') return base.qg_nivel || 0;
         if (type === 'muralha') return base.muralha_nivel || 0;
@@ -31,10 +21,6 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
 
     return (
         <div className="w-full flex justify-center py-8 bg-[#050608]">
-            {/* 
-               PASSO 1: CONTAINER FIXO 800x600 
-               Este é o 'Canvas' que não muda de layout no resize.
-            */}
             <div 
                 id="VillageCanvas"
                 className="village-root"
@@ -44,121 +30,83 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     height: '600px', 
                     margin: '0 auto',
                     overflow: 'hidden',
-                    boxShadow: '0 0 50px rgba(0,0,0,0.8)',
-                    cursor: 'default',
-                    backgroundColor: '#000'
                 }}
             >
                 <style>{`
-                    .village-root {
+                    .village-root,
+                    .village-root * {
                         all: unset;
+                        box-sizing: border-box;
+                        background: transparent !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                    }
+                    .village-root {
                         position: relative;
                         display: block;
                         width: 800px;
                         height: 600px;
                     }
-                    .village-root * {
-                        all: unset;
-                        box-sizing: border-box;
-                    }
                     .village-root div {
                         position: absolute;
-                    }
-                    .village-root .building-node {
-                        position: absolute !important;
-                        background: transparent !important;
                     }
                     .village-root img {
                         display: block;
                         user-select: none;
-                        -pointer-events: none;
+                        background: transparent !important;
                     }
-                    @keyframes pulse {
-                        0% { opacity: 0.3; }
-                        50% { opacity: 0.7; }
-                        100% { opacity: 0.3; }
+                    .village-root .building-node {
+                        position: absolute !important;
+                        padding: 0 !important;
+                        cursor: pointer;
+                        pointer-events: auto;
                     }
                 `}</style>
 
                 {/* CAMADA 1: background-layer */}
                 <div 
                     id="background-layer" 
+                    className="village-canvas"
                     style={{ position: 'absolute', inset: 0, zIndex: 1 }}
                 >
                     <img 
                         src="/assets/structures/v2/terrain_v12.png" 
+                        className="village-bg"
                         style={{ 
                             width: '800px', 
                             height: '600px', 
                             objectFit: 'cover',
-                            filter: 'brightness(0.8) contrast(1.3) saturate(0.9)'
+                            filter: 'brightness(0.9) contrast(1.2)'
                         }}
                         alt="Mapa Tático" 
                     />
-                    {/* Gradiente Radial centrado na HQ (400, 270) */}
-                    <div style={{ 
-                        position: 'absolute', 
-                        inset: 0, 
-                        background: 'radial-gradient(circle at 400px 270px, transparent 20%, rgba(0,0,0,0.7) 100%)',
-                        mixBlendMode: 'multiply'
-                    }} />
                 </div>
 
                 {/* CAMADA 2: buildings-layer */}
                 <div 
-                    id="buildings-layer" 
+                    id="buildings-layer"
+                    className="buildings-layer"
                     style={{ position: 'absolute', inset: 0, zIndex: 2 }}
                 >
-                    <TooltipProvider>
-                        {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
-                            const level = getBuildingLevel(type);
-                            const isConstructing = (buildingQueue || []).some(q => q.type === type);
-                            const config = gameConfig?.buildings?.[type];
-                            
-                            if (level === 0 && !isConstructing) return null;
+                    {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
+                        const level = getBuildingLevel(type);
+                        const isConstructing = (buildingQueue || []).some(q => q.type === type);
+                        const config = gameConfig?.buildings?.[type];
+                        
+                        if (level === 0 && !isConstructing) return null;
 
-                            return (
-                                <BuildingNode
-                                    key={type}
-                                    type={type}
-                                    level={level}
-                                    scale={1} // LOCK SCALE AT 1 FOR DETERMINISTIC
-                                    isConstructing={isConstructing}
-                                    name={config?.name || type}
-                                    onClick={() => onBuildingClick({ id: type, buildingType: type, name: config?.name || type, level })}
-                                />
-                            );
-                        })}
-                    </TooltipProvider>
-                </div>
-
-                {/* CAMADA 3: ui-layer */}
-                <div 
-                    id="ui-layer" 
-                    style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none' }}
-                >
-                    {/* Overlay de HUD Tático */}
-                    <div style={{ position: 'absolute', left: '20px', top: '20px', pointerEvents: 'none' }}>
-                         <div style={{ 
-                             backgroundColor: 'rgba(0,0,0,0.7)', 
-                             padding: '8px 16px', 
-                             borderLeft: '3px solid #0f0',
-                             color: '#fff',
-                             fontSize: '12px',
-                             fontFamily: 'monospace',
-                             textTransform: 'uppercase'
-                         }}>
-                            Sinal: {base.nome} | Setor: Alpha-1
-                         </div>
-                    </div>
-                    
-                    {/* Linhas de scanline fixas */}
-                    <div style={{ 
-                        position: 'absolute', 
-                        inset: 0, 
-                        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.03) 1px, rgba(255,255,255,0.03) 2px)', 
-                        backgroundSize: '100% 4px' 
-                    }} />
+                        return (
+                            <BuildingNode
+                                key={type}
+                                type={type}
+                                level={level}
+                                scale={1}
+                                isConstructing={isConstructing}
+                                name={config?.name || type}
+                                onClick={() => onBuildingClick({ id: type, buildingType: type, name: config?.name || type, level })}
+                            />
+                        );
+                    })}
                 </div>
             </div>
         </div>

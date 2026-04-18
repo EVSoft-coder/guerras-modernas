@@ -28261,7 +28261,7 @@ const BuildingNode = ({
   const top = layout2.y - height;
   const assetPath = layout2.assetName ? `/images/buildings/${layout2.assetName}` : null;
   const staticZ = Math.floor(layout2.y);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
       id: `node-${type2}`,
@@ -28274,105 +28274,31 @@ const BuildingNode = ({
         height: `${height}px`,
         zIndex: staticZ,
         cursor: "pointer",
-        pointerEvents: "auto",
-        background: "transparent",
-        border: "none",
-        boxShadow: "none",
-        padding: "0"
+        pointerEvents: "auto"
       },
       onClick: (e) => {
         e.stopPropagation();
         onClick();
       },
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            style: {
-              position: "absolute",
-              bottom: "0",
-              left: "50%",
-              width: "6px",
-              height: "6px",
-              background: "red",
-              borderRadius: "50%",
-              transform: "translateX(-50%)",
-              zIndex: 100,
-              pointerEvents: "none",
-              boxShadow: "0 0 5px red"
-            }
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            style: {
-              position: "absolute",
-              bottom: "-2px",
-              left: "25%",
-              width: "50%",
-              height: "10px",
-              background: "rgba(0,0,0,0.2)",
-              filter: "blur(10px)",
-              borderRadius: "100%",
-              zIndex: -1,
-              pointerEvents: "none"
-            }
-          }
-        ),
-        assetPath && /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            src: assetPath,
-            style: {
-              display: "block",
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              pointerEvents: "none",
-              mixBlendMode: "lighten",
-              background: "transparent"
-            },
-            alt: name
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            style: {
-              position: "absolute",
-              width: "100%",
-              bottom: "-5px",
-              textAlign: "center",
-              pointerEvents: "none"
-            },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
-              display: "inline-block",
-              color: "#0f0",
-              fontSize: "10px",
-              fontWeight: "900",
-              fontFamily: "monospace",
-              textTransform: "uppercase",
-              textShadow: "1px 1px 2px black"
-            }, children: [
-              name.split(" ")[0],
-              " L",
-              level
-            ] })
-          }
-        ),
-        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
-          position: "absolute",
-          inset: 0,
-          border: "1px dashed #0f0",
-          animation: "pulse 2s infinite"
-        } })
-      ]
+      children: assetPath && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          src: assetPath,
+          style: {
+            display: "block",
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            pointerEvents: "none",
+            mixBlendMode: "lighten"
+          },
+          alt: name
+        }
+      )
     }
   );
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
-  reactExports.useRef(null);
   const getBuildingLevel = (type2) => {
     var _a2;
     if (type2 === "qg") return base.qg_nivel || 0;
@@ -28393,76 +28319,68 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
         width: "800px",
         height: "600px",
         margin: "0 auto",
-        overflow: "hidden",
-        boxShadow: "0 0 50px rgba(0,0,0,0.8)",
-        cursor: "default",
-        backgroundColor: "#000"
+        overflow: "hidden"
       },
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
-                    .village-root {
+                    .village-root,
+                    .village-root * {
                         all: unset;
+                        box-sizing: border-box;
+                        background: transparent !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                    }
+                    .village-root {
                         position: relative;
                         display: block;
                         width: 800px;
                         height: 600px;
                     }
-                    .village-root * {
-                        all: unset;
-                        box-sizing: border-box;
-                    }
                     .village-root div {
                         position: absolute;
-                    }
-                    .village-root .building-node {
-                        position: absolute !important;
-                        background: transparent !important;
                     }
                     .village-root img {
                         display: block;
                         user-select: none;
-                        -pointer-events: none;
+                        background: transparent !important;
                     }
-                    @keyframes pulse {
-                        0% { opacity: 0.3; }
-                        50% { opacity: 0.7; }
-                        100% { opacity: 0.3; }
+                    .village-root .building-node {
+                        position: absolute !important;
+                        padding: 0 !important;
+                        cursor: pointer;
+                        pointer-events: auto;
                     }
                 ` }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
             id: "background-layer",
+            className: "village-canvas",
             style: { position: "absolute", inset: 0, zIndex: 1 },
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "img",
-                {
-                  src: "/assets/structures/v2/terrain_v12.png",
-                  style: {
-                    width: "800px",
-                    height: "600px",
-                    objectFit: "cover",
-                    filter: "brightness(0.8) contrast(1.3) saturate(0.9)"
-                  },
-                  alt: "Mapa Tático"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
-                position: "absolute",
-                inset: 0,
-                background: "radial-gradient(circle at 400px 270px, transparent 20%, rgba(0,0,0,0.7) 100%)",
-                mixBlendMode: "multiply"
-              } })
-            ]
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: "/assets/structures/v2/terrain_v12.png",
+                className: "village-bg",
+                style: {
+                  width: "800px",
+                  height: "600px",
+                  objectFit: "cover",
+                  filter: "brightness(0.9) contrast(1.2)"
+                },
+                alt: "Mapa Tático"
+              }
+            )
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
             id: "buildings-layer",
+            className: "buildings-layer",
             style: { position: "absolute", inset: 0, zIndex: 2 },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
+            children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
               var _a2;
               const level = getBuildingLevel(type2);
               const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
@@ -28480,35 +28398,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                 },
                 type2
               );
-            }) })
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            id: "ui-layer",
-            style: { position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none" },
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", left: "20px", top: "20px", pointerEvents: "none" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
-                backgroundColor: "rgba(0,0,0,0.7)",
-                padding: "8px 16px",
-                borderLeft: "3px solid #0f0",
-                color: "#fff",
-                fontSize: "12px",
-                fontFamily: "monospace",
-                textTransform: "uppercase"
-              }, children: [
-                "Sinal: ",
-                base.nome,
-                " | Setor: Alpha-1"
-              ] }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
-                position: "absolute",
-                inset: 0,
-                backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.03) 1px, rgba(255,255,255,0.03) 2px)",
-                backgroundSize: "100% 4px"
-              } })
-            ]
+            })
           }
         )
       ]
@@ -44628,7 +44518,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-BC6uSU9I.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BqF-AWi-.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44664,4 +44554,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-B-vzM14d.js.map
+//# sourceMappingURL=app-Dv999LlX.js.map
