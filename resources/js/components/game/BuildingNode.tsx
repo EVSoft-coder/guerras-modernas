@@ -1,62 +1,88 @@
 import React from 'react';
+import { BUILDING_LAYOUT } from '@/config/buildingLayout';
 import { motion } from 'framer-motion';
-import { getEvolutionLevelAsset } from '@/lib/game-utils';
-import { getBuildingAsset } from '@/utils/assetMapper';
 
 interface BuildingNodeProps {
-    buildingType: string;
-    nome: string;
-    nivel: number;
-    gridPos: { x: number, y: number } | null;
-    isConstructing?: boolean;
-    isLocked?: boolean;
+    type: string;
+    level: number;
+    scale: number;
+    isConstructing: boolean;
+    name: string;
     onClick: () => void;
 }
 
-export const BuildingNode: React.FC<Omit<BuildingNodeProps, 'gridPos'>> = ({ buildingType, nome, nivel, isConstructing, isLocked, onClick }) => {
-    const isGhost = nivel === 0;
-    const currentTryLevel = getEvolutionLevelAsset(nivel ?? 1);
-    const imgUrl = getBuildingAsset(buildingType, isGhost ? 1 : currentTryLevel);
+export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, isConstructing, name, onClick }) => {
+    const layout = BUILDING_LAYOUT[type];
+    if (!layout) return null;
+
+    // CÁLCULO DE POSIÇÃO BASEADO EM ÂNCORA E ESCALA (PASSO 4 & 7)
+    let left = layout.x * scale;
+    let top = layout.y * scale;
+    const width = layout.w * scale;
+    const height = layout.h * scale;
+
+    if (layout.anchor === 'center') {
+        left -= width / 2;
+        top -= height / 2;
+    }
+
+    if (layout.anchor === 'bottom') {
+        left -= width / 2;
+        top -= height;
+    }
+
+    // MAPEAR ASSET PATH
+    const assetPath = `/assets/structures/v2/${
+        type === 'qg' ? 'hq' : 
+        type === 'quartel' ? 'barracks' : 
+        type === 'fabrica_municoes' ? 'factory' :
+        type === 'refinaria' ? 'factory' :
+        type.replace('central_', '').replace('mina_', '')
+    }.png`.replace('pesquisa', 'research').replace('suprimentos', 'mine').replace('metal', 'mine');
 
     return (
-        <motion.div 
-            whileHover={!isLocked ? { scale: 1.1, zIndex: 100 } : {}}
-            whileTap={!isLocked ? { scale: 0.9 } : {}}
-            onClick={!isLocked ? onClick : undefined}
-            className={`relative flex flex-col items-center justify-center p-1 group ${!isLocked ? 'cursor-pointer' : 'cursor-not-allowed'} ${isLocked ? 'opacity-20 grayscale' : (isGhost ? 'opacity-50 grayscale hover:grayscale-0 hover:opacity-100' : '')}`}
+        <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.08 }}
+            onClick={onClick}
+            className="absolute cursor-pointer transition-transform group/node"
+            style={{
+                left,
+                top,
+                width,
+                height,
+                zIndex: Math.floor(layout.y) // PASSO 4 — Z-INDEX DINÂMICO
+            }}
         >
-            {/* CONTAINER DO EDIFÍCIO */}
-            <div className="relative group/bldg transition-all duration-300">
-                {/* GLOW DE FUNDO SUBTIL NO HOVER */}
-                {!isLocked && <div className={`absolute inset-0 bg-sky-500/0 group-hover:bg-sky-500/10 blur-xl rounded-full transition-all duration-300 ${isGhost ? 'group-hover:bg-orange-500/10' : ''}`} />}
-                
-                <motion.img 
-                    src={imgUrl} 
-                    className={`w-14 h-14 md:w-20 md:h-20 object-contain drop-shadow-[0_5px_15px_rgba(0,0,0,0.6)] ${!isLocked ? 'group-hover/bldg:drop-shadow-[0_0_20px_rgba(14,165,233,0.5)]' : ''} transition-all duration-500 relative z-10 ${isGhost ? 'border-2 border-dashed border-white/10 rounded-xl p-1' : ''}`} 
-                    alt={nome ?? 'STRUCTURE'}
-                />
+            {/* PASSO 5 — IMAGEM BUILDING */}
+            <img 
+                src={assetPath} 
+                className={`w-full h-full object-contain pointer-events-none mix-blend-screen transition-all
+                    ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.2] group-hover/node:brightness-[1.4]'}
+                `}
+                alt={name}
+            />
 
-                {/* LEVEL BADGE TÁCTICO COMPACTO */}
-                <div className={`absolute -bottom-1 -right-1 bg-neutral-950 border ${isLocked ? 'border-red-500/40' : (isGhost ? 'border-orange-500/40' : 'border-sky-500/40')} rounded-md px-1.5 py-0.5 shadow-xl backdrop-blur-md z-20`}>
-                    <span className={`text-[9px] font-mono font-black text-white ${isLocked ? 'text-red-500' : (isGhost ? 'text-orange-500' : '')}`}>
-                        {isLocked ? '🔒' : (isGhost ? '+' : (nivel ?? 0))}
-                    </span>
-                </div>
-
-                {/* INDICADOR DE CONSTRUÇÃO */}
-                {isConstructing && !isLocked && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
-                         <div className="w-full h-full border-2 border-orange-500 border-t-transparent rounded-full animate-spin opacity-60"></div>
-                    </div>
-                )}
+            {/* PASSO 5 — BUILDING LEVEL HUD */}
+            <div 
+                className="absolute top-0 right-0 bg-black/90 border border-[#0f0]/30 text-[#0f0] font-black font-mono rounded-full shadow-[0_0_10px_rgba(0,255,0,0.2)] flex items-center justify-center backdrop-blur-md"
+                style={{ 
+                    padding: `${2 * scale}px ${6 * scale}px`,
+                    fontSize: `${Math.max(8, 11 * scale)}px`,
+                    transform: 'translate(30%, -30%)'
+                }}
+            >
+                L.{level}
             </div>
 
-            {/* NOME (SÓ APARECE NO HOVER OU MUITO PEQUENO) */}
-            <div className={`mt-1 flex flex-col items-center bg-black/40 px-2 py-0.5 rounded border border-white/5 backdrop-blur-sm ${!isLocked ? 'opacity-60 group-hover:opacity-100' : 'opacity-40'} transition-opacity`}>
-                <span className="text-[7px] font-black uppercase text-neutral-300 tracking-tighter whitespace-nowrap">
-                    {nome ?? 'UNKNOWN'}
-                </span>
+            {/* STATUS LABEL (Opcional, apenas em hover para UI limpa) */}
+            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover/node:opacity-100 transition-opacity bg-black/80 px-2 py-1 rounded text-[8px] text-white font-black whitespace-nowrap uppercase tracking-widest border border-white/10">
+                {name}
             </div>
+
+            {/* DEBUG OUTLINE (PASSO 8 — TEMPORÁRIO) */}
+            {/* <div className="absolute inset-0 border border-red-500/20 pointer-events-none" /> */}
         </motion.div>
     );
 };
