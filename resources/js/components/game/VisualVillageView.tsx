@@ -44,6 +44,10 @@ interface VisualVillageViewProps {
 
 export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
     
+    React.useEffect(() => {
+        console.log(">>> VILLAGE_COMMAND_HUD_V3_TRANSPARENCY_ACTIVE <<<");
+    }, []);
+
     const getBuildingLevel = (type: string) => {
         if (type === 'qg') return base.qg_nivel || 0;
         if (type === 'muralha') return base.muralha_nivel || 0;
@@ -118,24 +122,26 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                                             )}
                                         </AnimatePresence>
 
-                                        {/* INTEGRATED BUILDING IMAGE BLOCK — REMOVING BLACK SQUARES */}
-                                        <div className="relative w-full h-full flex items-center justify-center drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                                        {/* INTEGRATED BUILDING IMAGE BLOCK — SCREEN BLEND TO REMOVE BLACK */}
+                                        <div className="relative w-full h-full flex items-center justify-center drop-shadow-[0_0_25px_rgba(0,0,0,0.6)]">
                                             {pos.assetUrl ? (
                                                 <img 
                                                     src={pos.assetUrl} 
-                                                    className={`w-full h-full object-contain transition-all duration-700 mix-blend-lighten 
-                                                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.2] contrast-[1.2] group-hover/building:brightness-[1.4]'}
+                                                    className={`w-full h-full object-contain transition-all duration-700 mix-blend-screen
+                                                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.3] contrast-[1.2] group-hover/building:brightness-[1.5] group-hover/building:scale-110'}
                                                     `} 
-                                                    style={{ transform: 'scale(1.2)' }}
+                                                    style={{ transform: 'scale(1.4)' }}
+                                                    onLoad={() => console.log(`BASE_STRUCTURE_LOADED: ${type}`)}
                                                 />
                                             ) : (
-                                                <div className="flex flex-col items-center justify-center w-2/3 h-2/3 bg-[#050709]/80 backdrop-blur-xl rounded-[2rem] border border-white/10 group-hover/building:border-white/30 transition-all shadow-2xl relative">
-                                                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,#fff_0%,transparent_70%)] rounded-[2rem]" />
-                                                    <pos.icon size={22} className={`${pos.color} group-hover/building:scale-110 transition-transform mb-1.5`} />
-                                                    <span className="text-[7px] font-black uppercase text-neutral-400 tracking-[0.2em]">{config?.name?.split(' ')[0] || type}</span>
+                                                <div className="flex flex-col items-center justify-center w-2/3 h-2/3 bg-[#050709]/90 backdrop-blur-2xl rounded-[2.5rem] border border-white/20 group-hover/building:border-white/50 transition-all shadow-2xl relative">
+                                                    <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,#fff_0%,transparent_70%)] rounded-[2.5rem]" />
+                                                    <pos.icon size={26} className={`${pos.color} group-hover/building:scale-125 transition-transform mb-2`} />
+                                                    <span className="text-[8px] font-black uppercase text-neutral-300 tracking-[0.3em]">{config?.name?.split(' ')[0] || type}</span>
                                                 </div>
                                             )}
                                         </div>
+>
 
                                         {/* HOLOGRAPHIC LEVEL BADGE */}
                                         <div className="absolute -bottom-1 -right-1 z-50">
