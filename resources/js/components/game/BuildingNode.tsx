@@ -38,6 +38,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     return (
         <div 
             id={`node-${type}`}
+            className="building-node"
             style={{ 
                 position: 'absolute',
                 left: `${left}px`,
@@ -46,14 +47,15 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 height: `${layout.h}px`,
                 zIndex: staticZ,
                 cursor: 'pointer',
-                pointerEvents: 'auto'
+                pointerEvents: 'auto',
+                background: 'transparent'
             }}
             onClick={(e) => {
                 e.stopPropagation();
                 onClick();
             }}
         >
-            {/* ASSET (FILTROS ESTÁTICOS) */}
+            {/* ASSET (FIX TEMPORÁRIO PARA TRANSPARÊNCIA) */}
             {assetPath && (
                 <img 
                     src={assetPath} 
@@ -62,10 +64,10 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                         width: `${layout.w}px`, 
                         height: `${layout.h}px`,
                         pointerEvents: 'none',
-                        // Mixing blending para transparência profissional
-                        mixBlendMode: (type === 'housing' || type === 'posto_recrutamento') ? 'multiply' : 'screen',
-                        filter: 'brightness(1.5) contrast(1.2) saturate(1.1)',
-                        opacity: isConstructing ? 0.5 : 0.95
+                        // PASSO 1 — MIX BLEND LIGHTEN
+                        mixBlendMode: 'lighten',
+                        background: 'transparent',
+                        opacity: isConstructing ? 0.5 : 1
                     }}
                     alt={name}
                 />

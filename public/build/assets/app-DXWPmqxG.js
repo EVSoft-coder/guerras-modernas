@@ -28210,6 +28210,7 @@ const BuildingNode = ({
     "div",
     {
       id: `node-${type2}`,
+      className: "building-node",
       style: {
         position: "absolute",
         left: `${left}px`,
@@ -28218,7 +28219,8 @@ const BuildingNode = ({
         height: `${layout2.h}px`,
         zIndex: staticZ,
         cursor: "pointer",
-        pointerEvents: "auto"
+        pointerEvents: "auto",
+        background: "transparent"
       },
       onClick: (e) => {
         e.stopPropagation();
@@ -28234,10 +28236,10 @@ const BuildingNode = ({
               width: `${layout2.w}px`,
               height: `${layout2.h}px`,
               pointerEvents: "none",
-              // Mixing blending para transparência profissional
-              mixBlendMode: type2 === "housing" || type2 === "posto_recrutamento" ? "multiply" : "screen",
-              filter: "brightness(1.5) contrast(1.2) saturate(1.1)",
-              opacity: isConstructing ? 0.5 : 0.95
+              // PASSO 1 — MIX BLEND LIGHTEN
+              mixBlendMode: "lighten",
+              background: "transparent",
+              opacity: isConstructing ? 0.5 : 1
             },
             alt: name
           }
@@ -44496,7 +44498,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-8quSHOIY.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BOu0jc0f.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44532,4 +44534,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CHVAkf85.js.map
+//# sourceMappingURL=app-DXWPmqxG.js.map
