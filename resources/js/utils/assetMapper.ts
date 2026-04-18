@@ -23,11 +23,12 @@ export const getBuildingAsset = (type: string, level: number | 'blueprint' = 1):
 export const getUnitAsset = (type: string): string => {
     if (!type) return '/assets/placeholders/unit_unknown.svg';
     
-    // Normalizar nome: lower case + remover parênteses + trocar espaços por hífens
+    // Normalizar nome: ultra-robust slugify
     const t = type.toLowerCase()
-        .replace(/\((.*?)\)/g, '$1') // remove parênteses mas mantém o conteúdo
-        .trim()
-        .replace(/\s+/g, '-');       // troca espaços por hífens
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, "") // Remove acentos
+        .replace(/[^a-z0-9]/g, '-')                     // Substitui tudo o que não é letra/número por hífen
+        .replace(/-+/g, '-')                            // Remove hífens duplicados
+        .replace(/^-|-$/g, '');                         // Remove hífens no início e fim
     
     // Caminho padrão para unidades com arte final
     return `/images/unidades/${t}.png`;
