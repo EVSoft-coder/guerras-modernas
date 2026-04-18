@@ -181,15 +181,20 @@ class UnitQueueService
         $pos = 1;
 
         foreach ($items as $item) {
-            $update = ['position' => $pos];
+            $item->position = $pos;
             
             if ($pos === 1 && $item->status !== 'active') {
-                $update['status'] = 'active';
-                $update['started_at'] = $now;
-                $update['finishes_at'] = $now->copy()->addSeconds($item->quantity_remaining * $item->duration_per_unit);
+                $item->status = 'active';
+                $item->started_at = $now;
+                $item->finishes_at = $now->copy()->addSeconds($item->quantity_remaining * $item->duration_per_unit);
+            } else if ($pos > 1) {
+                // Garantir que itens em espera não têm tempos "lixo"
+                $item->status = 'pending';
+                $item->started_at = null;
+                $item->finishes_at = null;
             }
 
-            $item->update($update);
+            $item->save();
             $pos++;
         }
     }
@@ -202,8 +207,15 @@ class UnitQueueService
 
             $prev = UnitQueue::where('base_id', $item->base_id)->where('position', $item->position - 1)->first();
             if ($prev) {
-                $prev->update(['position' => $item->position, 'status' => 'pending', 'started_at' => null, 'finishes_at' => null]);
-                $item->update(['position' => $item->position - 1]);
+                $prev->position = $item->position;
+                $prev->status = 'pending';
+                $prev->started_at = null;
+                $prev->finishes_at = null;
+                $prev->save();
+
+                $item->position = $item->position - 1;
+                $item->save();
+
                 $this->refreshQueue($item->base_id);
             }
             return true;
@@ -218,8 +230,15 @@ class UnitQueueService
 
             $next = UnitQueue::where('base_id', $item->base_id)->where('position', $item->position + 1)->first();
             if ($next) {
-                $next->update(['position' => $item->position]);
-                $item->update(['position' => $item->position + 1, 'status' => 'pending', 'started_at' => null, 'finishes_at' => null]);
+                $next->position = $item->position;
+                $next->save();
+
+                $item->position = $item->position + 1;
+                $item->status = 'pending';
+                $item->started_at = null;
+                $item->finishes_at = null;
+                $item->save();
+
                 $this->refreshQueue($item->base_id);
             }
             return true;
