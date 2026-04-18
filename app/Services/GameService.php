@@ -40,9 +40,15 @@ class GameService
         GameEngine::process($base);
         return [
             'base' => $base,
-            'resources' => $this->resourceService->calculate($base->recursos, GameClock::now(), $this->obterTaxasProducao($base)),
+            'resources' => $this->calculateResources($base, GameClock::now()),
             'ultimo_update' => $base->ultimo_update
         ];
+    }
+
+    public function calculateResources(Base $base, $now = null): array
+    {
+        if (!$base->recursos) $base->load('recursos');
+        return $this->resourceService->calculate($base->recursos, $now ?? GameClock::now(), $this->obterTaxasProducao($base));
     }
 
     public function getState(Base $base): array
