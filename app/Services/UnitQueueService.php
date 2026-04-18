@@ -34,16 +34,24 @@ class UnitQueueService
             $economy = app(EconomyService::class);
             $buildingLevel = (new GameService($this->timeService))->obterNivelEdificio($base, $unitType->building_type);
             
-            $costPerUnit = $economy->getUnitCost($unitType->base_cost_suprimentos, $buildingLevel);
-            $durationPerUnit = $economy->getUnitBuildTime($unitType->base_build_time, $buildingLevel);
+            // FÓRMULA ECONOMY: Custo escala com nível do edifício produtor
+            $costs = $economy->getUnitCost($unitType->name, $buildingLevel);
+            $durationPerUnit = $economy->getUnitTime($unitType->name, $buildingLevel);
 
-            $totalSup = $costPerUnit * $quantidade;
-            $totalCom = ($unitType->base_cost_combustivel * 0.5) * $quantidade; // Exemplo simplificado
+            $totalCosts = [];
+            foreach ($costs as $res => $val) {
+                $totalCosts[$res] = $val * $quantidade;
+                if ((float)$rec->{$res} < $totalCosts[$res]) {
+                    throw new \Exception("LOGÍSTICA: " . strtoupper($res) . " insuficientes para mobilização.");
+                }
+            }
 
-            if ($rec->suprimentos < $totalSup) throw new \Exception("LOGÍSTICA: Suprimentos insuficientes.");
+            // Deduzir Recursos
+            foreach ($totalCosts as $res => $amount) {
+                if ($amount > 0) $rec->decrement($res, $amount);
+            }
 
-            // Deduzir
-            $rec->decrement('suprimentos', $totalSup);
+            $costPerUnit = $costs['suprimentos'] ?? 0;
 
             $lastPos = DB::table('unit_queue')->where('base_id', $base->id)->max('position') ?? 0;
             
