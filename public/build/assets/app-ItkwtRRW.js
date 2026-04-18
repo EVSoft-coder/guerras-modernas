@@ -28323,19 +28323,19 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
       },
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
-                    .village-root,
-                    .village-root * {
-                        all: unset;
-                        box-sizing: border-box;
-                        background: transparent !important;
-                        box-shadow: none !important;
-                        border: none !important;
-                    }
                     .village-root {
+                        all: initial;
                         position: relative;
                         display: block;
                         width: 800px;
                         height: 600px;
+                        margin: 0 auto;
+                        box-sizing: border-box;
+                        overflow: hidden;
+                    }
+                    .village-root * {
+                        box-sizing: border-box;
+                        background: transparent !important;
                     }
                     .village-root div {
                         position: absolute;
@@ -28344,12 +28344,16 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                         display: block;
                         user-select: none;
                         background: transparent !important;
+                        pointer-events: none;
                     }
                     .village-root .building-node {
                         position: absolute !important;
                         padding: 0 !important;
                         cursor: pointer;
                         pointer-events: auto;
+                        background: transparent !important;
+                        border: none !important;
+                        box-shadow: none !important;
                     }
                 ` }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -44518,7 +44522,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-BqF-AWi-.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-LPX-dwMr.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44554,4 +44558,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Dv999LlX.js.map
+//# sourceMappingURL=app-ItkwtRRW.js.map

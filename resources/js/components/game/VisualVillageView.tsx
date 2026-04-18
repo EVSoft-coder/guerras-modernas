@@ -33,19 +33,19 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                 }}
             >
                 <style>{`
-                    .village-root,
-                    .village-root * {
-                        all: unset;
-                        box-sizing: border-box;
-                        background: transparent !important;
-                        box-shadow: none !important;
-                        border: none !important;
-                    }
                     .village-root {
+                        all: initial;
                         position: relative;
                         display: block;
                         width: 800px;
                         height: 600px;
+                        margin: 0 auto;
+                        box-sizing: border-box;
+                        overflow: hidden;
+                    }
+                    .village-root * {
+                        box-sizing: border-box;
+                        background: transparent !important;
                     }
                     .village-root div {
                         position: absolute;
@@ -54,12 +54,16 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                         display: block;
                         user-select: none;
                         background: transparent !important;
+                        pointer-events: none;
                     }
                     .village-root .building-node {
                         position: absolute !important;
                         padding: 0 !important;
                         cursor: pointer;
                         pointer-events: auto;
+                        background: transparent !important;
+                        border: none !important;
+                        box-shadow: none !important;
                     }
                 `}</style>
 
