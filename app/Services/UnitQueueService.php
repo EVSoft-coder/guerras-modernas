@@ -201,35 +201,6 @@ class UnitQueueService
         }
     }
 
-    /**
-     * Cancela um lote de recrutamento com reembolso proporcional.
-     */
-    public function cancelRecruitment(int $queueId)
-    {
-        return DB::transaction(function() use ($queueId) {
-            $item = DB::table('unit_queue')->where('id', $queueId)->lockForUpdate()->first();
-            if (!$item) return false;
-
-            $baseId = $item->base_id;
-            $base = Base::find($baseId);
-            $rec = $base->recursos()->lockForUpdate()->first();
-
-            // Reembolso baseado no que ainda não foi produzido (Passo 5 — UNIT QUEUE)
-            $qtyRemaining = (int) $item->quantity_remaining;
-            
-            $rec->increment('suprimentos', (float) ($item->cost_suprimentos * $qtyRemaining));
-            $rec->increment('combustivel', (float) ($item->cost_combustivel * $qtyRemaining));
-            $rec->increment('municoes',    (float) ($item->cost_municoes * $qtyRemaining));
-
-            DB::table('unit_queue')->where('id', $item->id)->delete();
-            $this->refreshQueue($baseId);
-
-            Log::channel('game')->info('[UNIT_CANCELLED]', ['base_id' => $baseId, 'id' => $queueId, 'refund_qty' => $qtyRemaining]);
-
-            return true;
-        });
-    }
-
     private function refreshQueue(int $baseId)
     {
         $items = DB::table('unit_queue')
