@@ -37,18 +37,41 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
             */}
             <div 
                 id="VillageCanvas"
+                className="village-root"
                 style={{ 
+                    position: 'relative', 
                     width: '800px', 
                     height: '600px', 
-                    position: 'relative', 
+                    margin: '0 auto',
                     overflow: 'hidden',
-                    backgroundColor: '#000',
-                    boxShadow: '0 0 50px rgba(0,0,0,0.8)'
+                    boxShadow: '0 0 50px rgba(0,0,0,0.8)',
+                    cursor: 'default',
+                    backgroundColor: '#000'
                 }}
             >
                 <style>{`
-                    #VillageCanvas * {
-                        background-color: transparent !important;
+                    .village-root {
+                        all: unset;
+                        position: relative;
+                        display: block;
+                        width: 800px;
+                        height: 600px;
+                    }
+                    .village-root * {
+                        all: unset;
+                        box-sizing: border-box;
+                    }
+                    .village-root div {
+                        position: absolute;
+                    }
+                    .village-root .building-node {
+                        position: absolute !important;
+                        background: transparent !important;
+                    }
+                    .village-root img {
+                        display: block;
+                        user-select: none;
+                        -pointer-events: none;
                     }
                     @keyframes pulse {
                         0% { opacity: 0.3; }

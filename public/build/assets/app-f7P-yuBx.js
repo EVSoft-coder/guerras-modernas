@@ -28332,18 +28332,41 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
     "div",
     {
       id: "VillageCanvas",
+      className: "village-root",
       style: {
+        position: "relative",
         width: "800px",
         height: "600px",
-        position: "relative",
+        margin: "0 auto",
         overflow: "hidden",
-        backgroundColor: "#000",
-        boxShadow: "0 0 50px rgba(0,0,0,0.8)"
+        boxShadow: "0 0 50px rgba(0,0,0,0.8)",
+        cursor: "default",
+        backgroundColor: "#000"
       },
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
-                    #VillageCanvas * {
-                        background-color: transparent !important;
+                    .village-root {
+                        all: unset;
+                        position: relative;
+                        display: block;
+                        width: 800px;
+                        height: 600px;
+                    }
+                    .village-root * {
+                        all: unset;
+                        box-sizing: border-box;
+                    }
+                    .village-root div {
+                        position: absolute;
+                    }
+                    .village-root .building-node {
+                        position: absolute !important;
+                        background: transparent !important;
+                    }
+                    .village-root img {
+                        display: block;
+                        user-select: none;
+                        -pointer-events: none;
                     }
                     @keyframes pulse {
                         0% { opacity: 0.3; }
@@ -44550,7 +44573,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C-EvpLdM.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-kBkVKRc3.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44586,4 +44609,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-s0EmCBzz.js.map
+//# sourceMappingURL=app-f7P-yuBx.js.map
