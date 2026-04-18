@@ -64,8 +64,8 @@ class UnitQueueService
             $finishesAt = $startedAt->copy()->addSeconds($totalDuration);
             $lastPos = $lastItem ? $lastItem->position : 0;
 
-            // 5. Inserção na Fila
-            $id = DB::table('unit_queue')->insertGetId([
+            // 5. Inserção na Fila via Eloquent (Garante retorno do Objeto)
+            $queueItem = UnitQueue::create([
                 'base_id' => $base->id,
                 'unit_type_id' => $unitTypeId,
                 'quantity' => $quantidade, // Batch size
@@ -79,13 +79,11 @@ class UnitQueueService
                 'status' => 'pending',
                 'started_at' => $startedAt,
                 'finishes_at' => $finishesAt,
-                'created_at' => GameClock::now(),
-                'updated_at' => GameClock::now()
             ]);
 
-            Log::channel('game')->info("[UNIT_RECRUITMENT_STARTED] Base: {$base->id}, Type: {$unitType->name}, Qty: {$quantidade}");
+            Log::channel('game')->info("[UNIT_RECRUITMENT_STARTED] ID: {$queueItem->id}, Qty: {$quantidade}");
 
-            return $id;
+            return $queueItem;
         }, 5);
     }
 
