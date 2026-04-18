@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Log;
  */
 class ResourceService
 {
+    private TimeService $timeService;
+
+    public function __construct(?TimeService $timeService = null)
+    {
+        $this->timeService = $timeService ?? new TimeService();
+    }
     /**
      * Sincroniza a base com o tempo real se houver mudança de estado.
      */
