@@ -1,141 +1,41 @@
 export interface BuildingLayout {
-    x: number;      // Pixel X em relação a 800px
-    y: number;      // Pixel Y em relação a 600px
-    w: number;      // Largura base em pixels
-    h: number;      // Altura base em pixels
-    zIndex: number;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    zIndex?: number; // Agora opcional, pois será dinâmico por padrão
     assetPath: string;
     anchor?: 'center' | 'bottom';
+    offsetX?: number; // Ajuste fino X
+    offsetY?: number; // Ajuste fino Y
+    scale?: number;   // Escala individual do ativo
 }
 
 export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 export const BUILDING_LAYOUT_CONFIG: Record<string, BuildingLayout> = {
-    qg: {
-        x: 430,
-        y: 280,
-        w: 240,
-        h: 240,
-        zIndex: 30,
-        assetPath: '/assets/structures/v2/hq.png',
-        anchor: 'center'
-    },
-    central_energia: {
-        x: 400,
-        y: 60,
-        w: 110,
-        h: 110,
-        zIndex: 10,
-        assetPath: '/assets/structures/v2/energy.png',
-        anchor: 'center'
-    },
-    mina_suprimentos: {
-        x: 120,
-        y: 110,
-        w: 110,
-        h: 110,
-        zIndex: 11,
-        assetPath: '/assets/structures/v2/mine.png',
-        anchor: 'center'
-    },
-    mina_metal: {
-        x: 680,
-        y: 480,
-        w: 120,
-        h: 120,
-        zIndex: 45,
-        assetPath: '/assets/structures/v2/mine.png',
-        anchor: 'center'
-    },
-    radar_estrategico: {
-        x: 270,
-        y: 80,
-        w: 90,
-        h: 90,
-        zIndex: 12,
-        assetPath: '/assets/structures/v2/radar.png',
-        anchor: 'center'
-    },
-    centro_pesquisa: {
-        x: 640,
-        y: 130,
-        w: 120,
-        h: 120,
-        zIndex: 13,
-        assetPath: '/assets/structures/v2/research.png',
-        anchor: 'center'
-    },
-    quartel: {
-        x: 200,
-        y: 220,
-        w: 140,
-        h: 140,
-        zIndex: 20,
-        assetPath: '/assets/structures/v2/barracks.png',
-        anchor: 'center'
-    },
-    fabrica_municoes: {
-        x: 140,
-        y: 450,
-        w: 160,
-        h: 160,
-        zIndex: 40,
-        assetPath: '/assets/structures/v2/factory.png',
-        anchor: 'center'
-    },
-    refinaria: {
-        x: 720,
-        y: 210,
-        w: 110,
-        h: 110,
-        zIndex: 21,
-        assetPath: '/assets/structures/v2/factory.png',
-        anchor: 'center'
-    },
-    aerodromo: {
-        x: 400,
-        y: 500,
-        w: 220,
-        h: 220,
-        zIndex: 42,
-        assetPath: '/assets/structures/v2/aerodrome.png',
-        anchor: 'center'
-    },
-    housing: {
-        x: 210,
-        y: 330,
-        w: 100,
-        h: 100,
-        zIndex: 25,
-        assetPath: '/assets/structures/v2/housing.png',
-        anchor: 'center'
-    },
-    posto_recrutamento: {
-        x: 640,
-        y: 400,
-        w: 100,
-        h: 100,
-        zIndex: 43,
-        assetPath: '/assets/structures/v2/housing.png',
-        anchor: 'center'
-    },
-    muralha: {
-        x: 740,
-        y: 40,
-        w: 80,
-        h: 80,
-        zIndex: 5,
-        assetPath: '',
-        anchor: 'center'
-    },
-    parlamento: {
-        x: 400,
-        y: 550,
-        w: 90,
-        h: 90,
-        zIndex: 50,
-        assetPath: '',
-        anchor: 'center'
-    }
+    // BACK ROW
+    central_energia:    { x: 385, y: 70, w: 120, h: 120, assetPath: '/assets/structures/v2/energy.png', offsetX: 0, offsetY: 0, scale: 1.3 },
+    mina_suprimentos:   { x: 140, y: 125, w: 120, h: 120, assetPath: '/assets/structures/v2/mine.png', offsetX: -5, offsetY: 0, scale: 1.2 },
+    radar_estrategico:  { x: 265, y: 95, w: 100, h: 100, assetPath: '/assets/structures/v2/radar.png', offsetX: 0, offsetY: 0, scale: 1.1 },
+    centro_pesquisa:    { x: 650, y: 140, w: 140, h: 140, assetPath: '/assets/structures/v2/research.png', offsetX: 10, offsetY: 0, scale: 1.3 },
+    
+    // MID ROW
+    quartel:            { x: 220, y: 245, w: 160, h: 160, assetPath: '/assets/structures/v2/barracks.png', offsetX: 0, offsetY: 0, scale: 1.3 },
+    refinaria:          { x: 740, y: 235, w: 130, h: 130, assetPath: '/assets/structures/v2/factory.png', offsetX: 5, offsetY: 0, scale: 1.2 },
+    housing:            { x: 235, y: 350, w: 110, h: 110, assetPath: '/assets/structures/v2/housing.png', offsetX: -10, offsetY: 0, scale: 1.15 },
+    
+    // CENTER
+    qg:                 { x: 450, y: 310, w: 300, h: 300, assetPath: '/assets/structures/v2/hq.png', offsetX: 0, offsetY: 0, scale: 1.5 },
+    
+    // FRONT ROW
+    fabrica_municoes:   { x: 165, y: 475, w: 180, h: 180, assetPath: '/assets/structures/v2/factory.png', offsetX: 0, offsetY: 0, scale: 1.4 },
+    aerodromo:          { x: 420, y: 510, w: 240, h: 240, assetPath: '/assets/structures/v2/aerodrome.png', offsetX: 0, offsetY: 0, scale: 1.4 },
+    posto_recrutamento: { x: 670, y: 430, w: 120, h: 120, assetPath: '/assets/structures/v2/housing.png', offsetX: 0, offsetY: 0, scale: 1.2 },
+    mina_metal:         { x: 730, y: 505, w: 140, h: 140, assetPath: '/assets/structures/v2/mine.png', offsetX: 0, offsetY: 0, scale: 1.3 },
+    
+    // MARGINALS
+    muralha:            { x: 750, y: 55, w: 100, h: 100, assetPath: '', offsetX: 0, offsetY: 0 },
+    parlamento:         { x: 400, y: 560, w: 100, h: 100, assetPath: '', offsetX: 0, offsetY: 0 }
 };
