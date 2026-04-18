@@ -28291,25 +28291,28 @@ const AnimatedNumber = ({ value, customValue }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
 const POSITION_MAP = {
-  // ALINHAMENTO TÁTICO BASEADO NOS PADS DO TERRENO
-  qg: { top: "50%", left: "52%", size: "320px", icon: Flag, color: "text-orange-500", assetUrl: "/assets/structures/v2/hq.png", zIndex: 30 },
-  central_energia: { top: "12%", left: "50%", size: "150px", icon: Zap, color: "text-yellow-400", assetUrl: "/assets/structures/v2/energy.png", zIndex: 10 },
-  mina_suprimentos: { top: "18%", left: "16%", size: "150px", icon: Pickaxe, color: "text-emerald-500", assetUrl: "/assets/structures/v2/mine.png", zIndex: 11 },
-  mina_metal: { top: "82%", left: "84%", size: "150px", icon: Pickaxe, color: "text-sky-400", assetUrl: "/assets/structures/v2/mine.png", zIndex: 45 },
-  radar_estrategico: { top: "12%", left: "32%", size: "120px", icon: Radar, color: "text-blue-400", assetUrl: "/assets/structures/v2/radar.png", zIndex: 12 },
-  centro_pesquisa: { top: "22%", left: "78%", size: "160px", icon: Microscope, color: "text-purple-400", assetUrl: "/assets/structures/v2/research.png", zIndex: 13 },
-  quartel: { top: "38%", left: "26%", size: "180px", icon: Crosshair, color: "text-red-500", assetUrl: "/assets/structures/v2/barracks.png", zIndex: 20 },
-  fabrica_municoes: { top: "75%", left: "22%", size: "200px", icon: Factory, color: "text-neutral-400", assetUrl: "/assets/structures/v2/factory.png", zIndex: 40 },
-  refinaria: { top: "38%", left: "88%", size: "160px", icon: Flame, color: "text-orange-600", assetUrl: "/assets/structures/v2/factory.png", zIndex: 21 },
-  aerodromo: { top: "82%", left: "48%", size: "220px", icon: Plane, color: "text-cyan-400", assetUrl: "/assets/structures/v2/aerodrome.png", zIndex: 42 },
-  housing: { top: "55%", left: "24%", size: "130px", icon: House, color: "text-indigo-400", assetUrl: "/assets/structures/v2/housing.png", zIndex: 25 },
-  posto_recrutamento: { top: "65%", left: "78%", size: "130px", icon: Users, color: "text-rose-400", assetUrl: "/assets/structures/v2/housing.png", zIndex: 43 },
-  muralha: { top: "5%", left: "92%", size: "100px", icon: Shield, color: "text-blue-500", zIndex: 5 },
-  parlamento: { top: "92%", left: "50%", size: "110px", icon: Landmark, color: "text-amber-500", zIndex: 50 }
+  // BACK ROW
+  central_energia: { top: "10%", left: "50%", size: "130px", icon: Zap, color: "text-yellow-400", assetUrl: "/assets/structures/v2/energy.png", zIndex: 10 },
+  mina_suprimentos: { top: "18%", left: "16%", size: "130px", icon: Pickaxe, color: "text-emerald-500", assetUrl: "/assets/structures/v2/mine.png", zIndex: 11 },
+  mina_metal: { top: "85%", left: "85%", size: "140px", icon: Pickaxe, color: "text-sky-400", assetUrl: "/assets/structures/v2/mine.png", zIndex: 45 },
+  radar_estrategico: { top: "12%", left: "32%", size: "100px", icon: Radar, color: "text-blue-400", assetUrl: "/assets/structures/v2/radar.png", zIndex: 12 },
+  centro_pesquisa: { top: "22%", left: "82%", size: "140px", icon: Microscope, color: "text-purple-400", assetUrl: "/assets/structures/v2/research.png", zIndex: 13 },
+  // MID ROW
+  quartel: { top: "38%", left: "26%", size: "150px", icon: Crosshair, color: "text-red-500", assetUrl: "/assets/structures/v2/barracks.png", zIndex: 20 },
+  refinaria: { top: "38%", left: "92%", size: "140px", icon: Flame, color: "text-orange-600", assetUrl: "/assets/structures/v2/factory.png", zIndex: 21 },
+  housing: { top: "56%", left: "26%", size: "110px", icon: House, color: "text-indigo-400", assetUrl: "/assets/structures/v2/housing.png", zIndex: 25 },
+  // CENTER
+  qg: { top: "48%", left: "54%", size: "300px", icon: Flag, color: "text-orange-500", assetUrl: "/assets/structures/v2/hq.png", zIndex: 30 },
+  // FRONT ROW - DESCOMPRESSION
+  fabrica_municoes: { top: "75%", left: "15%", size: "180px", icon: Factory, color: "text-neutral-400", assetUrl: "/assets/structures/v2/factory.png", zIndex: 40 },
+  aerodromo: { top: "86%", left: "48%", size: "200px", icon: Plane, color: "text-cyan-400", assetUrl: "/assets/structures/v2/aerodrome.png", zIndex: 42 },
+  posto_recrutamento: { top: "68%", left: "78%", size: "110px", icon: Users, color: "text-rose-400", assetUrl: "/assets/structures/v2/housing.png", zIndex: 43 },
+  muralha: { top: "5%", left: "92%", size: "90px", icon: Shield, color: "text-blue-500", zIndex: 5 },
+  parlamento: { top: "92%", left: "50%", size: "100px", icon: Landmark, color: "text-amber-500", zIndex: 50 }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   U$2.useEffect(() => {
-    console.log(">>> VILLAGE_COMMAND_HUD_V6_ULTRA_PREMIUM_FIX_ACTIVE <<<");
+    console.log(">>> VILLAGE_COMMAND_HUD_V7_SCREEN_BLEND_ACTIVE <<<");
   }, []);
   const getBuildingLevel = (type2) => {
     var _a2;
@@ -28370,27 +28373,21 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                 style: { width: pos.size, height: pos.size },
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_70%)] opacity-0 group-hover/building:opacity-100 transition-opacity" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative w-full h-full flex items-center justify-center drop-shadow-[0_30px_60px_rgba(0,0,0,1)]", children: pos.assetUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative w-full h-full flex items-center justify-center drop-shadow-[0_20px_50px_rgba(0,0,0,0.9)]", children: pos.assetUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "img",
                     {
                       src: pos.assetUrl,
-                      className: `w-full h-full object-contain transition-all duration-500
-                                                        ${isConstructing ? "brightness-50 grayscale" : "brightness-[1.25] contrast-[1.2] group-hover/building:brightness-[1.4]"}
+                      className: `w-full h-full object-contain transition-all duration-700 mix-blend-screen
+                                                        ${isConstructing ? "brightness-50 grayscale" : "brightness-[1.2] contrast-[1.1] group-hover/building:brightness-[1.4]"}
                                                     `,
                       style: {
-                        transform: "scale(1.8)",
-                        filter: "drop-shadow(0 0 10px rgba(0,0,0,0.8))"
+                        transform: "scale(1.45)"
                       },
-                      onError: (e) => {
-                        var _a3;
-                        console.error("FAILED_TO_LOAD_ASSET:", type2);
-                        e.currentTarget.style.display = "none";
-                        (_a3 = e.currentTarget.parentElement) == null ? void 0 : _a3.classList.add("broken-asset");
-                      }
+                      onLoad: () => console.log(`BASE_STRUCTURE_LOADED: ${type2}`)
                     }
-                  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center w-3/4 h-3/4 bg-[#050709]/95 backdrop-blur-3xl rounded-[2.5rem] border-2 border-white/20 shadow-2xl", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 32, className: `${pos.color} mb-3` }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black uppercase text-white tracking-widest", children: (config == null ? void 0 : config.name) || type2 })
+                  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center w-2/3 h-2/3 bg-[#050709]/95 backdrop-blur-3xl rounded-[2.5rem] border-2 border-white/20 shadow-2xl", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 28, className: `${pos.color} mb-2` }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-white tracking-widest", children: (config == null ? void 0 : config.name) || type2 })
                   ] }) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 z-50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#050709]/90 border border-white/10 px-4 py-1.5 rounded-full shadow-2xl backdrop-blur-2xl flex items-center gap-3 group-hover/building:border-white/30 transition-all", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-2 h-2 rounded-full ${isConstructing ? "bg-orange-500 animate-pulse" : "bg-emerald-500 shadow-[0_0_10px_#10b981]"}` }),
@@ -44575,7 +44572,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-BTWQa4gn.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DjBrRxIa.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44611,4 +44608,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DxPKHS5X.js.map
+//# sourceMappingURL=app-DJb9bg-j.js.map
