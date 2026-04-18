@@ -1,5 +1,6 @@
 import React from 'react';
 import { BUILDING_LAYOUT } from '@/config/buildingLayout';
+import { BUILDING_ASSETS } from '@/config/buildingAssets';
 
 interface BuildingNodeProps {
     type: string;
@@ -24,9 +25,13 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const layout = BUILDING_LAYOUT[type];
     if (!layout) return null;
 
-    // CÁLCULO DE ANCORAGEM MÁSTER (V12.4)
-    const left = layout.x - (layout.w / 2);
-    const top = layout.y - layout.h; // Forçado para Bottom Alignment
+    // CÁLCULO DE ANCORAGEM MÁSTER (V12.4 + V13 metadata)
+    const assetConfig = BUILDING_ASSETS[type] || { width: 100, height: 100, anchor: 'bottom' };
+    const width = assetConfig.width;
+    const height = assetConfig.height;
+
+    const left = layout.x - (width / 2);
+    const top = layout.y - height; // Forçado para Bottom Alignment
 
     const assetPath = layout.assetName 
         ? `/images/buildings/${layout.assetName}`
@@ -43,8 +48,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 position: 'absolute',
                 left: `${left}px`,
                 top: `${top}px`,
-                width: `${layout.w}px`,
-                height: `${layout.h}px`,
+                width: `${width}px`,
+                height: `${height}px`,
                 zIndex: staticZ,
                 cursor: 'pointer',
                 pointerEvents: 'auto',

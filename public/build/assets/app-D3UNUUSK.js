@@ -28193,6 +28193,58 @@ const BUILDING_LAYOUT = {
   housing: { x: 80, y: 180, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" },
   posto_recrutamento: { x: 720, y: 180, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" }
 };
+const BUILDING_ASSETS = {
+  qg: {
+    width: 200,
+    height: 200,
+    anchor: "bottom"
+  },
+  quartel: {
+    width: 110,
+    height: 110,
+    anchor: "bottom"
+  },
+  fabrica_municoes: {
+    width: 110,
+    height: 110,
+    anchor: "bottom"
+  },
+  central_energia: {
+    width: 90,
+    height: 90,
+    anchor: "bottom"
+  },
+  centro_pesquisa: {
+    width: 90,
+    height: 90,
+    anchor: "bottom"
+  },
+  radar_estrategico: {
+    width: 90,
+    height: 90,
+    anchor: "bottom"
+  },
+  aerodromo: {
+    width: 120,
+    height: 120,
+    anchor: "bottom"
+  },
+  muralha: {
+    width: 260,
+    height: 110,
+    anchor: "center"
+  },
+  mine: {
+    width: 100,
+    height: 100,
+    anchor: "bottom"
+  },
+  housing: {
+    width: 110,
+    height: 110,
+    anchor: "bottom"
+  }
+};
 const BuildingNode = ({
   type: type2,
   level,
@@ -28202,8 +28254,11 @@ const BuildingNode = ({
 }) => {
   const layout2 = BUILDING_LAYOUT[type2];
   if (!layout2) return null;
-  const left = layout2.x - layout2.w / 2;
-  const top = layout2.y - layout2.h;
+  const assetConfig = BUILDING_ASSETS[type2] || { width: 100, height: 100 };
+  const width = assetConfig.width;
+  const height = assetConfig.height;
+  const left = layout2.x - width / 2;
+  const top = layout2.y - height;
   const assetPath = layout2.assetName ? `/images/buildings/${layout2.assetName}` : null;
   const staticZ = Math.floor(layout2.y);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -28215,8 +28270,8 @@ const BuildingNode = ({
         position: "absolute",
         left: `${left}px`,
         top: `${top}px`,
-        width: `${layout2.w}px`,
-        height: `${layout2.h}px`,
+        width: `${width}px`,
+        height: `${height}px`,
         zIndex: staticZ,
         cursor: "pointer",
         pointerEvents: "auto",
@@ -44573,7 +44628,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-kBkVKRc3.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CEdB0jWz.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44609,4 +44664,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-f7P-yuBx.js.map
+//# sourceMappingURL=app-D3UNUUSK.js.map
