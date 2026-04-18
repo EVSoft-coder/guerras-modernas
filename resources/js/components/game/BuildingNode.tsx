@@ -24,16 +24,16 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const layout = BUILDING_LAYOUT[type];
     if (!layout) return null;
 
-    // CÁLCULO DE ANCORAGEM (V12.1)
+    // CÁLCULO DE ANCORAGEM MÁSTER (V12.4)
     const left = layout.x - (layout.w / 2);
-    const top = layout.y - (layout.anchor === 'bottom' ? layout.h : layout.h / 2);
+    const top = layout.y - layout.h; // Forçado para Bottom Alignment
 
     const assetPath = layout.assetName 
         ? `/images/buildings/${layout.assetName}`
         : null;
 
-    // Z-INDEX TÁTICO: BASEADO NO LIMITE INFERIOR (Y + H)
-    const staticZ = Math.floor(layout.y + layout.h);
+    // Z-INDEX TÁTICO: BASEADO NO LIMITE INFERIOR (Y)
+    const staticZ = Math.floor(layout.y);
 
     return (
         <div 
@@ -58,7 +58,24 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 onClick();
             }}
         >
-            {/* SOMBRA DE CONTACTO (OPCIONAL - MANTIDA MAS COM OPACIDADE MÍNIMA) */}
+            {/* SINALIZADOR DE PRECISÃO (DEBUG - PONTO VERMELHO NA BASE) */}
+            <div 
+                style={{ 
+                    position: 'absolute',
+                    bottom: '0',
+                    left: '50%',
+                    width: '6px',
+                    height: '6px',
+                    background: 'red',
+                    borderRadius: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 100,
+                    pointerEvents: 'none',
+                    boxShadow: '0 0 5px red'
+                }} 
+            />
+
+            {/* SOMBRA DE CONTACTO (ALPHA) */}
             <div 
                 style={{ 
                     position: 'absolute',

@@ -28177,21 +28177,21 @@ const AnimatedNumber = ({ value, customValue }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
 const BUILDING_LAYOUT = {
-  // LAYOUT DETERMINÍSTICO V12.1 — COORDENADAS REAIS
-  qg: { x: 400, y: 270, w: 180, h: 180, anchor: "bottom", assetName: "qg.png" },
-  quartel: { x: 630, y: 320, w: 110, h: 110, anchor: "bottom", assetName: "quartel.png" },
-  fabrica_municoes: { x: 230, y: 320, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
-  central_energia: { x: 340, y: 170, w: 90, h: 90, anchor: "bottom", assetName: "central_energia.png" },
-  centro_pesquisa: { x: 620, y: 180, w: 90, h: 90, anchor: "bottom", assetName: "centro_pesquisa.png" },
-  radar_estrategico: { x: 180, y: 210, w: 90, h: 90, anchor: "bottom", assetName: "radar_estrategico.png" },
-  aerodromo: { x: 400, y: 400, w: 120, h: 120, anchor: "bottom", assetName: "aerodromo.png" },
-  muralha: { x: 400, y: 520, w: 260, h: 110, anchor: "center", assetName: "muralha.png" },
+  // LAYOUT DETERMINÍSTICO V12.1 — COORDENADAS REAIS (ALINHADAS AO SOLO)
+  qg: { x: 400, y: 350, w: 180, h: 180, anchor: "bottom", assetName: "qg.png" },
+  quartel: { x: 630, y: 380, w: 110, h: 110, anchor: "bottom", assetName: "quartel.png" },
+  fabrica_municoes: { x: 230, y: 380, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
+  central_energia: { x: 340, y: 220, w: 90, h: 90, anchor: "bottom", assetName: "central_energia.png" },
+  centro_pesquisa: { x: 620, y: 230, w: 90, h: 90, anchor: "bottom", assetName: "centro_pesquisa.png" },
+  radar_estrategico: { x: 180, y: 250, w: 90, h: 90, anchor: "bottom", assetName: "radar_estrategico.png" },
+  aerodromo: { x: 400, y: 480, w: 120, h: 120, anchor: "bottom", assetName: "aerodromo.png" },
+  muralha: { x: 400, y: 560, w: 260, h: 110, anchor: "bottom", assetName: "muralha.png" },
   // Fallbacks para edifícios não listados mas necessários
-  refinaria: { x: 660, y: 450, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
-  mina_suprimentos: { x: 140, y: 450, w: 100, h: 100, anchor: "bottom", assetName: "mine.png" },
-  mina_metal: { x: 400, y: 490, w: 120, h: 120, anchor: "bottom", assetName: "mine.png" },
-  housing: { x: 80, y: 100, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" },
-  posto_recrutamento: { x: 720, y: 100, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" }
+  refinaria: { x: 660, y: 500, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
+  mina_suprimentos: { x: 140, y: 500, w: 100, h: 100, anchor: "bottom", assetName: "mine.png" },
+  mina_metal: { x: 400, y: 550, w: 120, h: 120, anchor: "bottom", assetName: "mine.png" },
+  housing: { x: 80, y: 180, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" },
+  posto_recrutamento: { x: 720, y: 180, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" }
 };
 const BuildingNode = ({
   type: type2,
@@ -28203,9 +28203,9 @@ const BuildingNode = ({
   const layout2 = BUILDING_LAYOUT[type2];
   if (!layout2) return null;
   const left = layout2.x - layout2.w / 2;
-  const top = layout2.y - (layout2.anchor === "bottom" ? layout2.h : layout2.h / 2);
+  const top = layout2.y - layout2.h;
   const assetPath = layout2.assetName ? `/images/buildings/${layout2.assetName}` : null;
-  const staticZ = Math.floor(layout2.y + layout2.h);
+  const staticZ = Math.floor(layout2.y);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
@@ -28230,6 +28230,24 @@ const BuildingNode = ({
         onClick();
       },
       children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            style: {
+              position: "absolute",
+              bottom: "0",
+              left: "50%",
+              width: "6px",
+              height: "6px",
+              background: "red",
+              borderRadius: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 100,
+              pointerEvents: "none",
+              boxShadow: "0 0 5px red"
+            }
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -44532,7 +44550,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CFpBok1B.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-C-EvpLdM.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44568,4 +44586,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-C0-4oJmF.js.map
+//# sourceMappingURL=app-s0EmCBzz.js.map
