@@ -39,30 +39,48 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
     // PASSO 3 — Z-INDEX AVANÇADO (CENTRO DE MASSA VISUAL)
     let dynamicZIndex = Math.floor(layout.y + (layout.h * 0.5));
     if (type === 'muralha') dynamicZIndex = 1;
+    // PASSO 9 — Z-INDEX DINÂMICO BASEADO EM POSIÇÃO Y (OCLUSÃO ISOMÉTRICA)
+    const dynamicZIndex = Math.floor(layout.y) + 100;
+
+    // FUNÇÃO DE ABREVIATURA TÁTICA (HUD CLEAN-UP)
+    const getTacticalName = (fullName: string) => {
+        const mapping: Record<string, string> = {
+            'Radar de Longo Alcance': 'Radar Est.',
+            'Centro de Pesquisa & I&D': 'Pesquisa',
+            'Fábrica de Munições': 'Fábrica Mun.',
+            'Refinaria de Combustível': 'Refinaria',
+            'Mina de Suprimentos': 'Suprimentos',
+            'Mina de Metal': 'Mina Metal',
+            'Quartel Regional': 'Quartel',
+            'Complexo Residencial': 'Habitação',
+            'Posto de Recrutamento': 'Recrut.',
+            'Centro de Comando (QG)': 'Comando QG'
+        };
+        return mapping[fullName] || (fullName.length > 12 ? fullName.substring(0, 10) + '...' : fullName);
+    };
+
+    const tacticalName = getTacticalName(name);
 
     return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.05, zIndex: 9999 }}
-            onClick={onClick}
-            className="absolute cursor-pointer transition-all hover:filter hover:brightness-110 group/node"
-            style={{
-                left,
-                top,
-                width,
-                height,
-                zIndex: dynamicZIndex
+        <div 
+            className="group/node absolute cursor-pointer transition-transform duration-300"
+            style={{ 
+                left: `${left}px`, 
+                top: `${top}px`, 
+                width: `${width}px`, 
+                height: `${height}px`,
+                zIndex: dynamicZIndex, // PASSO 10 — Z-INDEX DINÂMICO
+                pointerEvents: 'auto'
+            }}
+            onClick={(e) => {
+                e.stopPropagation();
+                onClick();
             }}
         >
-            {/* SHADOW SYSTEM V11 (DUAL ISOMETRIC SHADOW) */}
+            {/* SOMBRA ISOMÉTRICA (ANCORED) */}
             <div 
-                className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[80%] h-[20%] bg-black/90 blur-[10px] rounded-[100%] z-[-2] opacity-80" 
-                style={{ transform: 'translateX(-40%)' }} // Desvio isométrico
-            />
-            <div 
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-[60%] h-[10%] bg-black/100 blur-[4px] rounded-[100%] z-[-1] opacity-90" 
-                style={{ transform: 'translateX(-45%)' }}
+                className="absolute w-[80%] h-[30%] bg-black/60 blur-[12px] rounded-[100%] z-0" 
+                style={{ bottom: '5%', left: '10%' }}
             />
 
             {/* ASSET VISUAL REAL (GRID MASTER V11.3 - SOLID MASS) */}
@@ -70,13 +88,13 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 <img 
                     src={assetPath} 
                     className={`w-full h-full object-contain pointer-events-none transition-all duration-500
-                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.5] contrast-[1.3] saturate-[1.2] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 group-hover/node:filter group-hover/node:drop-shadow-[0_0_20px_rgba(0,255,100,0.4)]'}
+                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.6] contrast-[1.4] saturate-[1.3] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 group-hover/node:filter group-hover/node:drop-shadow-[0_0_20px_rgba(0,255,100,0.5)]'}
                     `}
                     alt={name}
                     style={{
                         mixBlendMode: (type === 'housing' || type === 'posto_recrutamento') ? 'multiply' : 'screen',
-                        maskImage: 'radial-gradient(circle at center, black 75%, transparent 100%)',
-                        WebkitMaskImage: 'radial-gradient(circle at center, black 75%, transparent 100%)'
+                        maskImage: 'radial-gradient(circle at center, black 80%, transparent 100%)',
+                        WebkitMaskImage: 'radial-gradient(circle at center, black 80%, transparent 100%)'
                     }}
                     onError={(e) => {
                         e.currentTarget.style.display = 'none';
@@ -84,22 +102,22 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 />
             ) : (
                 <div className="w-full h-full flex items-center justify-center bg-black/80 border border-white/20 rounded-xl backdrop-blur-xl">
-                    <span className="text-[10px] text-white/40 font-black uppercase text-center px-1 leading-none">{name}</span>
+                    <span className="text-[10px] text-white/40 font-black uppercase text-center px-1 leading-none">{tacticalName}</span>
                 </div>
             )}
 
-            {/* HUD MILITAR MINIMALISTA V11.3 */}
-            <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 z-[2000] pointer-events-none">
+            {/* HUD MILITAR MINIMALISTA V11.3 (TOP LAYER) */}
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 z-[5000] pointer-events-none">
                 {/* NAME PLATE (COMPACT HUD STYLE) */}
-                <div className="px-2 py-0.5 bg-black/90 backdrop-blur-3xl border border-white/10 rounded-sm shadow-3xl group-hover/node:border-[#0f0]/60 transition-all">
-                    <span className="text-[7.5px] font-black text-white/95 uppercase tracking-[0.15em] whitespace-nowrap">
-                        {name.length > 15 ? name.substring(0, 12) + "..." : name}
+                <div className="px-2 py-0.5 bg-black/95 backdrop-blur-3xl border border-white/10 rounded-sm shadow-3xl group-hover/node:border-[#0f0]/60 transition-all">
+                    <span className="text-[7.5px] font-black text-white/95 uppercase tracking-[0.2em] whitespace-nowrap">
+                        {tacticalName}
                     </span>
                 </div>
                 
                 {/* LEVEL BADGE (TACTICAL HUD) */}
                 <div 
-                    className="flex items-center justify-center bg-[#050608]/95 border border-[#0f0]/90 text-[#0f0] font-black shadow-[0_0_20px_rgba(0,255,0,0.25)] skew-x-[-12deg]"
+                    className="flex items-center justify-center bg-[#050608]/95 border border-[#0f0]/90 text-[#0f0] font-black shadow-[0_0_20px_rgba(0,255,0,0.3)] skew-x-[-12deg]"
                     style={{ 
                         width: `${22 * scale}px`,
                         height: `${14 * scale}px`,
@@ -112,7 +130,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
 
             {/* CONSTRUCTING STATUS */}
             {isConstructing && (
-                <div className="absolute -top-16 left-1/2 -translate-x-1/2 text-[7px] font-black text-[#0f0] animate-pulse uppercase">
+                <div className="absolute -top-16 left-1/2 -translate-x-1/2 text-[7.5px] font-black text-[#0f0] animate-pulse uppercase tracking-wider">
                     Engenharia...
                 </div>
             )}

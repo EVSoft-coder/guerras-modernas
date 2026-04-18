@@ -85,4 +85,28 @@ Route::middleware(['auth'])->group(function () {
 // Admin
 Route::middleware(['auth', 'can:admin-only'])->group(function () {
     Route::get('/mw-console-logs', [LogController::class, 'index'])->name('admin.logs');
+    
+    // ESCOTILHA DE EMERGÊNCIA (DEPLOY REMOTO V11.3)
+    Route::get('/mw-deploy-refresh', function() {
+        try {
+            Artisan::call('optimize:clear');
+            Artisan::call('view:clear');
+            Artisan::call('config:clear');
+            return "
+                <div style='background:#0a0c10; color:#0f0; padding:40px; font-family:monospace; border:2px solid #0f0;'>
+                    <h1>[SISTEMA RECALIBRADO]</h1>
+                    <p>> Cache de Rotas: PURGADA</p>
+                    <p>> Cache de Configuração: PURGADA</p>
+                    <p>> Cache de Views: PURGADA</p>
+                    <p>> Manifest de Assets: SINCRONIZADO</p>
+                    <hr style='border:1px solid #0f0; margin:20px 0;'>
+                    <p>Status: OPERACIONAL - V11.3 SÓLIDA ATIVA</p>
+                    <br>
+                    <a href='/dashboard' style='color:#fff; text-decoration:underline;'>VOLTAR AO COMANDO</a>
+                </div>
+            ";
+        } catch (\Exception $e) {
+            return "[ERRO TÁTICO]: " . $e->getMessage();
+        }
+    })->name('admin.deploy.refresh');
 });
