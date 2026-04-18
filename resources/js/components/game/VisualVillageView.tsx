@@ -15,22 +15,12 @@ interface VillageViewProps {
  * VillageCanvas — FASE UI PROFISSIONAL (Passo 1)
  * Sistema de renderização absoluta independente (Passo 9)
  */
+/**
+ * VillageCanvas — FASE CORE DETERMINÍSTICO
+ * Proibido: % , flex, grid, margin-auto para posicionamento interno.
+ */
 export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [scale, setScale] = useState(1);
-    
-    // PASSO 7 — ESCALA RESPONSIVA DINÂMICA
-    useEffect(() => {
-        const updateScale = () => {
-            if (containerRef.current) {
-                setScale(containerRef.current.clientWidth / REFERENCE_WIDTH);
-            }
-        };
-        const observer = new ResizeObserver(updateScale);
-        if (containerRef.current) observer.observe(containerRef.current);
-        updateScale();
-        return () => observer.disconnect();
-    }, []);
 
     const getBuildingLevel = (type: string) => {
         if (type === 'qg') return base.qg_nivel || 0;
@@ -40,78 +30,91 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
     };
 
     return (
-        <div className="w-full flex justify-center py-4"> {/* PASSO 2 — VILLAGE-ROOT */}
-            
+        <div className="w-full flex justify-center py-8 bg-[#050608]">
+            {/* 
+               PASSO 1: CONTAINER FIXO 800x600 
+               Este é o 'Canvas' que não muda de layout no resize.
+            */}
             <div 
-                ref={containerRef}
-                className="relative bg-[#010203] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-3xl select-none"
+                id="VillageCanvas"
                 style={{ 
-                    width: '100%', 
-                    maxWidth: '800px', 
-                    aspectRatio: '800/600' 
+                    width: '800px', 
+                    height: '600px', 
+                    position: 'relative', 
+                    overflow: 'hidden',
+                    backgroundColor: '#000',
+                    boxShadow: '0 0 50px rgba(0,0,0,0.8)'
                 }}
             >
-                {/* PASSO 11 — MOTOR DE TRANSPARÊNCIA SVG (CHROMA KEY) */}
-                <svg width="0" height="0" className="absolute invisible">
-                    <defs>
-                        <filter id="alpha-purge" colorInterpolationFilters="sRGB">
-                            <feColorMatrix type="matrix" 
-                                values="1 0 0 0 0
-                                        0 1 0 0 0
-                                        0 0 1 0 0
-                                        1 1 1 0 -0.8" />
-                        </filter>
-                    </defs>
-                </svg>
-
-                {/* PASSO 1 & 2 — VILLAGE-BG (MASTERPIECE V11) */}
-                <div className="absolute inset-0 z-0">
+                {/* CAMADA 1: background-layer */}
+                <div 
+                    id="background-layer" 
+                    style={{ position: 'absolute', inset: 0, zIndex: 1 }}
+                >
                     <img 
                         src="/assets/structures/v2/terrain.png" 
-                        className="w-full h-full object-cover brightness-[0.65] contrast-[1.15] saturate-[0.8]" 
-                        alt="Village Background Masterpiece" 
+                        style={{ width: '800px', height: '600px', objectFit: 'cover' }}
+                        alt="Terreno" 
                     />
-                    {/* PASSO 5 — OVERLAY DE FOCO TÁTICO (SUAVE) */}
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_50%,rgba(0,0,0,0.5)_100%)] pointer-events-none" />
+                    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, transparent, rgba(0,0,0,0.4))' }} />
                 </div>
 
-                {/* PASSO 1 & 6 — VILLAGE-LAYER-BUILDINGS */}
-                <div className="absolute inset-0 z-20 pointer-events-none">
+                {/* CAMADA 2: buildings-layer */}
+                <div 
+                    id="buildings-layer" 
+                    style={{ position: 'absolute', inset: 0, zIndex: 2 }}
+                >
                     <TooltipProvider>
                         {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
                             const level = getBuildingLevel(type);
                             const isConstructing = (buildingQueue || []).some(q => q.type === type);
                             const config = gameConfig?.buildings?.[type];
                             
-                            // Apenas renderiza se o nível for > 0 ou em construção
                             if (level === 0 && !isConstructing) return null;
 
                             return (
-                                <div key={type} className="pointer-events-auto">
-                                    <BuildingNode
-                                        type={type}
-                                        level={level}
-                                        scale={scale}
-                                        isConstructing={isConstructing}
-                                        name={config?.name || type}
-                                        onClick={() => onBuildingClick({ id: type, buildingType: type, name: config?.name || type, level })}
-                                    />
-                                </div>
+                                <BuildingNode
+                                    key={type}
+                                    type={type}
+                                    level={level}
+                                    scale={1} // LOCK SCALE AT 1 FOR DETERMINISTIC
+                                    isConstructing={isConstructing}
+                                    name={config?.name || type}
+                                    onClick={() => onBuildingClick({ id: type, buildingType: type, name: config?.name || type, level })}
+                                />
                             );
                         })}
                     </TooltipProvider>
                 </div>
 
-                {/* PASSO 9 — UI SEPARATION (Apenas overlays táticos leves) */}
-                <div className="absolute inset-x-8 top-8 flex justify-between items-start z-50 pointer-events-none opacity-50">
-                    <div className="bg-black/40 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md">
-                        <span className="text-[10px] font-black text-white uppercase tracking-widest">{base.nome}</span>
+                {/* CAMADA 3: ui-layer */}
+                <div 
+                    id="ui-layer" 
+                    style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none' }}
+                >
+                    {/* Overlay de HUD Tático */}
+                    <div style={{ position: 'absolute', left: '20px', top: '20px', pointerEvents: 'none' }}>
+                         <div style={{ 
+                             backgroundColor: 'rgba(0,0,0,0.7)', 
+                             padding: '8px 16px', 
+                             borderLeft: '3px solid #0f0',
+                             color: '#fff',
+                             fontSize: '12px',
+                             fontFamily: 'monospace',
+                             textTransform: 'uppercase'
+                         }}>
+                            Sinal: {base.nome} | Setor: Alpha-1
+                         </div>
                     </div>
+                    
+                    {/* Linhas de scanline fixas */}
+                    <div style={{ 
+                        position: 'absolute', 
+                        inset: 0, 
+                        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.03) 1px, rgba(255,255,255,0.03) 2px)', 
+                        backgroundSize: '100% 4px' 
+                    }} />
                 </div>
-
-                {/* SCANLINE EFFECT */}
-                <div className="absolute inset-0 z-[100] pointer-events-none opacity-[0.03]" 
-                     style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px)', backgroundSize: '100% 4px' }} />
             </div>
         </div>
     );

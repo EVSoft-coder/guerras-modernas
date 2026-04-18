@@ -28176,81 +28176,48 @@ const AnimatedNumber = ({ value, customValue }) => {
   }, [value]);
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
-const REFERENCE_WIDTH = 800;
 const BUILDING_LAYOUT = {
-  // LAYOUT MASTERPIECE V11.3 (SISTEMA DE DISPERSÃO TOTAL)
-  // Coordenadas calculadas para o grid 800x600 real
-  qg: { x: 400, y: 310, w: 160, h: 160, anchor: "center", assetName: "hq.png" },
-  // SECTORES TÁTICOS (CIRCLES & RECTS) - DISPERSÃO ALFA
-  radar_estrategico: { x: 400, y: 130, w: 100, h: 100, anchor: "center", assetName: "radar.png" },
-  // C1 (Norte)
-  central_energia: { x: 530, y: 200, w: 100, h: 100, anchor: "center", assetName: "energy.png" },
-  // R7 (NE)
-  centro_pesquisa: { x: 590, y: 310, w: 110, h: 110, anchor: "center", assetName: "research.png" },
-  // R6 (Leste)
-  parlamento: { x: 140, y: 310, w: 110, h: 110, anchor: "center", assetName: "research.png" },
-  // C2 (Oeste)
-  // INDÚSTRIA & RECURSOS (DISPERSÃO BETA)
-  quartel: { x: 270, y: 200, w: 100, h: 100, anchor: "center", assetName: "barracks.png" },
-  // R1 (NW)
-  fabrica_municoes: { x: 210, y: 310, w: 100, h: 100, anchor: "center", assetName: "factory.png" },
-  // R4 (Oeste)
-  refinaria: { x: 660, y: 310, w: 110, h: 110, anchor: "center", assetName: "factory.png" },
-  // C3 (Leste)
-  mina_suprimentos: { x: 270, y: 420, w: 100, h: 100, anchor: "center", assetName: "mine.png" },
-  // R3 (SW)
-  mina_metal: { x: 400, y: 490, w: 120, h: 120, anchor: "center", assetName: "mine.png" },
-  // C6 (Sul)
-  // LOGÍSTICA & EXTERIOR
-  aerodromo: { x: 400, y: 560, w: 180, h: 180, anchor: "bottom", assetName: "aerodrome.png" },
-  housing: { x: 80, y: 100, w: 110, h: 110, anchor: "center", assetName: "housing.png" },
-  posto_recrutamento: { x: 720, y: 100, w: 110, h: 110, anchor: "center", assetName: "housing.png" },
-  muralha: { x: 400, y: 310, w: 520, h: 340, anchor: "center", assetName: "wall.png" }
+  // LAYOUT DETERMINÍSTICO V12.1 — COORDENADAS REAIS
+  qg: { x: 400, y: 270, w: 180, h: 180, anchor: "bottom", assetName: "hq.png" },
+  quartel: { x: 630, y: 320, w: 110, h: 110, anchor: "bottom", assetName: "barracks.png" },
+  fabrica_municoes: { x: 230, y: 320, w: 110, h: 110, anchor: "bottom", assetName: "factory.png" },
+  central_energia: { x: 340, y: 170, w: 90, h: 90, anchor: "bottom", assetName: "energy.png" },
+  centro_pesquisa: { x: 620, y: 180, w: 90, h: 90, anchor: "bottom", assetName: "research.png" },
+  radar_estrategico: { x: 180, y: 210, w: 90, h: 90, anchor: "bottom", assetName: "radar.png" },
+  aerodromo: { x: 400, y: 400, w: 120, h: 120, anchor: "bottom", assetName: "aerodrome.png" },
+  muralha: { x: 400, y: 520, w: 260, h: 110, anchor: "center", assetName: "wall.png" },
+  // Fallbacks para edifícios não listados mas necessários
+  refinaria: { x: 660, y: 450, w: 110, h: 110, anchor: "bottom", assetName: "factory.png" },
+  mina_suprimentos: { x: 140, y: 450, w: 100, h: 100, anchor: "bottom", assetName: "mine.png" },
+  mina_metal: { x: 400, y: 490, w: 120, h: 120, anchor: "bottom", assetName: "mine.png" },
+  housing: { x: 80, y: 100, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" },
+  posto_recrutamento: { x: 720, y: 100, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" }
 };
-const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name, onClick }) => {
+const BuildingNode = ({
+  type: type2,
+  level,
+  isConstructing,
+  name,
+  onClick
+}) => {
   const layout2 = BUILDING_LAYOUT[type2];
   if (!layout2) return null;
-  let left = layout2.x * scale2;
-  let top = layout2.y * scale2;
-  const width = layout2.w * scale2;
-  const height = layout2.h * scale2;
-  if (layout2.anchor === "center") {
-    left -= width / 2;
-    top -= height / 2;
-  }
-  if (layout2.anchor === "bottom") {
-    left -= width / 2;
-    top -= height;
-  }
+  const left = layout2.x - layout2.w / 2;
+  const top = layout2.y - (layout2.anchor === "bottom" ? layout2.h : layout2.h / 2);
   const assetPath = layout2.assetName ? `/assets/structures/v2/${layout2.assetName}` : null;
-  const dynamicZIndex = type2 === "muralha" ? 1 : Math.floor(layout2.y) + 100;
-  const getTacticalName = (fullName) => {
-    const mapping = {
-      "Radar de Longo Alcance": "Radar Est.",
-      "Centro de Pesquisa & I&D": "Pesquisa",
-      "Fábrica de Munições": "Fábrica Mun.",
-      "Refinaria de Combustível": "Refinaria",
-      "Mina de Suprimentos": "Suprimentos",
-      "Mina de Metal": "Mina Metal",
-      "Quartel Regional": "Quartel",
-      "Complexo Residencial": "Habitação",
-      "Posto de Recrutamento": "Recrut.",
-      "Centro de Comando (QG)": "Comando QG"
-    };
-    return mapping[fullName] || (fullName.length > 12 ? fullName.substring(0, 10) + "..." : fullName);
-  };
-  const tacticalName = getTacticalName(name);
+  const staticZ = Math.floor(layout2.y + layout2.h);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: "group/node absolute cursor-pointer transition-transform duration-300",
+      id: `node-${type2}`,
       style: {
+        position: "absolute",
         left: `${left}px`,
         top: `${top}px`,
-        width: `${width}px`,
-        height: `${height}px`,
-        zIndex: dynamicZIndex,
-        // PASSO 10 — Z-INDEX DINÂMICO
+        width: `${layout2.w}px`,
+        height: `${layout2.h}px`,
+        zIndex: staticZ,
+        cursor: "pointer",
         pointerEvents: "auto"
       },
       onClick: (e) => {
@@ -28258,66 +28225,65 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
         onClick();
       },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "absolute w-[80%] h-[30%] bg-black/60 blur-[12px] rounded-[100%] z-0",
-            style: { bottom: "5%", left: "10%" }
-          }
-        ),
-        assetPath ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        assetPath && /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
             src: assetPath,
-            className: `w-full h-full object-contain pointer-events-none transition-all duration-500
-                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.6] contrast-[1.4] saturate-[1.3] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 group-hover/node:filter group-hover/node:drop-shadow-[0_0_20px_rgba(0,255,100,0.5)]"}
-                    `,
-            alt: name,
             style: {
+              display: "block",
+              width: `${layout2.w}px`,
+              height: `${layout2.h}px`,
+              pointerEvents: "none",
+              // Mixing blending para transparência profissional
               mixBlendMode: type2 === "housing" || type2 === "posto_recrutamento" ? "multiply" : "screen",
-              maskImage: "radial-gradient(circle at center, black 80%, transparent 100%)",
-              WebkitMaskImage: "radial-gradient(circle at center, black 80%, transparent 100%)"
+              filter: "brightness(1.5) contrast(1.2) saturate(1.1)",
+              opacity: isConstructing ? 0.5 : 0.95
             },
-            onError: (e) => {
-              e.currentTarget.style.display = "none";
-            }
+            alt: name
           }
-        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/80 border border-white/20 rounded-xl backdrop-blur-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/40 font-black uppercase text-center px-1 leading-none", children: tacticalName }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 z-[5000] pointer-events-none", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 py-0.5 bg-black/95 backdrop-blur-3xl border border-white/10 rounded-sm shadow-3xl group-hover/node:border-[#0f0]/60 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7.5px] font-black text-white/95 uppercase tracking-[0.2em] whitespace-nowrap", children: tacticalName }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "flex items-center justify-center bg-[#050608]/95 border border-[#0f0]/90 text-[#0f0] font-black shadow-[0_0_20px_rgba(0,255,0,0.3)] skew-x-[-12deg]",
-              style: {
-                width: `${22 * scale2}px`,
-                height: `${14 * scale2}px`,
-                fontSize: `${Math.max(8, 11 * scale2)}px`
-              },
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "skew-x-[12deg]", children: level || 0 })
-            }
-          )
-        ] }),
-        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -top-16 left-1/2 -translate-x-1/2 text-[7.5px] font-black text-[#0f0] animate-pulse uppercase tracking-wider", children: "Engenharia..." }),
-        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center z-50 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 border-2 border-[#0f0]/40 border-t-[#0f0] rounded-full animate-spin shadow-[0_0_15px_rgba(0,255,0,0.3)]" }) })
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            style: {
+              position: "absolute",
+              width: "100%",
+              top: "-15px",
+              textAlign: "center",
+              pointerEvents: "none"
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+              display: "inline-block",
+              backgroundColor: "rgba(0,0,0,0.8)",
+              border: "1px solid rgba(0,255,0,0.4)",
+              padding: "2px 6px",
+              borderRadius: "2px"
+            }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: {
+              color: "#0f0",
+              fontSize: "9px",
+              fontWeight: "bold",
+              fontFamily: "monospace",
+              textTransform: "uppercase"
+            }, children: [
+              name,
+              " [LVL ",
+              level,
+              "]"
+            ] }) })
+          }
+        ),
+        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+          position: "absolute",
+          inset: 0,
+          border: "1px dashed #0f0",
+          animation: "pulse 2s infinite"
+        } })
       ]
     }
   );
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
-  const containerRef = reactExports.useRef(null);
-  const [scale2, setScale] = reactExports.useState(1);
-  reactExports.useEffect(() => {
-    const updateScale = () => {
-      if (containerRef.current) {
-        setScale(containerRef.current.clientWidth / REFERENCE_WIDTH);
-      }
-    };
-    const observer2 = new ResizeObserver(updateScale);
-    if (containerRef.current) observer2.observe(containerRef.current);
-    updateScale();
-    return () => observer2.disconnect();
-  }, []);
+  reactExports.useRef(null);
   const getBuildingLevel = (type2) => {
     var _a2;
     if (type2 === "qg") return base.qg_nivel || 0;
@@ -28328,67 +28294,94 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
     });
     return (b2 == null ? void 0 : b2.nivel) || 0;
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full flex justify-center py-4", children: [
-    " ",
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        ref: containerRef,
-        className: "relative bg-[#010203] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-3xl select-none",
-        style: {
-          width: "100%",
-          maxWidth: "800px",
-          aspectRatio: "800/600"
-        },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "0", height: "0", className: "absolute invisible", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("filter", { id: "alpha-purge", colorInterpolationFilters: "sRGB", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "feColorMatrix",
-            {
-              type: "matrix",
-              values: "1 0 0 0 0\n                                        0 1 0 0 0\n                                        0 0 1 0 0\n                                        1 1 1 0 -0.8"
-            }
-          ) }) }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 z-0", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "img",
-              {
-                src: "/assets/structures/v2/terrain.png",
-                className: "w-full h-full object-cover brightness-[0.65] contrast-[1.15] saturate-[0.8]",
-                alt: "Village Background Masterpiece"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_50%,rgba(0,0,0,0.5)_100%)] pointer-events-none" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-20 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
-            var _a2;
-            const level = getBuildingLevel(type2);
-            const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
-            const config = (_a2 = gameConfig == null ? void 0 : gameConfig.buildings) == null ? void 0 : _a2[type2];
-            if (level === 0 && !isConstructing) return null;
-            return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pointer-events-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              BuildingNode,
-              {
-                type: type2,
-                level,
-                scale: scale2,
-                isConstructing,
-                name: (config == null ? void 0 : config.name) || type2,
-                onClick: () => onBuildingClick({ id: type2, buildingType: type2, name: (config == null ? void 0 : config.name) || type2, level })
-              }
-            ) }, type2);
-          }) }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-x-8 top-8 flex justify-between items-start z-50 pointer-events-none opacity-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-black/40 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-white uppercase tracking-widest", children: base.nome }) }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "absolute inset-0 z-[100] pointer-events-none opacity-[0.03]",
-              style: { backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px)", backgroundSize: "100% 4px" }
-            }
-          )
-        ]
-      }
-    )
-  ] });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full flex justify-center py-8 bg-[#050608]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      id: "VillageCanvas",
+      style: {
+        width: "800px",
+        height: "600px",
+        position: "relative",
+        overflow: "hidden",
+        backgroundColor: "#000",
+        boxShadow: "0 0 50px rgba(0,0,0,0.8)"
+      },
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            id: "background-layer",
+            style: { position: "absolute", inset: 0, zIndex: 1 },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
+                {
+                  src: "/assets/structures/v2/terrain.png",
+                  style: { width: "800px", height: "600px", objectFit: "cover" },
+                  alt: "Terreno"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", inset: 0, background: "radial-gradient(circle at center, transparent, rgba(0,0,0,0.4))" } })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: "buildings-layer",
+            style: { position: "absolute", inset: 0, zIndex: 2 },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
+              var _a2;
+              const level = getBuildingLevel(type2);
+              const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
+              const config = (_a2 = gameConfig == null ? void 0 : gameConfig.buildings) == null ? void 0 : _a2[type2];
+              if (level === 0 && !isConstructing) return null;
+              return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                BuildingNode,
+                {
+                  type: type2,
+                  level,
+                  scale: 1,
+                  isConstructing,
+                  name: (config == null ? void 0 : config.name) || type2,
+                  onClick: () => onBuildingClick({ id: type2, buildingType: type2, name: (config == null ? void 0 : config.name) || type2, level })
+                },
+                type2
+              );
+            }) })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            id: "ui-layer",
+            style: { position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none" },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", left: "20px", top: "20px", pointerEvents: "none" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
+                backgroundColor: "rgba(0,0,0,0.7)",
+                padding: "8px 16px",
+                borderLeft: "3px solid #0f0",
+                color: "#fff",
+                fontSize: "12px",
+                fontFamily: "monospace",
+                textTransform: "uppercase"
+              }, children: [
+                "Sinal: ",
+                base.nome,
+                " | Setor: Alpha-1"
+              ] }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+                position: "absolute",
+                inset: 0,
+                backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.03) 1px, rgba(255,255,255,0.03) 2px)",
+                backgroundSize: "100% 4px"
+              } })
+            ]
+          }
+        )
+      ]
+    }
+  ) });
 };
 const Dialog = Root$4;
 const DialogTrigger = Trigger$2;
@@ -44503,7 +44496,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Bz4oRFYL.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-8quSHOIY.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44539,4 +44532,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BuCRPvh8.js.map
+//# sourceMappingURL=app-CHVAkf85.js.map
