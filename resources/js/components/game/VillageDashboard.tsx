@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { type BreadcrumbItem, DashboardProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { ResourceBar } from '@/components/game/ResourceBar';
-import { VillageView } from '@/components/game/VillageView';
+import { VisualVillageView } from '@/components/game/VisualVillageView';
 import { BuildingModal } from '@/components/game/BuildingModal';
 import { GarrisonPanel } from '@/components/game/GarrisonPanel';
 import { ProductionQueue } from '@/components/game/ProductionQueue';
@@ -248,7 +248,7 @@ export function VillageDashboard({
                         unitTypes={unitTypes}
                     />
                     ) : (
-                        <VillageView base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} buildingQueue={buildingQueue} />
+                        <VisualVillageView base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} buildingQueue={buildingQueue} />
                     )}
                 </div>
 

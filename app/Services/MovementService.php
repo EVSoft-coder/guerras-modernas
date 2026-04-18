@@ -306,15 +306,12 @@ class MovementService
 
         if ($politicoCount <= 0) return;
 
-        // PASSO 5 - REDUÇÃO DE LEALDADE
+        // PASSO 5 - REDUÇÃO DE LEALDADE (Tribal)
+        $loyaltyService = app(LoyaltyService::class);
         $reduction = rand(20, 35) * $politicoCount;
-        $oldLoyalty = (int) $targetBase->loyalty;
-        $newLoyalty = max(0, $oldLoyalty - $reduction);
+        $newLoyalty = $loyaltyService->reduceLoyalty($targetBase, $reduction);
         
-        $targetBase->loyalty = $newLoyalty;
-        $targetBase->save();
-
-        Log::channel('game')->warning("[CONQUEST] Lealdade reduzida no setor {$targetBase->id}: {$oldLoyalty} -> {$newLoyalty} (-{$reduction})");
+        Log::channel('game')->warning("[CONQUEST] Lealdade reduzida no setor {$targetBase->id} para {$newLoyalty}% (-{$reduction})");
 
         // PASSO 6 - CONQUISTA
         if ($newLoyalty <= 0) {

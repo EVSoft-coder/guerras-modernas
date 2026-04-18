@@ -18,6 +18,7 @@ class GameEngine
     protected $movementService;
     protected $timeService;
     protected $integrityService;
+    protected $loyaltyService;
 
     public function __construct(
         ?BuildingQueueService $buildingQueueService = null,
@@ -25,7 +26,8 @@ class GameEngine
         ?ResourceService $resourceService = null,
         ?MovementService $movementService = null,
         ?TimeService $timeService = null,
-        ?QueueIntegrityService $integrityService = null
+        ?QueueIntegrityService $integrityService = null,
+        ?LoyaltyService $loyaltyService = null
     ) {
         $this->timeService = $timeService ?? new TimeService();
         $this->buildingQueueService = $buildingQueueService ?? new BuildingQueueService($this->timeService);
@@ -33,6 +35,7 @@ class GameEngine
         $this->resourceService = $resourceService ?? new ResourceService($this->timeService);
         $this->movementService = $movementService ?? new MovementService(new MapService());
         $this->integrityService = $integrityService ?? new QueueIntegrityService();
+        $this->loyaltyService = $loyaltyService ?? new LoyaltyService();
     }
 
     /**
@@ -55,8 +58,9 @@ class GameEngine
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             if (!$lockedBase) return;
 
-            // 2. Sync de Recursos
+            // 2. Sync de Recursos e Lealdade (Tribal)
             $this->resourceService->sync($lockedBase);
+            $this->loyaltyService->updateLoyalty($lockedBase);
 
             // 3. Auditoria e Reparação de Integridade
             $this->integrityService->validateAndRepair($lockedBase);
