@@ -17,20 +17,18 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
-    // LAYOUT TRIBAL V20 — EVOLUÇÃO POR PATAMARES
+    // LAYOUT TRIBAL V20 — EVOLUÇÃO POR PATAMARES (Regras de Transição)
     qg: { 
         x: 550, y: 415, w: 260, h: 260, anchor: 'bottom', assetName: 'qg.png',
         tiers: [
-            { minLevel: 1,  assetName: 'qg.png' },
-            { minLevel: 10, assetName: 'qg_v2.png' },
-            { minLevel: 20, assetName: 'qg_v3.png' }
+            { minLevel: 1,  assetName: 'qg.png' }
+            // { minLevel: 10, assetName: 'qg_v2.png' }, // ATIVAR QUANDO ASSET EXISTIR
         ]
     },
     quartel: { 
         x: 730, y: 375, w: 120, h: 120, anchor: 'bottom', assetName: 'quartel.png',
         tiers: [
-            { minLevel: 1,  assetName: 'quartel.png' },
-            { minLevel: 15, assetName: 'quartel_v2.png' }
+            { minLevel: 1,  assetName: 'quartel.png' }
         ]
     },
     fabrica_municoes:   { x: 440, y: 565, w: 110, h: 110, anchor: 'bottom', assetName: 'fabrica_municoes.png' },

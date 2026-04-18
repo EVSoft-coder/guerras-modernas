@@ -28177,7 +28177,7 @@ const AnimatedNumber = ({ value, customValue }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
 const BUILDING_LAYOUT = {
-  // LAYOUT TRIBAL V20 — EVOLUÇÃO POR PATAMARES
+  // LAYOUT TRIBAL V20 — EVOLUÇÃO POR PATAMARES (Regras de Transição)
   qg: {
     x: 550,
     y: 415,
@@ -28186,9 +28186,8 @@ const BUILDING_LAYOUT = {
     anchor: "bottom",
     assetName: "qg.png",
     tiers: [
-      { minLevel: 1, assetName: "qg.png" },
-      { minLevel: 10, assetName: "qg_v2.png" },
-      { minLevel: 20, assetName: "qg_v3.png" }
+      { minLevel: 1, assetName: "qg.png" }
+      // { minLevel: 10, assetName: 'qg_v2.png' }, // ATIVAR QUANDO ASSET EXISTIR
     ]
   },
   quartel: {
@@ -28199,8 +28198,7 @@ const BUILDING_LAYOUT = {
     anchor: "bottom",
     assetName: "quartel.png",
     tiers: [
-      { minLevel: 1, assetName: "quartel.png" },
-      { minLevel: 15, assetName: "quartel_v2.png" }
+      { minLevel: 1, assetName: "quartel.png" }
     ]
   },
   fabrica_municoes: { x: 440, y: 565, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
@@ -28307,8 +28305,9 @@ const BuildingNode = ({
   const left = layout2.x - width / 2;
   const top = layout2.y - height;
   const staticZ = Math.floor(layout2.y);
+  const [imgError, setImgError] = U$2.useState(false);
   let finalAssetName = layout2.assetName;
-  if (layout2.tiers) {
+  if (layout2.tiers && !imgError) {
     const activeTier = [...layout2.tiers].sort((a, b2) => b2.minLevel - a.minLevel).find((t2) => level >= t2.minLevel);
     if (activeTier) {
       finalAssetName = activeTier.assetName;
@@ -28372,6 +28371,7 @@ const BuildingNode = ({
           "img",
           {
             src: assetPath,
+            onError: () => setImgError(true),
             style: {
               display: "block",
               width: "100%",
@@ -44625,7 +44625,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C1IxiZLc.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CSkoSHyO.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44661,4 +44661,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-D2FYx0GC.js.map
+//# sourceMappingURL=app-laoDOthP.js.map

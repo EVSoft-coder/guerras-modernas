@@ -52,9 +52,11 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     // Z-INDEX TÁTICO: BASEADO NO LIMITE INFERIOR (Y)
     const staticZ = Math.floor(layout.y);
 
+    const [imgError, setImgError] = React.useState(false);
+
     // SELEÇÃO DE ASSET POR TIER (V20 — REPLICAÇÃO TRIBAL)
     let finalAssetName = layout.assetName;
-    if (layout.tiers) {
+    if (layout.tiers && !imgError) {
         // Encontrar o maior tier que o nível atual atingiu
         const activeTier = [...layout.tiers]
             .sort((a, b) => b.minLevel - a.minLevel)
@@ -132,6 +134,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
             {assetPath && (
                 <img 
                     src={assetPath} 
+                    onError={() => setImgError(true)}
                     style={{ 
                         display: 'block',
                         width: '100%', 
