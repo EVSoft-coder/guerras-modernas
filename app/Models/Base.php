@@ -90,7 +90,7 @@ class Base extends Model
 
     public function unitQueue()
     {
-        return $this->hasMany(UnitQueue::class, 'base_id');
+        return $this->hasMany(UnitQueue::class, 'base_id')->orderBy('position');
     }
 
     /* Mapeamento Táctico para ECS Interface */

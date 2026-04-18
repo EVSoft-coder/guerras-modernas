@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Clock, Hammer, Shield, ChevronUp, ChevronDown, X, Loader2 } from 'lucide-react';
+import { Activity, Clock, Hammer, Shield, ChevronUp, ChevronDown, X, Loader2, Sword } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { router } from '@inertiajs/react';
 
@@ -14,6 +14,8 @@ interface QueueItemData {
     duration: number;
     position: number;
     status: string;
+    quantity?: number;
+    quantity_remaining?: number;
 }
 
 interface ProductionQueueProps {
@@ -44,27 +46,39 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
             id: t.id,
             buildingType: 'treino' as const,
             label: (t.unitType?.name || t.unidade || 'Unidade').replace(/_/g, ' '),
-            sublabel: `Recrutamento: ${t.quantity || t.quantidade}x`,
+            sublabel: `Recrutamento: ${t.quantity_remaining || t.quantity || t.quantidade}x`,
             started_at: t.started_at,
             ends_at: t.finishes_at,
-            duration: t.duration || 0,
-            position: 999, // Treinos ficam no fim por agora
-            status: 'active'
+            duration: t.duration_per_unit || (t.total_duration / t.quantity) || 0,
+            position: t.position || 1,
+            status: t.status || 'active',
+            quantity: t.quantity,
+            quantity_remaining: t.quantity_remaining
         }))
     ].sort((a, b) => a.position - b.position);
 
     const handleCancel = (id: number, type: string) => {
         if (type === 'construcao') {
             router.post(`/base/upgrade/cancelar/${id}`);
+        } else {
+            router.post(`/units/cancelar/${id}`);
         }
     };
 
-    const handleMoveUp = (id: number) => {
-        router.post(`/base/upgrade/subir/${id}`);
+    const handleMoveUp = (id: number, type: string) => {
+        if (type === 'construcao') {
+            router.post(`/base/upgrade/subir/${id}`);
+        } else {
+            router.post(`/units/subir/${id}`);
+        }
     };
 
-    const handleMoveDown = (id: number) => {
-        router.post(`/base/upgrade/descer/${id}`);
+    const handleMoveDown = (id: number, type: string) => {
+        if (type === 'construcao') {
+            router.post(`/base/upgrade/descer/${id}`);
+        } else {
+            router.post(`/units/descer/${id}`);
+        }
     };
 
     return (
@@ -86,8 +100,8 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
                                 item={item} 
                                 isFirst={item.position === 1} 
                                 onCancel={() => handleCancel(item.id, item.buildingType)}
-                                onMoveUp={() => handleMoveUp(item.id)}
-                                onMoveDown={() => handleMoveDown(item.id)}
+                                onMoveUp={() => handleMoveUp(item.id, item.buildingType)}
+                                onMoveDown={() => handleMoveDown(item.id, item.buildingType)}
                                 isLast={index === unifiedQueue.length - 1}
                             />
                         ))
@@ -99,7 +113,7 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
                         >
                             <Hammer className="mx-auto text-neutral-800 mb-3 opacity-20" size={32} />
                             <span className="text-[9px] uppercase font-black text-neutral-600 tracking-[0.2em] block">
-                                Sem Operações de Engenharia
+                                Sem Operações de Engenharia ou Mobilização
                             </span>
                         </motion.div>
                     )}
@@ -137,6 +151,8 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
         const s = Math.max(0, Math.floor((remaining % 60000) / 1000));
         
         const timeStr = remaining <= 0 ? 'Concluíndo...' : (h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`);
+        
+        // No caso de treino, o progresso é da UNIDADE ATUAL
         const percent = Math.min(100, Math.max(0, ((total - remaining) / total) * 100));
 
         return { percent, timeStr };
@@ -157,10 +173,11 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
             <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-3">
                     <div className={`size-8 rounded-lg flex items-center justify-center ${isFirst ? 'bg-sky-500/20 text-sky-400' : 'bg-neutral-800 text-neutral-500'}`}>
-                         <span className="text-[10px] font-black">{item.position === 999 ? 'T' : item.position}</span>
+                         <span className="text-[10px] font-black">{item.position}</span>
                     </div>
                     <div className="flex flex-col">
                         <span className="text-xs font-black uppercase text-white tracking-tighter flex items-center gap-2">
+                             {item.buildingType === 'construcao' ? <Hammer size={10} /> : <Shield size={10} className="text-emerald-400" />}
                             {item.label}
                             {isFirst && <div className="size-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>}
                         </span>
@@ -170,7 +187,7 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
 
                 {/* CONTROLOS TÁCTICOS */}
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {!isFirst && item.position !== 999 && (
+                    {!isFirst && (
                         <button 
                             onClick={onMoveUp}
                             className="p-1.5 hover:bg-white/10 rounded-md text-neutral-400 hover:text-white transition-colors"
@@ -179,7 +196,7 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
                             <ChevronUp size={14} />
                         </button>
                     )}
-                    {!isLast && item.position !== 999 && (
+                    {!isLast && (
                         <button 
                             onClick={onMoveDown}
                             className="p-1.5 hover:bg-white/10 rounded-md text-neutral-400 hover:text-white transition-colors"
@@ -200,7 +217,9 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
 
             <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-mono font-black text-white/40 uppercase tracking-widest">{isFirst ? 'A Executar' : 'Em Fila'}</span>
+                    <span className="text-[10px] font-mono font-black text-white/40 uppercase tracking-widest">
+                        {item.buildingType === 'construcao' ? 'Engenharia' : 'Mobilização'}
+                    </span>
                     <span className={`text-[10px] font-mono font-black ${isFirst ? 'text-sky-400' : 'text-neutral-600'}`}>
                         {timeStr}
                     </span>
@@ -209,7 +228,7 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
                 <div className="relative h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/5">
                     <motion.div 
                         className={`absolute inset-y-0 left-0 ${
-                            isFirst ? 'bg-gradient-to-r from-sky-600 to-sky-400 shadow-[0_0_10px_rgba(14,165,233,0.3)]' : 'bg-neutral-800'
+                            isFirst ? (item.buildingType === 'construcao' ? 'bg-sky-500 shadow-[0_0_10px_#0ea5e9]' : 'bg-emerald-500 shadow-[0_0_10px_#10b981]') : 'bg-neutral-800'
                         }`}
                         initial={{ width: 0 }}
                         animate={{ width: `${percent}%` }}

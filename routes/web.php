@@ -125,6 +125,9 @@ Route::middleware(['auth'])->group(function () {
     
     Route::post('/buildings/upgrade', [BaseController::class, 'upgrade'])->name('buildings.upgrade');
     Route::post('/units/recruit', [UnitRecruitmentController::class, 'recruit'])->name('units.recruit');
+    Route::post('/units/cancelar/{id}', [UnitRecruitmentController::class, 'cancel'])->name('units.cancelar');
+    Route::post('/units/subir/{id}', [UnitRecruitmentController::class, 'moveUp'])->name('units.subir');
+    Route::post('/units/descer/{id}', [UnitRecruitmentController::class, 'moveDown'])->name('units.descer');
     
     // Gestão de Base
     Route::prefix('base')->name('base.')->group(function () {
