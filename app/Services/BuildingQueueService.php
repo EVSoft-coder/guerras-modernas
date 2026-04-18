@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Base;
-use App\Models\BuildingType;
+use App\Domain\Building\BuildingType;
 use App\Models\BuildingQueue;
 use App\Domain\Building\BuildingRules;
 use Illuminate\Support\Facades\DB;
