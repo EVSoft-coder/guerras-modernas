@@ -55,43 +55,44 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 zIndex: dynamicZIndex
             }}
         >
-            {/* PASSO 4 — SHADOW SYSTEM (GROUND BLUR) - VISIBILIDADE FIXA */}
+            {/* PASSO 4 — SHADOW SYSTEM (GROUND BLUR) - VISIBILIDADE FIXA REFORÇADA */}
             <div 
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-[60%] h-[15%] bg-black/60 blur-[10px] rounded-[100%] z-[-1] opacity-60" 
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-[70%] h-[15%] bg-black/80 blur-[8px] rounded-[100%] z-[-1] opacity-70" 
                 style={{ transform: 'translateX(-50%)' }}
             />
 
-            {/* ASSET VISUAL REAL (PASSO FINAL — PURGA DE PRETOS) */}
+            {/* ASSET VISUAL REAL (PASSO FINAL — PURGA RADICAL DE PRETOS) */}
             {assetPath ? (
                 <img 
                     src={assetPath} 
                     className={`w-full h-full object-contain pointer-events-none mix-blend-screen transition-all duration-500
-                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.2] contrast-[1.4] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110'}
+                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.3] contrast-[1.7] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110'}
                     `}
                     alt={name}
                     style={{
-                        filter: 'drop-shadow(0 0 15px rgba(0,0,0,0.6)) grayscale(0.1)'
+                        filter: 'drop-shadow(0 0 15px rgba(0,0,0,0.7))'
                     }}
                     onError={(e) => {
                         e.currentTarget.style.display = 'none';
                     }}
                 />
             ) : (
-                <div className="w-full h-full flex items-center justify-center bg-black/60 border border-white/20 rounded-xl backdrop-blur-md">
+                <div className="w-full h-full flex items-center justify-center bg-black/70 border border-white/20 rounded-xl backdrop-blur-md">
                     <span className="text-[10px] text-white/30 font-black uppercase text-center px-1 leading-none">{name}</span>
                 </div>
             )}
 
-            {/* LEVEL BADGE — POSIÇÃO TÁTICA CORRIGIDA */}
+            {/* LEVEL BADGE — TRIBAL MINIMALIST STYLE */}
             <div 
-                className="absolute top-0 right-0 bg-[#050709] border border-[#0f0]/40 text-[#0f0] font-black font-mono rounded-lg shadow-xl flex items-center justify-center backdrop-blur-xl"
+                className="absolute bottom-2 right-2 bg-black/90 border border-[#0f0]/60 text-[#0f0] font-black font-mono rounded-full shadow-2xl flex items-center justify-center backdrop-blur-md"
                 style={{ 
-                    padding: `${1 * scale}px ${4 * scale}px`,
-                    fontSize: `${Math.max(8, 11 * scale)}px`,
-                    transform: 'translate(20%, -20%)'
+                    width: `${22 * scale}px`,
+                    height: `${22 * scale}px`,
+                    fontSize: `${Math.max(8, 12 * scale)}px`,
+                    zIndex: 100
                 }}
             >
-                L.{(level || 0)}
+                {(level || 0)}
             </div>
 
             {/* HOVER LABEL */}
