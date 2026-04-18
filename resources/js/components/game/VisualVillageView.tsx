@@ -141,7 +141,6 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                                                 </div>
                                             )}
                                         </div>
->
 
                                         {/* HOLOGRAPHIC LEVEL BADGE */}
                                         <div className="absolute -bottom-1 -right-1 z-50">

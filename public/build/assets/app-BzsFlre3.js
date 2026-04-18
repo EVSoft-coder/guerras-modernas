@@ -28307,6 +28307,9 @@ const POSITION_MAP = {
   parlamento: { top: "90%", left: "50%", size: "100px", icon: Landmark, color: "text-amber-500" }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
+  U$2.useEffect(() => {
+    console.log(">>> VILLAGE_COMMAND_HUD_V3_TRANSPARENCY_ACTIVE <<<");
+  }, []);
   const getBuildingLevel = (type2) => {
     var _a2, _b;
     if (type2 === "qg") return base.qg_nivel || 0;
@@ -28377,19 +28380,20 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                       ]
                     }
                   ) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative w-full h-full flex items-center justify-center drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]", children: pos.assetUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative w-full h-full flex items-center justify-center drop-shadow-[0_0_25px_rgba(0,0,0,0.6)]", children: pos.assetUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "img",
                     {
                       src: pos.assetUrl,
-                      className: `w-full h-full object-contain transition-all duration-700 mix-blend-lighten 
-                                                        ${isConstructing ? "brightness-50 grayscale" : "brightness-[1.2] contrast-[1.2] group-hover/building:brightness-[1.4]"}
+                      className: `w-full h-full object-contain transition-all duration-700 mix-blend-screen
+                                                        ${isConstructing ? "brightness-50 grayscale" : "brightness-[1.3] contrast-[1.2] group-hover/building:brightness-[1.5] group-hover/building:scale-110"}
                                                     `,
-                      style: { transform: "scale(1.2)" }
+                      style: { transform: "scale(1.4)" },
+                      onLoad: () => console.log(`BASE_STRUCTURE_LOADED: ${type2}`)
                     }
-                  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center w-2/3 h-2/3 bg-[#050709]/80 backdrop-blur-xl rounded-[2rem] border border-white/10 group-hover/building:border-white/30 transition-all shadow-2xl relative", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,#fff_0%,transparent_70%)] rounded-[2rem]" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 22, className: `${pos.color} group-hover/building:scale-110 transition-transform mb-1.5` }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] font-black uppercase text-neutral-400 tracking-[0.2em]", children: ((_b = config == null ? void 0 : config.name) == null ? void 0 : _b.split(" ")[0]) || type2 })
+                  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center w-2/3 h-2/3 bg-[#050709]/90 backdrop-blur-2xl rounded-[2.5rem] border border-white/20 group-hover/building:border-white/50 transition-all shadow-2xl relative", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,#fff_0%,transparent_70%)] rounded-[2.5rem]" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 26, className: `${pos.color} group-hover/building:scale-125 transition-transform mb-2` }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black uppercase text-neutral-300 tracking-[0.3em]", children: ((_b = config == null ? void 0 : config.name) == null ? void 0 : _b.split(" ")[0]) || type2 })
                   ] }) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -bottom-1 -right-1 z-50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#050709]/90 border border-white/20 px-3 py-1.5 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-2xl flex items-center gap-2 group-hover/building:border-white/40 transition-all", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${isConstructing ? "bg-orange-500 animate-pulse" : "bg-emerald-500 shadow-[0_0_8px_#10b981]"}` }),
@@ -44574,7 +44578,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-COM3ui3a.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-36OArd4t.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44610,4 +44614,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CeR8hPcD.js.map
+//# sourceMappingURL=app-BzsFlre3.js.map
