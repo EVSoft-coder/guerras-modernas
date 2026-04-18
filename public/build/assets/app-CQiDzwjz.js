@@ -27798,7 +27798,7 @@ const featureBundle = {
   ...drag,
   ...layout
 };
-const motion$1 = /* @__PURE__ */ createMotionProxy(featureBundle, createDomVisualElement);
+const motion = /* @__PURE__ */ createMotionProxy(featureBundle, createDomVisualElement);
 function isDOMKeyframes(keyframes2) {
   return typeof keyframes2 === "object" && !Array.isArray(keyframes2);
 }
@@ -28267,7 +28267,7 @@ const ResourceItem = ({ icon, label, value, rate, cap, color: color2, accentColo
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1.5 w-full bg-white/5 rounded-full p-[1px] border border-white/[0.03]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion$1.div,
+          motion.div,
           {
             className: `h-full rounded-full ${accentColor} ${glowColor} shadow-[0_0_8px_rgba(255,255,255,0.1)]`,
             initial: { width: 0 },
@@ -28345,7 +28345,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
-      motion$1.div,
+      motion.div,
       {
         animate: { rotate: 360 },
         transition: { duration: 10, repeat: Infinity, ease: "linear" },
@@ -28369,7 +28369,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
           style: { top: pos.top, left: pos.left },
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Tooltip, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              motion$1.button,
+              motion.button,
               {
                 whileHover: { scale: 1.05, y: -5 },
                 whileTap: { scale: 0.95 },
@@ -28384,7 +28384,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `p-2.5 rounded-xl bg-gradient-to-br from-white/10 to-transparent ${pos.color} group-hover:scale-110 transition-transform`, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 20, strokeWidth: 2.5 }),
                     isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      motion$1.div,
+                      motion.div,
                       {
                         animate: { rotate: 360 },
                         transition: { repeat: Infinity, duration: 3, ease: "linear" },
@@ -28462,7 +28462,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-end", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] font-black text-neutral-500 uppercase tracking-widest", children: "Base_Integrity" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 h-1 bg-white/5 rounded-full overflow-hidden mt-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion$1.div,
+          motion.div,
           {
             initial: { width: 0 },
             animate: { width: "92%" },
@@ -28473,7 +28473,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
       /* @__PURE__ */ jsxRuntimeExports.jsx(Cpu, { size: 16, className: "text-neutral-500" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
-      motion$1.div,
+      motion.div,
       {
         animate: { top: ["0%", "100%", "0%"] },
         transition: { duration: 8, repeat: Infinity, ease: "linear" },
@@ -28664,7 +28664,7 @@ const BuildingModal = ({
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-2 h-2 rounded-full animate-pulse ${isBuilt ? "bg-sky-500 shadow-[0_0_10px_#0ea5e9]" : "bg-orange-500 shadow-[0_0_10px_#f97316]"}` }),
         isBuilt ? "SISTEMA_OPERACIONAL" : "ASSINATURA_PLANEADA"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(motion$1.div, { initial: { scale: 0.8, opacity: 0 }, animate: { scale: 1, opacity: 1 }, className: "relative z-10 group cursor-crosshair", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { initial: { scale: 0.8, opacity: 0 }, animate: { scale: 1, opacity: 1 }, className: "relative z-10 group cursor-crosshair", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute inset-0 blur-[80px] opacity-20 group-hover:opacity-40 transition-all ${isBuilt ? "bg-sky-500" : "bg-orange-500"}` }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
@@ -28807,7 +28807,7 @@ const GarrisonPanel = ({ tropas = [], gameConfig }) => {
           const unitName = t2.tipo || t2.unidade || "Unidade";
           const config = unitsConfig[unitName] || { name: unitName };
           return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            motion$1.div,
+            motion.div,
             {
               initial: { opacity: 0, x: -10 },
               animate: { opacity: 1, x: 0 },
@@ -28841,7 +28841,7 @@ const GarrisonPanel = ({ tropas = [], gameConfig }) => {
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-1 bg-white/5 rounded-full overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        motion$1.div,
+                        motion.div,
                         {
                           initial: { width: 0 },
                           animate: { width: "100%" },
@@ -28859,7 +28859,7 @@ const GarrisonPanel = ({ tropas = [], gameConfig }) => {
         }),
         (!tropas || tropas.length === 0) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "col-span-full py-16 text-center border border-dashed border-white/5 rounded-[2rem] bg-white/[0.01] relative overflow-hidden group/empty", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
-            motion$1.div,
+            motion.div,
             {
               animate: { opacity: [0.1, 0.3, 0.1] },
               transition: { duration: 4, repeat: Infinity },
@@ -28952,7 +28952,7 @@ const ProductionQueue = ({
       },
       `${item.buildingType}-${item.id}`
     )) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      motion$1.div,
+      motion.div,
       {
         initial: { opacity: 0 },
         animate: { opacity: 1 },
@@ -28992,7 +28992,7 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }) =>
   };
   const { percent: percent2, timeStr } = calculateProgress();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    motion$1.div,
+    motion.div,
     {
       layout: true,
       initial: { x: 20, opacity: 0 },
@@ -29048,7 +29048,7 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }) =>
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-mono font-black ${isFirst ? "text-sky-400" : "text-neutral-600"}`, children: timeStr })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            motion$1.div,
+            motion.div,
             {
               className: `absolute inset-y-0 left-0 ${isFirst ? item.buildingType === "construcao" ? "bg-sky-500 shadow-[0_0_10px_#0ea5e9]" : "bg-emerald-500 shadow-[0_0_10px_#10b981]" : "bg-neutral-800"}`,
               initial: { width: 0 },
@@ -29092,7 +29092,7 @@ const ToastItem = ({ toast: toast2, onRemove }) => {
   };
   const config = typeConfigs[toast2.type];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    motion$1.div,
+    motion.div,
     {
       initial: { opacity: 0, x: 50, scale: 0.9 },
       animate: { opacity: 1, x: 0, scale: 1 },
@@ -29141,7 +29141,7 @@ const ArmyMovementPanel = ({
       /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesRecebidos == null ? void 0 : ataquesRecebidos.map((movement) => {
         var _a2, _b;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion$1.div,
+          motion.div,
           {
             initial: { opacity: 0, height: 0 },
             animate: { opacity: 1, height: "auto" },
@@ -29175,7 +29175,7 @@ const ArmyMovementPanel = ({
       /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: ataquesEnviados == null ? void 0 : ataquesEnviados.map((movement) => {
         var _a2, _b, _c;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion$1.div,
+          motion.div,
           {
             initial: { opacity: 0 },
             animate: { opacity: 1 },
@@ -30251,7 +30251,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, diplomat
         className: "absolute inset-0 z-0 cursor-grab active:cursor-grabbing overflow-hidden",
         onWheel: handleWheel,
         children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion$1.div,
+          motion.div,
           {
             drag: true,
             dragMomentum: false,
@@ -30299,7 +30299,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, diplomat
                         y2
                       ] }),
                       baseAt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center w-full h-full", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                        motion$1.div,
+                        motion.div,
                         {
                           initial: { scale: 0 },
                           animate: { scale: 1 },
@@ -30335,7 +30335,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, diplomat
                 const left = (e.x - center.x + VIEWPORT_RANGE) * TILE_SIZE;
                 const top = (e.y - center.y + VIEWPORT_RANGE) * TILE_SIZE;
                 return /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  motion$1.div,
+                  motion.div,
                   {
                     animate: { left, top },
                     className: "absolute flex items-center justify-center",
@@ -30421,7 +30421,7 @@ function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, diplomat
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full px-20 max-w-5xl pointer-events-none", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: selectedSector && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion$1.div,
+        motion.div,
         {
           initial: { y: 50, opacity: 0 },
           animate: { y: 0, opacity: 1 },
@@ -30560,7 +30560,7 @@ const QueueEntry = ({ item, isFirst }) => {
   if (!result) return null;
   const { percent: percent2, timeStr } = result;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    motion$1.div,
+    motion.div,
     {
       initial: { x: 20, opacity: 0 },
       animate: { x: 0, opacity: 1 },
@@ -30581,7 +30581,7 @@ const QueueEntry = ({ item, isFirst }) => {
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1 bg-black/40 rounded-full overflow-hidden border border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion$1.div,
+          motion.div,
           {
             className: "h-full bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]",
             initial: { width: 0 },
@@ -44595,7 +44595,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Ds2bPV49.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-B2D0RGd7.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44631,4 +44631,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app--x6GmmMU.js.map
+//# sourceMappingURL=app-CQiDzwjz.js.map

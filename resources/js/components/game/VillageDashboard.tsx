@@ -14,6 +14,7 @@ import { gameStateService } from '@src/services/GameStateService';
 import { eventBus, Events } from '@src/core/EventBus';
 import { WorldMapView } from '@/components/game/WorldMapView';
 import { Logger } from '@src/core/Logger';
+import { motion } from 'framer-motion';
 
 import { useGameEntities } from '@/hooks/use-game-entities';
 import { UnitQueue } from '@/components/game/UnitQueue';
