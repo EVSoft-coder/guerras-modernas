@@ -28304,7 +28304,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
     if (type2 === "muralha") return base.muralha_nivel || 0;
     const b2 = (_a2 = base.edificios) == null ? void 0 : _a2.find((e) => {
       var _a3;
-      return ((_a3 = e.buildingType || e.type || e.slug) == null ? void 0 : _a3.toLowerCase()) === type2.toLowerCase();
+      return ((_a3 = e.buildingType || e.tipo) == null ? void 0 : _a3.toLowerCase()) === type2.toLowerCase();
     });
     return (b2 == null ? void 0 : b2.nivel) || 0;
   };
@@ -44483,7 +44483,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-D4YbAlGv.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CFmvJDDn.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44519,4 +44519,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-wlFvG3yN.js.map
+//# sourceMappingURL=app-DVkXUTpj.js.map

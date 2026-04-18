@@ -35,7 +35,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
     const getBuildingLevel = (type: string) => {
         if (type === 'qg') return base.qg_nivel || 0;
         if (type === 'muralha') return base.muralha_nivel || 0;
-        const b = base.edificios?.find(e => (e.buildingType || e.type || e.slug)?.toLowerCase() === type.toLowerCase());
+        const b = base.edificios?.find(e => (e.buildingType || e.tipo)?.toLowerCase() === type.toLowerCase());
         return b?.nivel || 0;
     };
 
