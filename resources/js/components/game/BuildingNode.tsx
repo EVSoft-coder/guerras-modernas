@@ -65,18 +65,18 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 style={{ transform: 'translateX(-45%)' }}
             />
 
-            {/* ASSET VISUAL REAL (HYBRID BLENDING V11.2 - NO-GHOST) */}
+            {/* ASSET VISUAL REAL (GRID MASTER V11.3 - SOLID MASS) */}
             {assetPath ? (
                 <img 
                     src={assetPath} 
                     className={`w-full h-full object-contain pointer-events-none transition-all duration-500
-                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.3] contrast-[1.2] saturate-[1.1] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110 group-hover/node:filter group-hover/node:drop-shadow-[0_0_15px_rgba(0,255,150,0.4)]'}
+                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.5] contrast-[1.3] saturate-[1.2] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 group-hover/node:filter group-hover/node:drop-shadow-[0_0_20px_rgba(0,255,100,0.4)]'}
                     `}
                     alt={name}
                     style={{
                         mixBlendMode: (type === 'housing' || type === 'posto_recrutamento') ? 'multiply' : 'screen',
-                        maskImage: 'radial-gradient(circle at center, black 70%, transparent 98%)',
-                        WebkitMaskImage: 'radial-gradient(circle at center, black 70%, transparent 98%)'
+                        maskImage: 'radial-gradient(circle at center, black 75%, transparent 100%)',
+                        WebkitMaskImage: 'radial-gradient(circle at center, black 75%, transparent 100%)'
                     }}
                     onError={(e) => {
                         e.currentTarget.style.display = 'none';
@@ -88,25 +88,34 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 </div>
             )}
 
-            {/* HUD TÁTICO V11.2 (HIGH-POSITIONED) */}
-            <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-[1000]">
-                {/* NAME PLATE (CRISP READABILITY) */}
-                <div className="px-2 py-0.5 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-sm shadow-2xl group-hover/node:border-[#0f0]/60 transition-colors">
-                    <span className="text-[8px] font-black text-white/90 uppercase tracking-widest whitespace-nowrap">{name}</span>
+            {/* HUD MILITAR MINIMALISTA V11.3 */}
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 z-[2000] pointer-events-none">
+                {/* NAME PLATE (COMPACT HUD STYLE) */}
+                <div className="px-2 py-0.5 bg-black/90 backdrop-blur-3xl border border-white/10 rounded-sm shadow-3xl group-hover/node:border-[#0f0]/60 transition-all">
+                    <span className="text-[7.5px] font-black text-white/95 uppercase tracking-[0.15em] whitespace-nowrap">
+                        {name.length > 15 ? name.substring(0, 12) + "..." : name}
+                    </span>
                 </div>
                 
-                {/* LEVEL BADGE (HUD STYLE) */}
+                {/* LEVEL BADGE (TACTICAL HUD) */}
                 <div 
-                    className="flex items-center justify-center bg-[#0a0c10]/95 border border-[#0f0]/80 text-[#0f0] font-black shadow-[0_0_15px_rgba(0,255,0,0.3)] skew-x-[-15deg]"
+                    className="flex items-center justify-center bg-[#050608]/95 border border-[#0f0]/90 text-[#0f0] font-black shadow-[0_0_20px_rgba(0,255,0,0.25)] skew-x-[-12deg]"
                     style={{ 
-                        width: `${24 * scale}px`,
-                        height: `${16 * scale}px`,
-                        fontSize: `${Math.max(9, 12 * scale)}px`,
+                        width: `${22 * scale}px`,
+                        height: `${14 * scale}px`,
+                        fontSize: `${Math.max(8, 11 * scale)}px`,
                     }}
                 >
-                    <span className="skew-x-[15deg]">{(level || 0)}</span>
+                    <span className="skew-x-[12deg]">{(level || 0)}</span>
                 </div>
             </div>
+
+            {/* CONSTRUCTING STATUS */}
+            {isConstructing && (
+                <div className="absolute -top-16 left-1/2 -translate-x-1/2 text-[7px] font-black text-[#0f0] animate-pulse uppercase">
+                    Engenharia...
+                </div>
+            )}
 
             {/* CONSTRUCTING OVERLAY (SUBTLE) */}
             {isConstructing && (
