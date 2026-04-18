@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Domain\Building\BuildingType;
 
 class UnitTypeSeeder extends Seeder
 {
@@ -12,9 +13,12 @@ class UnitTypeSeeder extends Seeder
      */
     public function run(): void
     {
+        \DB::table('unit_types')->truncate();
+        
         \DB::table('unit_types')->insert([
             [
                 'name' => 'Infantaria',
+                'building_type' => BuildingType::QUARTEL,
                 'attack' => 10,
                 'defense' => 15,
                 'speed' => 10.0,
@@ -28,6 +32,7 @@ class UnitTypeSeeder extends Seeder
             ],
             [
                 'name' => 'Veículo leve (APC)',
+                'building_type' => BuildingType::FABRICA_MUNICOES,
                 'attack' => 20,
                 'defense' => 40,
                 'speed' => 25.0,
@@ -41,6 +46,7 @@ class UnitTypeSeeder extends Seeder
             ],
             [
                 'name' => 'Tanque de Combate (MBT)',
+                'building_type' => BuildingType::FABRICA_MUNICOES,
                 'attack' => 150,
                 'defense' => 100,
                 'speed' => 20.0,

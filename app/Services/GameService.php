@@ -131,8 +131,10 @@ class GameService
         }, 5);
     }
 
-    public function obterNivelEdificio(Base $base, string $tipo): int
+    public function obterNivelEdificio(Base $base, ?string $tipo): int
     {
+        if (is_null($tipo)) return 0;
+        
         if ($tipo === BuildingType::QG) return (int) $base->qg_nivel;
         if ($tipo === BuildingType::MURALHA) return (int) $base->muralha_nivel;
         return (int) ($base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0);
