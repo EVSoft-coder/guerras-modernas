@@ -53,6 +53,7 @@ class UnitQueueService
                 'position'          => $position,
                 'quantity'          => $quantidade,
                 'quantity_remaining' => $quantidade,
+                'units_produced'    => 0,
                 'duration_per_unit' => $durationPerUnit,
                 'total_duration'    => $totalDuration,
                 'status'            => $position === 1 ? 'active' : 'pending',
@@ -82,6 +83,7 @@ class UnitQueueService
             $active = DB::table('unit_queue')
                 ->where('base_id', $base->id)
                 ->where('position', 1)
+                ->whereNull('cancelled_at')
                 ->lockForUpdate()
                 ->first();
 
@@ -90,33 +92,41 @@ class UnitQueueService
                 return;
             }
 
+            // PASSO 2 — UNIT QUEUE IDEMPOTENTE
+            // new_units = calculated - units_produced
             $startedAt = \Carbon\Carbon::parse($active->started_at);
             $elapsed = $now->diffInSeconds($startedAt);
             
-            $unitsProduced = floor($elapsed / $active->duration_per_unit);
-            $actualProduced = min((int)$unitsProduced, $active->quantity_remaining);
+            $totalShouldBeProduced = floor($elapsed / $active->duration_per_unit);
+            $newUnits = $totalShouldBeProduced - ($active->units_produced ?? 0);
+            
+            $actualToProduce = min((int)$newUnits, $active->quantity_remaining);
 
-            if ($actualProduced > 0) {
-                $this->addUnitsToBase($base, $active->unit_type_id, $actualProduced);
+            if ($actualToProduce > 0) {
+                $this->addUnitsToBase($base, $active->unit_type_id, $actualToProduce);
                 
-                $newQuantityRemaining = $active->quantity_remaining - $actualProduced;
-                $newStartedAt = $startedAt->addSeconds($actualProduced * $active->duration_per_unit);
+                $newQuantityRemaining = $active->quantity_remaining - $actualToProduce;
+                $newUnitsProduced = ($active->units_produced ?? 0) + $actualToProduce;
                 
                 if ($newQuantityRemaining <= 0) {
                     DB::table('unit_queue')->where('id', $active->id)->delete();
-                    $this->refreshQueue($base->id);
                 } else {
                     DB::table('unit_queue')->where('id', $active->id)->update([
                         'quantity_remaining' => $newQuantityRemaining,
-                        'started_at' => $newStartedAt,
+                        'units_produced' => $newUnitsProduced,
                         'updated_at' => $now
                     ]);
                 }
+                
+                // Se o lote terminou ou houve produção, refresh positions
+                if ($newQuantityRemaining <= 0) {
+                    $this->refreshQueue($base->id);
+                }
 
-                Log::channel('game')->info('[UNITS_PRODUCED_PARTIAL]', [
+                Log::channel('game')->info('[UNITS_PRODUCED_IDEMPOTENT]', [
                     'base_id' => $base->id,
-                    'qty' => $actualProduced,
-                    'remaining' => $newQuantityRemaining
+                    'qty' => $actualToProduce,
+                    'total_lot' => $active->quantity
                 ]);
             }
         });
@@ -128,21 +138,41 @@ class UnitQueueService
     public function cancelRecruitment(int $queueId)
     {
         return DB::transaction(function() use ($queueId) {
-            $item = DB::table('unit_queue')->where('id', $queueId)->lockForUpdate()->first();
-            if (!$item || $item->position !== 1) {
-                 throw new \Exception("LOGÍSTICA: Apenas a produção ativa pode ser cancelada/abortada.");
+            $item = DB::table('unit_queue')
+                ->where('id', $queueId)
+                ->whereNull('cancelled_at')
+                ->lockForUpdate()
+                ->first();
+
+            if (!$item) {
+                 throw new \Exception("LOGÍSTICA: Ordem inexistente ou já cancelada.");
+            }
+
+            // Apenas o primeiro item pode ser cancelado no recrutamento (regra de reorder/idempotência)
+            // se permitirmos outros, as positions mudariam sem ter refunds complexos.
+            if ($item->position !== 1) {
+                throw new \Exception("LOGÍSTICA: Apenas a produção ativa pode ser cancelada (Use Prioridades para reordenar).");
             }
 
             $base = Base::find($item->base_id);
-            $rec = $base->recursos;
+            $rec = $base->recursos()->lockForUpdate()->first();
             
             $qtyToRefund = $item->quantity_remaining;
             $rec->increment('suprimentos', $item->cost_suprimentos * $qtyToRefund);
             $rec->increment('combustivel', $item->cost_combustivel * $qtyToRefund);
             $rec->increment('municoes', $item->cost_municoes * $qtyToRefund);
 
+            // PASSO 5 — CANCELAMENTO SEGURO
+            DB::table('unit_queue')->where('id', $queueId)->update([
+                'cancelled_at' => $this->timeService->now(),
+                'status' => 'CANCELLED'
+            ]);
+
+            // Remover item e reordenar
             DB::table('unit_queue')->where('id', $queueId)->delete();
             $this->refreshQueue($item->base_id);
+
+            Log::channel('game')->info('[UNIT_CANCELLED]', ['id' => $queueId, 'refund_qty' => $qtyToRefund]);
 
             return true;
         });

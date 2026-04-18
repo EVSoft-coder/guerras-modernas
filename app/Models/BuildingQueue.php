@@ -18,6 +18,7 @@ class BuildingQueue extends Model
         'status',
         'started_at',
         'finishes_at',
+        'cancelled_at',
         'cost_suprimentos',
         'cost_combustivel',
         'cost_municoes',
@@ -26,6 +27,7 @@ class BuildingQueue extends Model
     protected $casts = [
         'started_at' => 'datetime',
         'finishes_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'position' => 'integer',
         'duration' => 'integer',
     ];

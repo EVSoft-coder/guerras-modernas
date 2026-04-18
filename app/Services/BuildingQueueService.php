@@ -96,6 +96,7 @@ class BuildingQueueService
             // 1. Verificar o item ativo (position 1)
             $active = BuildingQueue::where('base_id', $base->id)
                 ->where('position', 1)
+                ->whereNull('cancelled_at')
                 ->lockForUpdate()
                 ->first();
 
@@ -126,16 +127,25 @@ class BuildingQueueService
     public function cancelBuilding(int $queueId)
     {
         return DB::transaction(function() use ($queueId) {
-            $item = BuildingQueue::where('id', $queueId)->lockForUpdate()->first();
+            $item = BuildingQueue::where('id', $queueId)
+                ->whereNull('cancelled_at')
+                ->lockForUpdate()
+                ->first();
+                
             if (!$item) return false;
 
             $baseId = $item->base_id;
-
-            // PASSO 4 — CANCELAMENTO: Devolver recursos (Apenas se for o primeiro ou conforme regra)
-            // No prompt diz "apenas position = 1", mas vamos permitir todos, devolvendo o custo registado
             $base = Base::find($baseId);
-            $rec = $base->recursos;
             
+            // Lock recursos para evitar race condition de reembolso
+            $rec = $base->recursos()->lockForUpdate()->first();
+            
+            // PASSO 5 — CANCELAMENTO SEGURO
+            $item->update([
+                'cancelled_at' => $this->timeService->now(),
+                'status' => 'CANCELLED'
+            ]);
+
             $rec->increment('suprimentos', $item->cost_suprimentos);
             $rec->increment('combustivel', $item->cost_combustivel);
             $rec->increment('municoes', $item->cost_municoes);
@@ -143,7 +153,7 @@ class BuildingQueueService
             $item->delete();
             $this->refreshQueue($baseId);
 
-            Log::channel('game')->info('[BUILD_CANCELLED]', ['base_id' => $baseId, 'type' => $item->type]);
+            Log::channel('game')->info('[BUILD_CANCELLED_SECURE]', ['base_id' => $baseId, 'type' => $item->type]);
 
             return true;
         });

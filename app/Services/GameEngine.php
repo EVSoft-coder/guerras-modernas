@@ -13,19 +13,22 @@ class GameEngine
     protected $resourceService;
     protected $movementService;
     protected $timeService;
+    protected $integrityService;
 
     public function __construct(
         ?BuildingQueueService $buildingQueueService = null,
         ?UnitQueueService $unitQueueService = null,
         ?ResourceService $resourceService = null,
         ?MovementService $movementService = null,
-        ?TimeService $timeService = null
+        ?TimeService $timeService = null,
+        ?QueueIntegrityService $integrityService = null
     ) {
         $this->timeService = $timeService ?? new TimeService();
         $this->buildingQueueService = $buildingQueueService ?? new BuildingQueueService($this->timeService);
         $this->unitQueueService = $unitQueueService ?? new UnitQueueService($this->timeService);
         $this->resourceService = $resourceService ?? new ResourceService($this->timeService);
         $this->movementService = $movementService ?? new MovementService(new MapService());
+        $this->integrityService = $integrityService ?? new QueueIntegrityService();
     }
 
     /**
@@ -47,6 +50,9 @@ class GameEngine
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             
             if (!$lockedBase) return;
+
+            // 1.1 Validação de Integridade (Passo 9)
+            $this->integrityService->validateQueue($lockedBase);
 
             // 2. Processar Fila de Construção
             $this->buildingQueueService->processQueue($lockedBase);

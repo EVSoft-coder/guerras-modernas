@@ -15,8 +15,10 @@ class UnitQueue extends Model
         'position',
         'duration_per_unit',
         'total_duration',
+        'units_produced',
         'started_at', 
         'finishes_at', 
+        'cancelled_at',
         'status',
         'cost_suprimentos',
         'cost_combustivel',
@@ -26,8 +28,10 @@ class UnitQueue extends Model
     protected $casts = [
         'started_at' => 'datetime',
         'finishes_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'quantity' => 'integer',
         'quantity_remaining' => 'integer',
+        'units_produced' => 'integer',
         'position' => 'integer',
     ];
 
