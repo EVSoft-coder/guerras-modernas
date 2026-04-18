@@ -28177,21 +28177,21 @@ const AnimatedNumber = ({ value, customValue }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
 const BUILDING_LAYOUT = {
-  // LAYOUT DETERMINÍSTICO V12.1 — COORDENADAS REAIS (ALINHADAS AO SOLO)
-  qg: { x: 400, y: 350, w: 180, h: 180, anchor: "bottom", assetName: "qg.png" },
-  quartel: { x: 630, y: 380, w: 110, h: 110, anchor: "bottom", assetName: "quartel.png" },
-  fabrica_municoes: { x: 230, y: 380, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
-  central_energia: { x: 340, y: 220, w: 90, h: 90, anchor: "bottom", assetName: "central_energia.png" },
-  centro_pesquisa: { x: 620, y: 230, w: 90, h: 90, anchor: "bottom", assetName: "centro_pesquisa.png" },
-  radar_estrategico: { x: 180, y: 250, w: 90, h: 90, anchor: "bottom", assetName: "radar_estrategico.png" },
-  aerodromo: { x: 400, y: 480, w: 120, h: 120, anchor: "bottom", assetName: "aerodromo.png" },
-  muralha: { x: 400, y: 560, w: 260, h: 110, anchor: "bottom", assetName: "muralha.png" },
-  // Fallbacks para edifícios não listados mas necessários
-  refinaria: { x: 660, y: 500, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
-  mina_suprimentos: { x: 140, y: 500, w: 100, h: 100, anchor: "bottom", assetName: "mine.png" },
-  mina_metal: { x: 400, y: 550, w: 120, h: 120, anchor: "bottom", assetName: "mine.png" },
-  housing: { x: 80, y: 180, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" },
-  posto_recrutamento: { x: 720, y: 180, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" }
+  // LAYOUT DETERMINÍSTICO V12.5 — ALINHAMENTO COM PLATAFORMAS (terrain_v12)
+  qg: { x: 400, y: 285, w: 180, h: 180, anchor: "bottom", assetName: "qg.png" },
+  quartel: { x: 770, y: 440, w: 110, h: 110, anchor: "bottom", assetName: "quartel.png" },
+  fabrica_municoes: { x: 290, y: 440, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
+  central_energia: { x: 440, y: 190, w: 90, h: 90, anchor: "bottom", assetName: "central_energia.png" },
+  centro_pesquisa: { x: 770, y: 195, w: 90, h: 90, anchor: "bottom", assetName: "centro.png" },
+  radar_estrategico: { x: 220, y: 275, w: 90, h: 90, anchor: "bottom", assetName: "radar.png" },
+  aerodromo: { x: 500, y: 555, w: 120, h: 120, anchor: "bottom", assetName: "aerodromo.png" },
+  muralha: { x: 400, y: 580, w: 260, h: 110, anchor: "bottom", assetName: "muralha.png" },
+  // Fallbacks e Edifícios Secundários
+  refinaria: { x: 840, y: 560, w: 110, h: 110, anchor: "bottom", assetName: "refinaria.png" },
+  mina_suprimentos: { x: 170, y: 560, w: 100, h: 100, anchor: "bottom", assetName: "mina.png" },
+  mina_metal: { x: 400, y: 570, w: 120, h: 120, anchor: "bottom", assetName: "mina.png" },
+  housing: { x: 110, y: 200, w: 110, h: 110, anchor: "bottom", assetName: "complexo.png" },
+  posto_recrutamento: { x: 890, y: 200, w: 110, h: 110, anchor: "bottom", assetName: "posto.png" }
 };
 const BUILDING_ASSETS = {
   qg: {
@@ -44628,7 +44628,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CEdB0jWz.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index--H5m2ywQ.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44664,4 +44664,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-D3UNUUSK.js.map
+//# sourceMappingURL=app-6iekJJtq.js.map
