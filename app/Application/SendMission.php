@@ -6,6 +6,7 @@ use App\Models\Base;
 use Illuminate\Contracts\Auth\Authenticatable;
 use App\Services\CombatService;
 use App\Services\TimeService;
+use App\Services\MovementService;
 use Illuminate\Support\Facades\DB;
 
 /**
