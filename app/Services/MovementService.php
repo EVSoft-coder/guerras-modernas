@@ -149,13 +149,12 @@ class MovementService
             $this->handleCombat($movement, $base);
         }
 
-        // Marcar como processado
-        $movement->update([
-            'status' => 'arrived',
-            'processed_at' => now()
-        ]);
+        // Marcar como processado (ATÓMICO)
+        $movement->status = 'arrived';
+        $movement->processed_at = now();
+        $movement->save();
 
-        Log::channel('game')->info("[MOVEMENT_PROCESSED] Movimento {$movement->id} ({$movement->type}) processado.");
+        Log::channel('game')->info("[MOVEMENT_PROCESSED] Movimento {$movement->id} ({$movement->type}) finalizado com sucesso.");
     }
 
     /**
@@ -163,65 +162,69 @@ class MovementService
      */
     private function handleCombat(Movement $movement, Base $base): void
     {
-        DB::transaction(function() use ($movement, $base) {
-            $originBase = Base::where('id', $movement->origin_id)->lockForUpdate()->first();
-            $targetBase = Base::where('id', $base->id)->lockForUpdate()->first();
+        // PASSO 1 & 2 - LOCK COMPLETO (Transação já iniciada no processMovements)
+        $originBase = Base::where('id', $movement->origin_id)->lockForUpdate()->first();
+        $targetBase = Base::where('id', $base->id)->lockForUpdate()->first();
+        
+        if (!$originBase || !$targetBase) return;
+
+        // 1. Unidades Atacantes
+        $atkUnits = $movement->units->map(fn($u) => [
+            'id' => $u->unit_type_id,
+            'name' => $u->type->name,
+            'attack' => $u->type->attack,
+            'defense' => $u->type->defense,
+            'carry_capacity' => $u->type->carry_capacity,
+            'quantity' => $u->quantity
+        ])->toArray();
+
+        // 2. Unidades Defensoras
+        $defUnits = Tropas::where('base_id', $targetBase->id)->get()->map(function($t) {
+            $type = UnitType::where('name', $t->unidade)->first();
+            return [
+                'id' => $type?->id,
+                'name' => $t->unidade,
+                'attack' => $type?->attack ?? 0,
+                'defense' => $type?->defense ?? 0,
+                'quantity' => $t->quantidade
+            ];
+        })->filter(fn($u) => $u['quantity'] > 0)->toArray();
+
+        // 3. EXECUTAR COMBATE
+        $result = $this->combatService->resolveBattle($atkUnits, $defUnits);
+
+        // Atualizar tropas defensoras
+        foreach ($result['defender_units'] as $unit) {
+            Tropas::where('base_id', $targetBase->id)
+                ->where('unidade', $unit['name'])
+                ->update(['quantidade' => max(0, (int)$unit['quantity'])]);
+        }
+
+        $loot = [];
+        if ($result['attacker_won']) {
+            // 4. APLICAR LOOT
+            $loot = $this->calculateLoot($result['attacker_units'], $targetBase);
             
-            $atkUnits = $movement->units->map(fn($u) => [
-                'id' => $u->unit_type_id,
-                'name' => $u->type->name,
-                'attack' => $u->type->attack,
-                'defense' => $u->type->defense,
-                'carry_capacity' => $u->type->carry_capacity,
-                'quantity' => $u->quantity
-            ])->toArray();
+            // 5. EXECUTAR CONQUEST (Se político presente)
+            $this->handlePoliticalAction($movement, $targetBase, $result['attacker_units']);
+        }
 
-            $defUnits = Tropas::where('base_id', $targetBase->id)->get()->map(function($t) {
-                $type = UnitType::where('name', $t->unidade)->first();
-                return [
-                    'id' => $type?->id,
-                    'name' => $t->unidade,
-                    'attack' => $type?->attack ?? 0,
-                    'defense' => $type?->defense ?? 0,
-                    'quantity' => $t->quantidade
-                ];
-            })->filter(fn($u) => $u['quantity'] > 0)->toArray();
+        // 6. Tratar Sobreviventes
+        $survivors = collect($result['attacker_units'])->filter(fn($u) => $u['quantity'] > 0);
+        if ($survivors->isNotEmpty()) {
+            $this->createReturnMovement($movement, $targetBase, $originBase, $survivors, $loot);
+        }
 
-            $result = $this->combatService->resolveBattle($atkUnits, $defUnits);
-
-            foreach ($result['defender_units'] as $unit) {
-                Tropas::where('base_id', $targetBase->id)
-                    ->where('unidade', $unit['name'])
-                    ->update(['quantidade' => max(0, (int)$unit['quantity'])]);
-            }
-
-            // PASSO 1, 2, 3 - CALCULAR LOOT (Fase 11)
-            $loot = [];
-            if ($result['attacker_won']) {
-                $loot = $this->calculateLoot($result['attacker_units'], $targetBase);
-                
-                // PASSO 3, 4, 5 - TRATAR CONQUISTA POLÍTICA (Fase 13)
-                $this->handlePoliticalAction($movement, $targetBase, $result['attacker_units']);
-            }
-
-            // 5. Tratar Sobreviventes Atacantes (PASSO 2 - Fase 10)
-            $survivors = collect($result['attacker_units'])->filter(fn($u) => $u['quantity'] > 0);
-            
-            if ($survivors->isNotEmpty()) {
-                $this->createReturnMovement($movement, $targetBase, $originBase, $survivors, $loot);
-            }
-
-            // 6. Gerar Relatório
-            \App\Models\Relatorio::create([
-                'atacante_id' => $originBase->jogador_id,
-                'defensor_id' => $targetBase->jogador_id,
-                'vencedor_id' => $result['attacker_won'] ? $originBase->jogador_id : $targetBase->jogador_id,
-                'titulo' => "Batalha em " . $targetBase->nome,
-                'origem_nome' => $originBase->nome,
-                'destino_nome' => $targetBase->nome,
-                'detalhes' => array_merge($result, ['loot' => $loot])
-            ]);
-        });
+        // 7. Relatório
+        \App\Models\Relatorio::create([
+            'atacante_id' => $originBase->jogador_id,
+            'defensor_id' => $targetBase->jogador_id,
+            'vencedor_id' => $result['attacker_won'] ? $originBase->jogador_id : $targetBase->jogador_id,
+            'titulo' => "Batalha em " . $targetBase->nome,
+            'origem_nome' => $originBase->nome,
+            'destino_nome' => $targetBase->nome,
+            'detalhes' => array_merge($result, ['loot' => $loot])
+        ]);
     }
 
     /**
@@ -229,26 +232,27 @@ class MovementService
      */
     private function handlePoliticalAction(Movement $movement, Base $targetBase, array $attackerUnits): void
     {
-        // 1. Detetar Políticos (Passo 3)
+        // PASSO 4 - DETEÇÃO POLÍTICO
         $politicoCount = 0;
         foreach ($attackerUnits as $unit) {
-            if (strtolower($unit['name']) === 'politico') {
-                $politicoCount += $unit['quantity'];
+            if (isset($unit['name']) && strtolower($unit['name']) === 'politico') {
+                $politicoCount += (int) $unit['quantity'];
             }
         }
 
         if ($politicoCount <= 0) return;
 
-        // 2. Redução de Lealdade (Passo 4)
+        // PASSO 5 - REDUÇÃO DE LEALDADE
         $reduction = rand(20, 35) * $politicoCount;
-        $oldLoyalty = $targetBase->loyalty;
+        $oldLoyalty = (int) $targetBase->loyalty;
         $newLoyalty = max(0, $oldLoyalty - $reduction);
         
-        $targetBase->update(['loyalty' => $newLoyalty]);
+        $targetBase->loyalty = $newLoyalty;
+        $targetBase->save();
 
-        Log::channel('game')->info("[LOYALTY_REDUCED] Base {$targetBase->id}: {$oldLoyalty} -> {$newLoyalty} (-{$reduction})");
+        Log::channel('game')->warning("[LOYALTY_REDUCED] Base {$targetBase->id}: {$oldLoyalty} -> {$newLoyalty} (-{$reduction})");
 
-        // 3. Conquista (Passo 5)
+        // PASSO 6 - CONQUISTA
         if ($newLoyalty <= 0) {
             $this->executeConquest($movement, $targetBase);
         }
@@ -259,20 +263,22 @@ class MovementService
      */
     private function executeConquest(Movement $movement, Base $targetBase): void
     {
+        // PASSO 7 - PROTEGER OWNER (Garantir que a mudança é feita apenas se a lealdade for 0)
+        if ($targetBase->loyalty > 0) return;
+
         $newOwnerId = $movement->origin->jogador_id;
         $oldOwnerId = $targetBase->jogador_id;
 
-        // 1. Mudar Owner e Reset Lealdade
-        $targetBase->update([
-            'jogador_id' => $newOwnerId,
-            'loyalty' => rand(25, 35), // Reset parcial
-            'nome' => "Província de " . $movement->origin->jogador->username,
-        ]);
+        // PASSO 6 - CONQUISTA: Mudar Owner e Reset Lealdade
+        $targetBase->jogador_id = $newOwnerId;
+        $targetBase->loyalty = rand(25, 35); // Reset táctico
+        $targetBase->nome = "Província de " . ($movement->origin->jogador->username ?? "Jogador {$newOwnerId}");
+        $targetBase->save();
 
-        // 2. Remover Unidades Defensoras Restantes
+        // Remover Unidades Defensoras (Fidelidade jurada ao novo dono ou executadas)
         Tropas::where('base_id', $targetBase->id)->delete();
 
-        Log::channel('game')->warning("[CONQUEST_EVENT] Base {$targetBase->id} CONQUISTADA por Jogador {$newOwnerId} (Ex-dono: {$oldOwnerId})");
+        Log::channel('game')->emergency("[CONQUEST_EVENT] SETOR {$targetBase->id} CONQUISTADO por Jogador {$newOwnerId} (Antigo: {$oldOwnerId})");
     }
 
     /**
