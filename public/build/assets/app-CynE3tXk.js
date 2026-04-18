@@ -28178,32 +28178,24 @@ const AnimatedNumber = ({ value, customValue }) => {
 };
 const REFERENCE_WIDTH = 800;
 const BUILDING_LAYOUT = {
-  // CALIBRAÇÃO POR RÓTULOS REAIS (V10 BLUEPRINT)
-  qg: { x: 410, y: 340, w: 220, h: 220, anchor: "center", assetName: "hq.png" },
-  // RECURSOS (SLOTS R1, R3, R4, R7)
-  mina_metal: { x: 370, y: 165, w: 100, h: 100, anchor: "center", assetName: "mine.png" },
-  mina_suprimentos: { x: 175, y: 280, w: 100, h: 100, anchor: "center", assetName: "mine.png" },
-  // R4
-  refinaria: { x: 380, y: 520, w: 110, h: 110, anchor: "center", assetName: "factory.png" },
-  // R3
-  fabrica_municoes: { x: 475, y: 485, w: 110, h: 110, anchor: "center", assetName: "factory.png" },
-  // R7 bot
-  // CONTROLE & LOGÍSTICA (SLOTS C1, C2, C3, C6)
-  quartel: { x: 280, y: 230, w: 120, h: 120, anchor: "center", assetName: "barracks.png" },
-  // C1
-  central_energia: { x: 425, y: 135, w: 90, h: 90, anchor: "center", assetName: "energy.png" },
-  // C2
-  centro_pesquisa: { x: 570, y: 260, w: 120, h: 120, anchor: "center", assetName: "research.png" },
-  // C3
-  aerodromo: { x: 350, y: 580, w: 200, h: 200, anchor: "center", assetName: "aerodrome.png" },
-  // C6
-  // OUTROS
-  radar_estrategico: { x: 475, y: 175, w: 110, h: 110, anchor: "center", assetName: "radar.png" },
-  // R7 top
-  housing: { x: 740, y: 440, w: 100, h: 100, anchor: "center", assetName: "housing.png" },
-  posto_recrutamento: { x: 410, y: 60, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
-  parlamento: { x: 100, y: 100, w: 110, h: 110, anchor: "center", assetName: "research.png" },
-  muralha: { x: 410, y: 340, w: 550, h: 350, anchor: "center", assetName: "wall.png" }
+  // LAYOUT MASTERPIECE V11 (CINEMATIC GROUNDING)
+  qg: { x: 408, y: 314, w: 220, h: 220, anchor: "center", assetName: "hq.png" },
+  // INTEL & RESEARCH (SLOTS SUPERIORES)
+  radar_estrategico: { x: 436, y: 87, w: 100, h: 100, anchor: "center", assetName: "radar.png" },
+  central_energia: { x: 401, y: 196, w: 100, h: 100, anchor: "center", assetName: "energy.png" },
+  centro_pesquisa: { x: 511, y: 211, w: 100, h: 100, anchor: "center", assetName: "research.png" },
+  parlamento: { x: 206, y: 311, w: 110, h: 110, anchor: "center", assetName: "research.png" },
+  // INDÚSTRIA & RECURSOS (ZONAS CONCRETAS)
+  quartel: { x: 321, y: 271, w: 110, h: 110, anchor: "center", assetName: "barracks.png" },
+  fabrica_municoes: { x: 610, y: 301, w: 120, h: 120, anchor: "center", assetName: "factory.png" },
+  refinaria: { x: 770, y: 471, w: 120, h: 120, anchor: "center", assetName: "factory.png" },
+  mina_suprimentos: { x: 501, y: 431, w: 100, h: 100, anchor: "center", assetName: "mine.png" },
+  mina_metal: { x: 511, y: 521, w: 110, h: 110, anchor: "center", assetName: "mine.png" },
+  // LOGÍSTICA & DEFESA
+  aerodromo: { x: 416, y: 556, w: 200, h: 200, anchor: "center", assetName: "aerodrome.png" },
+  housing: { x: 100, y: 100, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
+  posto_recrutamento: { x: 700, y: 100, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
+  muralha: { x: 408, y: 314, w: 550, h: 350, anchor: "center", assetName: "wall.png" }
 };
 const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name, onClick }) => {
   const layout2 = BUILDING_LAYOUT[type2];
@@ -28242,8 +28234,15 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
-            className: "absolute -bottom-1 left-1/2 -translate-x-1/2 w-[70%] h-[15%] bg-black/80 blur-[8px] rounded-[100%] z-[-1] opacity-70",
-            style: { transform: "translateX(-50%)" }
+            className: "absolute -bottom-2 left-1/2 -translate-x-1/2 w-[80%] h-[20%] bg-black/90 blur-[10px] rounded-[100%] z-[-2] opacity-80",
+            style: { transform: "translateX(-40%)" }
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "absolute -bottom-1 left-1/2 -translate-x-1/2 w-[60%] h-[10%] bg-black/100 blur-[4px] rounded-[100%] z-[-1] opacity-90",
+            style: { transform: "translateX(-45%)" }
           }
         ),
         assetPath ? /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -28251,33 +28250,35 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
           {
             src: assetPath,
             className: `w-full h-full object-contain pointer-events-none transition-all duration-500
-                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.15] contrast-[1.35] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105"}
+                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.15] contrast-[1.25] saturate-[1.1] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 group-hover/node:filter group-hover/node:drop-shadow-[0_0_8px_rgba(0,255,255,0.4)]"}
                     `,
             alt: name,
             style: {
-              filter: "url(#alpha-purge) drop-shadow(0 0 20px rgba(0,0,0,0.8))",
-              maskImage: "radial-gradient(circle at center, black 45%, transparent 85%)",
-              WebkitMaskImage: "radial-gradient(circle at center, black 45%, transparent 85%)"
+              filter: "url(#alpha-purge) drop-shadow(0 0 15px rgba(0,0,0,0.6))",
+              maskImage: "linear-gradient(to bottom, black 85%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)"
             },
             onError: (e) => {
               e.currentTarget.style.display = "none";
             }
           }
         ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/80 border border-white/20 rounded-xl backdrop-blur-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/40 font-black uppercase text-center px-1 leading-none", children: name }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "absolute bottom-2 right-2 bg-black/90 border border-[#0f0]/60 text-[#0f0] font-black font-mono rounded-full shadow-2xl flex items-center justify-center backdrop-blur-md",
-            style: {
-              width: `${22 * scale2}px`,
-              height: `${22 * scale2}px`,
-              fontSize: `${Math.max(8, 12 * scale2)}px`,
-              zIndex: 100
-            },
-            children: level || 0
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/node:opacity-100 transition-all bg-black/90 px-3 py-1 rounded text-[9px] text-white font-black uppercase tracking-widest border border-white/10 shadow-2xl z-[10000]", children: name })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute -top-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-[101]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 py-0.5 bg-black/60 backdrop-blur-md border border-white/5 rounded-sm opacity-60 group-hover/node:opacity-100 transition-opacity whitespace-nowrap", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black text-white/80 uppercase tracking-tighter", children: name }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "flex items-center justify-center bg-[#0a0c10]/95 border border-[#0f0]/30 text-[#0f0] font-black shadow-2xl skew-x-[-12deg]",
+              style: {
+                width: `${24 * scale2}px`,
+                height: `${16 * scale2}px`,
+                fontSize: `${Math.max(8, 11 * scale2)}px`
+              },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "skew-x-[12deg]", children: level || 0 })
+            }
+          )
+        ] }),
+        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center z-50 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 border-2 border-[#0f0]/40 border-t-[#0f0] rounded-full animate-spin shadow-[0_0_15px_rgba(0,255,0,0.3)]" }) })
       ]
     }
   );
@@ -28331,11 +28332,11 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
               "img",
               {
                 src: "/assets/structures/v2/terrain.png",
-                className: "w-full h-full object-cover brightness-[0.55] contrast-[1.1] saturate-[0.9]",
-                alt: "Village Background"
+                className: "w-full h-full object-cover brightness-[0.65] contrast-[1.15] saturate-[0.8]",
+                alt: "Village Background Masterpiece"
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_100%)] pointer-events-none" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_50%,rgba(0,0,0,0.5)_100%)] pointer-events-none" })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-20 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
             var _a2;
@@ -44481,7 +44482,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-xsylJ-bq.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DqcVqzbD.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44517,4 +44518,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-kD5rXbxq.js.map
+//# sourceMappingURL=app-CynE3tXk.js.map
