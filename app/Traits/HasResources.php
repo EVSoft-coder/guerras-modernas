@@ -12,9 +12,7 @@ trait HasResources
      */
     public function updateResources()
     {
-        $service = new GameService();
-        $service->syncResources($this);
-        
+        \App\Services\GameEngine::process($this);
         return $this->recursos;
     }
 

@@ -4,23 +4,19 @@ namespace App\Services;
 
 use App\Models\Base;
 use App\Models\Edificio;
-use App\Models\Construcao;
-use App\Models\Tropa;
-use App\Models\Treino;
 use App\Domain\Building\BuildingType;
 use App\Domain\Building\BuildingRules;
-use App\Domain\Unit\UnitRules;
 use App\Domain\Economy\EconomyRules;
 use App\Services\TimeService;
 use App\Services\ResourceService;
 use App\Services\BuildingQueueService;
+use App\Services\GameEngine;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Carbon;
 
 /**
- * GameService Centralizado.
- * Concentra a lógica core de economia, engenharia e recrutamento.
+ * GameService Centralizado (FASE HARDEN FINAL).
+ * Lógica delegada à Sovereign Engine.
  */
 class GameService
 {
@@ -41,10 +37,10 @@ class GameService
      */
     public function snap(Base $base): array
     {
-        if (!$base->recursos) $base->load('recursos');
+        GameEngine::process($base);
         return [
             'base' => $base,
-            'resources' => $this->resourceService->calculate($base->recursos, $this->timeService->now(), $this->obterTaxasProducao($base)),
+            'resources' => $this->resourceService->calculate($base->recursos, GameClock::now(), $this->obterTaxasProducao($base)),
             'ultimo_update' => $base->ultimo_update
         ];
     }
@@ -54,20 +50,8 @@ class GameService
         return $this->snap($base);
     }
 
-    public function calculateResources($base, $now = null)
-    {
-        if (!$base->recursos) $base->load('recursos');
-        return $this->resourceService->calculate($base->recursos, $now ?? $this->timeService->now(), $this->obterTaxasProducao($base));
-    }
-
-    public function syncResources(Base $base): void
-    {
-        GameEngine::process($base);
-    }
-
     public function obterTaxasProducao(Base $base): array
     {
-        // Centralizar lógica de taxas no ResourceService (Passo 2 da Normalização)
         return $this->resourceService->getRates($base);
     }
 
@@ -76,19 +60,16 @@ class GameService
         $tipo = BuildingType::normalize($tipoRaw);
         
         return DB::transaction(function() use ($base, $tipo, $posX, $posY) {
-            // LOCK GLOBAL DA BASE (Fase Crítica)
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
 
-            // 1. Verificar se já existe queue (PASSO 2.1)
             $this->buildingQueueService->validateAvailableQueue($lockedBase);
 
-            // 2. Processamento Completo (PASSO 1 — GAME ENGINE)
+            // PROCESSAMENTO SOBERANO (Garante integridade total antes da ação)
             GameEngine::process($lockedBase);
 
             $nivelAtual = $this->obterNivelEdificio($lockedBase, $tipo);
             $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
 
-            // 3. Validar recursos e população (PASSO 2.3)
             $stats = $this->obterEstatisticasPopulacao($lockedBase);
             $popRequerida = config("game.buildings.{$tipo}.cost.pessoal") ?? 0;
 
@@ -96,37 +77,19 @@ class GameService
                 throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente. Melhore o Complexo Residencial.");
             }
 
-            // 4. Deduzir recursos (PASSO 2.5)
             if (!$this->consumirRecursosInternal($lockedBase, $custos)) {
-                Log::channel('game')->error('[BUILD_FAILED] Saldo insuficiente', ['base_id' => $lockedBase->id, 'tipo' => $tipo]);
                 throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
             }
 
-            // 5. Obter building_id (PASSO 5)
             $buildingId = null;
             if (!in_array($tipo, [BuildingType::QG, BuildingType::MURALHA])) {
                 $buildingId = $lockedBase->edificios()->where('tipo', $tipo)->first()?->id;
             }
 
-            Log::channel('game')->info('[BUILD_START]', ['base_id' => $lockedBase->id, 'tipo' => $tipo]);
-
-            // 6. Criar queue (PASSO 2.4 / PASSO 3)
-            $queue = $this->buildingQueueService->startConstruction($lockedBase, $tipo, $posX, $posY, $buildingId);
-
-            if (!$queue) {
-                 Log::channel('game')->error('[BUILD_FAILED] Falha ao criar entrada na fila', ['base_id' => $lockedBase->id, 'tipo' => $tipo]);
-                 throw new \Exception("ERRO CRÍTICO: Não foi possível registar o plano de engenharia.");
-            }
-
-            Log::channel('game')->info('[BUILD_QUEUE_CREATED]', ['id' => $queue->id, 'base_id' => $lockedBase->id]);
-
-            return $queue;
-        });
+            return $this->buildingQueueService->startConstruction($lockedBase, $tipo, $posX, $posY, $buildingId);
+        }, 5);
     }
 
-    /**
-     * Versão interna sem transação própria (reaproveita a do chamador)
-     */
     private function consumirRecursosInternal(Base $base, array $custos): bool
     {
         $rec = $base->recursos;
@@ -134,8 +97,7 @@ class GameService
 
         foreach ($custos as $res => $qtd) {
             if ($qtd <= 0) continue;
-            $available = (float)($rec->$res ?? 0);
-            if ($available < $qtd) return false;
+            if ((float)($rec->$res ?? 0) < $qtd) return false;
         }
 
         foreach ($custos as $res => $qtd) {
@@ -146,47 +108,22 @@ class GameService
         return true;
     }
 
-    /**
-     * Inicia o recrutamento de uma unidade usando a UnitQueueService.
-     * PASSO 10 - Unificação
-     */
     public function iniciarTreino(Base $base, int $unitTypeId, int $quantidade): \App\Models\UnitQueue
     {
         return DB::transaction(function() use ($base, $unitTypeId, $quantidade) {
-            // LOCK GLOBAL DA BASE (Fase Crítica)
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
-            
-            // 1. Processamento Completo (PASSO 1 — GAME ENGINE)
             GameEngine::process($lockedBase);
-
-            // 2. Delegar para UnitQueueService
             return $this->unitQueueService->startRecruitment($lockedBase, $unitTypeId, $quantidade);
-        });
+        }, 5);
     }
 
     public function consumirRecursos(Base $base, array $custos): bool
     {
-        $this->syncResources($base);
-
         return DB::transaction(function() use ($base, $custos) {
-            $rec = $base->recursos;
-            if (!$rec) return false;
-
-            foreach ($custos as $res => $qtd) {
-                if ($qtd <= 0) continue;
-                $available = (float)($rec->$res ?? 0);
-                if ($available < $qtd) return false;
-            }
-
-            foreach ($custos as $res => $qtd) {
-                if ($qtd <= 0) continue;
-                $rec->decrement($res, $qtd);
-            }
-
-            return true;
-        });
+            GameEngine::process($base);
+            return $this->consumirRecursosInternal($base, $custos);
+        }, 5);
     }
-
 
     public function obterNivelEdificio(Base $base, string $tipo): int
     {
@@ -212,39 +149,13 @@ class GameService
 
         $usedByTroops = 0;
         foreach ($base->units as $unit) {
-            // No futuro, o custo de pessoal de cada unidade deve vir da unit_types.
-            // Para já, assumimos 1 por unidade para robustez.
             $usedByTroops += $unit->quantity;
         }
 
-        $used = $usedByBuildings + $usedByTroops;
-
         return [
             'total' => $total,
-            'used' => $used,
-            'available' => max(0, $total - $used),
-            'details' => [
-                'buildings' => $usedByBuildings,
-                'troops' => $usedByTroops
-            ]
+            'used' => ($usedByBuildings + $usedByTroops),
+            'available' => max(0, $total - ($usedByBuildings + $usedByTroops))
         ];
-    }
-
-    public function findNextAvailablePosition(Base $base): array
-    {
-        for ($y = 0; $y < 10; $y++) {
-            for ($x = 0; $x < 5; $x++) {
-                $isOccupied = DB::table('edificios')
-                    ->where('base_id', $base->id)
-                    ->where('pos_x', $x)
-                    ->where('pos_y', $y)
-                    ->exists();
-                
-                if (!$isOccupied) {
-                    return ['x' => $x, 'y' => $y];
-                }
-            }
-        }
-        return ['x' => 0, 'y' => 0];
     }
 }

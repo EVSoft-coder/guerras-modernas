@@ -33,8 +33,8 @@ class MarketTrade
         }
 
         DB::transaction(function() use ($base, $offer, $receive) {
-            // Sincronizar antes de qualquer transação
-            $this->gameService->syncResources($base);
+            // Sincronizar estado completo via GameEngine (Fase Harden Final)
+            \App\Services\GameEngine::process($base);
 
             $custo = 300;
             $ganho = 100;
