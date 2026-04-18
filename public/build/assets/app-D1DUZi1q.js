@@ -28291,24 +28291,29 @@ const AnimatedNumber = ({ value, customValue }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
 const POSITION_MAP = {
-  qg: { top: "48%", left: "52%", size: "240px", icon: Flag, color: "text-orange-500", assetUrl: "/assets/structures/v2/hq.png", zIndex: 30 },
-  quartel: { top: "32%", left: "30%", size: "150px", icon: Crosshair, color: "text-red-500", assetUrl: "/assets/structures/v2/barracks.png" },
-  mina_suprimentos: { top: "22%", left: "18%", size: "140px", icon: Pickaxe, color: "text-emerald-500", assetUrl: "/assets/structures/v2/mine.png" },
-  mina_metal: { top: "75%", left: "78%", size: "140px", icon: Pickaxe, color: "text-sky-400", assetUrl: "/assets/structures/v2/mine.png" },
-  central_energia: { top: "15%", left: "50%", size: "140px", icon: Zap, color: "text-yellow-400", assetUrl: "/assets/structures/v2/energy.png" },
-  centro_pesquisa: { top: "25%", left: "75%", size: "150px", icon: Microscope, color: "text-purple-400", assetUrl: "/assets/structures/v2/research.png" },
-  fabrica_municoes: { top: "72%", left: "25%", size: "160px", icon: Factory, color: "text-neutral-400", assetUrl: "/assets/structures/v2/factory.png" },
-  refinaria: { top: "38%", left: "88%", size: "130px", icon: Flame, color: "text-orange-600", assetUrl: "/assets/structures/v2/factory.png" },
-  aerodromo: { top: "68%", left: "48%", size: "180px", icon: Plane, color: "text-cyan-400" },
-  muralha: { top: "8%", left: "92%", size: "100px", icon: Shield, color: "text-blue-500" },
-  housing: { top: "62%", left: "28%", size: "100px", icon: House, color: "text-indigo-400" },
-  posto_recrutamento: { top: "65%", left: "75%", size: "100px", icon: Users, color: "text-rose-400" },
-  radar_estrategico: { top: "15%", left: "35%", size: "110px", icon: Radar, color: "text-blue-400" },
-  parlamento: { top: "90%", left: "50%", size: "100px", icon: Landmark, color: "text-amber-500" }
+  // BACK ROW (Highest z-index bottom, Lowest z-index top)
+  central_energia: { top: "15%", left: "50%", size: "130px", icon: Zap, color: "text-yellow-400", assetUrl: "/assets/structures/v2/energy.png", zIndex: 10 },
+  mina_suprimentos: { top: "22%", left: "18%", size: "130px", icon: Pickaxe, color: "text-emerald-500", assetUrl: "/assets/structures/v2/mine.png", zIndex: 11 },
+  radar_estrategico: { top: "16%", left: "34%", size: "110px", icon: Radar, color: "text-blue-400", assetUrl: "/assets/structures/v2/radar.png", zIndex: 12 },
+  centro_pesquisa: { top: "22%", left: "68%", size: "130px", icon: Microscope, color: "text-purple-400", assetUrl: "/assets/structures/v2/research.png", zIndex: 13 },
+  // MID ROW
+  quartel: { top: "35%", left: "26%", size: "150px", icon: Crosshair, color: "text-red-500", assetUrl: "/assets/structures/v2/barracks.png", zIndex: 20 },
+  refinaria: { top: "35%", left: "80%", size: "130px", icon: Flame, color: "text-orange-600", assetUrl: "/assets/structures/v2/factory.png", zIndex: 21 },
+  housing: { top: "45%", left: "38%", size: "110px", icon: House, color: "text-indigo-400", assetUrl: "/assets/structures/v2/housing.png", zIndex: 22 },
+  // CENTERPIECE
+  qg: { top: "48%", left: "54%", size: "280px", icon: Flag, color: "text-orange-500", assetUrl: "/assets/structures/v2/hq.png", zIndex: 30 },
+  // FRONT ROW
+  fabrica_municoes: { top: "70%", left: "22%", size: "180px", icon: Factory, color: "text-neutral-400", assetUrl: "/assets/structures/v2/factory.png", zIndex: 40 },
+  mina_metal: { top: "75%", left: "82%", size: "150px", icon: Pickaxe, color: "text-sky-400", assetUrl: "/assets/structures/v2/mine.png", zIndex: 41 },
+  aerodromo: { top: "72%", left: "50%", size: "190px", icon: Plane, color: "text-cyan-400", assetUrl: "/assets/structures/v2/aerodrome.png", zIndex: 42 },
+  posto_recrutamento: { top: "65%", left: "72%", size: "110px", icon: Users, color: "text-rose-400", assetUrl: "/assets/structures/v2/housing.png", zIndex: 43 },
+  // MARGINALS (Integrated into frame)
+  muralha: { top: "8%", left: "92%", size: "100px", icon: Shield, color: "text-blue-500", zIndex: 5 },
+  parlamento: { top: "92%", left: "50%", size: "100px", icon: Landmark, color: "text-amber-500", zIndex: 50 }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   U$2.useEffect(() => {
-    console.log(">>> VILLAGE_COMMAND_HUD_V4_CHROMA_KEY_ACTIVE <<<");
+    console.log(">>> VILLAGE_COMMAND_HUD_ULTRA_PREMIUM_V5_ACTIVE <<<");
   }, []);
   const getBuildingLevel = (type2) => {
     var _a2, _b;
@@ -28319,17 +28324,11 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
       return ((_a3 = e.buildingType) == null ? void 0 : _a3.toLowerCase()) === type2.toLowerCase();
     })) == null ? void 0 : _b.nivel) || 0;
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full aspect-video bg-[#010203] rounded-[3rem] overflow-hidden border border-white/5 shadow-[0_0_80px_rgba(0,0,0,0.8)] group font-sans select-none", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-[#010203] via-transparent to-[#010203]/40 z-40 pointer-events-none" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "img",
-      {
-        src: "/assets/structures/v2/terrain.png",
-        className: "w-full h-full object-cover brightness-[0.7] contrast-[1.1] saturate-[0.8]",
-        alt: "Tactical Terrain"
-      }
-    ) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,12,24,0.6)_100%)] z-10 pointer-events-none" }),
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full aspect-video bg-[#020405] rounded-[2.5rem] overflow-hidden border border-white/5 shadow-[inset_0_0_100px_rgba(0,0,0,0.9)] group font-sans select-none ring-1 ring-white/10", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-0 brightness-75 contrast-[1.1] saturate-[0.7]", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/assets/structures/v2/terrain.png", className: "w-full h-full object-cover", alt: "Terrain" }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.7)_100%)] z-[5] pointer-events-none" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 border-[20px] border-black/20 pointer-events-none z-[60] backdrop-blur-[1px]" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-4 border border-white/[0.03] rounded-[2rem] pointer-events-none z-[61]" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Object.entries(POSITION_MAP).map(([type2, pos]) => {
       var _a2, _b;
       const level = getBuildingLevel(type2);
@@ -28339,15 +28338,9 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
-            className: "absolute -translate-x-1/2 -translate-y-1/2 opacity-20 hover:opacity-100 transition-all duration-700 z-10",
+            className: "absolute -translate-x-1/2 -translate-y-1/2 opacity-10 hover:opacity-100 transition-all duration-1000 z-10",
             style: { top: pos.top, left: pos.left },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-white/5 rounded-full border border-white/10 flex items-center gap-2 backdrop-blur-sm group/slot", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1.5 h-1.5 bg-neutral-600 rounded-full group-hover/slot:bg-white" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[6px] text-neutral-600 font-black uppercase tracking-widest hidden group-hover/slot:block transition-all", children: [
-                "Planeamento_",
-                type2
-              ] })
-            ] })
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 border border-white/5 rounded-lg backdrop-blur-sm flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1.5 h-1.5 bg-neutral-800 rounded-full" }) })
           },
           type2
         );
@@ -28361,84 +28354,70 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
             /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
               motion.button,
               {
-                whileHover: { scale: 1.02, y: -2 },
+                whileHover: { scale: 1.05, y: -4 },
                 whileTap: { scale: 0.98 },
                 onClick: () => onBuildingClick({ id: type2, buildingType: type2, name: (config == null ? void 0 : config.name) || type2, level }),
-                className: "relative group/building",
+                className: "relative group/building flex flex-col items-center justify-center",
                 style: { width: pos.size, height: pos.size },
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx(
                     motion.div,
                     {
                       initial: { opacity: 0 },
                       animate: { opacity: 1 },
                       exit: { opacity: 0 },
-                      className: "absolute inset-0 z-0",
-                      children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-orange-500/10 blur-2xl animate-pulse rounded-full" }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-x-0 bottom-4 h-1 bg-orange-500/60 shadow-[0_0_15px_#f97316] animate-pulse rounded-full" })
-                      ]
+                      className: "absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.1),transparent_70%)] blur-2xl animate-pulse"
                     }
                   ) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative w-full h-full flex items-center justify-center drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]", children: pos.assetUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "img",
-                    {
-                      src: pos.assetUrl,
-                      className: `w-full h-full object-contain transition-all duration-700
-                                                        ${isConstructing ? "brightness-50 grayscale" : "brightness-[1.1] contrast-[1.1] group-hover/building:brightness-[1.3] group-hover/building:scale-105"}
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full h-full flex flex-col items-center justify-center drop-shadow-[0_25px_45px_rgba(0,0,0,0.9)]", children: [
+                    pos.assetUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "img",
+                      {
+                        src: pos.assetUrl,
+                        className: `w-full h-full object-contain transition-all duration-1000
+                                                        ${isConstructing ? "brightness-50 grayscale contrast-150" : "brightness-[1.1] contrast-[1.1] group-hover/building:brightness-[1.2]"}
                                                     `,
-                      style: {
-                        transform: "scale(1.4)",
-                        filter: "url(#chroma-key-black)"
-                      },
-                      onLoad: () => console.log(`BASE_STRUCTURE_LOADED: ${type2}`)
-                    }
-                  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center w-2/3 h-2/3 bg-[#050709]/90 backdrop-blur-2xl rounded-[2.5rem] border border-white/20 group-hover/building:border-white/50 transition-all shadow-2xl relative", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,#fff_0%,transparent_70%)] rounded-[2.5rem]" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 26, className: `${pos.color} group-hover/building:scale-125 transition-transform mb-2` }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black uppercase text-neutral-300 tracking-[0.3em]", children: ((_b = config == null ? void 0 : config.name) == null ? void 0 : _b.split(" ")[0]) || type2 })
-                  ] }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -bottom-1 -right-1 z-50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#050709]/90 border border-white/20 px-3 py-1.5 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-2xl flex items-center gap-2 group-hover/building:border-white/40 transition-all", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${isConstructing ? "bg-orange-500 animate-pulse" : "bg-emerald-500 shadow-[0_0_8px_#10b981]"}` }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black font-mono text-white tracking-tighter", children: (level || 0).toString().padStart(2, "0") })
-                  ] }) }),
-                  level > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "div",
-                    {
-                      className: "absolute inset-0 opacity-[0.03] group-hover/building:opacity-[0.1] transition-opacity pointer-events-none",
-                      style: { backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px)", backgroundSize: "100% 4px" }
-                    }
-                  )
+                        style: {
+                          filter: "url(#chroma-key-black) drop-shadow(0 0 20px rgba(255,255,255,0.05))",
+                          transform: `scale(1.5) ${pos.rotation || ""}`
+                        }
+                      }
+                    ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center w-2/3 h-2/3 bg-black/80 backdrop-blur-3xl rounded-[2.5rem] border border-white/20 group-hover/building:border-white/50 transition-all shadow-3xl", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 28, className: `${pos.color} group-hover/building:scale-125 transition-transform mb-2 drop-shadow-[0_0_15px_currentColor] opacity-60 group-hover:opacity-100` }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black uppercase text-neutral-400 tracking-[0.3em]", children: ((_b = config == null ? void 0 : config.name) == null ? void 0 : _b.split(" ")[0]) || type2 })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -bottom-4 bg-black/80 border border-white/20 px-4 py-1.5 rounded-2xl shadow-2xl backdrop-blur-3xl group-hover/building:border-white/50 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${isConstructing ? "bg-orange-500 animate-pulse" : "bg-emerald-500 shadow-[0_0_8px_currentColor]"} transition-all` }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-black font-mono text-white tracking-widest", children: level.toString().padStart(2, "0") }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[7px] font-black text-neutral-500 uppercase tracking-tighter", children: [
+                        "SEC_",
+                        type2.slice(0, 3)
+                      ] })
+                    ] }) })
+                  ] })
                 ]
               }
             ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipContent, { className: "bg-[#010203]/95 border-white/10 text-white p-6 rounded-[2.5rem] backdrop-blur-3xl shadow-[0_40px_80px_rgba(0,0,0,1)] min-w-[220px] z-[100] border-t-white/20", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipContent, { className: "bg-black/95 border-white/10 text-white p-6 rounded-[2.5rem] backdrop-blur-3xl shadow-[0_50px_100px_rgba(0,0,0,1)] min-w-[240px] z-[1000] border-t-white/20", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 border-b border-white/5 pb-4", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2.5 rounded-2xl bg-white/5 border border-white/10", children: /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 18, className: pos.color }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] font-black text-neutral-500 uppercase tracking-widest", children: [
-                    "Protocolo_",
-                    type2.slice(0, 5)
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-black uppercase text-sm tracking-tighter leading-none", children: (config == null ? void 0 : config.name) || type2 })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-3 bg-white/5 rounded-2xl border border-white/10", children: /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 20, className: pos.color }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col pt-1", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black text-neutral-600 uppercase tracking-widest leading-none", children: "Command_Authorization" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-black uppercase text-lg tracking-tighter leading-none", children: (config == null ? void 0 : config.name) || type2 })
                 ] })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4 text-[9px] uppercase font-bold", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4 text-[10px] uppercase font-black tracking-widest", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-neutral-600 tracking-widest", children: "Estado" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: isConstructing ? "text-orange-400 animate-pulse" : "text-emerald-400", children: isConstructing ? "Em Expansão" : "Operacional" })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-neutral-500 text-[8px]", children: "Status" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: isConstructing ? "text-orange-400" : "text-emerald-400", children: isConstructing ? "Construction" : "Operational" })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-neutral-600 tracking-widest", children: "Eficiência" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1 text-right", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-neutral-500 text-[8px]", children: "Precision" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white", children: [
-                    (88 + (level || 0) * 1.2).toFixed(1),
+                    (89 + level).toFixed(1),
                     "%"
                   ] })
                 ] })
-              ] }),
-              isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-orange-500/5 p-3 rounded-2xl text-[8px] text-orange-400 flex items-center gap-3 border border-orange-500/10 font-black uppercase tracking-tighter", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { size: 12, className: "text-orange-500" }),
-                " Engenharia_Estrutural_Ativa"
               ] })
             ] }) })
           ] })
@@ -28446,27 +28425,37 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
         type2
       );
     }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-10 left-10 z-50 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 bg-[#010203]/40 px-5 py-2.5 rounded-2xl border border-white/5 backdrop-blur-md", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Radio, { size: 14, className: "text-sky-400 animate-pulse" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-white tracking-[0.2em]", children: "SIGINT // UPLINK_ESTABLISHED" })
-    ] }) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-10 left-10 z-50 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#010203]/40 px-5 py-3 rounded-2xl border border-white/5 backdrop-blur-md flex items-center gap-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-8 left-8 z-[70] pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 bg-black/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-xl shadow-2xl", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Radio, { size: 16, className: "text-sky-400 animate-pulse" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black text-neutral-600 uppercase tracking-widest leading-none mb-1.5", children: "Sector_Stability" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-40 h-1 bg-white/5 rounded-full overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion.div,
-          {
-            initial: { width: 0 },
-            animate: { width: "91%" },
-            className: "h-full bg-sky-500 shadow-[0_0_10px_#0ea5e9]"
-          }
-        ) })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Cpu, { size: 14, className: "text-neutral-500" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-black text-white uppercase tracking-[0.2em] leading-none mb-1", children: "Satellite_Link" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] font-mono text-sky-400 uppercase tracking-widest", children: [
+          "Signal_Strength: 98% // Node: ",
+          base.id
+        ] })
+      ] })
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-white/5 pointer-events-none" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-white/5 pointer-events-none" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { style: { visibility: "hidden", position: "absolute", width: 0, height: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("filter", { id: "chroma-key-black", children: /* @__PURE__ */ jsxRuntimeExports.jsx("feColorMatrix", { type: "matrix", values: "1 0 0 0 0\n                                                        0 1 0 0 0\n                                                        0 0 1 0 0\n                                                        1.5 1.5 1.5 0 -0.5" }) }) })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-8 right-8 z-[70] pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 bg-black/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-xl shadow-2xl", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { size: 16, className: "text-emerald-500 animate-pulse" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-black text-white uppercase tracking-widest", children: [
+        "System_Integrity: ",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-500", children: "OPTIMAL" })
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-8 right-8 z-[70] pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-end gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black text-neutral-500 uppercase tracking-[0.4em]", children: "Military_Grid_Status" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-1", children: [1, 2, 3, 4, 5, 6, 7].map((i2) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1.5 h-1.5 bg-sky-500/20 rounded-full" }, i2)) })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-8 left-8 z-[70] pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] font-mono text-neutral-700 uppercase tracking-[0.8em]", children: "Command_Interface_V5.Premium" }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      motion.div,
+      {
+        animate: { top: ["0%", "100%", "0%"] },
+        transition: { duration: 15, repeat: Infinity, ease: "linear" },
+        className: "absolute left-0 right-0 h-[100px] bg-gradient-to-b from-transparent via-white/[0.03] to-transparent pointer-events-none z-[80]"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { style: { visibility: "hidden", position: "absolute", width: 0, height: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("filter", { id: "chroma-key-black", children: /* @__PURE__ */ jsxRuntimeExports.jsx("feColorMatrix", { type: "matrix", values: "1 0 0 0 0\n                                                        0 1 0 0 0\n                                                        0 0 1 0 0\n                                                        1.8 1.8 1.8 0 -0.8" }) }) })
   ] });
 };
 const Dialog = Root$4;
@@ -44582,7 +44571,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C88uAqCi.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-tOWfJQmo.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44618,4 +44607,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-PRn8N1zK.js.map
+//# sourceMappingURL=app-D1DUZi1q.js.map
