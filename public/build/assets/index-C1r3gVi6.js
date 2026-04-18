@@ -1,90 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-Ble4R7XI.js";
-const unitConfigs = {
-  infantaria: {
-    id: "infantaria",
-    name: "Infantaria de Assalto",
-    cost: { suprimentos: 100, municoes: 20, pessoal: 1 },
-    time: 30,
-    attack: 10,
-    defenseGeneral: 15,
-    defenseArmored: 5,
-    speed: 10,
-    capacity: 20
-  },
-  blindado_apc: {
-    id: "blindado_apc",
-    name: "Transporte APC",
-    cost: { suprimentos: 300, combustivel: 100, municoes: 50, pessoal: 2 },
-    time: 120,
-    attack: 20,
-    defenseGeneral: 40,
-    defenseArmored: 30,
-    speed: 25,
-    capacity: 100
-  },
-  tanque_combate: {
-    id: "tanque_combate",
-    name: "Tanque de Combate (MBT)",
-    cost: { suprimentos: 800, combustivel: 300, municoes: 200, pessoal: 4 },
-    time: 600,
-    attack: 150,
-    defenseGeneral: 100,
-    defenseArmored: 120,
-    speed: 20,
-    capacity: 50
-  },
-  helicoptero_ataque: {
-    id: "helicoptero_ataque",
-    name: "Helicóptero Apache",
-    cost: { suprimentos: 1500, combustivel: 800, municoes: 500, pessoal: 2 },
-    time: 1800,
-    attack: 300,
-    defenseGeneral: 50,
-    defenseArmored: 40,
-    speed: 60,
-    capacity: 0
-  },
-  agente_espiao: {
-    id: "agente_espiao",
-    name: "Agente de Inteligência",
-    cost: { suprimentos: 500, combustivel: 100, municoes: 50, pessoal: 1 },
-    time: 600,
-    attack: 0,
-    defenseGeneral: 1,
-    defenseArmored: 1,
-    speed: 80,
-    capacity: 0,
-    isSpy: true
-  },
-  drone_recon: {
-    id: "drone_recon",
-    name: "Drone de Reconhecimento",
-    cost: { suprimentos: 400, combustivel: 200, pessoal: 1 },
-    time: 300,
-    attack: 0,
-    defenseGeneral: 5,
-    defenseArmored: 2,
-    speed: 120,
-    capacity: 0,
-    isDrone: true
-  },
-  politico: {
-    id: "politico",
-    name: "Comissário Político",
-    cost: { suprimentos: 2e3, municoes: 100, pessoal: 5 },
-    time: 1200,
-    attack: 1,
-    defenseGeneral: 2,
-    defenseArmored: 0,
-    speed: 5,
-    capacity: 0,
-    requires: { parlamento: 1 },
-    canConquer: true
-  }
-};
+import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-BelMLAoN.js";
 class InputSystem {
   constructor() {
     __publicField(this, "keys", {
@@ -745,6 +662,89 @@ class MovementSystem {
   }
 }
 const movementSystem = new MovementSystem();
+const unitConfigs = {
+  infantaria: {
+    id: "infantaria",
+    name: "Infantaria de Assalto",
+    cost: { suprimentos: 100, municoes: 20, pessoal: 1 },
+    time: 30,
+    attack: 10,
+    defenseGeneral: 15,
+    defenseArmored: 5,
+    speed: 10,
+    capacity: 20
+  },
+  blindado_apc: {
+    id: "blindado_apc",
+    name: "Transporte APC",
+    cost: { suprimentos: 300, combustivel: 100, municoes: 50, pessoal: 2 },
+    time: 120,
+    attack: 20,
+    defenseGeneral: 40,
+    defenseArmored: 30,
+    speed: 25,
+    capacity: 100
+  },
+  tanque_combate: {
+    id: "tanque_combate",
+    name: "Tanque de Combate (MBT)",
+    cost: { suprimentos: 800, combustivel: 300, municoes: 200, pessoal: 4 },
+    time: 600,
+    attack: 150,
+    defenseGeneral: 100,
+    defenseArmored: 120,
+    speed: 20,
+    capacity: 50
+  },
+  helicoptero_ataque: {
+    id: "helicoptero_ataque",
+    name: "Helicóptero Apache",
+    cost: { suprimentos: 1500, combustivel: 800, municoes: 500, pessoal: 2 },
+    time: 1800,
+    attack: 300,
+    defenseGeneral: 50,
+    defenseArmored: 40,
+    speed: 60,
+    capacity: 0
+  },
+  agente_espiao: {
+    id: "agente_espiao",
+    name: "Agente de Inteligência",
+    cost: { suprimentos: 500, combustivel: 100, municoes: 50, pessoal: 1 },
+    time: 600,
+    attack: 0,
+    defenseGeneral: 1,
+    defenseArmored: 1,
+    speed: 80,
+    capacity: 0,
+    isSpy: true
+  },
+  drone_recon: {
+    id: "drone_recon",
+    name: "Drone de Reconhecimento",
+    cost: { suprimentos: 400, combustivel: 200, pessoal: 1 },
+    time: 300,
+    attack: 0,
+    defenseGeneral: 5,
+    defenseArmored: 2,
+    speed: 120,
+    capacity: 0,
+    isDrone: true
+  },
+  politico: {
+    id: "politico",
+    name: "Comissário Político",
+    cost: { suprimentos: 2e3, municoes: 100, pessoal: 5 },
+    time: 1200,
+    attack: 1,
+    defenseGeneral: 2,
+    defenseArmored: 0,
+    speed: 5,
+    capacity: 0,
+    requires: { parlamento: 1 },
+    canConquer: true
+  }
+};
 class CombatSystem {
   init() {
     Logger.info("CombatSystem - Engagement Protocols ONLINE.");
@@ -1217,7 +1217,7 @@ class VillageComponent {
     pessoal: 0,
     metal: 0,
     energia: 0
-  }, name = "Base_Outpost", isRebel = false, loyalty = 100, isProtected = false, protectionUntil = 0) {
+  }, name = "Base_Outpost", isRebel = false, loyalty = 100, isProtected = false, protectionUntil = 0, aliancaId = null) {
     __publicField(this, "type", "Village");
     __publicField(this, "ownerId");
     this.dbId = dbId;
@@ -1228,6 +1228,7 @@ class VillageComponent {
     this.loyalty = loyalty;
     this.isProtected = isProtected;
     this.protectionUntil = protectionUntil;
+    this.aliancaId = aliancaId;
     this.ownerId = isRebel ? null : ownerId;
   }
 }
@@ -1654,6 +1655,7 @@ class WorldMapSyncSystem {
       const response = await axios.get(`/api/mapa/chunk/${cx}/${cy}`);
       const bases = response.data.bases || [];
       bases.forEach((b) => {
+        var _a, _b;
         const entityId = 2e4 + b.id;
         if (!entityManager.hasComponent(entityId, "Village")) {
           entityManager.createEntity(entityId);
@@ -1668,7 +1670,8 @@ class WorldMapSyncSystem {
             !b.ownerId,
             b.loyalty || 100,
             b.is_protected,
-            b.protection_until ? new Date(b.protection_until).getTime() : 0
+            b.protection_until ? new Date(b.protection_until).getTime() : 0,
+            ((_a = b.jogador) == null ? void 0 : _a.alianca_id) || null
           ));
           entityManager.addComponent(entityId, new GridPositionComponent(b.coordenada_x, b.coordenada_y, true));
         } else {
@@ -1678,6 +1681,7 @@ class WorldMapSyncSystem {
             village.loyalty = b.loyalty || 100;
             village.isProtected = b.is_protected;
             village.protectionUntil = b.protection_until ? new Date(b.protection_until).getTime() : 0;
+            village.aliancaId = ((_b = b.jogador) == null ? void 0 : _b.alianca_id) || null;
           }
         }
       });
@@ -2501,4 +2505,4 @@ rebelCoords.forEach((coord, index) => {
 });
 stateManager.setState(GameState.PLAYING);
 Logger.info("--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---");
-//# sourceMappingURL=index-B1zIgzre.js.map
+//# sourceMappingURL=index-C1r3gVi6.js.map
