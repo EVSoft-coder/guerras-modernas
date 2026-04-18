@@ -269,16 +269,18 @@ class MovementService
         $newOwnerId = $movement->origin->jogador_id;
         $oldOwnerId = $targetBase->jogador_id;
 
-        // PASSO 6 - CONQUISTA: Mudar Owner e Reset Lealdade
+        // PASSO 8 — CONQUEST: Mudar Owner e Reset Lealdade
         $targetBase->jogador_id = $newOwnerId;
         $targetBase->loyalty = rand(25, 35); // Reset táctico
         $targetBase->nome = "Província de " . ($movement->origin->jogador->username ?? "Jogador {$newOwnerId}");
         $targetBase->save();
 
-        // Remover Unidades Defensoras (Fidelidade jurada ao novo dono ou executadas)
-        Tropas::where('base_id', $targetBase->id)->delete();
+        // LIMPEZA DE ESTADO (Idempotência e Segurança)
+        DB::table('building_queue')->where('base_id', $targetBase->id)->delete();
+        DB::table('unit_queue')->where('base_id', $targetBase->id)->delete();
+        DB::table('tropas')->where('base_id', $targetBase->id)->delete();
 
-        Log::channel('game')->emergency("[CONQUEST_EVENT] SETOR {$targetBase->id} CONQUISTADO por Jogador {$newOwnerId} (Antigo: {$oldOwnerId})");
+        Log::channel('game')->emergency("[CONQUEST_EVENT] SETOR {$targetBase->id} CONQUISTADO por Jogador {$newOwnerId} (Antigo: {$oldOwnerId}). Estado Limpo.");
     }
 
     /**

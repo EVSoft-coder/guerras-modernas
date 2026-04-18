@@ -6,6 +6,10 @@ use App\Models\Base;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * GameEngine - Motor de Estado Soberano (FASE HARDEN FINAL).
+ * Orquestra todas as tabelas de domínio em ciclos atómicos.
+ */
 class GameEngine
 {
     protected $buildingQueueService;
@@ -46,27 +50,32 @@ class GameEngine
     public function processBase(Base $base): void
     {
         DB::transaction(function () use ($base) {
-            // 1. Lock Global da Base (Fase Crítica - Passo 1)
+            // 1. Lock Global da Base (Passo 3 — LOCKS)
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
-            
             if (!$lockedBase) return;
 
-            // 1.1 Validação de Integridade (Passo 9)
+            // 2. Sincronização Inicial de Recursos (Passo 6 — RESOURCES)
+            // Essencial antes de processar filas para ter o saldo exato para transições
+            $this->resourceService->sync($lockedBase);
+
+            // 3. Auditoria de Integridade (Passo 10 — INTEGRITY SERVICE)
             $this->integrityService->validateQueue($lockedBase);
 
-            // 2. Processar Fila de Construção
+            // 4. Processar Fila de Construção (Passo 4 — BUILDING QUEUE)
             $this->buildingQueueService->processQueue($lockedBase);
 
-            // 3. Processar Fila de Unidades
+            // 5. Processar Fila de Unidades (Passo 5 — UNIT QUEUE)
             $this->unitQueueService->processQueue($lockedBase);
 
-            // 4. Processar Movimentos Militares (Passo 5 - Fase 8)
+            // 6. Processar Movimentos Militares (Passo 9 — MOVEMENT)
+            // Inclui combate, loot e conquistas
             $this->movementService->processMovements($lockedBase);
 
-            // 5. Sincronizar Recursos
+            // 7. Sincronização Final de Recursos
+            // Captura qualquer produção extra ou looting resultante deste ciclo
             $this->resourceService->sync($lockedBase);
             
-            Log::channel('game')->info("[GAME_ENGINE] Base {$base->id} processada com sucesso.");
+            Log::channel('game')->info("[GAME_ENGINE] Base {$base->id} processada com sucesso atómico.");
         });
     }
 }

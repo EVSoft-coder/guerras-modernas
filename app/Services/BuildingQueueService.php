@@ -53,7 +53,14 @@ class BuildingQueueService
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             
             $nivelAtual = (new GameService($this->timeService))->obterNivelEdificio($lockedBase, $type);
-            $targetLevel = $nivelAtual + 1;
+            // PASSO 4 — BUILDING QUEUE: Considerar itens já na fila para definir o próximo nível
+            $maxTargetInQueue = DB::table('building_queue')
+                ->where('base_id', $lockedBase->id)
+                ->where('type', $type)
+                ->whereNull('cancelled_at')
+                ->max('target_level');
+
+            $targetLevel = max($nivelAtual, $maxTargetInQueue ?? 0) + 1;
 
             $duration = BuildingRules::calculateTime($type, $nivelAtual);
             $custos = BuildingRules::calculateCost($type, $nivelAtual);

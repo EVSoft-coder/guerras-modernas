@@ -62,7 +62,7 @@ class GameService
 
     public function syncResources(Base $base): void
     {
-        $this->resourceService->sync($base);
+        GameEngine::process($base);
     }
 
     public function obterTaxasProducao(Base $base): array
@@ -82,8 +82,8 @@ class GameService
             // 1. Verificar se já existe queue (PASSO 2.1)
             $this->buildingQueueService->validateAvailableQueue($lockedBase);
 
-            // 2. Sync resources (PASSO 2.2)
-            $this->syncResources($lockedBase);
+            // 2. Processamento Completo (PASSO 1 — GAME ENGINE)
+            GameEngine::process($lockedBase);
 
             $nivelAtual = $this->obterNivelEdificio($lockedBase, $tipo);
             $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
@@ -156,8 +156,8 @@ class GameService
             // LOCK GLOBAL DA BASE (Fase Crítica)
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             
-            // 1. Sync resources
-            $this->syncResources($lockedBase);
+            // 1. Processamento Completo (PASSO 1 — GAME ENGINE)
+            GameEngine::process($lockedBase);
 
             // 2. Delegar para UnitQueueService
             return $this->unitQueueService->startRecruitment($lockedBase, $unitTypeId, $quantidade);

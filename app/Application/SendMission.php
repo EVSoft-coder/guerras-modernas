@@ -44,7 +44,8 @@ class SendMission
             if (empty($data['destino_id'])) {
                 $coords = ['x' => $data['destino_x'], 'y' => $data['destino_y']];
             } else {
-                $baseDestino = Base::findOrFail($data['destino_id']);
+                // LOCK DESTINO (PASSO 3 — LOCKS)
+                $baseDestino = Base::where('id', $data['destino_id'])->lockForUpdate()->firstOrFail();
                 
                 // Validação de Proteção
                 if ($baseDestino->is_protected && $baseDestino->protection_until && $this->timeService->now()->lt($baseDestino->protection_until)) {
