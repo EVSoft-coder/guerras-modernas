@@ -29,7 +29,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const top = layout.y - (layout.anchor === 'bottom' ? layout.h : layout.h / 2);
 
     const assetPath = layout.assetName 
-        ? `/assets/structures/v2/${layout.assetName}`
+        ? `/images/buildings/${layout.assetName}`
         : null;
 
     // Z-INDEX TÁTICO: BASEADO NO LIMITE INFERIOR (Y + H)
