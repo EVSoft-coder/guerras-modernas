@@ -4310,6 +4310,10 @@
     opacity: .05;
   }
 
+  .mix-blend-lighten {
+    mix-blend-mode: lighten;
+  }
+
   .mix-blend-screen {
     mix-blend-mode: screen;
   }
@@ -4326,6 +4330,11 @@
 
   .shadow-\[0_0_0_1px_hsl\(var\(--sidebar-border\)\)\] {
     --tw-shadow: 0 0 0 1px var(--tw-shadow-color, hsl(var(--sidebar-border)));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+
+  .shadow-\[0_0_5px_red\] {
+    --tw-shadow: 0 0 5px var(--tw-shadow-color, red);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
 
@@ -4660,11 +4669,6 @@
 
   .drop-shadow-\[0_0_30px_rgba\(255\,255\,255\,0\.1\)\] {
     --tw-drop-shadow: drop-shadow(0 0 30px #ffffff1a);
-    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
-  }
-
-  .drop-shadow-\[0_10px_20px_rgba\(0\,0\,0\,0\.5\)\] {
-    --tw-drop-shadow: drop-shadow(0 10px 20px #00000080);
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 

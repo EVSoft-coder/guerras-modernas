@@ -36,9 +36,13 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
         ? `/assets/structures/v2/${layout.assetName}`
         : null;
 
+    // PASSO 2 — Z-INDEX PROFISSIONAL (BASE DO EDIFÍCIO)
+    let dynamicZIndex = Math.floor(layout.y + layout.h);
+    if (type === 'muralha') dynamicZIndex = 1; // EXCEÇÃO MURALLA
+
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             whileHover={{ scale: 1.05, zIndex: 9999 }}
             onClick={onClick}
@@ -48,19 +52,21 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 top,
                 width,
                 height,
-                zIndex: Math.floor(layout.y)
+                zIndex: dynamicZIndex
             }}
         >
-            {/* ASSET VISUAL REAL */}
+            {/* PASSO 5 — DEBUG GROUND (PONTO DE CONTACTO) */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-600 rounded-full z-[100] opacity-0 group-hover/node:opacity-100 shadow-[0_0_5px_red] pointer-events-none" />
+
+            {/* ASSET VISUAL REAL (PASSO 6 — BLEND LIGHTEN) */}
             {assetPath ? (
                 <img 
                     src={assetPath} 
-                    className={`w-full h-full object-contain pointer-events-none mix-blend-screen
-                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.1] filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.6)]'}
+                    className={`w-full h-full object-contain pointer-events-none mix-blend-lighten
+                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.1]'}
                     `}
                     alt={name}
                     onError={(e) => {
-                        console.error(`Asset mismatch: ${assetPath}`);
                         e.currentTarget.style.display = 'none';
                     }}
                 />
