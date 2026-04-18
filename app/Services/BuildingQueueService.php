@@ -141,7 +141,7 @@ class BuildingQueueService
             $rec = $base->recursos()->lockForUpdate()->first();
             
             // PASSO 5 — CANCELAMENTO SEGURO
-            $item->update([
+            DB::table('building_queue')->where('id', $item->id)->update([
                 'cancelled_at' => $this->timeService->now(),
                 'status' => 'CANCELLED'
             ]);
