@@ -28178,24 +28178,25 @@ const AnimatedNumber = ({ value, customValue }) => {
 };
 const REFERENCE_WIDTH = 800;
 const BUILDING_LAYOUT = {
-  // LAYOUT MASTERPIECE V11 (CINEMATIC GROUNDING)
-  qg: { x: 408, y: 314, w: 220, h: 220, anchor: "center", assetName: "hq.png" },
-  // INTEL & RESEARCH (SLOTS SUPERIORES)
-  radar_estrategico: { x: 436, y: 87, w: 100, h: 100, anchor: "center", assetName: "radar.png" },
-  central_energia: { x: 401, y: 196, w: 100, h: 100, anchor: "center", assetName: "energy.png" },
-  centro_pesquisa: { x: 511, y: 211, w: 100, h: 100, anchor: "center", assetName: "research.png" },
-  parlamento: { x: 206, y: 311, w: 110, h: 110, anchor: "center", assetName: "research.png" },
-  // INDÚSTRIA & RECURSOS (ZONAS CONCRETAS)
-  quartel: { x: 321, y: 271, w: 110, h: 110, anchor: "center", assetName: "barracks.png" },
-  fabrica_municoes: { x: 610, y: 301, w: 120, h: 120, anchor: "center", assetName: "factory.png" },
-  refinaria: { x: 770, y: 471, w: 120, h: 120, anchor: "center", assetName: "factory.png" },
-  mina_suprimentos: { x: 501, y: 431, w: 100, h: 100, anchor: "center", assetName: "mine.png" },
-  mina_metal: { x: 511, y: 521, w: 110, h: 110, anchor: "center", assetName: "mine.png" },
-  // LOGÍSTICA & DEFESA
-  aerodromo: { x: 416, y: 556, w: 200, h: 200, anchor: "center", assetName: "aerodrome.png" },
-  housing: { x: 100, y: 100, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
-  posto_recrutamento: { x: 700, y: 100, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
-  muralha: { x: 408, y: 314, w: 550, h: 350, anchor: "center", assetName: "wall.png" }
+  // LAYOUT MASTERPIECE V11.2 (PRECISION GRID)
+  // Escalas ajustadas: HQ (160), Circles (130), Rects (110)
+  qg: { x: 400, y: 310, w: 160, h: 160, anchor: "center", assetName: "hq.png" },
+  // SECTORES TÁTICOS (CIRCLES & RECTS)
+  radar_estrategico: { x: 410, y: 175, w: 110, h: 110, anchor: "center", assetName: "radar.png" },
+  central_energia: { x: 485, y: 235, w: 110, h: 110, anchor: "center", assetName: "energy.png" },
+  centro_pesquisa: { x: 615, y: 310, w: 120, h: 120, anchor: "center", assetName: "research.png" },
+  parlamento: { x: 185, y: 310, w: 120, h: 120, anchor: "center", assetName: "research.png" },
+  // INDÚSTRIA & RECURSOS
+  quartel: { x: 315, y: 235, w: 100, h: 100, anchor: "center", assetName: "barracks.png" },
+  fabrica_municoes: { x: 260, y: 310, w: 110, h: 110, anchor: "center", assetName: "factory.png" },
+  refinaria: { x: 540, y: 310, w: 110, h: 110, anchor: "center", assetName: "factory.png" },
+  mina_suprimentos: { x: 315, y: 385, w: 100, h: 100, anchor: "center", assetName: "mine.png" },
+  mina_metal: { x: 410, y: 480, w: 130, h: 130, anchor: "center", assetName: "mine.png" },
+  // LOGÍSTICA & EXTERIOR
+  aerodromo: { x: 410, y: 550, w: 180, h: 180, anchor: "bottom", assetName: "aerodrome.png" },
+  housing: { x: 100, y: 120, w: 110, h: 110, anchor: "center", assetName: "housing.png" },
+  posto_recrutamento: { x: 700, y: 120, w: 110, h: 110, anchor: "center", assetName: "housing.png" },
+  muralha: { x: 400, y: 310, w: 500, h: 320, anchor: "center", assetName: "wall.png" }
 };
 const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name, onClick }) => {
   const layout2 = BUILDING_LAYOUT[type2];
@@ -28250,35 +28251,35 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
           {
             src: assetPath,
             className: `w-full h-full object-contain pointer-events-none transition-all duration-500
-                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.25] contrast-[1.3] saturate-[1.2] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110 group-hover/node:filter group-hover/node:drop-shadow-[0_0_15px_rgba(0,255,150,0.5)]"}
+                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.3] contrast-[1.2] saturate-[1.1] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110 group-hover/node:filter group-hover/node:drop-shadow-[0_0_15px_rgba(0,255,150,0.4)]"}
                     `,
             alt: name,
             style: {
               mixBlendMode: type2 === "housing" || type2 === "posto_recrutamento" ? "multiply" : "screen",
-              filter: type2 === "housing" || type2 === "posto_recrutamento" ? "contrast(1.1)" : "url(#alpha-purge) drop-shadow(0 0 15px rgba(0,0,0,0.6))",
-              maskImage: "radial-gradient(circle at center, black 65%, transparent 95%)",
-              WebkitMaskImage: "radial-gradient(circle at center, black 65%, transparent 95%)"
+              maskImage: "radial-gradient(circle at center, black 70%, transparent 98%)",
+              WebkitMaskImage: "radial-gradient(circle at center, black 70%, transparent 98%)"
             },
             onError: (e) => {
               e.currentTarget.style.display = "none";
             }
           }
         ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/80 border border-white/20 rounded-xl backdrop-blur-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/40 font-black uppercase text-center px-1 leading-none", children: name }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute -top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-[101]", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-3 py-1 bg-black/80 backdrop-blur-xl border border-white/10 rounded-sm shadow-xl group-hover/node:border-[#0f0]/40 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black text-white uppercase tracking-wider", children: name }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute -top-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-[1000]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 py-0.5 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-sm shadow-2xl group-hover/node:border-[#0f0]/60 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black text-white/90 uppercase tracking-widest whitespace-nowrap", children: name }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: "flex items-center justify-center bg-[#0a0c10]/95 border border-[#0f0]/60 text-[#0f0] font-black shadow-[0_0_10px_rgba(0,255,0,0.2)] skew-x-[-15deg]",
+              className: "flex items-center justify-center bg-[#0a0c10]/95 border border-[#0f0]/80 text-[#0f0] font-black shadow-[0_0_15px_rgba(0,255,0,0.3)] skew-x-[-15deg]",
               style: {
-                width: `${26 * scale2}px`,
-                height: `${17 * scale2}px`,
+                width: `${24 * scale2}px`,
+                height: `${16 * scale2}px`,
                 fontSize: `${Math.max(9, 12 * scale2)}px`
               },
               children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "skew-x-[15deg]", children: level || 0 })
             }
           )
         ] }),
+        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center z-50 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 border-2 border-[#0f0]/30 border-t-[#0f0] rounded-full animate-spin" }) }),
         isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center z-50 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 border-2 border-[#0f0]/40 border-t-[#0f0] rounded-full animate-spin shadow-[0_0_15px_rgba(0,255,0,0.3)]" }) })
       ]
     }
@@ -44483,7 +44484,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CFmvJDDn.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CXNUD7CU.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44519,4 +44520,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DVkXUTpj.js.map
+//# sourceMappingURL=app-C2v9WIQ5.js.map
