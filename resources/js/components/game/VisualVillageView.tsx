@@ -19,20 +19,20 @@ interface BuildingPos {
 }
 
 const POSITION_MAP: Record<string, BuildingPos> = {
-    qg: { top: '50%', left: '50%', size: '220px', icon: Flag, color: 'text-orange-500', assetUrl: '/assets/structures/v2/hq.png', zIndex: 30 },
-    quartel: { top: '35%', left: '28%', size: '140px', icon: Crosshair, color: 'text-red-500', assetUrl: '/assets/structures/v2/barracks.png' },
-    mina_suprimentos: { top: '15%', left: '15%', size: '130px', icon: Pickaxe, color: 'text-emerald-500', assetUrl: '/assets/structures/v2/mine.png' },
-    mina_metal: { top: '80%', left: '85%', size: '130px', icon: Pickaxe, color: 'text-sky-400', assetUrl: '/assets/structures/v2/mine.png' },
-    central_energia: { top: '18%', left: '48%', size: '130px', icon: Zap, color: 'text-yellow-400', assetUrl: '/assets/structures/v2/energy.png' },
-    centro_pesquisa: { top: '22%', left: '72%', size: '140px', icon: Microscope, color: 'text-purple-400', assetUrl: '/assets/structures/v2/research.png' },
-    fabrica_municoes: { top: '78%', left: '18%', size: '150px', icon: Factory, color: 'text-neutral-400', assetUrl: '/assets/structures/v2/factory.png' },
-    refinaria: { top: '35%', left: '85%', size: '120px', icon: Flame, color: 'text-orange-600', assetUrl: '/assets/structures/v2/factory.png' },
-    aerodromo: { top: '70%', left: '48%', size: '160px', icon: Plane, color: 'text-cyan-400' },
-    muralha: { top: '5%', left: '90%', size: '80px', icon: Shield, color: 'text-blue-500' },
-    housing: { top: '58%', left: '25%', size: '90px', icon: Home, color: 'text-indigo-400' },
-    posto_recrutamento: { top: '62%', left: '78%', size: '90px', icon: Users, color: 'text-rose-400' },
-    radar_estrategico: { top: '12%', left: '35%', size: '100px', icon: Radar, color: 'text-blue-400' },
-    parlamento: { top: '88%', left: '50%', size: '90px', icon: Landmark, color: 'text-amber-500' },
+    qg: { top: '48%', left: '52%', size: '240px', icon: Flag, color: 'text-orange-500', assetUrl: '/assets/structures/v2/hq.png', zIndex: 30 },
+    quartel: { top: '32%', left: '30%', size: '150px', icon: Crosshair, color: 'text-red-500', assetUrl: '/assets/structures/v2/barracks.png' },
+    mina_suprimentos: { top: '22%', left: '18%', size: '140px', icon: Pickaxe, color: 'text-emerald-500', assetUrl: '/assets/structures/v2/mine.png' },
+    mina_metal: { top: '75%', left: '78%', size: '140px', icon: Pickaxe, color: 'text-sky-400', assetUrl: '/assets/structures/v2/mine.png' },
+    central_energia: { top: '15%', left: '50%', size: '140px', icon: Zap, color: 'text-yellow-400', assetUrl: '/assets/structures/v2/energy.png' },
+    centro_pesquisa: { top: '25%', left: '75%', size: '150px', icon: Microscope, color: 'text-purple-400', assetUrl: '/assets/structures/v2/research.png' },
+    fabrica_municoes: { top: '72%', left: '25%', size: '160px', icon: Factory, color: 'text-neutral-400', assetUrl: '/assets/structures/v2/factory.png' },
+    refinaria: { top: '38%', left: '88%', size: '130px', icon: Flame, color: 'text-orange-600', assetUrl: '/assets/structures/v2/factory.png' },
+    aerodromo: { top: '68%', left: '48%', size: '180px', icon: Plane, color: 'text-cyan-400' },
+    muralha: { top: '8%', left: '92%', size: '100px', icon: Shield, color: 'text-blue-500' },
+    housing: { top: '62%', left: '28%', size: '100px', icon: Home, color: 'text-indigo-400' },
+    posto_recrutamento: { top: '65%', left: '75%', size: '100px', icon: Users, color: 'text-rose-400' },
+    radar_estrategico: { top: '15%', left: '35%', size: '110px', icon: Radar, color: 'text-blue-400' },
+    parlamento: { top: '90%', left: '50%', size: '100px', icon: Landmark, color: 'text-amber-500' },
 };
 
 interface VisualVillageViewProps {
@@ -118,12 +118,15 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                                             )}
                                         </AnimatePresence>
 
-                                        {/* HIGH-END BUILDING BLOCK */}
-                                        <div className="relative w-full h-full flex items-center justify-center">
+                                        {/* INTEGRATED BUILDING IMAGE BLOCK — REMOVING BLACK SQUARES */}
+                                        <div className="relative w-full h-full flex items-center justify-center drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                                             {pos.assetUrl ? (
                                                 <img 
                                                     src={pos.assetUrl} 
-                                                    className={`w-full h-full object-contain transition-all duration-700 drop-shadow-2xl ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.1] contrast-[1.1] group-hover/building:brightness-[1.2] group-hover/building:drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]'}`} 
+                                                    className={`w-full h-full object-contain transition-all duration-700 mix-blend-lighten 
+                                                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.2] contrast-[1.2] group-hover/building:brightness-[1.4]'}
+                                                    `} 
+                                                    style={{ transform: 'scale(1.2)' }}
                                                 />
                                             ) : (
                                                 <div className="flex flex-col items-center justify-center w-2/3 h-2/3 bg-[#050709]/80 backdrop-blur-xl rounded-[2rem] border border-white/10 group-hover/building:border-white/30 transition-all shadow-2xl relative">
