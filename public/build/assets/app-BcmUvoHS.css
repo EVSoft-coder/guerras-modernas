@@ -553,10 +553,6 @@
     top: calc(var(--spacing) * -2);
   }
 
-  .-top-10 {
-    top: calc(var(--spacing) * -10);
-  }
-
   .-top-12 {
     top: calc(var(--spacing) * -12);
   }
@@ -771,10 +767,6 @@
 
   .z-\[100\] {
     z-index: 100;
-  }
-
-  .z-\[1000\] {
-    z-index: 1000;
   }
 
   .z-\[2000\] {
@@ -1852,18 +1844,8 @@
     transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
   }
 
-  .skew-x-\[-15deg\] {
-    --tw-skew-x: skewX(-15deg);
-    transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
-  }
-
   .skew-x-\[12deg\] {
     --tw-skew-x: skewX(12deg);
-    transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
-  }
-
-  .skew-x-\[15deg\] {
-    --tw-skew-x: skewX(15deg);
     transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
   }
 
@@ -2475,10 +2457,6 @@
     border-color: oklab(86.644% -.233887 .179499 / .4);
   }
 
-  .border-\[\#0f0\]\/80 {
-    border-color: oklab(86.644% -.233887 .179499 / .8);
-  }
-
   .border-\[\#0f0\]\/90 {
     border-color: oklab(86.644% -.233887 .179499 / .9);
   }
@@ -2741,10 +2719,6 @@
 
   .border-t-sky-500\/30 {
     border-top-color: color-mix(in oklab, var(--color-sky-500) 30%, transparent);
-  }
-
-  .bg-\[\#0a0c10\]\/95 {
-    background-color: oklab(15.4018% -.000917099 -.00915512 / .95);
   }
 
   .bg-\[\#1b1b18\] {
@@ -4742,18 +4716,8 @@
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
-  .brightness-\[1\.3\] {
-    --tw-brightness: brightness(1.3);
-    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
-  }
-
   .brightness-\[1\.5\] {
     --tw-brightness: brightness(1.5);
-    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
-  }
-
-  .contrast-\[1\.2\] {
-    --tw-contrast: contrast(1.2);
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
@@ -4814,11 +4778,6 @@
 
   .saturate-\[0\.8\] {
     --tw-saturate: saturate(.8);
-    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
-  }
-
-  .saturate-\[1\.1\] {
-    --tw-saturate: saturate(1.1);
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
@@ -5240,24 +5199,12 @@
       scale: var(--tw-scale-x) var(--tw-scale-y);
     }
 
-    .group-hover\/node\:scale-110:is(:where(.group\/node):hover *) {
-      --tw-scale-x: 110%;
-      --tw-scale-y: 110%;
-      --tw-scale-z: 110%;
-      scale: var(--tw-scale-x) var(--tw-scale-y);
-    }
-
     .group-hover\/node\:border-\[\#0f0\]\/60:is(:where(.group\/node):hover *) {
       border-color: oklab(86.644% -.233887 .179499 / .6);
     }
 
     .group-hover\/node\:opacity-100:is(:where(.group\/node):hover *) {
       opacity: 1;
-    }
-
-    .group-hover\/node\:drop-shadow-\[0_0_15px_rgba\(0\,255\,150\,0\.4\)\]:is(:where(.group\/node):hover *) {
-      --tw-drop-shadow: drop-shadow(0 0 15px #00ff9666);
-      filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
     }
 
     .group-hover\/node\:drop-shadow-\[0_0_20px_rgba\(0\,255\,100\,0\.4\)\]:is(:where(.group\/node):hover *) {

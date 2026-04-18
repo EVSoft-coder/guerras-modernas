@@ -32,7 +32,7 @@ const rootElement = document.getElementById('app');
 if (rootElement) {
     window.eventBus = eventBus;
     initializeTheme();
-    console.log("FRONTEND VERSION 2026");
+    console.log("FRONTEND VERSION 2026.04.18.C");
     console.log("--- GUERRAS MODERNAS SINAL V3.9.2 ATIVO ---");
     
     createInertiaApp({
