@@ -625,6 +625,10 @@
     right: calc(var(--spacing) * 1);
   }
 
+  .right-2 {
+    right: calc(var(--spacing) * 2);
+  }
+
   .right-3 {
     right: calc(var(--spacing) * 3);
   }
@@ -1807,6 +1811,10 @@
     transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y) !important;
   }
 
+  .animate-\[spin_4s_linear_infinite\] {
+    animation: 4s linear infinite spin;
+  }
+
   .animate-\[spin_20s_linear_infinite\] {
     animation: 20s linear infinite spin;
   }
@@ -2169,6 +2177,10 @@
 
   .rounded-3xl {
     border-radius: var(--radius-3xl);
+  }
+
+  .rounded-\[1\.2rem\] {
+    border-radius: 1.2rem;
   }
 
   .rounded-\[1\.5rem\] {
@@ -4343,6 +4355,11 @@
 
   .shadow-\[0_0_15px_rgba\(14\,165\,233\,0\.5\)\] {
     --tw-shadow: 0 0 15px var(--tw-shadow-color, #0ea5e980);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+
+  .shadow-\[0_0_15px_rgba\(16\,185\,129\,0\.1\)\] {
+    --tw-shadow: 0 0 15px var(--tw-shadow-color, #10b9811a);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
 

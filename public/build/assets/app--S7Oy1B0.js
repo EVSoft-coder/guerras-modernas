@@ -30474,64 +30474,76 @@ function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, diplomat
   ] });
 }
 const UnitQueue = ({ queue = [] }) => {
+  const [now2, setNow] = reactExports.useState(Date.now());
+  reactExports.useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1e3);
+    return () => clearInterval(timer);
+  }, []);
+  const sortedQueue = [...queue].sort((a, b2) => a.position - b2.position);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { className: "py-4 bg-white/[0.02] border-b border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "text-emerald-500 animate-pulse", size: 16 }),
-      "Mobilização de Tropas"
+      "Linha de Mobilização"
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "py-6 space-y-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "popLayout", children: queue.length > 0 ? queue.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(QueueEntry, { item, isFirst: index2 === 0 }, item.id)) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center py-6 border-2 border-dashed border-white/5 rounded-2xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] uppercase font-black text-neutral-600 tracking-widest", children: "Quartel em Espera" }) }) }) })
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "py-6 space-y-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "popLayout", children: sortedQueue.length > 0 ? sortedQueue.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      QueueEntry,
+      {
+        item,
+        now: now2
+      },
+      item.id
+    )) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center py-8 border border-dashed border-white/5 rounded-2xl bg-white/[0.01]", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] uppercase font-black text-neutral-600 tracking-[0.4em]", children: "Quartel em Espera" }) }) }) })
   ] });
 };
-const QueueEntry = ({ item, isFirst }) => {
+const QueueEntry = ({ item, now: now2 }) => {
   var _a2;
-  const calculateProgress = () => {
-    const start = new Date(item.started_at).getTime();
-    const end = new Date(item.finishes_at).getTime();
-    const now2 = (/* @__PURE__ */ new Date()).getTime();
-    const total = end - start;
-    const elapsed = now2 - start;
-    const remaining = end - now2;
-    if (remaining <= 0) return null;
-    const percent22 = Math.min(100, Math.max(0, elapsed / total * 100));
-    const h2 = Math.floor(remaining / 36e5);
-    const m2 = Math.floor(remaining % 36e5 / 6e4);
-    const s2 = Math.floor(remaining % 6e4 / 1e3);
-    const timeStr2 = h2 > 0 ? `${h2}h ${m2}m` : `${m2}m ${s2}s`;
-    return { percent: percent22, timeStr: timeStr2 };
-  };
-  const result = calculateProgress();
-  if (!result) return null;
-  const { percent: percent2, timeStr } = result;
+  const start = new Date(item.started_at).getTime();
+  const end = new Date(item.finishes_at).getTime();
+  const total = end - start;
+  const elapsed = now2 - start;
+  const remainingMs = end - now2;
+  const isFinished = remainingMs <= 0;
+  const percent2 = isFinished ? 100 : Math.min(100, Math.max(0, elapsed / total * 100));
+  const seconds = Math.max(0, Math.floor(remainingMs / 1e3));
+  const h2 = Math.floor(seconds / 3600);
+  const m2 = Math.floor(seconds % 3600 / 60);
+  const s2 = seconds % 60;
+  const timeStr = h2 > 0 ? `${h2}h ${m2}m ${s2}s` : m2 > 0 ? `${m2}m ${s2}s` : `${s2}s`;
+  const unitName = ((_a2 = item.unitType) == null ? void 0 : _a2.name) || "Unidade Desconhecida";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
-      initial: { x: 20, opacity: 0 },
+      layout: true,
+      initial: { x: -20, opacity: 0 },
       animate: { x: 0, opacity: 1 },
-      className: `relative p-3 rounded-xl border border-white/5 bg-white/[0.01] ${!isFirst ? "opacity-40" : ""}`,
+      exit: { x: 20, opacity: 0 },
+      className: `
+                relative p-4 rounded-[1.2rem] border transition-all duration-500
+                ${item.position === 1 ? "bg-emerald-500/5 border-emerald-500/20" : "bg-white/[0.01] border-white/5 opacity-60"}
+            `,
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center mb-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-white uppercase", children: (_a2 = item.unitType) == null ? void 0 : _a2.name }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] text-neutral-500 ml-2 font-bold uppercase", children: [
-              "x",
-              item.quantity,
-              " Unidades"
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start mb-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-black text-white uppercase tracking-tight", children: unitName }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[9px] text-neutral-500 font-bold uppercase tracking-widest mt-0.5", children: [
+              "Lote: x",
+              item.quantity
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 text-[10px] font-mono font-black text-emerald-400", children: [
-            isFirst && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "size-1 bg-emerald-500 rounded-full animate-ping" }),
-            timeStr
-          ] })
+          item.position === 1 && !isFinished ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "text-emerald-500 animate-[spin_4s_linear_infinite]", size: 12 }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono font-black text-emerald-400", children: timeStr })
+          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[9px] font-black text-neutral-600 uppercase tracking-widest", children: isFinished ? "Concluído" : `Posição #${item.position}` })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1 bg-black/40 rounded-full overflow-hidden border border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/5 relative", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           motion.div,
           {
-            className: "h-full bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]",
-            initial: { width: 0 },
+            className: `h-full ${item.position === 1 ? "bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]" : "bg-neutral-800"}`,
             animate: { width: `${percent2}%` },
-            transition: { type: "spring", bounce: 0, duration: 1.5 }
+            transition: { type: "tween", ease: "linear", duration: 1 }
           }
-        ) })
+        ) }),
+        item.position === 1 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-2 right-2 opacity-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 40, className: "animate-pulse" }) })
       ]
     }
   );
@@ -44538,7 +44550,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-HHvX-kkB.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CmahcGoV.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44574,4 +44586,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BOCvT5bI.js.map
+//# sourceMappingURL=app--S7Oy1B0.js.map
