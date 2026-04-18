@@ -49,33 +49,29 @@ class GameEngine
      */
     public function processBase(Base $base): void
     {
+        // PASSO 1 — LOCK TIMEOUT + RETRY (Fase Harden 3): 5 tentativas automáticas
         DB::transaction(function () use ($base) {
-            // 1. Lock Global da Base (Passo 3 — LOCKS)
+            // 1. Lock Global da Base
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             if (!$lockedBase) return;
 
-            // 2. Sincronização Inicial de Recursos (Passo 6 — RESOURCES)
-            // Essencial antes de processar filas para ter o saldo exato para transições
+            // 2. Sync de Recursos
             $this->resourceService->sync($lockedBase);
 
-            // 3. Auditoria de Integridade (Passo 4 — FASE HARDEN 2)
+            // 3. Auditoria e Reparação de Integridade
             $this->integrityService->validateAndRepair($lockedBase);
 
-            // 4. Processar Fila de Construção (Passo 4 — BUILDING QUEUE)
+            // 4. Processar Filas
             $this->buildingQueueService->processQueue($lockedBase);
-
-            // 5. Processar Fila de Unidades (Passo 5 — UNIT QUEUE)
             $this->unitQueueService->processQueue($lockedBase);
 
-            // 6. Processar Movimentos Militares (Passo 9 — MOVEMENT)
-            // Inclui combate, loot e conquistas
+            // 5. Processar Movimentos
             $this->movementService->processMovements($lockedBase);
 
-            // 7. Sincronização Final de Recursos
-            // Captura qualquer produção extra ou looting resultante deste ciclo
+            // 6. Sync Final (Estado Final)
             $this->resourceService->sync($lockedBase);
             
-            Log::channel('game')->info("[GAME_ENGINE] Base {$base->id} processada com sucesso atómico.");
-        });
+            Log::channel('game')->info("[GAME_ENGINE] Ciclo atómico finalizado para base {$base->id}");
+        }, 5);
     }
 }

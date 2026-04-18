@@ -241,6 +241,57 @@ class MovementService
     }
 
     /**
+     * Cancela um movimento em trânsito e inicia o regresso automático.
+     * PASSO 4 — MOVEMENT CANCEL (Harden 3)
+     */
+    public function cancelMovement(int $movementId): Movement
+    {
+        return DB::transaction(function() use ($movementId) {
+            $movement = Movement::where('id', $movementId)
+                ->where('status', 'moving')
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $now = GameClock::now();
+            $departure = $movement->departure_time;
+            
+            // Calcular tempo já percorrido
+            $elapsed = $now->diffInSeconds($departure);
+            $returnArrival = $now->copy()->addSeconds($elapsed);
+
+            // Criar Movimento de Regresso
+            $returnMovement = Movement::create([
+                'origin_id' => $movement->target_id,
+                'target_id' => $movement->origin_id,
+                'status' => 'moving',
+                'type' => 'return',
+                'departure_time' => $now,
+                'arrival_time' => $returnArrival,
+                'loot_suprimentos' => $movement->loot_suprimentos,
+                'loot_combustivel' => $movement->loot_combustivel,
+                'loot_municoes'    => $movement->loot_municoes
+            ]);
+
+            foreach ($movement->units as $mUnit) {
+                MovementUnit::create([
+                    'movement_id' => $returnMovement->id,
+                    'unit_type_id' => $mUnit->unit_type_id,
+                    'quantity' => $mUnit->quantity
+                ]);
+            }
+
+            // Anular o original (Atómico)
+            $movement->status = 'cancelled';
+            $movement->processed_at = $now;
+            $movement->save();
+
+            Log::channel('game')->info("[MOVEMENT_CANCELLED] Operação #{$movementId} abortada. Regresso previsto para {$returnArrival}");
+
+            return $returnMovement;
+        }, 5);
+    }
+
+    /**
      * Resolve ações de conquista política baseadas na presença de unidades especiais (Fase 13).
      */
     private function handlePoliticalAction(Movement $movement, Base $targetBase, array $attackerUnits): void

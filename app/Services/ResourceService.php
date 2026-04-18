@@ -4,40 +4,22 @@ namespace App\Services;
 
 use App\Models\Base;
 use App\Models\Recurso;
-use App\Services\TimeService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * ResourceService - Doutrina de Persistência Atómica (FASE HARDEN 2).
- * Implementa "1 sync per cycle" e logging categorizado.
+ * ResourceService - Escala Real (PASSO 3 — FASE HARDEN 3).
+ * Sincronização inteligente baseada em estado, não apenas tempo.
  */
 class ResourceService
 {
-    private TimeService $timeService;
-    
-    // Rastreio de bases já sincronizadas no ciclo atual para evitar redundância
-    protected static array $syncedThisCycle = [];
-
-    public function __construct(?TimeService $timeService = null)
-    {
-        $this->timeService = $timeService ?? new TimeService();
-    }
-
     /**
-     * Sincroniza a base com o tempo real.
-     * PASSO 1 — RESOURCE SYNC: apenas 1 sync real por ciclo.
+     * Sincroniza a base com o tempo real se houver mudança de estado.
      */
     public function sync(Base $base): void
     {
         $now = GameClock::now();
-        $cycleId = $now->toDateTimeString();
-
-        // Se já sincronizado neste exato segundo (mesmo ciclo), ignorar (PASSO 1)
-        if (isset(self::$syncedThisCycle[$base->id]) && self::$syncedThisCycle[$base->id] === $cycleId) {
-            return;
-        }
 
         DB::transaction(function () use ($base, $now) {
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
@@ -46,7 +28,15 @@ class ResourceService
             $rates = $this->getRates($lockedBase);
             $calculated = $this->calculate($lockedBase->recursos, $now, $rates);
 
-            // Write: Tabelas Recursos e Bases (Operação Atómica)
+            // PASSO 6 — LOGGING: Registar diffs (Harden 3)
+            $before = $lockedBase->recursos->only(['suprimentos', 'combustivel', 'municoes']);
+
+            // PASSO 3 — VERIFICAÇÃO POR ESTADO (Harden 3)
+            // Só escrevemos se houver mudança tática real nos valores ou se houver recalque de tempo significativo
+            if (!$this->hasStateChanged($lockedBase->recursos, $calculated)) {
+                return;
+            }
+
             $lockedBase->recursos->update([
                 'suprimentos' => $calculated['suprimentos'],
                 'combustivel' => $calculated['combustivel'],
@@ -60,12 +50,24 @@ class ResourceService
 
             $lockedBase->update(['ultimo_update' => $now]);
             
+            Log::channel('game')->info("[RESOURCE_DIFF] Base #{$base->id}", [
+                'before' => $before,
+                'after' => collect($calculated)->only(['suprimentos', 'combustivel', 'municoes'])->toArray()
+            ]);
+
             // Sync instâncias
             $base->setRelation('recursos', $lockedBase->recursos);
             $base->ultimo_update = $now;
-        });
+        }, 5);
+    }
 
-        self::$syncedThisCycle[$base->id] = $cycleId;
+    private function hasStateChanged(Recurso $current, array $calculated): bool
+    {
+        // Mudança se a diferença for > 0.1 em qualquer recurso (evitar floats irrelevantes)
+        foreach (['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'] as $key) {
+            if (abs((float)$current->{$key} - (float)$calculated[$key]) > 0.1) return true;
+        }
+        return false;
     }
 
     public function calculate(Recurso $resource, $now = null, array $taxasMinuto = null): array

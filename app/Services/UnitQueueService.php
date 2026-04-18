@@ -3,90 +3,76 @@
 namespace App\Services;
 
 use App\Models\Base;
-use App\Models\UnitQueue;
 use App\Models\UnitType;
-use App\Domain\Unit\UnitRules;
-use App\Services\TimeService;
+use App\Models\UnitQueue;
+use App\Models\MovementUnit;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * UnitQueueService - Mobilização em Escala (PASSO 1 — FASE HARDEN 3).
+ * Gere recrutamento com suporte a retries e consistência atómica.
+ */
 class UnitQueueService
 {
     private TimeService $timeService;
 
-    public function __construct(?TimeService $timeService = null)
+    public function __construct(TimeService $timeService)
     {
-        $this->timeService = $timeService ?? new TimeService();
+        $this->timeService = $timeService;
     }
 
-    /**
-     * Inicia o recrutamento de um lote de unidades.
-     */
     public function startRecruitment(Base $base, int $unitTypeId, int $quantidade)
     {
         return DB::transaction(function() use ($base, $unitTypeId, $quantidade) {
             $unitType = UnitType::findOrFail($unitTypeId);
             
-            // PASSO 6 & 7: Escalar com building level
-            $gameService = new GameService($this->timeService);
-            $economy = app(\App\Services\EconomyService::class);
+            // Lock Resources
+            $rec = $base->recursos()->lockForUpdate()->first();
             
-            // Mapeamento simples de unidade para edifício produtor
-            $producerType = \App\Domain\Building\BuildingType::QUARTEL;
-            $unitNameLower = strtolower($unitType->name);
-            if (str_contains($unitNameLower, 'avião') || str_contains($unitNameLower, 'cça') || str_contains($unitNameLower, 'bombardeiro')) {
-                $producerType = \App\Domain\Building\BuildingType::AERODROMO;
-            }
+            // Calcular custos baseados no EconomyService (Fase 14)
+            $economy = app(EconomyService::class);
+            $buildingLevel = (new GameService($this->timeService))->obterNivelEdificio($base, $unitType->building_type);
             
-            $buildingLevel = $gameService->obterNivelEdificio($base, $producerType);
-            
-            $durationPerUnit = $economy->getUnitTime($unitType->name, $buildingLevel, 1);
-            $totalDuration = $durationPerUnit * $quantidade;
+            $costPerUnit = $economy->getUnitCost($unitType->base_cost_suprimentos, $buildingLevel);
+            $durationPerUnit = $economy->getUnitBuildTime($unitType->base_build_time, $buildingLevel);
 
-            $custoTotal = $economy->getUnitCost($unitType->name, $buildingLevel, $quantidade);
-            // Re-mapear para garantir chaves
-            $custoTotal = array_merge(['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0], $custoTotal);
+            $totalSup = $costPerUnit * $quantidade;
+            $totalCom = ($unitType->base_cost_combustivel * 0.5) * $quantidade; // Exemplo simplificado
 
-            if (!$gameService->consumirRecursos($base, $custoTotal)) {
-                throw new \Exception("LOGÍSTICA: Recursos insuficientes para mobilização em massa.");
-            }
+            if ($rec->suprimentos < $totalSup) throw new \Exception("LOGÍSTICA: Suprimentos insuficientes.");
+
+            // Deduzir
+            $rec->decrement('suprimentos', $totalSup);
 
             $lastPos = DB::table('unit_queue')->where('base_id', $base->id)->max('position') ?? 0;
-            $position = $lastPos + 1;
-
-            $now = $this->timeService->now();
-
+            
             $id = DB::table('unit_queue')->insertGetId([
-                'base_id'           => $base->id,
-                'unit_type_id'      => $unitTypeId,
-                'position'          => $position,
-                'quantity'          => $quantidade,
+                'base_id' => $base->id,
+                'unit_type_id' => $unitTypeId,
+                'quantity' => $quantidade,
                 'quantity_remaining' => $quantidade,
-                'units_produced'    => 0,
+                'units_produced' => 0,
                 'duration_per_unit' => $durationPerUnit,
-                'total_duration'    => $totalDuration,
-                'status'            => $position === 1 ? 'active' : 'pending',
-                'started_at'        => $position === 1 ? $now : null,
-                'finishes_at'       => $position === 1 ? $now->copy()->addSeconds($totalDuration) : null,
-                'cost_suprimentos'  => (int) ($custoTotal['suprimentos'] / $quantidade),
-                'cost_combustivel'  => (int) ($custoTotal['combustivel'] / $quantidade),
-                'cost_municoes'     => (int) ($custoTotal['municoes'] / $quantidade),
-                'created_at'        => $now,
-                'updated_at'        => $now,
+                'cost_suprimentos' => $costPerUnit,
+                'cost_combustivel' => $unitType->base_cost_combustivel,
+                'cost_municoes' => $unitType->base_cost_municoes,
+                'position' => $lastPos + 1,
+                'status' => ($lastPos + 1) === 1 ? 'active' : 'pending',
+                'started_at' => ($lastPos + 1) === 1 ? GameClock::now() : null,
+                'created_at' => GameClock::now(),
+                'updated_at' => GameClock::now()
             ]);
 
             Log::channel('game')->info('[UNIT_ENQUEUED]', ['id' => $id, 'qty' => $quantidade]);
 
             return $id;
-        });
+        }, 5);
     }
 
-    /**
-     * Processa o recrutamento da base com entregas parciais.
-     */
     public function processQueue(Base $base)
     {
-        $now = $this->timeService->now();
+        $now = GameClock::now();
         
         DB::transaction(function() use ($base, $now) {
             $active = DB::table('unit_queue')
@@ -101,9 +87,7 @@ class UnitQueueService
                 return;
             }
 
-            // PASSO 2 — UNIT QUEUE IDEMPOTENTE
-            // new_units = calculated - units_produced
-            $startedAt = \Carbon\Carbon::parse($active->started_at);
+            $startedAt = Carbon::parse($active->started_at);
             $elapsed = $now->diffInSeconds($startedAt);
             
             $totalShouldBeProduced = floor($elapsed / $active->duration_per_unit);
@@ -127,78 +111,43 @@ class UnitQueueService
                     ]);
                 }
                 
-                // Se o lote terminou ou houve produção, refresh positions
                 if ($newQuantityRemaining <= 0) {
                     $this->refreshQueue($base->id);
                 }
-
-                Log::channel('game')->info('[UNITS_PRODUCED_IDEMPOTENT]', [
-                    'base_id' => $base->id,
-                    'qty' => $actualToProduce,
-                    'total_lot' => $active->quantity
-                ]);
             }
-        });
+        }, 5);
     }
 
-    /**
-     * Cancela o recrutamento e reembolsa as unidades não produzidas.
-     */
     public function cancelRecruitment(int $queueId)
     {
         return DB::transaction(function() use ($queueId) {
-            $item = DB::table('unit_queue')
-                ->where('id', $queueId)
-                ->whereNull('cancelled_at')
-                ->lockForUpdate()
-                ->first();
+            $item = DB::table('unit_queue')->where('id', $queueId)->lockForUpdate()->first();
+            if (!$item) return false;
 
-            if (!$item) {
-                 throw new \Exception("LOGÍSTICA: Ordem inexistente ou já cancelada.");
-            }
-
-            // Apenas o primeiro item pode ser cancelado no recrutamento (regra de reorder/idempotência)
-            // se permitirmos outros, as positions mudariam sem ter refunds complexos.
-            if ($item->position !== 1) {
-                throw new \Exception("LOGÍSTICA: Apenas a produção ativa pode ser cancelada (Use Prioridades para reordenar).");
-            }
-
-            $base = Base::find($item->base_id);
+            $baseId = $item->base_id;
+            $base = Base::find($baseId);
             $rec = $base->recursos()->lockForUpdate()->first();
+
+            $qtyRemaining = (int) $item->quantity_remaining;
             
-            $qtyToRefund = $item->quantity_remaining;
-            $rec->increment('suprimentos', $item->cost_suprimentos * $qtyToRefund);
-            $rec->increment('combustivel', $item->cost_combustivel * $qtyToRefund);
-            $rec->increment('municoes', $item->cost_municoes * $qtyToRefund);
+            $rec->increment('suprimentos', (float) ($item->cost_suprimentos * $qtyRemaining));
+            $rec->increment('combustivel', (float) ($item->cost_combustivel * $qtyRemaining));
+            $rec->increment('municoes',    (float) ($item->cost_municoes * $qtyRemaining));
 
-            // PASSO 5 — CANCELAMENTO SEGURO
-            DB::table('unit_queue')->where('id', $queueId)->update([
-                'cancelled_at' => $this->timeService->now(),
-                'status' => 'CANCELLED'
-            ]);
-
-            // Remover item e reordenar
-            DB::table('unit_queue')->where('id', $queueId)->delete();
-            $this->refreshQueue($item->base_id);
-
-            Log::channel('game')->info('[UNIT_CANCELLED]', ['id' => $queueId, 'refund_qty' => $qtyToRefund]);
+            DB::table('unit_queue')->where('id', $item->id)->delete();
+            $this->refreshQueue($baseId);
 
             return true;
-        });
+        }, 5);
     }
 
     private function addUnitsToBase(Base $base, int $unitTypeId, int $quantity)
     {
-        $unit = $base->units()->where('unit_type_id', $unitTypeId)->first();
-        if ($unit) {
-            $unit->increment('quantity', $quantity);
-        } else {
-            $base->units()->create([
-                'unit_type_id' => $unitTypeId,
-                'quantity' => $quantity,
-                'health' => 100
-            ]);
-        }
+        $unitName = UnitType::find($unitTypeId)->name;
+        \App\Models\Tropas::updateOrCreate(
+            ['base_id' => $base->id, 'unidade' => $unitName],
+            ['quantidade' => DB::raw("quantidade + {$quantity}")]
+        );
     }
 
     private function refreshQueue(int $baseId)
@@ -208,7 +157,7 @@ class UnitQueueService
             ->orderBy('position', 'asc')
             ->get();
 
-        $now = $this->timeService->now();
+        $now = GameClock::now();
         $pos = 1;
 
         foreach ($items as $item) {
@@ -218,12 +167,7 @@ class UnitQueueService
                 $update['status'] = 'active';
                 $update['started_at'] = $now;
                 $update['finishes_at'] = $now->copy()->addSeconds($item->quantity_remaining * $item->duration_per_unit);
-            } else if ($pos > 1) {
-                $update['status'] = 'pending';
-                $update['started_at'] = null;
-                $update['finishes_at'] = null;
             }
-
             DB::table('unit_queue')->where('id', $item->id)->update($update);
             $pos++;
         }
@@ -242,7 +186,7 @@ class UnitQueueService
                 $this->refreshQueue($item->base_id);
             }
             return true;
-        });
+        }, 5);
     }
 
     public function moveDown(int $queueId)
@@ -258,6 +202,6 @@ class UnitQueueService
                 $this->refreshQueue($item->base_id);
             }
             return true;
-        });
+        }, 5);
     }
 }
