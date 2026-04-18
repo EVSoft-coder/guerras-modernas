@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-DCBM5XkE.js";
+import { e as eventBus, E as Events, g as gameStateService, a as entityManager, L as Logger, S as Sr, s as stateManager, b as axios, r as resourceSystem, G as GameState, c as GameMode } from "./app-Ble4R7XI.js";
 const unitConfigs = {
   infantaria: {
     id: "infantaria",
@@ -1427,31 +1427,24 @@ class SyncSystem {
     eventBus.subscribe(Events.ATTACK_LAUNCH, (ev) => this.handleAttackLaunch(ev.data));
   }
   async handleBuildingUpgrade(data) {
-    var _a;
-    try {
-      Logger.building("UPGRADE_REQUEST", data);
-      const response = await fetch("/buildings/upgrade", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "X-CSRF-TOKEN": ((_a = document.querySelector('meta[name="csrf-token"]')) == null ? void 0 : _a.content) || ""
-        },
-        body: JSON.stringify({ base_id: data.base_id, tipo: data.tipo })
-      });
-      const resData = await response.json();
-      Logger.backend("UPGRADE_RESPONSE", { status: response.status, data: resData });
-      if (!response.ok) {
-        throw new Error(resData.message || "Operation Denied");
+    Logger.building("UPGRADE_REQUEST", data);
+    Sr.post("/buildings/upgrade", {
+      base_id: data.base_id,
+      tipo: data.tipo
+    }, {
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => {
+        eventBus.emit(Events.ACTION_SUCCESS, { data: { type: "UPGRADE" } });
+      },
+      onError: (err) => {
+        const msg = Object.values(err)[0] || "Operação Negada";
+        eventBus.emit(Events.UI_ALERT, { data: { message: msg, type: "error" } });
+      },
+      onFinish: () => {
+        eventBus.emit(Events.ACTION_SUCCESS, { data: { type: "CLEANUP" } });
       }
-      Sr.reload();
-      eventBus.emit(Events.ACTION_SUCCESS, { data: { type: "UPGRADE" } });
-      Logger.info("[ACTION] Structural upgrade authorized by Central Command.");
-    } catch (err) {
-      Logger.error("[ACTION_FAILURE] Building upgrade aborted", err);
-      eventBus.emit(Events.UI_ALERT, { data: { message: err.message, type: "error" } });
-    }
+    });
   }
   async handleUnitTraining(data) {
     var _a;
@@ -2508,4 +2501,4 @@ rebelCoords.forEach((coord, index) => {
 });
 stateManager.setState(GameState.PLAYING);
 Logger.info("--- OPERATIONS ACTIVE: VISUAL TACTICAL ENGAGEMENT ONGOING ---");
-//# sourceMappingURL=index-D7yoNkyF.js.map
+//# sourceMappingURL=index-B1zIgzre.js.map

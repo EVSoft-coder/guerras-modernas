@@ -28177,12 +28177,8 @@ const getBuildingAsset = (type2, level = 1) => {
   if (t2 === "central_energia") assetFolder = "solar";
   return `/images/edificios/${assetFolder}/lvl_${level}.png`;
 };
-const getUnitAsset = (type2) => {
-  const t2 = type2.toLowerCase();
-  const placeholders = [];
-  if (placeholders.includes(t2)) {
-    return `/assets/placeholders/unit_${t2}.svg`;
-  }
+const getUnitAsset$1 = (type2) => {
+  const t2 = type2.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
   return `/images/unidades/${t2}.png`;
 };
 const BuildingNode = ({ buildingType, nome, nivel, isConstructing, isLocked, onClick }) => {
@@ -28302,7 +28298,7 @@ const buildingConfigs = {
     requires: { qg: 10 }
   }
 };
-const VillageView = ({ base, onBuildingClick, gameConfig }) => {
+const VillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   const bConfigs = Object.values(buildingConfigs);
   const playerBuildings = U$2.useMemo(() => {
     var _a2;
@@ -28329,7 +28325,8 @@ const VillageView = ({ base, onBuildingClick, gameConfig }) => {
       ...b2,
       uniqueId: existing ? existing.id : `ghost-${b2.id}`,
       level: existing ? existing.level : 0,
-      isBuilt: !!existing
+      isBuilt: !!existing,
+      isUpgradingNow: (buildingQueue || []).some((q2) => q2.type === b2.id)
     };
   });
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative w-full aspect-video bg-black rounded-[2.5rem] overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.9)] border border-white/5 group", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-4 gap-6 p-8 overflow-y-auto", children: buildings.map((b2) => {
@@ -28339,6 +28336,7 @@ const VillageView = ({ base, onBuildingClick, gameConfig }) => {
         buildingType: b2.id,
         nome: b2.name,
         nivel: b2.level,
+        isConstructing: b2.isUpgradingNow,
         onClick: () => onBuildingClick({ ...b2, buildingType: b2.id }),
         isLocked: !b2.isBuilt && b2.level === 0 && b2.id !== "qg" && b2.id !== "muralha"
       },
@@ -28553,13 +28551,23 @@ const BuildingModal = ({
         className: `p-4 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden ${isSelected ? "bg-emerald-500/10 border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "bg-black/40 border-white/5 hover:border-white/20"}`,
         children: [
           isSelected && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 right-0 w-8 h-8 bg-emerald-500 text-black flex items-center justify-center rounded-bl-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { size: 12 }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-start mb-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-black uppercase text-white tracking-widest", children: unit.name }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] text-neutral-500 font-bold uppercase", children: [
-              unit.build_time,
-              "s Mobilização"
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-row items-center gap-4 mb-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 bg-black/40 rounded-xl border border-white/5 flex items-center justify-center p-1 group-hover:border-emerald-500/30 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: getUnitAsset(unit.name),
+                className: "w-full h-full object-contain brightness-90 group-hover:brightness-110 transition-all",
+                alt: unit.name
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-black uppercase text-white tracking-widest", children: unit.name }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] text-neutral-500 font-bold uppercase", children: [
+                unit.build_time,
+                "s Mobilização"
+              ] })
             ] })
-          ] }) }),
+          ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-3 gap-2 py-2 border-t border-white/5 mt-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] text-neutral-600 font-black uppercase", children: "Atk" }),
@@ -28639,7 +28647,8 @@ const BuildingModal = ({
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center relative", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] mb-2 opacity-50", children: "Assinatura de Nível" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative inline-block", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-8xl font-black text-white italic tracking-tighter leading-none select-none drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]", children: building.nivel || 0 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-8xl font-black text-white italic tracking-tighter leading-none select-none drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]", children: building.isUpgradingNow ? `${building.nivel} → ${building.nextLevel}` : building.nivel || 0 }),
+                  building.isUpgradingNow && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -top-4 -right-12", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { className: "bg-orange-500 text-black font-black text-[8px] animate-bounce", children: "UPGRADE" }) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -inset-2 bg-gradient-to-t from-sky-500/10 to-transparent blur-xl -z-10" })
                 ] })
               ] }),
@@ -28795,7 +28804,7 @@ const GarrisonPanel = ({ tropas = [], gameConfig }) => {
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 bg-black/40 rounded-xl border border-white/5 flex items-center justify-center p-1 group-hover:border-emerald-500/30 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "img",
                 {
-                  src: getUnitAsset(unitName),
+                  src: getUnitAsset$1(unitName),
                   className: "w-full h-full object-contain brightness-75 group-hover:brightness-110 transition-all",
                   alt: config.name,
                   onError: (e) => e.currentTarget.src = "/assets/placeholders/unit_unknown.svg"
@@ -28833,9 +28842,12 @@ const ProductionQueue = ({
       id: c2.id,
       buildingType: "construcao",
       label: (c2.buildingType || c2.type || "Estrutura").replace(/_/g, " "),
-      sublabel: `Upgrade para Nível ${c2.nivel_destino || c2.target_level}`,
-      started_at: c2.created_at || c2.started_at,
-      ends_at: c2.completado_em || c2.finishes_at
+      sublabel: `Upgrade para Nível ${c2.target_level}`,
+      started_at: c2.started_at,
+      ends_at: c2.finishes_at,
+      duration: c2.duration || 0,
+      position: c2.position || 1,
+      status: c2.status || "active"
     })),
     ...treinos.map((t2) => {
       var _a2;
@@ -28843,19 +28855,55 @@ const ProductionQueue = ({
         id: t2.id,
         buildingType: "treino",
         label: (((_a2 = t2.unitType) == null ? void 0 : _a2.name) || t2.unidade || "Unidade").replace(/_/g, " "),
-        sublabel: `Recrutamento: ${t2.quantity || t2.quantidade}x`,
-        started_at: t2.started_at || t2.created_at,
-        ends_at: t2.finishes_at || t2.completado_em
+        sublabel: `Recrutamento: ${t2.quantity_remaining || t2.quantity || t2.quantidade}x`,
+        started_at: t2.started_at,
+        ends_at: t2.finishes_at,
+        duration: t2.duration_per_unit || t2.total_duration / t2.quantity || 0,
+        position: t2.position || 1,
+        status: t2.status || "active",
+        quantity: t2.quantity,
+        quantity_remaining: t2.quantity_remaining
       };
     })
-  ].sort((a, b2) => new Date(a.ends_at).getTime() - new Date(b2.ends_at).getTime());
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" }),
+  ].sort((a, b2) => a.position - b2.position);
+  const handleCancel = (id2, type2) => {
+    if (type2 === "construcao") {
+      Sr.post(`/base/upgrade/cancelar/${id2}`);
+    } else {
+      Sr.post(`/units/cancelar/${id2}`);
+    }
+  };
+  const handleMoveUp = (id2, type2) => {
+    if (type2 === "construcao") {
+      Sr.post(`/base/upgrade/subir/${id2}`);
+    } else {
+      Sr.post(`/units/subir/${id2}`);
+    }
+  };
+  const handleMoveDown = (id2, type2) => {
+    if (type2 === "construcao") {
+      Sr.post(`/base/upgrade/descer/${id2}`);
+    } else {
+      Sr.post(`/units/descer/${id2}`);
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-black/40 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group border-t-sky-500/30 border-t-2", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { className: "py-4 bg-white/[0.02] border-b border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center justify-between", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { className: "text-sky-500 animate-pulse", size: 16 }),
-      "Comandos em Execução"
+      "Centro de Logística de Fila"
     ] }) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "py-6 space-y-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "popLayout", children: unifiedQueue.length > 0 ? unifiedQueue.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(QueueItem, { item, isFirst: index2 === 0 }, `${item.buildingType}-${item.id}`)) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "py-6 space-y-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "popLayout", children: unifiedQueue.length > 0 ? unifiedQueue.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      QueueItem,
+      {
+        item,
+        isFirst: item.position === 1,
+        onCancel: () => handleCancel(item.id, item.buildingType),
+        onMoveUp: () => handleMoveUp(item.id, item.buildingType),
+        onMoveDown: () => handleMoveDown(item.id, item.buildingType),
+        isLast: index2 === unifiedQueue.length - 1
+      },
+      `${item.buildingType}-${item.id}`
+    )) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
       motion.div,
       {
         initial: { opacity: 0 },
@@ -28863,59 +28911,104 @@ const ProductionQueue = ({
         className: "text-center py-10 border-2 border-dashed border-white/5 rounded-2xl bg-white/[0.01]",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Hammer, { className: "mx-auto text-neutral-800 mb-3 opacity-20", size: 32 }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] uppercase font-black text-neutral-600 tracking-[0.2em] block", children: "Sistemas em Espera" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] uppercase font-black text-neutral-600 tracking-[0.2em] block", children: "Sem Operações de Engenharia ou Mobilização" })
         ]
       }
     ) }) })
   ] });
 };
-const QueueItem = ({ item, isFirst }) => {
+const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }) => {
+  const [currentTime, setCurrentTime] = reactExports.useState((/* @__PURE__ */ new Date()).getTime());
+  reactExports.useEffect(() => {
+    const timer = setInterval(() => setCurrentTime((/* @__PURE__ */ new Date()).getTime()), 1e3);
+    return () => clearInterval(timer);
+  }, []);
   const calculateProgress = () => {
+    if (!isFirst || !item.ends_at) {
+      const h22 = Math.floor(item.duration / 3600);
+      const m22 = Math.floor(item.duration % 3600 / 60);
+      const s22 = item.duration % 60;
+      return { percent: 0, timeStr: `Aguardadndo (${h22 > 0 ? h22 + "h " : ""}${m22}m ${s22}s)` };
+    }
     const start = new Date(item.started_at).getTime();
     const end = new Date(item.ends_at).getTime();
-    const now2 = (/* @__PURE__ */ new Date()).getTime();
+    const now2 = currentTime;
     const total = end - start;
-    const elapsed = now2 - start;
     const remaining = end - now2;
-    if (remaining <= 0) return null;
-    const percent22 = Math.min(100, Math.max(0, elapsed / total * 100));
-    const h2 = Math.floor(remaining / 36e5);
-    const m2 = Math.floor(remaining % 36e5 / 6e4);
-    const s2 = Math.floor(remaining % 6e4 / 1e3);
-    const timeStr2 = h2 > 0 ? `${h2}h ${m2}m` : `${m2}m ${s2}s`;
+    const h2 = Math.max(0, Math.floor(remaining / 36e5));
+    const m2 = Math.max(0, Math.floor(remaining % 36e5 / 6e4));
+    const s2 = Math.max(0, Math.floor(remaining % 6e4 / 1e3));
+    const timeStr2 = remaining <= 0 ? "Concluíndo..." : h2 > 0 ? `${h2}h ${m2}m ${s2}s` : `${m2}m ${s2}s`;
+    const percent22 = Math.min(100, Math.max(0, (total - remaining) / total * 100));
     return { percent: percent22, timeStr: timeStr2 };
   };
-  const result = calculateProgress();
-  if (!result) return null;
-  const { percent: percent2, timeStr } = result;
+  const { percent: percent2, timeStr } = calculateProgress();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
+      layout: true,
       initial: { x: 20, opacity: 0 },
       animate: { x: 0, opacity: 1 },
       exit: { scale: 0.9, opacity: 0 },
-      className: `group relative ${!isFirst ? "opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500" : ""}`,
+      className: `group relative p-4 rounded-xl transition-all duration-300 ${isFirst ? "bg-white/[0.05] border border-white/10" : "bg-black/20 border border-white/5 opacity-60 hover:opacity-100"}`,
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-end mb-2 px-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black uppercase text-white tracking-tighter", children: item.label }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] text-neutral-500 font-bold uppercase pl-3.5 tracking-wider", children: item.sublabel })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start mb-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `size-8 rounded-lg flex items-center justify-center ${isFirst ? "bg-sky-500/20 text-sky-400" : "bg-neutral-800 text-neutral-500"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black", children: item.position }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-black uppercase text-white tracking-tighter flex items-center gap-2", children: [
+                item.buildingType === "construcao" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Hammer, { size: 10 }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { size: 10, className: "text-emerald-400" }),
+                item.label,
+                isFirst && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "size-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] text-neutral-500 font-bold uppercase tracking-wider", children: item.sublabel })
+            ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col items-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `text-[10px] font-mono font-black flex items-center gap-1.5 ${isFirst ? "text-white" : "text-neutral-500"}`, children: [
-            isFirst && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "size-1 bg-red-500 rounded-full animate-ping" }),
-            timeStr
-          ] }) })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity", children: [
+            !isFirst && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: onMoveUp,
+                className: "p-1.5 hover:bg-white/10 rounded-md text-neutral-400 hover:text-white transition-colors",
+                title: "Subir Prioridade",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { size: 14 })
+              }
+            ),
+            !isLast && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: onMoveDown,
+                className: "p-1.5 hover:bg-white/10 rounded-md text-neutral-400 hover:text-white transition-colors",
+                title: "Descer Prioridade",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { size: 14 })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: onCancel,
+                className: "p-1.5 hover:bg-red-500/20 rounded-md text-neutral-500 hover:text-red-500 transition-colors",
+                title: "Abortar Projeto",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 14 })
+              }
+            )
+          ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative h-1 bg-neutral-900 rounded-full overflow-hidden shadow-inner border border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion.div,
-          {
-            className: `absolute inset-y-0 left-0 ${item.buildingType === "construcao" ? "bg-gradient-to-r from-orange-600 to-orange-400" : "bg-gradient-to-r from-sky-600 to-sky-400"} shadow-[0_0_10px_rgba(14,165,233,0.3)]`,
-            initial: { width: 0 },
-            animate: { width: `${percent2}%` },
-            transition: { type: "spring", bounce: 0, duration: 1.5 }
-          }
-        ) }),
-        isFirst && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -inset-x-2 -inset-y-3 bg-white/[0.02] rounded-xl -z-10 group-hover:bg-white/[0.04] transition-colors" })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono font-black text-white/40 uppercase tracking-widest", children: item.buildingType === "construcao" ? "Engenharia" : "Mobilização" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-mono font-black ${isFirst ? "text-sky-400" : "text-neutral-600"}`, children: timeStr })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              className: `absolute inset-y-0 left-0 ${isFirst ? item.buildingType === "construcao" ? "bg-sky-500 shadow-[0_0_10px_#0ea5e9]" : "bg-emerald-500 shadow-[0_0_10px_#10b981]" : "bg-neutral-800"}`,
+              initial: { width: 0 },
+              animate: { width: `${percent2}%` },
+              transition: { duration: 0.5 }
+            }
+          ) })
+        ] })
       ]
     }
   );
@@ -30492,21 +30585,23 @@ function VillageDashboard({
   if (selectedBuildingType) {
     const buildDef = ((gameConfig == null ? void 0 : gameConfig.buildings) || {})[selectedBuildingType];
     const dbLevel = selectedBuildingType === "qg" ? Number(base.qg_nivel) : selectedBuildingType === "muralha" ? Number(base.muralha_nivel) : (foundBuilding == null ? void 0 : foundBuilding.nivel) || 0;
-    const queueEntries = (buildingQueue || []).filter((q2) => (q2.buildingType || q2.type) === selectedBuildingType);
-    const maxQueueLevel = queueEntries.length > 0 ? Math.max(...queueEntries.map((q2) => q2.target_level)) : 0;
-    const futureLevel = Math.max(dbLevel, maxQueueLevel);
+    const queueEntries = (buildingQueue || []).filter((q2) => q2.type === selectedBuildingType);
+    const isUpgradingNow = queueEntries.length > 0;
+    const nextLevel = dbLevel + 1;
     if (selectedBuildingType === "qg") {
-      currentBuilding = { buildingType: "qg", nome: "Quartel General", nivel: futureLevel, base };
+      currentBuilding = { buildingType: "qg", nome: "Quartel General", nivel: dbLevel, nextLevel, isUpgradingNow, base };
     } else if (selectedBuildingType === "muralha") {
-      currentBuilding = { buildingType: "muralha", nome: "Perímetro Defensivo", nivel: futureLevel, base };
+      currentBuilding = { buildingType: "muralha", nome: "Perímetro Defensivo", nivel: dbLevel, nextLevel, isUpgradingNow, base };
     } else if (foundBuilding) {
-      currentBuilding = { ...foundBuilding, ...buildDef, nome: (buildDef == null ? void 0 : buildDef.name) || "Estrutura", nivel: futureLevel, base };
+      currentBuilding = { ...foundBuilding, ...buildDef, nome: (buildDef == null ? void 0 : buildDef.name) || "Estrutura", nivel: dbLevel, nextLevel, isUpgradingNow, base };
     } else {
       currentBuilding = {
         ...buildDef,
         buildingType: selectedBuildingType,
         nome: (buildDef == null ? void 0 : buildDef.name) || "Projeto Padrão",
-        nivel: futureLevel,
+        nivel: dbLevel,
+        nextLevel,
+        isUpgradingNow,
         base
       };
     }
@@ -30614,7 +30709,7 @@ function VillageDashboard({
             gameConfig,
             unitTypes
           }
-        ) : /* @__PURE__ */ jsxRuntimeExports.jsx(VillageView, { base, onBuildingClick: handleBuildingClick, gameConfig })
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx(VillageView, { base, onBuildingClick: handleBuildingClick, gameConfig, buildingQueue })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-4 flex flex-col gap-8", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -44394,7 +44489,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-D7yoNkyF.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-B1zIgzre.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44430,4 +44525,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DCBM5XkE.js.map
+//# sourceMappingURL=app-Ble4R7XI.js.map

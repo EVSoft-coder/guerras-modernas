@@ -6,7 +6,7 @@ import { Hammer, Clock, Zap, Shield, Info, TrendingUp, AlertTriangle, ChevronRig
 import { motion, AnimatePresence } from 'framer-motion';
 import { Logger } from '../../../../src/core/Logger';
 import { getEvolutionLevelAsset, calculateBuildingCost, calculateConstructionTime, calculateResourceProduction, parseResourceValue } from '@/lib/game-utils';
-import { getBuildingAsset } from '@/utils/assetMapper';
+import { getBuildingAsset, getUnitAsset } from '@/utils/assetMapper';
 
 interface BuildingModalProps {
     isOpen: boolean;
@@ -156,12 +156,19 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
             >
                 {isSelected && <div className="absolute top-0 right-0 w-8 h-8 bg-emerald-500 text-black flex items-center justify-center rounded-bl-xl"><Sword size={12} /></div>}
                 
-                <div className="flex justify-between items-start mb-3">
-                    <div className="flex flex-col">
-                        <span className="text-[11px] font-black uppercase text-white tracking-widest">{unit.name}</span>
-                        <span className="text-[8px] text-neutral-500 font-bold uppercase">{unit.build_time}s Mobilização</span>
+                    <div className="flex flex-row items-center gap-4 mb-3">
+                        <div className="w-12 h-12 bg-black/40 rounded-xl border border-white/5 flex items-center justify-center p-1 group-hover:border-emerald-500/30 transition-all">
+                            <img 
+                                src={getUnitAsset(unit.name)} 
+                                className="w-full h-full object-contain brightness-90 group-hover:brightness-110 transition-all" 
+                                alt={unit.name}
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-[11px] font-black uppercase text-white tracking-widest">{unit.name}</span>
+                            <span className="text-[8px] text-neutral-500 font-bold uppercase">{unit.build_time}s Mobilização</span>
+                        </div>
                     </div>
-                </div>
                 
                 <div className="grid grid-cols-3 gap-2 py-2 border-t border-white/5 mt-1">
                     <div className="flex flex-col">
