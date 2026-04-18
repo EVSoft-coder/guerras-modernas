@@ -36,9 +36,9 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
         ? `/assets/structures/v2/${layout.assetName}`
         : null;
 
-    // PASSO 2 — Z-INDEX PROFISSIONAL (BASE DO EDIFÍCIO)
-    let dynamicZIndex = Math.floor(layout.y + layout.h);
-    if (type === 'muralha') dynamicZIndex = 1; // EXCEÇÃO MURALLA
+    // PASSO 3 — Z-INDEX AVANÇADO (CENTRO DE MASSA VISUAL)
+    let dynamicZIndex = Math.floor(layout.y + (layout.h * 0.5));
+    if (type === 'muralha') dynamicZIndex = 1;
 
     return (
         <motion.div
@@ -46,7 +46,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
             animate={{ opacity: 1, scale: 1 }}
             whileHover={{ scale: 1.05, zIndex: 9999 }}
             onClick={onClick}
-            className="absolute cursor-pointer transition-all hover:filter hover:brightness-125 group/node"
+            className="absolute cursor-pointer transition-all hover:filter hover:brightness-110 group/node"
             style={{
                 left,
                 top,
@@ -55,15 +55,18 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 zIndex: dynamicZIndex
             }}
         >
-            {/* PASSO 5 — DEBUG GROUND (PONTO DE CONTACTO) */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-600 rounded-full z-[100] opacity-0 group-hover/node:opacity-100 shadow-[0_0_5px_red] pointer-events-none" />
+            {/* PASSO 4 — SHADOW SYSTEM (GROUND BLUR) */}
+            <div 
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-[60%] h-[15%] bg-black/50 blur-[10px] rounded-[100%] z-[-1] opacity-0 group-hover/node:opacity-100 transition-opacity" 
+                style={{ transform: 'translateX(-50%)' }}
+            />
 
-            {/* ASSET VISUAL REAL (PASSO 6 — BLEND LIGHTEN) */}
+            {/* ASSET VISUAL REAL (PASSO 6 — OPACIDADE 0.9) */}
             {assetPath ? (
                 <img 
                     src={assetPath} 
-                    className={`w-full h-full object-contain pointer-events-none mix-blend-lighten
-                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.1]'}
+                    className={`w-full h-full object-contain pointer-events-none mix-blend-lighten transition-opacity
+                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.1] opacity-90 group-hover/node:opacity-100'}
                     `}
                     alt={name}
                     onError={(e) => {
@@ -71,7 +74,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                     }}
                 />
             ) : (
-                <div className="w-full h-full flex items-center justify-center bg-black/40 border border-white/10 rounded-xl backdrop-blur-sm">
+                <div className="w-full h-full flex items-center justify-center bg-black/50 border border-white/10 rounded-xl backdrop-blur-md">
                     <span className="text-[10px] text-white/20 font-black uppercase text-center px-1 leading-none">{name}</span>
                 </div>
             )}

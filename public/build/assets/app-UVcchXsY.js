@@ -28178,22 +28178,21 @@ const AnimatedNumber = ({ value, customValue }) => {
 };
 const REFERENCE_WIDTH = 800;
 const BUILDING_LAYOUT = {
-  // AJUSTE CIRÚRGICO REAL (PASSO 1 & 2)
-  qg: { x: 400, y: 270, w: 220, h: 220, anchor: "bottom", assetName: "hq.png" },
-  radar_estrategico: { x: 180, y: 210, w: 90, h: 90, anchor: "bottom", assetName: "radar.png" },
-  central_energia: { x: 340, y: 170, w: 90, h: 90, anchor: "bottom", assetName: "energy.png" },
-  centro_pesquisa: { x: 620, y: 180, w: 90, h: 90, anchor: "bottom", assetName: "research.png" },
-  quartel: { x: 630, y: 320, w: 110, h: 110, anchor: "bottom", assetName: "barracks.png" },
-  fabrica_municoes: { x: 230, y: 320, w: 110, h: 110, anchor: "bottom", assetName: "factory.png" },
-  refinaria: { x: 740, y: 240, w: 100, h: 100, anchor: "bottom", assetName: "factory.png" },
-  aerodromo: { x: 400, y: 380, w: 130, h: 130, anchor: "bottom", assetName: "aerodrome.png" },
+  // AJUSTE AAA (PASSO 1 & 2)
+  qg: { x: 400, y: 270, w: 180, h: 180, anchor: "bottom", assetName: "hq.png" },
+  radar_estrategico: { x: 195, y: 215, w: 85, h: 85, anchor: "bottom", assetName: "radar.png" },
+  central_energia: { x: 345, y: 175, w: 85, h: 85, anchor: "bottom", assetName: "energy.png" },
+  centro_pesquisa: { x: 610, y: 185, w: 85, h: 85, anchor: "bottom", assetName: "research.png" },
+  quartel: { x: 625, y: 325, w: 105, h: 105, anchor: "bottom", assetName: "barracks.png" },
+  fabrica_municoes: { x: 235, y: 325, w: 105, h: 105, anchor: "bottom", assetName: "factory.png" },
+  refinaria: { x: 745, y: 245, w: 90, h: 90, anchor: "bottom", assetName: "factory.png" },
+  aerodromo: { x: 400, y: 400, w: 120, h: 120, anchor: "bottom", assetName: "aerodrome.png" },
+  mina_suprimentos: { x: 130, y: 155, w: 85, h: 85, anchor: "bottom", assetName: "mine.png" },
+  mina_metal: { x: 710, y: 485, w: 100, h: 100, anchor: "bottom", assetName: "mine.png" },
+  housing: { x: 145, y: 285, w: 75, h: 75, anchor: "bottom", assetName: "housing.png" },
+  posto_recrutamento: { x: 755, y: 365, w: 75, h: 75, anchor: "bottom", assetName: "housing.png" },
   muralha: { x: 400, y: 520, w: 260, h: 110, anchor: "center", assetName: "" },
-  // OUTROS EDIFÍCIOS (AJUSTADOS PROPORCIONALMENTE)
-  mina_suprimentos: { x: 120, y: 150, w: 90, h: 90, anchor: "bottom", assetName: "mine.png" },
-  mina_metal: { x: 700, y: 480, w: 100, h: 100, anchor: "bottom", assetName: "mine.png" },
-  housing: { x: 140, y: 280, w: 80, h: 80, anchor: "bottom", assetName: "housing.png" },
-  posto_recrutamento: { x: 750, y: 360, w: 80, h: 80, anchor: "bottom", assetName: "housing.png" },
-  parlamento: { x: 550, y: 560, w: 80, h: 80, anchor: "bottom", assetName: "" }
+  parlamento: { x: 550, y: 565, w: 80, h: 80, anchor: "bottom", assetName: "" }
 };
 const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name, onClick }) => {
   const layout2 = BUILDING_LAYOUT[type2];
@@ -28211,7 +28210,7 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
     top -= height;
   }
   const assetPath = layout2.assetName ? `/assets/structures/v2/${layout2.assetName}` : null;
-  let dynamicZIndex = Math.floor(layout2.y + layout2.h);
+  let dynamicZIndex = Math.floor(layout2.y + layout2.h * 0.5);
   if (type2 === "muralha") dynamicZIndex = 1;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
@@ -28220,7 +28219,7 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
       animate: { opacity: 1, scale: 1 },
       whileHover: { scale: 1.05, zIndex: 9999 },
       onClick,
-      className: "absolute cursor-pointer transition-all hover:filter hover:brightness-125 group/node",
+      className: "absolute cursor-pointer transition-all hover:filter hover:brightness-110 group/node",
       style: {
         left,
         top,
@@ -28229,20 +28228,26 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
         zIndex: dynamicZIndex
       },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-600 rounded-full z-[100] opacity-0 group-hover/node:opacity-100 shadow-[0_0_5px_red] pointer-events-none" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "absolute -bottom-1 left-1/2 -translate-x-1/2 w-[60%] h-[15%] bg-black/50 blur-[10px] rounded-[100%] z-[-1] opacity-0 group-hover/node:opacity-100 transition-opacity",
+            style: { transform: "translateX(-50%)" }
+          }
+        ),
         assetPath ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
             src: assetPath,
-            className: `w-full h-full object-contain pointer-events-none mix-blend-lighten
-                        ${isConstructing ? "brightness-50 grayscale" : "brightness-[1.1]"}
+            className: `w-full h-full object-contain pointer-events-none mix-blend-lighten transition-opacity
+                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.1] opacity-90 group-hover/node:opacity-100"}
                     `,
             alt: name,
             onError: (e) => {
               e.currentTarget.style.display = "none";
             }
           }
-        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/40 border border-white/10 rounded-xl backdrop-blur-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/20 font-black uppercase text-center px-1 leading-none", children: name }) }),
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/50 border border-white/10 rounded-xl backdrop-blur-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/20 font-black uppercase text-center px-1 leading-none", children: name }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
@@ -28300,14 +28305,17 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
           aspectRatio: "800/600"
         },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "img",
-            {
-              src: "/assets/structures/v2/terrain.png",
-              className: "absolute inset-0 w-full h-full object-cover brightness-[0.5] contrast-[1.2]",
-              alt: "Village Background"
-            }
-          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 z-0", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: "/assets/structures/v2/terrain.png",
+                className: "w-full h-full object-cover brightness-[0.55] contrast-[1.1] saturate-[0.9]",
+                alt: "Village Background"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_100%)] pointer-events-none" })
+          ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-20 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
             var _a2;
             const level = getBuildingLevel(type2);
@@ -44452,7 +44460,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DWzo8IcR.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DJ-sspqS.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44488,4 +44496,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CZm--Dt_.js.map
+//# sourceMappingURL=app-UVcchXsY.js.map

@@ -52,11 +52,15 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                 }}
             >
                 {/* PASSO 1 & 2 — VILLAGE-BG */}
-                <img 
-                    src="/assets/structures/v2/terrain.png" 
-                    className="absolute inset-0 w-full h-full object-cover brightness-[0.5] contrast-[1.2]" 
-                    alt="Village Background" 
-                />
+                <div className="absolute inset-0 z-0">
+                    <img 
+                        src="/assets/structures/v2/terrain.png" 
+                        className="w-full h-full object-cover brightness-[0.55] contrast-[1.1] saturate-[0.9]" 
+                        alt="Village Background" 
+                    />
+                    {/* PASSO 5 — OVERLAY DE FOCO (RADIAL GRADIENT) */}
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_100%)] pointer-events-none" />
+                </div>
 
                 {/* PASSO 1 & 6 — VILLAGE-LAYER-BUILDINGS */}
                 <div className="absolute inset-0 z-20 pointer-events-none">
