@@ -135,8 +135,8 @@ class BuildingQueueService
             $rec->increment('combustivel', $item->cost_combustivel);
             $rec->increment('municoes', $item->cost_municoes);
 
-            $item->update(['cancelled_at' => GameClock::now()]);
-            $item->delete();
+            DB::table('building_queue')->where('id', $item->id)->update(['cancelled_at' => GameClock::now()]);
+            DB::table('building_queue')->where('id', $item->id)->delete();
 
             $this->refreshQueue($base->id);
         }, 5);
@@ -159,7 +159,7 @@ class BuildingQueueService
                 $update['started_at'] = $now;
                 $update['finishes_at'] = $now->copy()->addSeconds($item->duration);
             }
-            $item->update($update);
+            DB::table('building_queue')->where('id', $item->id)->update($update);
             $pos++;
         }
     }
@@ -176,8 +176,8 @@ class BuildingQueueService
                 ->first();
 
             if ($prev) {
-                $prev->update(['position' => $item->position, 'status' => 'pending', 'started_at' => null, 'finishes_at' => null]);
-                $item->update(['position' => $item->position - 1]);
+                DB::table('building_queue')->where('id', $prev->id)->update(['position' => $item->position, 'status' => 'pending', 'started_at' => null, 'finishes_at' => null]);
+                DB::table('building_queue')->where('id', $item->id)->update(['position' => $item->position - 1]);
                 $this->refreshQueue($item->base_id);
             }
         }, 5);
@@ -195,8 +195,8 @@ class BuildingQueueService
                 ->first();
 
             if ($next) {
-                $next->update(['position' => $item->position]);
-                $item->update(['position' => $item->position + 1, 'status' => 'pending', 'started_at' => null, 'finishes_at' => null]);
+                DB::table('building_queue')->where('id', $next->id)->update(['position' => $item->position]);
+                DB::table('building_queue')->where('id', $item->id)->update(['position' => $item->position + 1, 'status' => 'pending', 'started_at' => null, 'finishes_at' => null]);
                 $this->refreshQueue($item->base_id);
             }
         }, 5);
