@@ -4,33 +4,34 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Flag, Shield, TreePine, Flame, Zap, Home, Users, 
     Crosshair, Plane, Radar, Microscope, Landmark, Factory, Pickaxe,
-    Activity, Cpu, Radio
+    Activity, Cpu, Radio, Info
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface BuildingPos {
     top: string;
     left: string;
+    size: string;
     icon: React.ElementType;
     color: string;
-    glow: string;
+    assetUrl?: string;
 }
 
 const POSITION_MAP: Record<string, BuildingPos> = {
-    qg: { top: '38%', left: '46%', icon: Flag, color: 'text-orange-500', glow: 'shadow-orange-500/20' },
-    muralha: { top: '5%', left: '85%', icon: Shield, color: 'text-blue-500', glow: 'shadow-blue-500/20' },
-    mina_suprimentos: { top: '15%', left: '15%', icon: TreePine, color: 'text-emerald-500', glow: 'shadow-emerald-500/20' },
-    refinaria: { top: '15%', left: '77%', icon: Flame, color: 'text-orange-600', glow: 'shadow-orange-600/20' },
-    fabrica_municoes: { top: '72%', left: '15%', icon: Factory, color: 'text-neutral-400', glow: 'shadow-neutral-400/20' },
-    mina_metal: { top: '72%', left: '77%', icon: Pickaxe, color: 'text-sky-400', glow: 'shadow-sky-400/20' },
-    central_energia: { top: '10%', left: '46%', icon: Zap, color: 'text-yellow-400', glow: 'shadow-yellow-400/20' },
-    housing: { top: '58%', left: '28%', icon: Home, color: 'text-indigo-400', glow: 'shadow-indigo-400/20' },
-    posto_recrutamento: { top: '58%', left: '64%', icon: Users, color: 'text-rose-400', glow: 'shadow-rose-400/20' },
-    quartel: { top: '35%', left: '18%', icon: Crosshair, color: 'text-red-500', glow: 'shadow-red-500/20' },
-    aerodromo: { top: '65%', left: '46%', icon: Plane, color: 'text-cyan-400', glow: 'shadow-cyan-400/20' },
-    radar_estrategico: { top: '12%', left: '28%', icon: Radar, color: 'text-blue-400', glow: 'shadow-blue-400/20' },
-    centro_pesquisa: { top: '12%', left: '64%', icon: Microscope, color: 'text-purple-400', glow: 'shadow-purple-400/20' },
-    parlamento: { top: '82%', left: '46%', icon: Landmark, color: 'text-amber-500', glow: 'shadow-amber-500/20' },
+    qg: { top: '45%', left: '50%', size: '180px', icon: Flag, color: 'text-orange-500', assetUrl: '/assets/structures/v2/hq.png' },
+    quartel: { top: '35%', left: '25%', size: '120px', icon: Crosshair, color: 'text-red-500', assetUrl: '/assets/structures/v2/barracks.png' },
+    muralha: { top: '10%', left: '85%', size: '80px', icon: Shield, color: 'text-blue-500' },
+    mina_suprimentos: { top: '20%', left: '15%', size: '80px', icon: TreePine, color: 'text-emerald-500' },
+    refinaria: { top: '20%', left: '75%', size: '80px', icon: Flame, color: 'text-orange-600' },
+    fabrica_municoes: { top: '75%', left: '20%', size: '80px', icon: Factory, color: 'text-neutral-400' },
+    mina_metal: { top: '75%', left: '80%', size: '80px', icon: Pickaxe, color: 'text-sky-400' },
+    central_energia: { top: '15%', left: '50%', size: '80px', icon: Zap, color: 'text-yellow-400' },
+    housing: { top: '60%', left: '30%', size: '80px', icon: Home, color: 'text-indigo-400' },
+    posto_recrutamento: { top: '60%', left: '70%', size: '80px', icon: Users, color: 'text-rose-400' },
+    aerodromo: { top: '70%', left: '50%', size: '110px', icon: Plane, color: 'text-cyan-400' },
+    radar_estrategico: { top: '15%', left: '30%', size: '80px', icon: Radar, color: 'text-blue-400' },
+    centro_pesquisa: { top: '15%', left: '70%', size: '80px', icon: Microscope, color: 'text-purple-400' },
+    parlamento: { top: '85%', left: '50%', size: '80px', icon: Landmark, color: 'text-amber-500' },
 };
 
 interface VisualVillageViewProps {
@@ -49,31 +50,31 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
     };
 
     return (
-        <div className="relative w-full aspect-video bg-[#05080a] rounded-[3rem] overflow-hidden border border-white/5 shadow-[0_0_50px_rgba(0,0,0,0.8)] group font-sans">
+        <div className="relative w-full aspect-video bg-[#020406] rounded-[3rem] overflow-hidden border border-white/5 shadow-2xl group font-sans">
             
-            {/* ADVANCED BACKGROUND ENGINE */}
-            <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none" 
+            {/* BASE TERRAIN BACKGROUND */}
+            <div className="absolute inset-0 opacity-40">
+                <img 
+                    src="/assets/structures/v2/terrain.png" 
+                    className="w-full h-full object-cover grayscale-[0.5] contrast-[1.2]" 
+                    alt="Base Terrain" 
+                />
+            </div>
+
+            {/* TACTICAL GRID OVERLAY */}
+            <div className="absolute inset-0 opacity-[0.05] pointer-events-none" 
                  style={{ 
-                    backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
-                    backgroundSize: '40px 40px' 
+                    backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                    backgroundSize: '30px 30px' 
                  }}>
             </div>
 
-            {/* RADAR SCANNER EFFECT */}
+            {/* SCANNING SCANLINE */}
             <motion.div 
-                animate={{ rotate: 360 }}
+                animate={{ top: ['0%', '100%', '0%'] }}
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square opacity-10 pointer-events-none"
-                style={{ background: 'conic-gradient(from 0deg, transparent 0deg, rgba(14, 165, 233, 0.4) 30deg, transparent 60deg)' }}
+                className="absolute left-0 right-0 h-[80px] bg-gradient-to-b from-transparent via-sky-500/10 to-transparent pointer-events-none z-40"
             />
-
-            {/* TACTICAL OVERLAY */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/20 pointer-events-none" />
-            
-            {/* ORBITAL RINGS */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[65%] aspect-square border border-white/[0.03] rounded-full pointer-events-none" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] aspect-square border border-white/[0.05] rounded-full pointer-events-none" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[15%] aspect-square border border-white/[0.1] rounded-full pointer-events-none" />
 
             <TooltipProvider>
                 {Object.entries(POSITION_MAP).map(([type, pos]) => {
@@ -81,6 +82,20 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                     const isConstructing = (buildingQueue || []).some(q => q.type === type);
                     const config = gameConfig?.buildings?.[type];
                     
+                    if (level === 0 && !isConstructing) {
+                        return (
+                             <div 
+                                key={type}
+                                className="absolute -translate-x-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity"
+                                style={{ top: pos.top, left: pos.left }}
+                            >
+                                <div className="w-6 h-6 border-2 border-dashed border-white/20 rounded-full flex items-center justify-center">
+                                    <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                                </div>
+                            </div>
+                        );
+                    }
+
                     return (
                         <div 
                             key={type}
@@ -90,68 +105,72 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <motion.button
-                                        whileHover={{ scale: 1.05, y: -5 }}
+                                        whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => onBuildingClick({ id: type, buildingType: type, name: config?.name || type, level })}
-                                        className={`
-                                            relative flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all duration-500 backdrop-blur-md
-                                            ${level > 0 
-                                                ? 'bg-neutral-900/40 border-white/10 shadow-2xl hover:border-white/30' 
-                                                : 'bg-black/40 border-white/5 opacity-30 hover:opacity-100 grayscale hover:grayscale-0'
-                                            }
-                                            ${isConstructing ? 'ring-1 ring-orange-500/50' : ''}
-                                            ${pos.glow}
-                                        `}
+                                        className="relative group/building"
+                                        style={{ width: pos.size, height: pos.size }}
                                     >
-                                        <div className={`p-2.5 rounded-xl bg-gradient-to-br from-white/10 to-transparent ${pos.color} group-hover:scale-110 transition-transform`}>
-                                            <pos.icon size={20} strokeWidth={2.5} />
+                                        <AnimatePresence>
                                             {isConstructing && (
                                                 <motion.div 
-                                                    animate={{ rotate: 360 }}
-                                                    transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                                                    className="absolute -inset-1.5 border-2 border-t-orange-400 border-r-transparent border-b-transparent border-l-transparent rounded-full shadow-[0_0_10px_rgba(251,146,60,0.4)]"
-                                                />
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    className="absolute inset-0 z-0"
+                                                >
+                                                    <div className="absolute inset-0 bg-orange-500/10 blur-xl animate-pulse rounded-full" />
+                                                    <div className="absolute inset-x-0 bottom-0 h-1 bg-orange-500 shadow-[0_0_10px_#f97316] animate-pulse" />
+                                                </motion.div>
                                             )}
+                                        </AnimatePresence>
+
+                                        {/* INTEGRATED BUILDING IMAGE OR HIGH-TECH CARD */}
+                                        {pos.assetUrl ? (
+                                            <div className="relative w-full h-full flex items-center justify-center drop-shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                                                <img 
+                                                    src={pos.assetUrl} 
+                                                    className={`w-full h-full object-contain transition-all duration-500 ${isConstructing ? 'brightness-50' : 'brightness-90 group-hover/building:brightness-125'}`} 
+                                                    style={{ filter: level === 0 ? 'grayscale(1) opacity(0.5)' : 'none' }}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center w-full h-full p-2 bg-neutral-900/60 backdrop-blur-md rounded-3xl border border-white/10 group-hover/building:border-white/40 transition-all shadow-2xl">
+                                                <pos.icon size={24} className={`${pos.color} group-hover/building:scale-110 transition-transform`} />
+                                                <span className="text-[8px] font-black uppercase text-neutral-400 mt-2 tracking-widest">{config?.name?.split(' ')[0] || type}</span>
+                                            </div>
+                                        )}
+
+                                        {/* LEVEL BADGE TACTICAL */}
+                                        <div className="absolute -bottom-2 -right-2 bg-[#050709] border border-white/10 px-3 py-1 rounded-full shadow-2xl flex items-center gap-2 z-20">
+                                            <div className={`w-1.5 h-1.5 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-emerald-500'}`} />
+                                            <span className="text-[9px] font-black font-mono text-white">L.{(level || 0).toString().padStart(2, '0')}</span>
+                                        </div>
+
+                                        {/* INTERACTIVE HOVER RING */}
+                                        <div className="absolute inset-0 rounded-full border border-white/0 group-hover/building:border-white/20 transition-all scale-110 pointer-events-none" />
+                                    </motion.button>
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-[#050709]/95 border-white/10 text-white p-5 rounded-[2rem] backdrop-blur-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] min-w-[200px] z-[100]">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3 border-b border-white/5 pb-3">
+                                            <div className={`p-2 rounded-xl bg-white/5 ${pos.color}`}><pos.icon size={16} /></div>
+                                            <span className="font-black uppercase text-[11px] tracking-[0.2em]">{config?.name || type}</span>
                                         </div>
                                         
-                                        <div className="flex flex-col items-center">
-                                            <span className="text-[7px] font-black uppercase tracking-[0.2em] text-neutral-500 group-hover:text-white transition-colors">
-                                                {config?.name?.split(' ')[0] || type}
-                                            </span>
-                                            <div className="flex items-center gap-1">
-                                                <div className="w-1 h-1 rounded-full bg-emerald-500/50 animate-pulse" />
-                                                <span className="text-[9px] font-mono font-bold text-neutral-300">
-                                                    LVL_{level.toString().padStart(2, '0')}
-                                                </span>
+                                        <div className="grid grid-cols-2 gap-3 text-[9px] uppercase font-bold text-neutral-500">
+                                            <div className="flex flex-col">
+                                                <span>Status</span>
+                                                <span className={isConstructing ? 'text-orange-400' : 'text-emerald-400'}>{isConstructing ? 'Expandindo' : 'Operacional'}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span>Eficiência</span>
+                                                <span className="text-white">{(85 + (level || 0) * 1.5).toFixed(1)}%</span>
                                             </div>
                                         </div>
 
-                                        {/* DECORATIVE DATA BARS */}
-                                        {level > 0 && (
-                                            <div className="mt-1 flex gap-0.5 w-full justify-center opacity-40">
-                                                {[1,2,3,4].map(i => (
-                                                    <div key={i} className={`h-0.5 rounded-full transition-all duration-1000 ${i <= (level % 4) + 1 ? 'w-2 bg-white/20' : 'w-1 bg-white/5'}`} />
-                                                ))}
-                                            </div>
-                                        )}
-                                    </motion.button>
-                                </TooltipTrigger>
-                                <TooltipContent className="bg-neutral-950/90 border-white/10 text-white p-4 rounded-3xl backdrop-blur-2xl shadow-2xl min-w-[180px]">
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex items-center gap-2 border-b border-white/10 pb-2">
-                                            <pos.icon size={16} className={pos.color} />
-                                            <span className="font-black uppercase text-[10px] tracking-widest">{config?.name || type}</span>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-2 text-[8px] uppercase font-bold text-neutral-400">
-                                            <div>Status: <span className="text-emerald-400">Online</span></div>
-                                            <div>Efficiency: <span className="text-white">{(85 + level).toFixed(1)}%</span></div>
-                                            <div>Load: <span className="text-white">{(12 + level*2)}%</span></div>
-                                            <div>ID: <span className="text-white font-mono">#{type.slice(0,3)}</span></div>
-                                        </div>
                                         {isConstructing && (
-                                            <div className="mt-2 bg-orange-500/20 p-2 rounded-xl text-[8px] text-orange-400 flex items-center gap-2 animate-pulse font-black uppercase tracking-tighter">
-                                                <Activity size={10} />
-                                                Structural_Expansion_In_Progress
+                                            <div className="bg-orange-500/10 p-2.5 rounded-xl text-[8px] text-orange-400 flex items-center gap-2 border border-orange-500/20 font-black uppercase">
+                                                <Activity size={10} className="animate-pulse" /> Operação_Engenharia_Iniciada
                                             </div>
                                         )}
                                     </div>
@@ -162,35 +181,32 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                 })}
             </TooltipProvider>
 
-            {/* AMBIENT INTERFACE ELEMENTS */}
-            <div className="absolute top-8 left-10 flex flex-col gap-1 pointer-events-none">
-                <div className="flex items-center gap-3 bg-black/40 px-5 py-2 rounded-full border border-white/10 backdrop-blur-xl ring-1 ring-white/5 shadow-2xl">
-                    <Radio size={12} className="text-sky-400 animate-pulse" />
-                    <span className="text-[9px] font-black uppercase tracking-tighter text-white">Secure_Uplink: <span className="text-sky-400 font-mono">ESTABLISHED</span></span>
-                </div>
-                <div className="px-5 text-[7px] font-mono text-neutral-500 uppercase tracking-widest">Lat: 38.7223 | Long: -9.1393 | Alt: 104m</div>
-            </div>
-
-            <div className="absolute bottom-10 right-10 flex items-center gap-4 bg-black/60 px-6 py-3 rounded-[2rem] border border-white/5 backdrop-blur-2xl pointer-events-none">
-                <div className="flex flex-col items-end">
-                    <span className="text-[7px] font-black text-neutral-500 uppercase tracking-widest">Base_Integrity</span>
-                    <div className="w-24 h-1 bg-white/5 rounded-full overflow-hidden mt-1">
-                        <motion.div 
-                            initial={{ width: 0 }}
-                            animate={{ width: '92%' }}
-                            className="h-full bg-gradient-to-r from-sky-500 to-emerald-500 shadow-[0_0_10px_rgba(14,165,233,0.5)]"
-                        />
+            {/* AMBIENT INTELLIGENCE */}
+            <div className="absolute top-10 left-10 z-50 pointer-events-none hidden md:block">
+                <div className="flex items-center gap-4 bg-[#050709]/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-xl">
+                    <Radio size={14} className="text-sky-400 animate-pulse" />
+                    <div className="flex flex-col leading-none">
+                        <span className="text-[10px] font-black uppercase text-white tracking-widest">Base_Surveillance</span>
+                        <span className="text-[7px] font-mono text-sky-400 mt-1 uppercase">Freq: 824.5 MHz | Node: {base.id}</span>
                     </div>
                 </div>
-                <Cpu size={16} className="text-neutral-500" />
             </div>
 
-            {/* SCANNING SCANLINE */}
-            <motion.div 
-                animate={{ top: ['0%', '100%', '0%'] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                className="absolute left-0 right-0 h-[100px] bg-gradient-to-b from-transparent via-sky-500/5 to-transparent pointer-events-none z-50"
-            />
+            <div className="absolute bottom-10 right-10 z-50 pointer-events-none hidden md:block">
+                 <div className="bg-[#050709]/60 px-6 py-4 rounded-[2rem] border border-white/10 backdrop-blur-xl flex items-center gap-4">
+                    <div className="flex flex-col items-end">
+                        <span className="text-[8px] font-black text-neutral-500 uppercase tracking-widest mb-1">Structural_Integrity</span>
+                        <div className="w-32 h-1 bg-white/5 rounded-full overflow-hidden">
+                            <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: '94%' }}
+                                className="h-full bg-gradient-to-r from-emerald-600 to-sky-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                            />
+                        </div>
+                    </div>
+                    <div className="p-2 bg-white/5 rounded-full"><Cpu size={14} className="text-neutral-500" /></div>
+                 </div>
+            </div>
         </div>
     );
 };

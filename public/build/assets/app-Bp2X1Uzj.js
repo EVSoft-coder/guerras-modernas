@@ -28308,20 +28308,20 @@ const AnimatedNumber = ({ value, customValue }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
 const POSITION_MAP = {
-  qg: { top: "38%", left: "46%", icon: Flag, color: "text-orange-500", glow: "shadow-orange-500/20" },
-  muralha: { top: "5%", left: "85%", icon: Shield, color: "text-blue-500", glow: "shadow-blue-500/20" },
-  mina_suprimentos: { top: "15%", left: "15%", icon: TreePine, color: "text-emerald-500", glow: "shadow-emerald-500/20" },
-  refinaria: { top: "15%", left: "77%", icon: Flame, color: "text-orange-600", glow: "shadow-orange-600/20" },
-  fabrica_municoes: { top: "72%", left: "15%", icon: Factory, color: "text-neutral-400", glow: "shadow-neutral-400/20" },
-  mina_metal: { top: "72%", left: "77%", icon: Pickaxe, color: "text-sky-400", glow: "shadow-sky-400/20" },
-  central_energia: { top: "10%", left: "46%", icon: Zap, color: "text-yellow-400", glow: "shadow-yellow-400/20" },
-  housing: { top: "58%", left: "28%", icon: House, color: "text-indigo-400", glow: "shadow-indigo-400/20" },
-  posto_recrutamento: { top: "58%", left: "64%", icon: Users, color: "text-rose-400", glow: "shadow-rose-400/20" },
-  quartel: { top: "35%", left: "18%", icon: Crosshair, color: "text-red-500", glow: "shadow-red-500/20" },
-  aerodromo: { top: "65%", left: "46%", icon: Plane, color: "text-cyan-400", glow: "shadow-cyan-400/20" },
-  radar_estrategico: { top: "12%", left: "28%", icon: Radar, color: "text-blue-400", glow: "shadow-blue-400/20" },
-  centro_pesquisa: { top: "12%", left: "64%", icon: Microscope, color: "text-purple-400", glow: "shadow-purple-400/20" },
-  parlamento: { top: "82%", left: "46%", icon: Landmark, color: "text-amber-500", glow: "shadow-amber-500/20" }
+  qg: { top: "45%", left: "50%", size: "180px", icon: Flag, color: "text-orange-500", assetUrl: "/assets/structures/v2/hq.png" },
+  quartel: { top: "35%", left: "25%", size: "120px", icon: Crosshair, color: "text-red-500", assetUrl: "/assets/structures/v2/barracks.png" },
+  muralha: { top: "10%", left: "85%", size: "80px", icon: Shield, color: "text-blue-500" },
+  mina_suprimentos: { top: "20%", left: "15%", size: "80px", icon: TreePine, color: "text-emerald-500" },
+  refinaria: { top: "20%", left: "75%", size: "80px", icon: Flame, color: "text-orange-600" },
+  fabrica_municoes: { top: "75%", left: "20%", size: "80px", icon: Factory, color: "text-neutral-400" },
+  mina_metal: { top: "75%", left: "80%", size: "80px", icon: Pickaxe, color: "text-sky-400" },
+  central_energia: { top: "15%", left: "50%", size: "80px", icon: Zap, color: "text-yellow-400" },
+  housing: { top: "60%", left: "30%", size: "80px", icon: House, color: "text-indigo-400" },
+  posto_recrutamento: { top: "60%", left: "70%", size: "80px", icon: Users, color: "text-rose-400" },
+  aerodromo: { top: "70%", left: "50%", size: "110px", icon: Plane, color: "text-cyan-400" },
+  radar_estrategico: { top: "15%", left: "30%", size: "80px", icon: Radar, color: "text-blue-400" },
+  centro_pesquisa: { top: "15%", left: "70%", size: "80px", icon: Microscope, color: "text-purple-400" },
+  parlamento: { top: "85%", left: "50%", size: "80px", icon: Landmark, color: "text-amber-500" }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   const getBuildingLevel = (type2) => {
@@ -28333,35 +28333,49 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
       return ((_a3 = e.buildingType) == null ? void 0 : _a3.toLowerCase()) === type2.toLowerCase();
     })) == null ? void 0 : _b.nivel) || 0;
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full aspect-video bg-[#05080a] rounded-[3rem] overflow-hidden border border-white/5 shadow-[0_0_50px_rgba(0,0,0,0.8)] group font-sans", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full aspect-video bg-[#020406] rounded-[3rem] overflow-hidden border border-white/5 shadow-2xl group font-sans", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 opacity-40", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "img",
+      {
+        src: "/assets/structures/v2/terrain.png",
+        className: "w-full h-full object-cover grayscale-[0.5] contrast-[1.2]",
+        alt: "Base Terrain"
+      }
+    ) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: "absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none",
+        className: "absolute inset-0 opacity-[0.05] pointer-events-none",
         style: {
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
-          backgroundSize: "40px 40px"
+          backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+          backgroundSize: "30px 30px"
         }
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       motion.div,
       {
-        animate: { rotate: 360 },
+        animate: { top: ["0%", "100%", "0%"] },
         transition: { duration: 10, repeat: Infinity, ease: "linear" },
-        className: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square opacity-10 pointer-events-none",
-        style: { background: "conic-gradient(from 0deg, transparent 0deg, rgba(14, 165, 233, 0.4) 30deg, transparent 60deg)" }
+        className: "absolute left-0 right-0 h-[80px] bg-gradient-to-b from-transparent via-sky-500/10 to-transparent pointer-events-none z-40"
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/20 pointer-events-none" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[65%] aspect-square border border-white/[0.03] rounded-full pointer-events-none" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] aspect-square border border-white/[0.05] rounded-full pointer-events-none" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[15%] aspect-square border border-white/[0.1] rounded-full pointer-events-none" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Object.entries(POSITION_MAP).map(([type2, pos]) => {
       var _a2, _b;
       const level = getBuildingLevel(type2);
       const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
       const config = (_a2 = gameConfig == null ? void 0 : gameConfig.buildings) == null ? void 0 : _a2[type2];
+      if (level === 0 && !isConstructing) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "absolute -translate-x-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity",
+            style: { top: pos.top, left: pos.left },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 border-2 border-dashed border-white/20 rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1 h-1 bg-white/40 rounded-full" }) })
+          },
+          type2
+        );
+      }
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -28371,76 +28385,67 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
             /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
               motion.button,
               {
-                whileHover: { scale: 1.05, y: -5 },
+                whileHover: { scale: 1.05 },
                 whileTap: { scale: 0.95 },
                 onClick: () => onBuildingClick({ id: type2, buildingType: type2, name: (config == null ? void 0 : config.name) || type2, level }),
-                className: `
-                                            relative flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all duration-500 backdrop-blur-md
-                                            ${level > 0 ? "bg-neutral-900/40 border-white/10 shadow-2xl hover:border-white/30" : "bg-black/40 border-white/5 opacity-30 hover:opacity-100 grayscale hover:grayscale-0"}
-                                            ${isConstructing ? "ring-1 ring-orange-500/50" : ""}
-                                            ${pos.glow}
-                                        `,
+                className: "relative group/building",
+                style: { width: pos.size, height: pos.size },
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `p-2.5 rounded-xl bg-gradient-to-br from-white/10 to-transparent ${pos.color} group-hover:scale-110 transition-transform`, children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 20, strokeWidth: 2.5 }),
-                    isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      motion.div,
-                      {
-                        animate: { rotate: 360 },
-                        transition: { repeat: Infinity, duration: 3, ease: "linear" },
-                        className: "absolute -inset-1.5 border-2 border-t-orange-400 border-r-transparent border-b-transparent border-l-transparent rounded-full shadow-[0_0_10px_rgba(251,146,60,0.4)]"
-                      }
-                    )
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    motion.div,
+                    {
+                      initial: { opacity: 0 },
+                      animate: { opacity: 1 },
+                      className: "absolute inset-0 z-0",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-orange-500/10 blur-xl animate-pulse rounded-full" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-x-0 bottom-0 h-1 bg-orange-500 shadow-[0_0_10px_#f97316] animate-pulse" })
+                      ]
+                    }
+                  ) }),
+                  pos.assetUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative w-full h-full flex items-center justify-center drop-shadow-[0_0_20px_rgba(0,0,0,0.5)]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "img",
+                    {
+                      src: pos.assetUrl,
+                      className: `w-full h-full object-contain transition-all duration-500 ${isConstructing ? "brightness-50" : "brightness-90 group-hover/building:brightness-125"}`,
+                      style: { filter: level === 0 ? "grayscale(1) opacity(0.5)" : "none" }
+                    }
+                  ) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center w-full h-full p-2 bg-neutral-900/60 backdrop-blur-md rounded-3xl border border-white/10 group-hover/building:border-white/40 transition-all shadow-2xl", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 24, className: `${pos.color} group-hover/building:scale-110 transition-transform` }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black uppercase text-neutral-400 mt-2 tracking-widest", children: ((_b = config == null ? void 0 : config.name) == null ? void 0 : _b.split(" ")[0]) || type2 })
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] font-black uppercase tracking-[0.2em] text-neutral-500 group-hover:text-white transition-colors", children: ((_b = config == null ? void 0 : config.name) == null ? void 0 : _b.split(" ")[0]) || type2 }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1 h-1 rounded-full bg-emerald-500/50 animate-pulse" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[9px] font-mono font-bold text-neutral-300", children: [
-                        "LVL_",
-                        level.toString().padStart(2, "0")
-                      ] })
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute -bottom-2 -right-2 bg-[#050709] border border-white/10 px-3 py-1 rounded-full shadow-2xl flex items-center gap-2 z-20", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${isConstructing ? "bg-orange-500 animate-pulse" : "bg-emerald-500"}` }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[9px] font-black font-mono text-white", children: [
+                      "L.",
+                      (level || 0).toString().padStart(2, "0")
                     ] })
                   ] }),
-                  level > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 flex gap-0.5 w-full justify-center opacity-40", children: [1, 2, 3, 4].map((i2) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `h-0.5 rounded-full transition-all duration-1000 ${i2 <= level % 4 + 1 ? "w-2 bg-white/20" : "w-1 bg-white/5"}` }, i2)) })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 rounded-full border border-white/0 group-hover/building:border-white/20 transition-all scale-110 pointer-events-none" })
                 ]
               }
             ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipContent, { className: "bg-neutral-950/90 border-white/10 text-white p-4 rounded-3xl backdrop-blur-2xl shadow-2xl min-w-[180px]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 border-b border-white/10 pb-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 16, className: pos.color }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-black uppercase text-[10px] tracking-widest", children: (config == null ? void 0 : config.name) || type2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipContent, { className: "bg-[#050709]/95 border-white/10 text-white p-5 rounded-[2rem] backdrop-blur-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] min-w-[200px] z-[100]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 border-b border-white/5 pb-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-2 rounded-xl bg-white/5 ${pos.color}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(pos.icon, { size: 16 }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-black uppercase text-[11px] tracking-[0.2em]", children: (config == null ? void 0 : config.name) || type2 })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-2 text-[8px] uppercase font-bold text-neutral-400", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  "Status: ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400", children: "Online" })
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-3 text-[9px] uppercase font-bold text-neutral-500", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Status" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: isConstructing ? "text-orange-400" : "text-emerald-400", children: isConstructing ? "Expandindo" : "Operacional" })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  "Efficiency: ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Eficiência" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white", children: [
-                    (85 + level).toFixed(1),
+                    (85 + (level || 0) * 1.5).toFixed(1),
                     "%"
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  "Load: ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white", children: [
-                    12 + level * 2,
-                    "%"
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  "ID: ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white font-mono", children: [
-                    "#",
-                    type2.slice(0, 3)
                   ] })
                 ] })
               ] }),
-              isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2 bg-orange-500/20 p-2 rounded-xl text-[8px] text-orange-400 flex items-center gap-2 animate-pulse font-black uppercase tracking-tighter", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { size: 10 }),
-                "Structural_Expansion_In_Progress"
+              isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-orange-500/10 p-2.5 rounded-xl text-[8px] text-orange-400 flex items-center gap-2 border border-orange-500/20 font-black uppercase", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { size: 10, className: "animate-pulse" }),
+                " Operação_Engenharia_Iniciada"
               ] })
             ] }) })
           ] })
@@ -28448,38 +28453,30 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
         type2
       );
     }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute top-8 left-10 flex flex-col gap-1 pointer-events-none", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 bg-black/40 px-5 py-2 rounded-full border border-white/10 backdrop-blur-xl ring-1 ring-white/5 shadow-2xl", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Radio, { size: 12, className: "text-sky-400 animate-pulse" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[9px] font-black uppercase tracking-tighter text-white", children: [
-          "Secure_Uplink: ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sky-400 font-mono", children: "ESTABLISHED" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-10 left-10 z-50 pointer-events-none hidden md:block", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 bg-[#050709]/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-xl", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Radio, { size: 14, className: "text-sky-400 animate-pulse" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col leading-none", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-white tracking-widest", children: "Base_Surveillance" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[7px] font-mono text-sky-400 mt-1 uppercase", children: [
+          "Freq: 824.5 MHz | Node: ",
+          base.id
         ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-5 text-[7px] font-mono text-neutral-500 uppercase tracking-widest", children: "Lat: 38.7223 | Long: -9.1393 | Alt: 104m" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute bottom-10 right-10 flex items-center gap-4 bg-black/60 px-6 py-3 rounded-[2rem] border border-white/5 backdrop-blur-2xl pointer-events-none", children: [
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-10 right-10 z-50 pointer-events-none hidden md:block", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#050709]/60 px-6 py-4 rounded-[2rem] border border-white/10 backdrop-blur-xl flex items-center gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-end", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7px] font-black text-neutral-500 uppercase tracking-widest", children: "Base_Integrity" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 h-1 bg-white/5 rounded-full overflow-hidden mt-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black text-neutral-500 uppercase tracking-widest mb-1", children: "Structural_Integrity" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-32 h-1 bg-white/5 rounded-full overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           motion.div,
           {
             initial: { width: 0 },
-            animate: { width: "92%" },
-            className: "h-full bg-gradient-to-r from-sky-500 to-emerald-500 shadow-[0_0_10px_rgba(14,165,233,0.5)]"
+            animate: { width: "94%" },
+            className: "h-full bg-gradient-to-r from-emerald-600 to-sky-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
           }
         ) })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Cpu, { size: 16, className: "text-neutral-500" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      motion.div,
-      {
-        animate: { top: ["0%", "100%", "0%"] },
-        transition: { duration: 8, repeat: Infinity, ease: "linear" },
-        className: "absolute left-0 right-0 h-[100px] bg-gradient-to-b from-transparent via-sky-500/5 to-transparent pointer-events-none z-50"
-      }
-    )
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-white/5 rounded-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Cpu, { size: 14, className: "text-neutral-500" }) })
+    ] }) })
   ] });
 };
 const Dialog = Root$4;
@@ -44595,7 +44592,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-B2D0RGd7.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DqsA5u3s.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44631,4 +44628,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CQiDzwjz.js.map
+//# sourceMappingURL=app-Bp2X1Uzj.js.map
