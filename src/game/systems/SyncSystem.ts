@@ -33,35 +33,25 @@ export class SyncSystem implements GameSystem {
     }
 
     private async handleBuildingUpgrade(data: any): Promise<void> {
-        try {
-            Logger.building('UPGRADE_REQUEST', data);
-            const response = await fetch('/buildings/upgrade', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
-                },
-                body: JSON.stringify({ base_id: data.base_id, tipo: data.tipo })
-            });
-
-            const resData = await response.json();
-            Logger.backend('UPGRADE_RESPONSE', { status: response.status, data: resData });
-
-            if (!response.ok) {
-                throw new Error(resData.message || 'Operation Denied');
+        Logger.building('UPGRADE_REQUEST', data);
+        
+        router.post('/buildings/upgrade', {
+            base_id: data.base_id,
+            tipo: data.tipo
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'UPGRADE' } });
+            },
+            onError: (err) => {
+                const msg = Object.values(err)[0] as string || 'Operação Negada';
+                eventBus.emit(Events.UI_ALERT, { data: { message: msg, type: 'error' } });
+            },
+            onFinish: () => {
+                eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'CLEANUP' } });
             }
-            
-            // Garantir que a UI reflete a nova fila de construção
-            router.reload();
-            eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'UPGRADE' } });
-
-            Logger.info('[ACTION] Structural upgrade authorized by Central Command.');
-        } catch (err: any) {
-            Logger.error('[ACTION_FAILURE] Building upgrade aborted', err);
-            eventBus.emit(Events.UI_ALERT, { data: { message: err.message, type: 'error' } });
-        }
+        });
     }
 
     private async handleUnitTraining(data: any): Promise<void> {
