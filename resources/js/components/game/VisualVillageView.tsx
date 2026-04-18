@@ -45,7 +45,7 @@ interface VisualVillageViewProps {
 export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
     
     React.useEffect(() => {
-        console.log(">>> VILLAGE_COMMAND_HUD_V3_TRANSPARENCY_ACTIVE <<<");
+        console.log(">>> VILLAGE_COMMAND_HUD_V4_CHROMA_KEY_ACTIVE <<<");
     }, []);
 
     const getBuildingLevel = (type: string) => {
@@ -122,15 +122,18 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                                             )}
                                         </AnimatePresence>
 
-                                        {/* INTEGRATED BUILDING IMAGE BLOCK — SCREEN BLEND TO REMOVE BLACK */}
-                                        <div className="relative w-full h-full flex items-center justify-center drop-shadow-[0_0_25px_rgba(0,0,0,0.6)]">
+                                        {/* OPTICAL TRANSPARENCY BLOCK — USING CHROMA KEY FILTER */}
+                                        <div className="relative w-full h-full flex items-center justify-center drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
                                             {pos.assetUrl ? (
                                                 <img 
                                                     src={pos.assetUrl} 
-                                                    className={`w-full h-full object-contain transition-all duration-700 mix-blend-screen
-                                                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.3] contrast-[1.2] group-hover/building:brightness-[1.5] group-hover/building:scale-110'}
+                                                    className={`w-full h-full object-contain transition-all duration-700
+                                                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.1] contrast-[1.1] group-hover/building:brightness-[1.3] group-hover/building:scale-105'}
                                                     `} 
-                                                    style={{ transform: 'scale(1.4)' }}
+                                                    style={{ 
+                                                        transform: 'scale(1.4)',
+                                                        filter: 'url(#chroma-key-black)'
+                                                    }}
                                                     onLoad={() => console.log(`BASE_STRUCTURE_LOADED: ${type}`)}
                                                 />
                                             ) : (
@@ -222,6 +225,17 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
             {/* CORNER DECORATIONS TACTICAL */}
             <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-white/5 pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-white/5 pointer-events-none" />
+
+            {/* SVG CHROMA KEY FILTER — THE SECRET WEAPON */}
+            <svg style={{ visibility: 'hidden', position: 'absolute', width: 0, height: 0 }}>
+                <filter id="chroma-key-black">
+                    {/* Convert any near-black (low luminance) to transparency */}
+                    <feColorMatrix type="matrix" values="1 0 0 0 0
+                                                        0 1 0 0 0
+                                                        0 0 1 0 0
+                                                        1.5 1.5 1.5 0 -0.5" />
+                </filter>
+            </svg>
         </div>
     );
 };
