@@ -46,6 +46,8 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     .village-root * {
                         box-sizing: border-box;
                         background: transparent !important;
+                        box-shadow: none !important;
+                        border: none !important;
                     }
                     .village-root div {
                         position: absolute;

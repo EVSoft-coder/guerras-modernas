@@ -76,6 +76,20 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 onClick();
             }}
         >
+            {/* MARCADOR DE ASSENTAMENTO (DEBUG) */}
+            <div style={{ 
+                position: 'absolute',
+                bottom: '0',
+                left: '50%',
+                width: '4px',
+                height: '4px',
+                background: '#00f',
+                borderRadius: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 100,
+                boxShadow: '0 0 4px #00f'
+            }} />
+
             {assetPath && (
                 <img 
                     src={assetPath} 
@@ -85,7 +99,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                         height: '100%',
                         objectFit: 'contain',
                         pointerEvents: 'none',
-                        mixBlendMode: 'lighten',
+                        mixBlendMode: 'screen',
                     }}
                     alt={name}
                 />
