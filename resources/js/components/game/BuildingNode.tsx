@@ -36,11 +36,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
         ? `/assets/structures/v2/${layout.assetName}`
         : null;
 
-    // PASSO 3 — Z-INDEX AVANÇADO (CENTRO DE MASSA VISUAL)
-    let dynamicZIndex = Math.floor(layout.y + (layout.h * 0.5));
-    if (type === 'muralha') dynamicZIndex = 1;
     // PASSO 9 — Z-INDEX DINÂMICO BASEADO EM POSIÇÃO Y (OCLUSÃO ISOMÉTRICA)
-    const dynamicZIndex = Math.floor(layout.y) + 100;
+    const dynamicZIndex = (type === 'muralha') ? 1 : Math.floor(layout.y) + 100;
 
     // FUNÇÃO DE ABREVIATURA TÁTICA (HUD CLEAN-UP)
     const getTacticalName = (fullName: string) => {
@@ -135,19 +132,12 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 </div>
             )}
 
-            {/* CONSTRUCTING OVERLAY (SUBTLE) */}
-            {isConstructing && (
-                <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
-                    <div className="w-10 h-10 border-2 border-[#0f0]/30 border-t-[#0f0] rounded-full animate-spin" />
-                </div>
-            )}
-
             {/* CONSTRUCTING OVERLAY */}
             {isConstructing && (
                 <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
                     <div className="w-12 h-12 border-2 border-[#0f0]/40 border-t-[#0f0] rounded-full animate-spin shadow-[0_0_15px_rgba(0,255,0,0.3)]" />
                 </div>
             )}
-        </motion.div>
+        </div>
     );
 };

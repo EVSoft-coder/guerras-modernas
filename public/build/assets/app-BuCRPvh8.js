@@ -28223,36 +28223,46 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
     top -= height;
   }
   const assetPath = layout2.assetName ? `/assets/structures/v2/${layout2.assetName}` : null;
-  let dynamicZIndex = Math.floor(layout2.y + layout2.h * 0.5);
-  if (type2 === "muralha") dynamicZIndex = 1;
+  const dynamicZIndex = type2 === "muralha" ? 1 : Math.floor(layout2.y) + 100;
+  const getTacticalName = (fullName) => {
+    const mapping = {
+      "Radar de Longo Alcance": "Radar Est.",
+      "Centro de Pesquisa & I&D": "Pesquisa",
+      "Fábrica de Munições": "Fábrica Mun.",
+      "Refinaria de Combustível": "Refinaria",
+      "Mina de Suprimentos": "Suprimentos",
+      "Mina de Metal": "Mina Metal",
+      "Quartel Regional": "Quartel",
+      "Complexo Residencial": "Habitação",
+      "Posto de Recrutamento": "Recrut.",
+      "Centro de Comando (QG)": "Comando QG"
+    };
+    return mapping[fullName] || (fullName.length > 12 ? fullName.substring(0, 10) + "..." : fullName);
+  };
+  const tacticalName = getTacticalName(name);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    motion.div,
+    "div",
     {
-      initial: { opacity: 0, scale: 0.95 },
-      animate: { opacity: 1, scale: 1 },
-      whileHover: { scale: 1.05, zIndex: 9999 },
-      onClick,
-      className: "absolute cursor-pointer transition-all hover:filter hover:brightness-110 group/node",
+      className: "group/node absolute cursor-pointer transition-transform duration-300",
       style: {
-        left,
-        top,
-        width,
-        height,
-        zIndex: dynamicZIndex
+        left: `${left}px`,
+        top: `${top}px`,
+        width: `${width}px`,
+        height: `${height}px`,
+        zIndex: dynamicZIndex,
+        // PASSO 10 — Z-INDEX DINÂMICO
+        pointerEvents: "auto"
+      },
+      onClick: (e) => {
+        e.stopPropagation();
+        onClick();
       },
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
-            className: "absolute -bottom-2 left-1/2 -translate-x-1/2 w-[80%] h-[20%] bg-black/90 blur-[10px] rounded-[100%] z-[-2] opacity-80",
-            style: { transform: "translateX(-40%)" }
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "absolute -bottom-1 left-1/2 -translate-x-1/2 w-[60%] h-[10%] bg-black/100 blur-[4px] rounded-[100%] z-[-1] opacity-90",
-            style: { transform: "translateX(-45%)" }
+            className: "absolute w-[80%] h-[30%] bg-black/60 blur-[12px] rounded-[100%] z-0",
+            style: { bottom: "5%", left: "10%" }
           }
         ),
         assetPath ? /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -28260,25 +28270,25 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
           {
             src: assetPath,
             className: `w-full h-full object-contain pointer-events-none transition-all duration-500
-                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.5] contrast-[1.3] saturate-[1.2] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 group-hover/node:filter group-hover/node:drop-shadow-[0_0_20px_rgba(0,255,100,0.4)]"}
+                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.6] contrast-[1.4] saturate-[1.3] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 group-hover/node:filter group-hover/node:drop-shadow-[0_0_20px_rgba(0,255,100,0.5)]"}
                     `,
             alt: name,
             style: {
               mixBlendMode: type2 === "housing" || type2 === "posto_recrutamento" ? "multiply" : "screen",
-              maskImage: "radial-gradient(circle at center, black 75%, transparent 100%)",
-              WebkitMaskImage: "radial-gradient(circle at center, black 75%, transparent 100%)"
+              maskImage: "radial-gradient(circle at center, black 80%, transparent 100%)",
+              WebkitMaskImage: "radial-gradient(circle at center, black 80%, transparent 100%)"
             },
             onError: (e) => {
               e.currentTarget.style.display = "none";
             }
           }
-        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/80 border border-white/20 rounded-xl backdrop-blur-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/40 font-black uppercase text-center px-1 leading-none", children: name }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 z-[2000] pointer-events-none", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 py-0.5 bg-black/90 backdrop-blur-3xl border border-white/10 rounded-sm shadow-3xl group-hover/node:border-[#0f0]/60 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7.5px] font-black text-white/95 uppercase tracking-[0.15em] whitespace-nowrap", children: name.length > 15 ? name.substring(0, 12) + "..." : name }) }),
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/80 border border-white/20 rounded-xl backdrop-blur-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/40 font-black uppercase text-center px-1 leading-none", children: tacticalName }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 z-[5000] pointer-events-none", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 py-0.5 bg-black/95 backdrop-blur-3xl border border-white/10 rounded-sm shadow-3xl group-hover/node:border-[#0f0]/60 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[7.5px] font-black text-white/95 uppercase tracking-[0.2em] whitespace-nowrap", children: tacticalName }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: "flex items-center justify-center bg-[#050608]/95 border border-[#0f0]/90 text-[#0f0] font-black shadow-[0_0_20px_rgba(0,255,0,0.25)] skew-x-[-12deg]",
+              className: "flex items-center justify-center bg-[#050608]/95 border border-[#0f0]/90 text-[#0f0] font-black shadow-[0_0_20px_rgba(0,255,0,0.3)] skew-x-[-12deg]",
               style: {
                 width: `${22 * scale2}px`,
                 height: `${14 * scale2}px`,
@@ -28288,8 +28298,7 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
             }
           )
         ] }),
-        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -top-16 left-1/2 -translate-x-1/2 text-[7px] font-black text-[#0f0] animate-pulse uppercase", children: "Engenharia..." }),
-        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center z-50 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 border-2 border-[#0f0]/30 border-t-[#0f0] rounded-full animate-spin" }) }),
+        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -top-16 left-1/2 -translate-x-1/2 text-[7.5px] font-black text-[#0f0] animate-pulse uppercase tracking-wider", children: "Engenharia..." }),
         isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center z-50 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 border-2 border-[#0f0]/40 border-t-[#0f0] rounded-full animate-spin shadow-[0_0_15px_rgba(0,255,0,0.3)]" }) })
       ]
     }
@@ -44494,7 +44503,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-yAygddu_.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Bz4oRFYL.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44530,4 +44539,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-MZWE7vux.js.map
+//# sourceMappingURL=app-BuCRPvh8.js.map
