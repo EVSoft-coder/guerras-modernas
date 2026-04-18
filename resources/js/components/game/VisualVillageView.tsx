@@ -52,11 +52,22 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     style={{ position: 'absolute', inset: 0, zIndex: 1 }}
                 >
                     <img 
-                        src="/assets/structures/v2/terrain.png" 
-                        style={{ width: '800px', height: '600px', objectFit: 'cover' }}
-                        alt="Terreno" 
+                        src="/assets/structures/v2/terrain_v12.png" 
+                        style={{ 
+                            width: '800px', 
+                            height: '600px', 
+                            objectFit: 'cover',
+                            filter: 'brightness(0.8) contrast(1.3) saturate(0.9)'
+                        }}
+                        alt="Mapa Tático" 
                     />
-                    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, transparent, rgba(0,0,0,0.4))' }} />
+                    {/* Gradiente Radial centrado na HQ (400, 270) */}
+                    <div style={{ 
+                        position: 'absolute', 
+                        inset: 0, 
+                        background: 'radial-gradient(circle at 400px 270px, transparent 20%, rgba(0,0,0,0.7) 100%)',
+                        mixBlendMode: 'multiply'
+                    }} />
                 </div>
 
                 {/* CAMADA 2: buildings-layer */}
