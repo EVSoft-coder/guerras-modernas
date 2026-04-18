@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Flag, Shield, TreePine, Flame, Zap, Home, Users, 
     Crosshair, Plane, Radar, Microscope, Landmark, Factory, Pickaxe,
-    Activity, Cpu, Radio, Target, Zap as EnergyIcon, Boxes
+    Activity, Cpu, Radio, Target, Zap as EnergyIcon, AlertTriangle
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -16,33 +16,24 @@ interface BuildingPos {
     color: string;
     assetUrl?: string;
     zIndex?: number;
-    rotation?: string;
 }
 
 const POSITION_MAP: Record<string, BuildingPos> = {
-    // BACK ROW (Highest z-index bottom, Lowest z-index top)
-    central_energia:    { top: '15%', left: '50%', size: '130px', icon: EnergyIcon, color: 'text-yellow-400', assetUrl: '/assets/structures/v2/energy.png', zIndex: 10 },
-    mina_suprimentos:   { top: '22%', left: '18%', size: '130px', icon: Pickaxe, color: 'text-emerald-500', assetUrl: '/assets/structures/v2/mine.png', zIndex: 11 },
-    radar_estrategico:  { top: '16%', left: '34%', size: '110px', icon: Radar, color: 'text-blue-400', assetUrl: '/assets/structures/v2/radar.png', zIndex: 12 },
-    centro_pesquisa:    { top: '22%', left: '68%', size: '130px', icon: Microscope, color: 'text-purple-400', assetUrl: '/assets/structures/v2/research.png', zIndex: 13 },
-    
-    // MID ROW
-    quartel:            { top: '35%', left: '26%', size: '150px', icon: Crosshair, color: 'text-red-500', assetUrl: '/assets/structures/v2/barracks.png', zIndex: 20 },
-    refinaria:          { top: '35%', left: '80%', size: '130px', icon: Flame, color: 'text-orange-600', assetUrl: '/assets/structures/v2/factory.png', zIndex: 21 },
-    housing:            { top: '45%', left: '38%', size: '110px', icon: Home, color: 'text-indigo-400', assetUrl: '/assets/structures/v2/housing.png', zIndex: 22 },
-    
-    // CENTERPIECE
-    qg:                 { top: '48%', left: '54%', size: '280px', icon: Flag, color: 'text-orange-500', assetUrl: '/assets/structures/v2/hq.png', zIndex: 30 },
-    
-    // FRONT ROW
-    fabrica_municoes:   { top: '70%', left: '22%', size: '180px', icon: Factory, color: 'text-neutral-400', assetUrl: '/assets/structures/v2/factory.png', zIndex: 40 },
-    mina_metal:         { top: '75%', left: '82%', size: '150px', icon: Pickaxe, color: 'text-sky-400', assetUrl: '/assets/structures/v2/mine.png', zIndex: 41 },
-    aerodromo:          { top: '72%', left: '50%', size: '190px', icon: Plane, color: 'text-cyan-400', assetUrl: '/assets/structures/v2/aerodrome.png', zIndex: 42 },
-    posto_recrutamento: { top: '65%', left: '72%', size: '110px', icon: Users, color: 'text-rose-400', assetUrl: '/assets/structures/v2/housing.png', zIndex: 43 },
-    
-    // MARGINALS (Integrated into frame)
-    muralha:            { top: '8%', left: '92%', size: '100px', icon: Shield, color: 'text-blue-500', zIndex: 5 },
-    parlamento:         { top: '92%', left: '50%', size: '100px', icon: Landmark, color: 'text-amber-500', zIndex: 50 },
+    // ALINHAMENTO TÁTICO BASEADO NOS PADS DO TERRENO
+    qg:                 { top: '50%', left: '52%', size: '320px', icon: Flag, color: 'text-orange-500', assetUrl: '/assets/structures/v2/hq.png', zIndex: 30 },
+    central_energia:    { top: '12%', left: '50%', size: '150px', icon: EnergyIcon, color: 'text-yellow-400', assetUrl: '/assets/structures/v2/energy.png', zIndex: 10 },
+    mina_suprimentos:   { top: '18%', left: '16%', size: '150px', icon: Pickaxe, color: 'text-emerald-500', assetUrl: '/assets/structures/v2/mine.png', zIndex: 11 },
+    mina_metal:         { top: '82%', left: '84%', size: '150px', icon: Pickaxe, color: 'text-sky-400', assetUrl: '/assets/structures/v2/mine.png', zIndex: 45 },
+    radar_estrategico:  { top: '12%', left: '32%', size: '120px', icon: Radar, color: 'text-blue-400', assetUrl: '/assets/structures/v2/radar.png', zIndex: 12 },
+    centro_pesquisa:    { top: '22%', left: '78%', size: '160px', icon: Microscope, color: 'text-purple-400', assetUrl: '/assets/structures/v2/research.png', zIndex: 13 },
+    quartel:            { top: '38%', left: '26%', size: '180px', icon: Crosshair, color: 'text-red-500', assetUrl: '/assets/structures/v2/barracks.png', zIndex: 20 },
+    fabrica_municoes:   { top: '75%', left: '22%', size: '200px', icon: Factory, color: 'text-neutral-400', assetUrl: '/assets/structures/v2/factory.png', zIndex: 40 },
+    refinaria:          { top: '38%', left: '88%', size: '160px', icon: Flame, color: 'text-orange-600', assetUrl: '/assets/structures/v2/factory.png', zIndex: 21 },
+    aerodromo:          { top: '82%', left: '48%', size: '220px', icon: Plane, color: 'text-cyan-400', assetUrl: '/assets/structures/v2/aerodrome.png', zIndex: 42 },
+    housing:            { top: '55%', left: '24%', size: '130px', icon: Home, color: 'text-indigo-400', assetUrl: '/assets/structures/v2/housing.png', zIndex: 25 },
+    posto_recrutamento: { top: '65%', left: '78%', size: '130px', icon: Users, color: 'text-rose-400', assetUrl: '/assets/structures/v2/housing.png', zIndex: 43 },
+    muralha:            { top: '5%', left: '92%', size: '100px', icon: Shield, color: 'text-blue-500', zIndex: 5 },
+    parlamento:         { top: '92%', left: '50%', size: '110px', icon: Landmark, color: 'text-amber-500', zIndex: 50 },
 };
 
 interface VisualVillageViewProps {
@@ -55,28 +46,35 @@ interface VisualVillageViewProps {
 export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
     
     React.useEffect(() => {
-        console.log(">>> VILLAGE_COMMAND_HUD_ULTRA_PREMIUM_V5_ACTIVE <<<");
+        console.log(">>> VILLAGE_COMMAND_HUD_V6_ULTRA_PREMIUM_FIX_ACTIVE <<<");
     }, []);
 
     const getBuildingLevel = (type: string) => {
         if (type === 'qg') return base.qg_nivel || 0;
         if (type === 'muralha') return base.muralha_nivel || 0;
-        return base.edificios?.find(e => e.buildingType?.toLowerCase() === type.toLowerCase())?.nivel || 0;
+        const b = base.edificios?.find(e => {
+            const bt = e.buildingType || e.type || e.slug; // Tenta vários campos de identificação
+            return bt?.toLowerCase() === type.toLowerCase();
+        });
+        return b?.nivel || 0;
     };
 
     return (
-        <div className="relative w-full aspect-video bg-[#020405] rounded-[2.5rem] overflow-hidden border border-white/5 shadow-[inset_0_0_100px_rgba(0,0,0,0.9)] group font-sans select-none ring-1 ring-white/10">
+        <div className="relative w-full aspect-video bg-[#010203] rounded-[3rem] overflow-hidden border border-white/10 shadow-[0_0_120px_rgba(0,0,0,1)] group font-sans select-none">
             
-            {/* AMBIENT LAYERS */}
-            <div className="absolute inset-0 z-0 brightness-75 contrast-[1.1] saturate-[0.7]">
-                <img src="/assets/structures/v2/terrain.png" className="w-full h-full object-cover" alt="Terrain" />
+            {/* TERRENO DE FUNDO — MAIOR ESCURIDÃO PARA CONTRASTE */}
+            <div className="absolute inset-0 z-0">
+                <img 
+                    src="/assets/structures/v2/terrain.png" 
+                    className="w-full h-full object-cover brightness-[0.45] contrast-[1.3] saturate-[0.6]" 
+                    alt="Tactical Terrain" 
+                />
             </div>
-            
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.7)_100%)] z-[5] pointer-events-none" />
-            
-            {/* FRAME OVERLAY */}
-            <div className="absolute inset-0 border-[20px] border-black/20 pointer-events-none z-[60] backdrop-blur-[1px]" />
-            <div className="absolute inset-4 border border-white/[0.03] rounded-[2rem] pointer-events-none z-[61]" />
+
+            {/* VIGNETTE E GRID TÁTICA */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.8)_100%)] z-10 pointer-events-none" />
+            <div className="absolute inset-0 opacity-[0.03] z-10 pointer-events-none" 
+                 style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
             <TooltipProvider>
                 {Object.entries(POSITION_MAP).map(([type, pos]) => {
@@ -88,12 +86,10 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                         return (
                              <div 
                                 key={type}
-                                className="absolute -translate-x-1/2 -translate-y-1/2 opacity-10 hover:opacity-100 transition-all duration-1000 z-10"
+                                className="absolute -translate-x-1/2 -translate-y-1/2 opacity-20 hover:opacity-100 transition-all z-10"
                                 style={{ top: pos.top, left: pos.left }}
                             >
-                                <div className="p-2 border border-white/5 rounded-lg backdrop-blur-sm flex items-center justify-center">
-                                    <div className="w-1.5 h-1.5 bg-neutral-800 rounded-full" />
-                                </div>
+                                <div className="p-3 border border-white/10 rounded-full backdrop-blur-md bg-white/5"><Target size={12} className="text-neutral-700" /></div>
                             </div>
                         );
                     }
@@ -107,72 +103,77 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <motion.button
-                                        whileHover={{ scale: 1.05, y: -4 }}
-                                        whileTap={{ scale: 0.98 }}
+                                        whileHover={{ scale: 1.08, y: -5 }}
+                                        whileTap={{ scale: 0.95 }}
                                         onClick={() => onBuildingClick({ id: type, buildingType: type, name: config?.name || type, level })}
-                                        className="relative group/building flex flex-col items-center justify-center"
+                                        className="relative group/building cursor-pointer p-2 rounded-[2.5rem]"
                                         style={{ width: pos.size, height: pos.size }}
                                     >
-                                        <AnimatePresence>
-                                            {isConstructing && (
-                                                <motion.div 
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    exit={{ opacity: 0 }}
-                                                    className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.1),transparent_70%)] blur-2xl animate-pulse"
-                                                />
-                                            )}
-                                        </AnimatePresence>
+                                        {/* GLOW DE BASE PARA VISIBILIDADE */}
+                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_70%)] opacity-0 group-hover/building:opacity-100 transition-opacity" />
 
-                                        {/* OPTICAL CHROMA BLOCK */}
-                                        <div className="relative w-full h-full flex flex-col items-center justify-center drop-shadow-[0_25px_45px_rgba(0,0,0,0.9)]">
+                                        {/* ATIVO DO EDIFÍCIO — ALTO CONTRASTE, SEM CHROMA KEY AGRESSIVO */}
+                                        <div className="relative w-full h-full flex items-center justify-center drop-shadow-[0_30px_60px_rgba(0,0,0,1)]">
                                             {pos.assetUrl ? (
                                                 <img 
                                                     src={pos.assetUrl} 
-                                                    className={`w-full h-full object-contain transition-all duration-1000
-                                                        ${isConstructing ? 'brightness-50 grayscale contrast-150' : 'brightness-[1.1] contrast-[1.1] group-hover/building:brightness-[1.2]'}
+                                                    className={`w-full h-full object-contain transition-all duration-500
+                                                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.25] contrast-[1.2] group-hover/building:brightness-[1.4]'}
                                                     `} 
                                                     style={{ 
-                                                        filter: 'url(#chroma-key-black) drop-shadow(0 0 20px rgba(255,255,255,0.05))',
-                                                        transform: `scale(1.5) ${pos.rotation || ''}`
+                                                        transform: 'scale(1.8)',
+                                                        filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.8))'
+                                                    }}
+                                                    onError={(e) => {
+                                                        console.error("FAILED_TO_LOAD_ASSET:", type);
+                                                        e.currentTarget.style.display = 'none';
+                                                        e.currentTarget.parentElement?.classList.add('broken-asset');
                                                     }}
                                                 />
                                             ) : (
-                                                <div className="flex flex-col items-center justify-center w-2/3 h-2/3 bg-black/80 backdrop-blur-3xl rounded-[2.5rem] border border-white/20 group-hover/building:border-white/50 transition-all shadow-3xl">
-                                                    <pos.icon size={28} className={`${pos.color} group-hover/building:scale-125 transition-transform mb-2 drop-shadow-[0_0_15px_currentColor] opacity-60 group-hover:opacity-100`} />
-                                                    <span className="text-[8px] font-black uppercase text-neutral-400 tracking-[0.3em]">{config?.name?.split(' ')[0] || type}</span>
+                                                <div className="flex flex-col items-center justify-center w-3/4 h-3/4 bg-[#050709]/95 backdrop-blur-3xl rounded-[2.5rem] border-2 border-white/20 shadow-2xl">
+                                                    <pos.icon size={32} className={`${pos.color} mb-3`} />
+                                                    <span className="text-[9px] font-black uppercase text-white tracking-widest">{config?.name || type}</span>
                                                 </div>
                                             )}
+                                        </div>
 
-                                            {/* FLOATING HUD LABEL — LEVEL */}
-                                            <div className="absolute -bottom-4 bg-black/80 border border-white/20 px-4 py-1.5 rounded-2xl shadow-2xl backdrop-blur-3xl group-hover/building:border-white/50 transition-all">
-                                                <div className="flex items-center gap-2.5">
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-emerald-500 shadow-[0_0_8px_currentColor]'} transition-all`} />
-                                                    <span className="text-[11px] font-black font-mono text-white tracking-widest">{level.toString().padStart(2, '0')}</span>
-                                                    <span className="text-[7px] font-black text-neutral-500 uppercase tracking-tighter">SEC_{type.slice(0,3)}</span>
+                                        {/* ETIQUETA DE STATUS — INTEGRADA AO EDIFÍCIO */}
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 z-50">
+                                            <div className="bg-[#050709]/90 border border-white/10 px-4 py-1.5 rounded-full shadow-2xl backdrop-blur-2xl flex items-center gap-3 group-hover/building:border-white/30 transition-all">
+                                                <div className={`w-2 h-2 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-emerald-500 shadow-[0_0_10px_#10b981]'}`} />
+                                                <span className="text-[12px] font-black font-mono text-white tracking-tighter">L.{(level || 0)}</span>
+                                                <span className="text-[7px] font-black text-neutral-500 uppercase tracking-widest border-l border-white/10 pl-3">{type.split('_')[0]}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* INDICADOR DE CONSTRUÇÃO */}
+                                        {isConstructing && (
+                                            <div className="absolute inset-x-0 -bottom-8 flex justify-center">
+                                                <div className="bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20 text-[7px] font-black text-orange-400 uppercase tracking-widest flex items-center gap-2">
+                                                    <Activity size={10} className="animate-pulse" /> Operação_Engenharia
                                                 </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </motion.button>
                                 </TooltipTrigger>
-                                <TooltipContent className="bg-black/95 border-white/10 text-white p-6 rounded-[2.5rem] backdrop-blur-3xl shadow-[0_50px_100px_rgba(0,0,0,1)] min-w-[240px] z-[1000] border-t-white/20">
+                                <TooltipContent className="bg-black/95 border-white/10 text-white p-6 rounded-[2.5rem] backdrop-blur-3xl shadow-3xl min-w-[260px] z-[1000] border-t-white/30">
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-4 border-b border-white/5 pb-4">
-                                            <div className="p-3 bg-white/5 rounded-2xl border border-white/10"><pos.icon size={20} className={pos.color} /></div>
-                                            <div className="flex flex-col pt-1">
-                                                <span className="text-[9px] font-black text-neutral-600 uppercase tracking-widest leading-none">Command_Authorization</span>
-                                                <span className="font-black uppercase text-lg tracking-tighter leading-none">{config?.name || type}</span>
+                                            <div className="p-3 bg-white/5 rounded-2xl border border-white/10"><pos.icon size={22} className={pos.color} /></div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[9px] font-black text-neutral-600 uppercase tracking-widest leading-none">Authorization_Code</span>
+                                                <span className="font-black uppercase text-xl tracking-tighter leading-none mt-1">{config?.name || type}</span>
                                             </div>
                                         </div>
-                                        
-                                        <div className="grid grid-cols-2 gap-4 text-[10px] uppercase font-black tracking-widest">
+                                        <div className="grid grid-cols-2 gap-4 text-[10px] uppercase font-black">
                                             <div className="flex flex-col gap-1">
-                                                <span className="text-neutral-500 text-[8px]">Status</span>
-                                                <span className={isConstructing ? 'text-orange-400' : 'text-emerald-400'}>{isConstructing ? 'Construction' : 'Operational'}</span>
+                                                <span className="text-neutral-500 text-[8px]">Status_Geral</span>
+                                                <span className={isConstructing ? 'text-orange-400' : 'text-emerald-400'}>{isConstructing ? 'Construção_Ativa' : 'Sistema_Operacional'}</span>
                                             </div>
                                             <div className="flex flex-col gap-1 text-right">
-                                                <span className="text-neutral-500 text-[8px]">Precision</span>
-                                                <span className="text-white">{(89 + level).toFixed(1)}%</span>
+                                                <span className="text-neutral-500 text-[8px]">Integridade</span>
+                                                <span className="text-white">{(92 + level).toFixed(1)}%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -183,54 +184,34 @@ export const VisualVillageView: React.FC<VisualVillageViewProps> = ({ base, onBu
                 })}
             </TooltipProvider>
 
-            {/* INTEGRATED HUD FRAME ELEMENTS */}
-            <div className="absolute top-8 left-8 z-[70] pointer-events-none">
-                <div className="flex items-center gap-4 bg-black/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-xl shadow-2xl">
-                    <Radio size={16} className="text-sky-400 animate-pulse" />
+            {/* ELEMENTOS DE HUD INTEGRADOS NA MOLDURA */}
+            <div className="absolute top-10 left-10 z-[100] pointer-events-none">
+                <div className="flex items-center gap-5 bg-black/60 px-7 py-4 rounded-3xl border border-white/10 backdrop-blur-2xl shadow-2xl">
+                    <Radio size={18} className="text-sky-400 animate-pulse" />
                     <div className="flex flex-col">
-                        <span className="text-[11px] font-black text-white uppercase tracking-[0.2em] leading-none mb-1">Satellite_Link</span>
-                        <span className="text-[8px] font-mono text-sky-400 uppercase tracking-widest">Signal_Strength: 98% // Node: {base.id}</span>
+                        <span className="text-[12px] font-black text-white uppercase tracking-[0.2em] leading-none mb-1.5">Satellite // Node_{base.id}</span>
+                        <span className="text-[8px] font-mono text-sky-400 uppercase tracking-[0.4em] opacity-80">Link_Stability: 99.4% // Crypto_Online</span>
                     </div>
                 </div>
             </div>
 
-            <div className="absolute top-8 right-8 z-[70] pointer-events-none">
-                 <div className="flex items-center gap-4 bg-black/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-xl shadow-2xl">
-                    <Activity size={16} className="text-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest">System_Integrity: <span className="text-emerald-500">OPTIMAL</span></span>
+            <div className="absolute top-10 right-10 z-[100] pointer-events-none">
+                 <div className="flex items-center gap-4 bg-black/60 px-7 py-4 rounded-3xl border border-white/10 backdrop-blur-2xl shadow-2xl">
+                    <Activity size={18} className="text-emerald-500 animate-pulse" />
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Base_Integrity: <span className="text-emerald-500">MAXIMUM</span></span>
                  </div>
             </div>
 
-            <div className="absolute bottom-8 right-8 z-[70] pointer-events-none">
-                <div className="flex flex-col items-end gap-2">
-                    <span className="text-[8px] font-black text-neutral-500 uppercase tracking-[0.4em]">Military_Grid_Status</span>
-                    <div className="flex gap-1">
-                        {[1,2,3,4,5,6,7].map(i => <div key={i} className="w-1.5 h-1.5 bg-sky-500/20 rounded-full" />)}
-                    </div>
-                </div>
+            <div className="absolute bottom-10 left-10 z-[100] pointer-events-none">
+                <span className="text-[8px] font-mono text-neutral-600 uppercase tracking-[1em]">Tactical_Command_Interface_V6_Premium</span>
             </div>
 
-            {/* VERSION HUD */}
-            <div className="absolute bottom-8 left-8 z-[70] pointer-events-none">
-                <span className="text-[7px] font-mono text-neutral-700 uppercase tracking-[0.8em]">Command_Interface_V5.Premium</span>
-            </div>
-
-            {/* SCANNING SCANLINE */}
+            {/* SCANLINE CINEMÁTICA */}
             <motion.div 
-                animate={{ top: ['0%', '100%', '0%'] }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                className="absolute left-0 right-0 h-[100px] bg-gradient-to-b from-transparent via-white/[0.03] to-transparent pointer-events-none z-[80]"
+                animate={{ top: ['-10%', '110%'] }}
+                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                className="absolute left-0 right-0 h-[80px] bg-gradient-to-b from-transparent via-white/[0.05] to-transparent pointer-events-none z-[110]"
             />
-
-            {/* CHROMA KEY FILTER */}
-            <svg style={{ visibility: 'hidden', position: 'absolute', width: 0, height: 0 }}>
-                <filter id="chroma-key-black">
-                    <feColorMatrix type="matrix" values="1 0 0 0 0
-                                                        0 1 0 0 0
-                                                        0 0 1 0 0
-                                                        1.8 1.8 1.8 0 -0.8" />
-                </filter>
-            </svg>
         </div>
     );
 };
