@@ -1,9 +1,9 @@
 /**
- * UtilitÃ¡rios TÃ¡ticos de Jogo (Refactored to match Domain Layer)
+ * Utilitários Táticos de Jogo (Fase 14 — Balanceamento Profissional)
  */
- 
+
 /**
- * Determina o nÃ­vel visual de um edifÃ­cio baseado no seu progresso.
+ * Determina o nível visual de um edifício baseado no seu progresso.
  */
 export const getEvolutionLevelAsset = (lvl: number): number => {
     if (lvl >= 6) return 6;
@@ -13,39 +13,41 @@ export const getEvolutionLevelAsset = (lvl: number): number => {
     if (lvl >= 2) return 2;
     return 1;
 };
- 
+
 /**
- * Calcula o custo de um edifÃ­cio para o prÃ³ximo nÃ­vel.
- * FÃ“RMULA DE DOMÃNIO: BaseValue * (1 + (CurrentLevel * Scaling))
+ * Calcula o custo de um edifício para o próximo nível (Exponencial).
+ * FÓRMULA: Base * (1.6 ^ LevelAtual)
  */
-export const calculateBuildingCost = (baseAmount: number, currentLevel: number, scaling: number = 1.5): number => {
-    return Math.floor(baseAmount * (1 + (currentLevel * scaling)));
+export const calculateBuildingCost = (baseAmount: number, currentLevel: number): number => {
+    return Math.floor(baseAmount * Math.pow(1.6, currentLevel));
 };
- 
+
 /**
- * Calcula o tempo de construÃ§Ã£o em segundos.
- * FÃ“RMULA DE DOMÃNIO: (TimeBase * (1 + (CurrentLevel * 0.5))) / Speed
+ * Calcula o tempo de construção em segundos (Exponencial).
+ * FÓRMULA: Base * (1.5 ^ LevelAtual)
  */
-export const calculateConstructionTime = (timeBase: number, currentLevel: number, speed: number = 1): number => {
-    const time = (timeBase * (1 + (currentLevel * 0.5))) / speed;
+export const calculateConstructionTime = (timeBase: number, currentLevel: number): number => {
+    const time = timeBase * Math.pow(1.5, currentLevel);
     return Math.max(5, Math.floor(time));
 };
- 
+
 /**
- * Calcula a produÃ§Ã£o por hora de um edifÃ­cio de recursos.
- * FÃ“RMULA DE DOMÃNIO: (BaseProd * speed) * (1 + (nivel * scaling))
+ * Calcula a produção por hora de um edifício de recursos (Exponencial).
+ * FÓRMULA: base * (level ^ 1.2)
  */
-export const calculateResourceProduction = (baseProd: number, level: number, speed: number = 1, scaling: number = 1.5): number => {
-    return Math.floor((baseProd * speed) * (1 + (level * scaling)));
+export const calculateResourceProduction = (baseProd: number, level: number): number => {
+    if (level <= 0) return 0;
+    return Math.floor(baseProd * Math.pow(level, 1.2));
 };
+
 /**
- * Limpa e converte valores de recursos para nÃºmeros puros para comparaÃ§Ã£o.
- * Ãštil quando o backend envia valores formatados (string).
+ * Limpa e converte valores de recursos para números puros para comparação.
+ * Útil quando o backend envia valores formatados (string).
  */
 export const parseResourceValue = (val: any): number => {
     if (typeof val === 'number') return val;
     if (typeof val === 'string') {
-        // Remove separadores de milhar (pontos ou vÃ­rgulas)
+        // Remove separadores de milhar (pontos ou vírgulas)
         return parseFloat(val.replace(/[^\d.-]/g, '')) || 0;
     }
     return 0;

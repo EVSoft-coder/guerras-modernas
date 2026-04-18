@@ -94,7 +94,23 @@ class GetDashboardData
             'buildingQueue'    => $base->buildingQueue,
             'unitQueue'        => $base->unitQueue()->with('unitType')->get(),
             'units'            => $base->units()->with('type')->get(),
-            'unitTypes'        => \App\Models\UnitType::all(),
+            'unitTypes'        => \App\Models\UnitType::all()->map(function($ut) use ($base) {
+                // Producer level (Passo 6 e 7)
+                $producerType = \App\Domain\Building\BuildingType::QUARTEL;
+                $unitNameLower = strtolower($ut->name);
+                if (str_contains($unitNameLower, 'avião') || str_contains($unitNameLower, 'cça') || str_contains($unitNameLower, 'bombardeiro')) {
+                    $producerType = \App\Domain\Building\BuildingType::AERODROMO;
+                }
+                $buildingLevel = $this->gameService->obterNivelEdificio($base, $producerType);
+                $economy = app(\App\Services\EconomyService::class);
+
+                return array_merge($ut->toArray(), [
+                    'cost_suprimentos' => $economy->getUnitCost($ut->name, $buildingLevel, 1)['suprimentos'] ?? 0,
+                    'cost_combustivel' => $economy->getUnitCost($ut->name, $buildingLevel, 1)['combustivel'] ?? 0,
+                    'cost_municoes'    => $economy->getUnitCost($ut->name, $buildingLevel, 1)['municoes'] ?? 0,
+                    'build_time'       => $economy->getUnitTime($ut->name, $buildingLevel, 1)
+                ]);
+            }),
             'gameData'         => [
                 'resources'  => $resources,
                 'units'      => $base->units,

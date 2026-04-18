@@ -27,17 +27,26 @@ class UnitQueueService
         return DB::transaction(function() use ($base, $unitTypeId, $quantidade) {
             $unitType = UnitType::findOrFail($unitTypeId);
             
-            $speedBonus = 1.0; 
-            $durationPerUnit = (int) ($unitType->build_time / $speedBonus);
+            // PASSO 6 & 7: Escalar com building level
+            $gameService = new GameService($this->timeService);
+            $economy = app(\App\Services\EconomyService::class);
+            
+            // Mapeamento simples de unidade para edifício produtor
+            $producerType = \App\Domain\Building\BuildingType::QUARTEL;
+            $unitNameLower = strtolower($unitType->name);
+            if (str_contains($unitNameLower, 'avião') || str_contains($unitNameLower, 'cça') || str_contains($unitNameLower, 'bombardeiro')) {
+                $producerType = \App\Domain\Building\BuildingType::AERODROMO;
+            }
+            
+            $buildingLevel = $gameService->obterNivelEdificio($base, $producerType);
+            
+            $durationPerUnit = $economy->getUnitTime($unitType->name, $buildingLevel, 1);
             $totalDuration = $durationPerUnit * $quantidade;
 
-            $custoTotal = [
-                'suprimentos' => $unitType->cost_suprimentos * $quantidade,
-                'combustivel' => $unitType->cost_combustivel * $quantidade,
-                'municoes'    => $unitType->cost_municoes * $quantidade,
-            ];
+            $custoTotal = $economy->getUnitCost($unitType->name, $buildingLevel, $quantidade);
+            // Re-mapear para garantir chaves
+            $custoTotal = array_merge(['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0], $custoTotal);
 
-            $gameService = new GameService($this->timeService);
             if (!$gameService->consumirRecursos($base, $custoTotal)) {
                 throw new \Exception("LOGÍSTICA: Recursos insuficientes para mobilização em massa.");
             }
@@ -59,9 +68,9 @@ class UnitQueueService
                 'status'            => $position === 1 ? 'active' : 'pending',
                 'started_at'        => $position === 1 ? $now : null,
                 'finishes_at'       => $position === 1 ? $now->copy()->addSeconds($totalDuration) : null,
-                'cost_suprimentos'  => $unitType->cost_suprimentos,
-                'cost_combustivel'  => $unitType->cost_combustivel,
-                'cost_municoes'     => $unitType->cost_municoes,
+                'cost_suprimentos'  => (int) ($custoTotal['suprimentos'] / $quantidade),
+                'cost_combustivel'  => (int) ($custoTotal['combustivel'] / $quantidade),
+                'cost_municoes'     => (int) ($custoTotal['municoes'] / $quantidade),
                 'created_at'        => $now,
                 'updated_at'        => $now,
             ]);

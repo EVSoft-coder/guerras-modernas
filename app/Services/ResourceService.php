@@ -41,7 +41,8 @@ class ResourceService
             ];
         }
 
-        $cap = (int)($resource->storage_capacity ?? 10000);
+        $hqLevel = $base->qg_nivel ?? 1;
+        $cap = app(\App\Services\EconomyService::class)->getStorageCapacity($hqLevel);
         $lastUpdate = $base->ultimo_update ?? $base->created_at;
         $lastUpdateCarbon = Carbon::parse($lastUpdate);
         
@@ -112,6 +113,7 @@ class ResourceService
                 'pessoal'     => $calculated['pessoal'],
                 'metal'       => $calculated['metal'],
                 'energia'     => $calculated['energia'],
+                'storage_capacity' => $calculated['cap'],
                 'updated_at'  => $now
             ]);
 
@@ -149,8 +151,8 @@ class ResourceService
 
             $prodType = $type->production_type;
             if (array_key_exists($prodType, $taxas)) {
-                // FÓRMULA PASSO 2: produção = (base_production * level)
-                $taxas[$prodType] += ($type->base_production * $edificio->nivel);
+                // FÓRMULA PASSO 4: production = base * (level ^ 1.2)
+                $taxas[$prodType] += app(\App\Services\EconomyService::class)->getBuildingProduction($type->base_production, $edificio->nivel);
             }
         }
 
