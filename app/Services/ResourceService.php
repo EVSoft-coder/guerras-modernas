@@ -10,14 +10,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * ResourceService - Doutrina de Persistência Atómica.
- * Responsável estrito pelo cálculo e sincronização de recursos.
- * Fase 2: Harden Resource Service (uso de locks e transações).
+ * ResourceService - Doutrina de Persistência Atómica (FASE HARDEN 2).
+ * Implementa "1 sync per cycle" e logging categorizado.
  */
 class ResourceService
 {
     private TimeService $timeService;
-    protected static $syncedBases = [];
+    
+    // Rastreio de bases já sincronizadas no ciclo atual para evitar redundância
+    protected static array $syncedThisCycle = [];
 
     public function __construct(?TimeService $timeService = null)
     {
@@ -25,87 +26,27 @@ class ResourceService
     }
 
     /**
-     * CÁLCULO PURO (Simulacro Determinístico)
-     * Regra: amount + (rate_hour * (elapsed / 3600))
-     * NÃO ALTERA A BASE DE DADOS.
-     */
-    public function calculate(Recurso $resource, $now = null, array $taxasMinuto = null): array
-    {
-        if (!$now) $now = $this->timeService->now();
-        $base = $resource->base;
-
-        if (!$taxasMinuto) {
-            $taxasMinuto = [
-                'suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 
-                'metal' => 0, 'energia' => 0, 'pessoal' => 0
-            ];
-        }
-
-        $hqLevel = $base->qg_nivel ?? 1;
-        $cap = app(\App\Services\EconomyService::class)->getStorageCapacity($hqLevel);
-        $lastUpdate = $base->ultimo_update ?? $base->created_at;
-        $lastUpdateCarbon = Carbon::parse($lastUpdate);
-        
-        $elapsed = 0;
-        $diff = (float)$now->getTimestamp() - (float)$lastUpdateCarbon->getTimestamp();
-        if ($diff > 0) {
-            $elapsed = $diff;
-        }
-
-        Log::channel('game')->info('[RESOURCE_CALC]', [
-            'base_id' => $base->id,
-            'before' => $resource->suprimentos,
-            'rate_min' => $taxasMinuto['suprimentos'] ?? 0,
-            'elapsed' => $elapsed
-        ]);
-        
-        $calcFunc = function($baseAmount, $ratePerMin) use ($elapsed) {
-            $ratePerHour = $ratePerMin * 60;
-            return $baseAmount + ($ratePerHour * ($elapsed / 3600));
-        };
-
-        return [
-            'suprimentos' => min($cap, max(0, $calcFunc((float)$resource->suprimentos, $taxasMinuto['suprimentos'] ?? 0))),
-            'combustivel' => min($cap, max(0, $calcFunc((float)$resource->combustivel, $taxasMinuto['combustivel'] ?? 0))),
-            'municoes'    => min($cap, max(0, $calcFunc((float)$resource->municoes, $taxasMinuto['municoes'] ?? 0))),
-            'metal'       => min($cap, max(0, $calcFunc((float)$resource->metal, $taxasMinuto['metal'] ?? 0))),
-            'energia'     => min($cap, max(0, $calcFunc((float)$resource->energia, $taxasMinuto['energia'] ?? 0))),
-            'pessoal'     => (float)$resource->pessoal,
-            'cap'         => $cap,
-            'last_update' => $now->toDateTimeString(),
-        ];
-    }
-
-    /**
-     * SINCRONIZAÇÃO ATÓMICA (Único ponto de escrita)
+     * Sincroniza a base com o tempo real.
+     * PASSO 1 — RESOURCE SYNC: apenas 1 sync real por ciclo.
      */
     public function sync(Base $base): void
     {
-        if (in_array($base->id, self::$syncedBases)) return;
+        $now = GameClock::now();
+        $cycleId = $now->toDateTimeString();
 
-        DB::transaction(function() use ($base) {
-            // Fase 2: Lock for Update
-            $lockedBase = Base::where('id', $base->id)->lockForUpdate()->with('recursos')->first();
+        // Se já sincronizado neste exato segundo (mesmo ciclo), ignorar (PASSO 1)
+        if (isset(self::$syncedThisCycle[$base->id]) && self::$syncedThisCycle[$base->id] === $cycleId) {
+            return;
+        }
+
+        DB::transaction(function () use ($base, $now) {
+            $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             if (!$lockedBase || !$lockedBase->recursos) return;
 
-            $now = $this->timeService->now();
-            $taxasMinuto = $this->getRates($lockedBase);
-            $calculated = $this->calculate($lockedBase->recursos, $now, $taxasMinuto);
-            
-            Log::channel('game')->info('[RESOURCE_SYNC]', [
-                'base_id' => $base->id,
-                'calculated' => $calculated
-            ]);
+            $rates = $this->getRates($lockedBase);
+            $calculated = $this->calculate($lockedBase->recursos, $now, $rates);
 
-            Log::channel('game')->info('[RESOURCE_SYNC] Pre-Update', [
-                'base_id' => $base->id,
-                'db_values' => [
-                    'sup' => $lockedBase->recursos->suprimentos,
-                    'metal' => $lockedBase->recursos->metal
-                ]
-            ]);
-
-            // Write 1: Tabela Recursos
+            // Write: Tabelas Recursos e Bases (Operação Atómica)
             $lockedBase->recursos->update([
                 'suprimentos' => $calculated['suprimentos'],
                 'combustivel' => $calculated['combustivel'],
@@ -117,32 +58,47 @@ class ResourceService
                 'updated_at'  => $now
             ]);
 
-            // Write 2: Tabela Bases
-            $lockedBase->update([
-                'ultimo_update' => $now
-            ]);
-
-            Log::channel('game')->info('[RESOURCE_SYNC] Post-Update', [
-                'base_id' => $base->id,
-                'new_values' => $calculated
-            ]);
-
-            // Atualizar instâncias passadas por referência (se necessário)
+            $lockedBase->update(['ultimo_update' => $now]);
+            
+            // Sync instâncias
             $base->setRelation('recursos', $lockedBase->recursos);
             $base->ultimo_update = $now;
         });
 
-        self::$syncedBases[] = $base->id;
+        self::$syncedThisCycle[$base->id] = $cycleId;
     }
-    
+
+    public function calculate(Recurso $resource, $now = null, array $taxasMinuto = null): array
+    {
+        if (!$now) $now = GameClock::now();
+        $base = $resource->base;
+
+        if (!$taxasMinuto) $taxasMinuto = $this->getRates($base);
+
+        $hqLevel = $base->qg_nivel ?? 1;
+        $cap = app(EconomyService::class)->getStorageCapacity($hqLevel);
+        
+        $lastUpdateStr = $base->ultimo_update ?? $base->created_at;
+        $lastUpdate = Carbon::parse($lastUpdateStr);
+        
+        $diff = max(0, $now->getTimestamp() - $lastUpdate->getTimestamp());
+        $minutes = $diff / 60;
+
+        $results = ['cap' => $cap];
+        $types = ['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'];
+
+        foreach ($types as $type) {
+            $prod = ($taxasMinuto[$type] ?? 0) * $minutes;
+            $current = (float) $resource->{$type};
+            $results[$type] = min($cap, $current + $prod);
+        }
+
+        return $results;
+    }
+
     public function getRates(Base $base): array
     {
-        $taxas = [
-            'suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 
-            'metal' => 0, 'energia' => 0, 'pessoal' => 0
-        ];
-
-        // Carregar edifícios com seus tipos para cálculo normalizado (Passo 2)
+        $taxas = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 'metal' => 0, 'energia' => 0, 'pessoal' => 0];
         $edificios = $base->edificios()->with('type')->get();
 
         foreach ($edificios as $edificio) {
@@ -151,8 +107,7 @@ class ResourceService
 
             $prodType = $type->production_type;
             if (array_key_exists($prodType, $taxas)) {
-                // FÓRMULA PASSO 4: production = base * (level ^ 1.2)
-                $taxas[$prodType] += app(\App\Services\EconomyService::class)->getBuildingProduction($type->base_production, $edificio->nivel);
+                $taxas[$prodType] += app(EconomyService::class)->getBuildingProduction($type->base_production, $edificio->nivel);
             }
         }
 

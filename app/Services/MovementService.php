@@ -154,7 +154,7 @@ class MovementService
         $movement->processed_at = now();
         $movement->save();
 
-        Log::channel('game')->info("[MOVEMENT_PROCESSED] Movimento {$movement->id} ({$movement->type}) finalizado com sucesso.");
+        Log::channel('game')->info("[MOVEMENT] Operação #{$movement->id} ({$movement->type}) concluída no setor {$base->id}");
     }
 
     /**
@@ -162,9 +162,20 @@ class MovementService
      */
     private function handleCombat(Movement $movement, Base $base): void
     {
-        // PASSO 1 & 2 - LOCK COMPLETO (Transação já iniciada no processMovements)
-        $originBase = Base::where('id', $movement->origin_id)->lockForUpdate()->first();
-        $targetBase = Base::where('id', $base->id)->lockForUpdate()->first();
+        // PASSO 2 — LOCK ORDER: Ordenar IDs para evitar Deadlocks (Fase Harden 2)
+        $id1 = (int) $movement->origin_id;
+        $id2 = (int) $base->id;
+        
+        $orderedIds = [$id1, $id2];
+        sort($orderedIds);
+        
+        $lockedBases = [];
+        foreach ($orderedIds as $id) {
+            $lockedBases[$id] = Base::where('id', $id)->lockForUpdate()->first();
+        }
+
+        $originBase = $lockedBases[$id1];
+        $targetBase = $lockedBases[$id2];
         
         if (!$originBase || !$targetBase) return;
 
@@ -215,7 +226,7 @@ class MovementService
             $this->createReturnMovement($movement, $targetBase, $originBase, $survivors, $loot);
         }
 
-        // 7. Relatório
+        // 7. Relatório (Persistência em BD)
         \App\Models\Relatorio::create([
             'atacante_id' => $originBase->jogador_id,
             'defensor_id' => $targetBase->jogador_id,
@@ -225,6 +236,8 @@ class MovementService
             'destino_nome' => $targetBase->nome,
             'detalhes' => array_merge($result, ['loot' => $loot])
         ]);
+
+        Log::channel('game')->info("[COMBAT] Batalha finalizada em {$targetBase->nome}. Vencedor: " . ($result['attacker_won'] ? "Atacante" : "Defensor"));
     }
 
     /**
@@ -250,7 +263,7 @@ class MovementService
         $targetBase->loyalty = $newLoyalty;
         $targetBase->save();
 
-        Log::channel('game')->warning("[LOYALTY_REDUCED] Base {$targetBase->id}: {$oldLoyalty} -> {$newLoyalty} (-{$reduction})");
+        Log::channel('game')->warning("[CONQUEST] Lealdade reduzida no setor {$targetBase->id}: {$oldLoyalty} -> {$newLoyalty} (-{$reduction})");
 
         // PASSO 6 - CONQUISTA
         if ($newLoyalty <= 0) {
@@ -269,18 +282,21 @@ class MovementService
         $newOwnerId = $movement->origin->jogador_id;
         $oldOwnerId = $targetBase->jogador_id;
 
-        // PASSO 8 — CONQUEST: Mudar Owner e Reset Lealdade
+        // PASSO 3 — CONQUEST CLEANUP COMPLETO (Harden 2)
         $targetBase->jogador_id = $newOwnerId;
-        $targetBase->loyalty = rand(25, 35); // Reset táctico
+        $targetBase->loyalty = rand(25, 35);
         $targetBase->nome = "Província de " . ($movement->origin->jogador->username ?? "Jogador {$newOwnerId}");
         $targetBase->save();
 
-        // LIMPEZA DE ESTADO (Idempotência e Segurança)
         DB::table('building_queue')->where('base_id', $targetBase->id)->delete();
         DB::table('unit_queue')->where('base_id', $targetBase->id)->delete();
         DB::table('tropas')->where('base_id', $targetBase->id)->delete();
+        
+        // Anular movimentos 
+        DB::table('movements')->where('target_id', $targetBase->id)->where('status', 'moving')->update(['status' => 'cancelled', 'processed_at' => now()]);
+        DB::table('movements')->where('origin_id', $targetBase->id)->where('status', 'moving')->update(['status' => 'cancelled', 'processed_at' => now()]);
 
-        Log::channel('game')->emergency("[CONQUEST_EVENT] SETOR {$targetBase->id} CONQUISTADO por Jogador {$newOwnerId} (Antigo: {$oldOwnerId}). Estado Limpo.");
+        Log::channel('game')->emergency("[CONQUEST] SETOR {$targetBase->id} CAPTURADO por {$newOwnerId} (Antigo: {$oldOwnerId}). Limpeza total executada.");
     }
 
     /**
@@ -315,9 +331,10 @@ class MovementService
             
             $loot["loot_{$type}"] = (float) $stolen;
             
-            // Deduzir da base alvo (Passo 4/5 - Sanitizado)
+            // Deduzir da base alvo
             if ($stolen > 0) {
                 $resources->decrement($type, $stolen);
+                Log::channel('game')->info("[LOOT] Recursos extraídos do setor {$targetBase->id}: {$stolen} de {$type}");
             }
         }
 

@@ -111,8 +111,8 @@ Route::get('/mw-debug-logs', function() {
     return response()->json(array_slice($lines, -100));
 });
 
-// Rotas Protegidas (Requer Login)
-Route::middleware(['auth'])->group(function () {
+// Rotas Protegidas (Requer Login e Rate Limit — PASSO 7 — FASE HARDEN 2)
+Route::middleware(['auth', 'throttle:60,1'])->group(function () {
     
     // Core Game
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

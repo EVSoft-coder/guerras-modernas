@@ -58,8 +58,8 @@ class GameEngine
             // Essencial antes de processar filas para ter o saldo exato para transições
             $this->resourceService->sync($lockedBase);
 
-            // 3. Auditoria de Integridade (Passo 10 — INTEGRITY SERVICE)
-            $this->integrityService->validateQueue($lockedBase);
+            // 3. Auditoria de Integridade (Passo 4 — FASE HARDEN 2)
+            $this->integrityService->validateAndRepair($lockedBase);
 
             // 4. Processar Fila de Construção (Passo 4 — BUILDING QUEUE)
             $this->buildingQueueService->processQueue($lockedBase);

@@ -10,8 +10,8 @@ use App\Services\MovementService;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Operação: Enviar Missão Militar.
- * Valida ownership, cooldowns e proteção do alvo.
+ * Operação: Enviar Missão Militar (FASE HARDEN 2).
+ * Valida ownership, cooldowns e aplica LOCK ORDER para evitar deadlocks.
  */
 class SendMission
 {
@@ -30,34 +30,40 @@ class SendMission
     public function execute(Authenticatable $user, array $data): void
     {
         DB::transaction(function() use ($user, $data) {
-            // 1. Lock Global da Base de Origem (Fase Crítica - Passo 3)
-            $baseOrigem = Base::where('id', $data['origem_id'])->lockForUpdate()->firstOrFail();
-            
-            // 2. Validação via Gate (Fase Crítica - Passo 5)
-            if (\Illuminate\Support\Facades\Gate::forUser($user)->denies('command', $baseOrigem)) {
-                throw new \Exception("Acesso Negado: Você não tem autoridade sobre esta unidade de comando.");
-            }
+            $idOrigem = (int) $data['origem_id'];
+            $idDestino = (int) ($data['destino_id'] ?? 0);
 
-            $baseDestino = null;
-            $coords = null;
-
-            if (empty($data['destino_id'])) {
-                $coords = ['x' => $data['destino_x'], 'y' => $data['destino_y']];
-            } else {
-                // LOCK DESTINO (PASSO 3 — LOCKS)
-                $baseDestino = Base::where('id', $data['destino_id'])->lockForUpdate()->firstOrFail();
+            // PASSO 2 — LOCK ORDER: Bloquear sempre ID menor primeiro (Evita Deadlocks)
+            if ($idDestino > 0) {
+                $orderedIds = [$idOrigem, $idDestino];
+                sort($orderedIds);
                 
+                $lockedBases = [];
+                foreach ($orderedIds as $id) {
+                    $lockedBases[$id] = Base::where('id', $id)->lockForUpdate()->firstOrFail();
+                }
+                $baseOrigem = $lockedBases[$idOrigem];
+                $baseDestino = $lockedBases[$idDestino];
+
                 // Validação de Proteção
                 if ($baseDestino->is_protected && $baseDestino->protection_until && $this->timeService->now()->lt($baseDestino->protection_until)) {
                     throw new \Exception("ALVO SOB PROTEÇÃO: O setor está em trégua diplomática.");
                 }
+            } else {
+                $baseOrigem = Base::where('id', $idOrigem)->lockForUpdate()->firstOrFail();
+                $baseDestino = null;
+                $coords = ['x' => $data['destino_x'] ?? 0, 'y' => $data['destino_y'] ?? 0];
+            }
+
+            // 1. Validação via Gate
+            if (\Illuminate\Support\Facades\Gate::forUser($user)->denies('command', $baseOrigem)) {
+                throw new \Exception("Acesso Negado: Você não tem autoridade sobre esta unidade de comando.");
             }
 
             if ($baseDestino) {
                 $this->movementService->sendTroops($baseOrigem, $baseDestino, $data['tropas'], $data['tipo']);
             } else {
-                // TODO: Implementar ataque a coordenadas se necessário (implementação atual foca em bases)
-                throw new \Exception("COORDENADAS: O comando central ainda não autorizou ataques a setores sem estruturas detetadas.");
+                throw new \Exception("COORDENADAS: O comando militar exige identificação de estrutura alvo para mobilização.");
             }
         });
     }

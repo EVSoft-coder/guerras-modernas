@@ -7,24 +7,30 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * QueueIntegrityService - O Sentinela (FASE HARDEN FINAL).
- * Monitoriza e corrige o estado global das filas e ativos da base.
+ * QueueIntegrityService - Audit & Repair (PASSO 4 — FASE HARDEN 2).
+ * Separação clara entre deteção de erros e execução de correções.
  */
 class QueueIntegrityService
 {
     /**
-     * Valida a integridade das filas da base.
+     * Valida a integridade das filas e repara se necessário.
      */
-    public function validateQueue(Base $base): void
+    public function validateAndRepair(Base $base): void
     {
-        DB::transaction(function() use ($base) {
-            $this->validateBuildingQueue($base->id);
-            $this->validateUnitQueue($base->id);
-            $this->validateTemporalConsistency($base->id);
-        });
+        if ($this->needsRepair($base)) {
+            $this->repair($base);
+        }
     }
 
-    private function validateBuildingQueue(int $baseId): void
+    /**
+     * Apenas valida o estado (Pure Check).
+     */
+    public function needsRepair(Base $base): bool
+    {
+        return $this->checkBuildingQueue($base->id) || $this->checkUnitQueue($base->id);
+    }
+
+    private function checkBuildingQueue(int $baseId): bool
     {
         $items = DB::table('building_queue')
             ->where('base_id', $baseId)
@@ -32,26 +38,18 @@ class QueueIntegrityService
             ->orderBy('position', 'asc')
             ->get();
 
-        if ($items->isEmpty()) return;
+        if ($items->isEmpty()) return false;
 
         $expectedSum = ($items->count() * ($items->count() + 1)) / 2;
-        $actualSum = $items->sum('position');
+        if ($expectedSum !== (int)$items->sum('position')) return true;
 
-        // PASSO 9 — VALIDAÇÃO: Check de saltos ou duplicados
-        if ($expectedSum !== (int)$actualSum || $this->hasDuplicatePositions($items)) {
-            Log::channel('game')->warning("[INTEGRITY] BUILDING_QUEUE reorder na base {$baseId}");
-            $this->forceReorder('building_queue', $baseId);
-        }
-
-        // Apenas um ativo
         $activeCount = $items->where('status', 'active')->count();
-        if ($activeCount > 1 || ($activeCount === 0 && $items->isNotEmpty())) {
-            Log::channel('game')->error("[INTEGRITY] Status incoerente na BUILDING_QUEUE base {$baseId}");
-            $this->forceReorder('building_queue', $baseId);
-        }
+        if ($activeCount !== 1) return true;
+
+        return false;
     }
 
-    private function validateUnitQueue(int $baseId): void
+    private function checkUnitQueue(int $baseId): bool
     {
         $items = DB::table('unit_queue')
             ->where('base_id', $baseId)
@@ -59,42 +57,24 @@ class QueueIntegrityService
             ->orderBy('position', 'asc')
             ->get();
 
-        if ($items->isEmpty()) return;
+        if ($items->isEmpty()) return false;
 
-        if ($this->hasDuplicatePositions($items)) {
-            Log::channel('game')->warning("[INTEGRITY] UNIT_QUEUE reorder na base {$baseId}");
-            $this->forceReorder('unit_queue', $baseId);
-        }
-        
         $activeCount = $items->where('status', 'active')->count();
-        if ($activeCount > 1 || ($activeCount === 0 && $items->isNotEmpty())) {
-            Log::channel('game')->error("[INTEGRITY] Status incoerente na UNIT_QUEUE base {$baseId}");
-            $this->forceReorder('unit_queue', $baseId);
-        }
+        if ($activeCount !== 1) return true;
+
+        return false;
     }
 
-    private function validateTemporalConsistency(int $baseId): void
+    /**
+     * Executa as correções necessárias (Repair).
+     */
+    public function repair(Base $base): void
     {
-        // Garante que o item active tem sempre finishes_at e started_at
-        $now = now();
-
-        $activeBuild = DB::table('building_queue')
-            ->where('base_id', $baseId)
-            ->where('status', 'active')
-            ->where(function($q) {
-                $q->whereNull('started_at')->orWhereNull('finishes_at');
-            })->first();
-
-        if ($activeBuild) {
-            Log::channel('game')->alert("[INTEGRITY] BUILDING_ACTIVE sem tempos na base {$baseId}. Resetting...");
-            $this->forceReorder('building_queue', $baseId);
-        }
-    }
-
-    private function hasDuplicatePositions($items): bool
-    {
-        $positions = $items->pluck('position')->toArray();
-        return count($positions) !== count(array_unique($positions));
+        DB::transaction(function() use ($base) {
+            Log::channel('game')->warning("[INTEGRITY_REPAIR] Iniciando reparação na base {$base->id}");
+            $this->forceReorder('building_queue', $base->id);
+            $this->forceReorder('unit_queue', $base->id);
+        });
     }
 
     private function forceReorder(string $table, int $baseId): void
@@ -107,7 +87,7 @@ class QueueIntegrityService
             ->get();
 
         $pos = 1;
-        $now = now();
+        $now = GameClock::now();
 
         foreach ($items as $item) {
             $update = [
@@ -116,9 +96,7 @@ class QueueIntegrityService
             ];
 
             if ($pos === 1) {
-                // Se estamos a forçar reorder, temos de garantir que o ativo tem tempos
                 $update['started_at'] = $item->started_at ?? $now;
-                
                 $duration = $item->duration ?? 60;
                 if ($table === 'unit_queue') {
                     $duration = ($item->duration_per_unit ?? 30) * ($item->quantity_remaining ?? 1);
