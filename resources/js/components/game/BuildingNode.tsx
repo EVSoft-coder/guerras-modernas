@@ -61,24 +61,24 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 style={{ transform: 'translateX(-50%)' }}
             />
 
-            {/* ASSET VISUAL REAL (PASSO FINAL — PURGA RADICAL DE PRETOS) */}
+            {/* ASSET VISUAL REAL (PREMIUM FORCE BLENDING) */}
             {assetPath ? (
                 <img 
                     src={assetPath} 
                     className={`w-full h-full object-contain pointer-events-none mix-blend-screen transition-all duration-500
-                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.3] contrast-[1.7] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110'}
+                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.25] contrast-[1.5] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 active:scale-95'}
                     `}
                     alt={name}
                     style={{
-                        filter: 'drop-shadow(0 0 15px rgba(0,0,0,0.7))'
+                        filter: 'drop-shadow(0 0 20px rgba(0,0,0,0.8))'
                     }}
                     onError={(e) => {
                         e.currentTarget.style.display = 'none';
                     }}
                 />
             ) : (
-                <div className="w-full h-full flex items-center justify-center bg-black/70 border border-white/20 rounded-xl backdrop-blur-md">
-                    <span className="text-[10px] text-white/30 font-black uppercase text-center px-1 leading-none">{name}</span>
+                <div className="w-full h-full flex items-center justify-center bg-black/80 border border-white/20 rounded-xl backdrop-blur-xl">
+                    <span className="text-[10px] text-white/40 font-black uppercase text-center px-1 leading-none">{name}</span>
                 </div>
             )}
 

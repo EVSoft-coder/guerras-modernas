@@ -28178,25 +28178,25 @@ const AnimatedNumber = ({ value, customValue }) => {
 };
 const REFERENCE_WIDTH = 800;
 const BUILDING_LAYOUT = {
-  // CALIBRAÇÃO VISUAL V9 (DESLOCAMENTO PARA PADS REAIS)
-  qg: { x: 490, y: 430, w: 220, h: 220, anchor: "bottom", assetName: "hq.png" },
-  // ANEL SUPERIOR (SINTONIZADO COM PADS DE TERRENO)
-  central_energia: { x: 340, y: 190, w: 90, h: 90, anchor: "bottom", assetName: "energy.png" },
-  centro_pesquisa: { x: 740, y: 220, w: 110, h: 110, anchor: "bottom", assetName: "research.png" },
-  radar_estrategico: { x: 230, y: 310, w: 100, h: 100, anchor: "bottom", assetName: "radar.png" },
-  parlamento: { x: 520, y: 160, w: 110, h: 110, anchor: "bottom", assetName: "research.png" },
-  // ANEL MÉDIO
-  quartel: { x: 780, y: 440, w: 120, h: 120, anchor: "bottom", assetName: "barracks.png" },
-  fabrica_municoes: { x: 200, y: 480, w: 125, h: 125, anchor: "bottom", assetName: "factory.png" },
-  refinaria: { x: 430, y: 240, w: 100, h: 100, anchor: "bottom", assetName: "factory.png" },
-  housing: { x: 140, y: 280, w: 85, h: 85, anchor: "bottom", assetName: "housing.png" },
-  posto_recrutamento: { x: 760, y: 140, w: 90, h: 90, anchor: "bottom", assetName: "housing.png" },
-  // VANGUARDA (PAD INFERIOR E LATERAIS)
-  aerodromo: { x: 500, y: 640, w: 200, h: 200, anchor: "bottom", assetName: "aerodrome.png" },
-  mina_metal: { x: 880, y: 550, w: 130, h: 130, anchor: "bottom", assetName: "mine.png" },
-  mina_suprimentos: { x: 120, y: 150, w: 100, h: 100, anchor: "bottom", assetName: "mine.png" },
-  // PERÍMETRO
-  muralha: { x: 400, y: 580, w: 420, h: 180, anchor: "center", assetName: "wall.png" }
+  // PRECISÃO PREMIUM V10 (BLUEPRINT SYNCHRONIZED)
+  qg: { x: 490, y: 320, w: 220, h: 220, anchor: "center", assetName: "hq.png" },
+  // INTEL & RESEARCH
+  radar_estrategico: { x: 230, y: 260, w: 100, h: 100, anchor: "center", assetName: "radar.png" },
+  central_energia: { x: 430, y: 190, w: 100, h: 100, anchor: "center", assetName: "energy.png" },
+  centro_pesquisa: { x: 550, y: 180, w: 100, h: 100, anchor: "center", assetName: "research.png" },
+  parlamento: { x: 700, y: 150, w: 110, h: 110, anchor: "center", assetName: "research.png" },
+  // PRODUCTION & RESOURCES
+  quartel: { x: 740, y: 250, w: 110, h: 110, anchor: "center", assetName: "barracks.png" },
+  fabrica_municoes: { x: 140, y: 440, w: 120, h: 120, anchor: "center", assetName: "factory.png" },
+  refinaria: { x: 140, y: 550, w: 120, h: 120, anchor: "center", assetName: "factory.png" },
+  mina_suprimentos: { x: 140, y: 240, w: 110, h: 110, anchor: "center", assetName: "mine.png" },
+  mina_metal: { x: 860, y: 550, w: 130, h: 130, anchor: "center", assetName: "mine.png" },
+  // LOGISTICS
+  aerodromo: { x: 650, y: 420, w: 220, h: 220, anchor: "center", assetName: "aerodrome.png" },
+  housing: { x: 280, y: 110, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
+  posto_recrutamento: { x: 760, y: 100, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
+  // PERIMETER
+  muralha: { x: 400, y: 560, w: 420, h: 180, anchor: "center", assetName: "wall.png" }
 };
 const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name, onClick }) => {
   const layout2 = BUILDING_LAYOUT[type2];
@@ -28244,17 +28244,17 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
           {
             src: assetPath,
             className: `w-full h-full object-contain pointer-events-none mix-blend-screen transition-all duration-500
-                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.3] contrast-[1.7] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110"}
+                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.25] contrast-[1.5] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 active:scale-95"}
                     `,
             alt: name,
             style: {
-              filter: "drop-shadow(0 0 15px rgba(0,0,0,0.7))"
+              filter: "drop-shadow(0 0 20px rgba(0,0,0,0.8))"
             },
             onError: (e) => {
               e.currentTarget.style.display = "none";
             }
           }
-        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/70 border border-white/20 rounded-xl backdrop-blur-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/30 font-black uppercase text-center px-1 leading-none", children: name }) }),
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/80 border border-white/20 rounded-xl backdrop-blur-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/40 font-black uppercase text-center px-1 leading-none", children: name }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -44465,7 +44465,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CsgDIfB8.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BAiGEGWq.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44501,4 +44501,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CCVAJ8V9.js.map
+//# sourceMappingURL=app-BIXGzGAq.js.map
