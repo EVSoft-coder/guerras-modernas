@@ -130,6 +130,9 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('base')->name('base.')->group(function () {
         Route::get('/switch/{id}', [BaseController::class, 'switchBase'])->name('switch');
         Route::post('/upgrade', [BaseController::class, 'upgrade'])->name('upgrade');
+        Route::post('/upgrade/cancelar/{id}', [BaseController::class, 'cancelUpgrade'])->name('upgrade.cancelar');
+        Route::post('/upgrade/subir/{id}', [BaseController::class, 'moveUp'])->name('upgrade.subir');
+        Route::post('/upgrade/descer/{id}', [BaseController::class, 'moveDown'])->name('upgrade.descer');
         Route::post('/treinar', [BaseController::class, 'treinar'])->name('treinar');
         Route::post('/atacar', [App\Http\Controllers\AtaqueController::class, 'enviar'])->name('atacar');
         Route::post('/atacar/cancelar/{id}', [BaseController::class, 'cancelarAtaque'])->name('atacar.cancelar');

@@ -22,17 +22,20 @@ class BaseController extends Controller
     private TrainUnits $trainUnits;
     private MarketTrade $marketTrade;
     private GameService $gameService;
+    private \App\Services\BuildingQueueService $queueService;
 
     public function __construct(
         UpgradeBuilding $upgradeBuilding, 
         TrainUnits $trainUnits,
         MarketTrade $marketTrade,
-        GameService $gameService
+        GameService $gameService,
+        \App\Services\BuildingQueueService $queueService
     ) {
         $this->upgradeBuilding = $upgradeBuilding;
         $this->trainUnits = $trainUnits;
         $this->marketTrade = $marketTrade;
         $this->gameService = $gameService;
+        $this->queueService = $queueService;
     }
 
     /**
@@ -115,6 +118,50 @@ class BaseController extends Controller
                 $request->recebe
             );
             return redirect()->back()->with('success', 'TRANSAÇÃO NO MERCADO NEGRO: Recursos trocados com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+    public function cancelUpgrade(Request $request, $id)
+    {
+        try {
+            $queueItem = \App\Models\BuildingQueue::findOrFail($id);
+            $base = Base::findOrFail($queueItem->base_id);
+            $this->authorize('update', $base);
+
+            $this->queueService->cancelBuilding($id);
+
+            return redirect()->back()->with('success', 'ORDEM CANCELADA: Recursos devolvidos ao depósito.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function moveUp(Request $request, $id)
+    {
+        try {
+            $queueItem = \App\Models\BuildingQueue::findOrFail($id);
+            $base = Base::findOrFail($queueItem->base_id);
+            $this->authorize('update', $base);
+
+            $this->queueService->moveUp($id);
+
+            return redirect()->back()->with('success', 'PRIORIDADE REALTERADA: Projeto movido para cima.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function moveDown(Request $request, $id)
+    {
+        try {
+            $queueItem = \App\Models\BuildingQueue::findOrFail($id);
+            $base = Base::findOrFail($queueItem->base_id);
+            $this->authorize('update', $base);
+
+            $this->queueService->moveDown($id);
+
+            return redirect()->back()->with('success', 'PRIORIDADE REALTERADA: Projeto movido para baixo.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }

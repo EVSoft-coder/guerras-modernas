@@ -75,7 +75,7 @@ class Base extends Model
 
     public function buildingQueue()
     {
-        return $this->hasMany(BuildingQueue::class, 'base_id');
+        return $this->hasMany(BuildingQueue::class)->orderBy('position');
     }
 
     public function treinos()

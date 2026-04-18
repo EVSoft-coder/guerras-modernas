@@ -8,6 +8,7 @@ use App\Models\Edificio;
 use App\Domain\Building\BuildingType;
 use App\Domain\Building\BuildingRules;
 use App\Services\TimeService;
+use App\Services\GameService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -22,7 +23,6 @@ class BuildingQueueService
 
     /**
      * Valida se a fila está livre para novas ordens.
-     * Fase Crítica - Passo 2.1
      */
     public function validateAvailableQueue(Base $base): void
     {
@@ -34,7 +34,6 @@ class BuildingQueueService
 
     /**
      * Inicia uma nova construção na fila.
-     * Passo 5: building_id validation
      */
     public function startConstruction(Base $base, string $type, int $posX = 0, int $posY = 0, ?int $buildingId = null)
     {
@@ -42,7 +41,6 @@ class BuildingQueueService
             $type = BuildingType::normalize($type);
 
             // PASSO 5 - BLOQUEIO DE DUPLICAÇÃO Simultânea
-            // Se já existe o MEMO edifício na fila, impedimos nova ordem para evitar dessincronização
             $existing = BuildingQueue::where('base_id', $base->id)
                 ->where('type', $type)
                 ->exists();
@@ -51,31 +49,39 @@ class BuildingQueueService
                 throw new \Exception("ENGENHARIA: Já existe uma obra em curso ou planeada para " . strtoupper($type));
             }
 
-            // PASSO 4 - LOCK: Bloquear a base para garantir exclusividade na transação
+            // PASSO 6 - LOCK: Bloquear a base
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             
             $nivelAtual = (new GameService($this->timeService))->obterNivelEdificio($lockedBase, $type);
             $targetLevel = $nivelAtual + 1;
 
-            $tempo = BuildingRules::calculateTime($type, $nivelAtual);
+            $duration = BuildingRules::calculateTime($type, $nivelAtual);
+            $custos = BuildingRules::calculateCost($type, $nivelAtual);
+            
+            // Determinar posição
+            $lastPos = BuildingQueue::where('base_id', $base->id)->max('position') ?? 0;
+            $position = $lastPos + 1;
+
             $now = $this->timeService->now();
             
-            // LOCK FOR UPDATE na fila para sequenciamento
-            $lastEntry = BuildingQueue::where('base_id', $base->id)
-                ->orderBy('finishes_at', 'desc')
-                ->lockForUpdate()
-                ->first();
-
-            $startTime = ($lastEntry && $lastEntry->finishes_at > $now) ? $lastEntry->finishes_at : $now;
-
-            return BuildingQueue::create([
+            $queue = BuildingQueue::create([
                 'base_id' => $base->id,
                 'building_id' => $buildingId,
+                'position' => $position,
                 'type' => $type,
                 'target_level' => $targetLevel,
-                'started_at' => $startTime,
-                'finishes_at' => $startTime->copy()->addSeconds($tempo),
+                'duration' => $duration,
+                'status' => $position === 1 ? 'active' : 'pending',
+                'started_at' => $position === 1 ? $now : null,
+                'finishes_at' => $position === 1 ? $now->copy()->addSeconds($duration) : null,
+                'cost_suprimentos' => $custos['suprimentos'] ?? 0,
+                'cost_combustivel' => $custos['combustivel'] ?? 0,
+                'cost_municoes' => $custos['municoes'] ?? 0,
             ]);
+
+            Log::channel('game')->info('[BUILD_ENQUEUED]', ['id' => $queue->id, 'pos' => $position]);
+
+            return $queue;
         });
     }
 
@@ -86,34 +92,142 @@ class BuildingQueueService
     {
         $now = $this->timeService->now();
         
-        // Selecionar IDs pendentes de forma estrita (Fase 4B - Passo 3)
-        $pendingIds = BuildingQueue::where('base_id', $base->id)
-            ->where('finishes_at', '<=', $now)
-            ->lockForUpdate()
-            ->pluck('id');
+        DB::transaction(function() use ($base, $now) {
+            // 1. Verificar o item ativo (position 1)
+            $active = BuildingQueue::where('base_id', $base->id)
+                ->where('position', 1)
+                ->lockForUpdate()
+                ->first();
 
-        if ($pendingIds->isEmpty()) return;
-
-        DB::transaction(function() use ($base, $pendingIds) {
-            foreach ($pendingIds as $id) {
-                $entry = BuildingQueue::find($id);
-                if (!$entry) continue;
-
-                $this->applyUpgrade($base, $entry->type, $entry->target_level);
-                $entry->delete();
+            if ($active && $active->finishes_at <= $now) {
+                // Obra terminou!
+                $this->applyUpgrade($base, $active->type, $active->target_level);
                 
                 Log::channel('game')->info('[CONSTRUCTION_FINISHED]', [
                     'base_id' => $base->id,
-                    'type' => $entry->type,
-                    'level' => $entry->target_level
+                    'type' => $active->type,
+                    'level' => $active->target_level
                 ]);
+
+                $active->delete();
+
+                // 2. Reordenar e iniciar próximo automaticamente
+                $this->refreshQueue($base->id);
+            } elseif (!$active) {
+                // Se não há ativo mas há pendentes, iniciar o primeiro
+                $this->refreshQueue($base->id);
             }
         });
     }
 
     /**
-     * Aplica o upgrade efetivamente na base de dados.
+     * Cancela uma construção.
      */
+    public function cancelBuilding(int $queueId)
+    {
+        return DB::transaction(function() use ($queueId) {
+            $item = BuildingQueue::where('id', $queueId)->lockForUpdate()->first();
+            if (!$item) return false;
+
+            $baseId = $item->base_id;
+
+            // PASSO 4 — CANCELAMENTO: Devolver recursos (Apenas se for o primeiro ou conforme regra)
+            // No prompt diz "apenas position = 1", mas vamos permitir todos, devolvendo o custo registado
+            $base = Base::find($baseId);
+            $rec = $base->recursos;
+            
+            $rec->increment('suprimentos', $item->cost_suprimentos);
+            $rec->increment('combustivel', $item->cost_combustivel);
+            $rec->increment('municoes', $item->cost_municoes);
+
+            $item->delete();
+            $this->refreshQueue($baseId);
+
+            Log::channel('game')->info('[BUILD_CANCELLED]', ['base_id' => $baseId, 'type' => $item->type]);
+
+            return true;
+        });
+    }
+
+    /**
+     * Sobe a prioridade de um item.
+     */
+    public function moveUp(int $queueId)
+    {
+        return DB::transaction(function() use ($queueId) {
+            $item = BuildingQueue::where('id', $queueId)->lockForUpdate()->first();
+            if (!$item || $item->position <= 1) return false;
+
+            $prev = BuildingQueue::where('base_id', $item->base_id)
+                ->where('position', $item->position - 1)
+                ->first();
+
+            if ($prev) {
+                $prev->update(['position' => $item->position]);
+                $item->update(['position' => $item->position - 1]);
+                $this->refreshQueue($item->base_id);
+            }
+
+            return true;
+        });
+    }
+
+    /**
+     * Desce a prioridade de um item.
+     */
+    public function moveDown(int $queueId)
+    {
+        return DB::transaction(function() use ($queueId) {
+            $item = BuildingQueue::where('id', $queueId)->lockForUpdate()->first();
+            if (!$item) return false;
+
+            $next = BuildingQueue::where('base_id', $item->base_id)
+                ->where('position', $item->position + 1)
+                ->first();
+
+            if ($next) {
+                $next->update(['position' => $item->position]);
+                $item->update(['position' => $item->position + 1]);
+                $this->refreshQueue($item->base_id);
+            }
+
+            return true;
+        });
+    }
+
+    /**
+     * Reordena a fila e garante que o primeiro está ativo.
+     */
+    private function refreshQueue(int $baseId)
+    {
+        $items = BuildingQueue::where('base_id', $baseId)
+            ->orderBy('position', 'asc')
+            ->get();
+
+        $now = $this->timeService->now();
+        $pos = 1;
+
+        foreach ($items as $item) {
+            $update = ['position' => $pos];
+            
+            if ($pos === 1) {
+                // Se o primeiro não estiver ativo ou mudou (reorder), resetamos o tempo dele
+                if ($item->status !== 'active') {
+                    $update['status'] = 'active';
+                    $update['started_at'] = $now;
+                    $update['finishes_at'] = $now->copy()->addSeconds($item->duration);
+                }
+            } else {
+                $update['status'] = 'pending';
+                $update['started_at'] = null;
+                $update['finishes_at'] = null;
+            }
+
+            $item->update($update);
+            $pos++;
+        }
+    }
+
     private function applyUpgrade(Base $base, string $type, int $level)
     {
         if ($type === BuildingType::QG) {
@@ -137,11 +251,5 @@ class BuildingQueueService
                 ]);
             }
         }
-    }
-
-    private function getCurrentLevel(Base $base, string $type): int
-    {
-        // Esta função agora é apenas descritiva, a fonte da verdade é o GameService
-        return (new GameService($this->timeService))->obterNivelEdificio($base, $type);
     }
 }
