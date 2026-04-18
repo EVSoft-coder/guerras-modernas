@@ -24,7 +24,8 @@ export function VillageDashboard({
     jogador, base: initialBase, bases: backendBases = STABLE_EMPTY_ARRAY, taxasPerSecond, gameConfig, 
     relatoriosGlobal, buildings = STABLE_EMPTY_ARRAY, population, resources, buildingQueue = STABLE_EMPTY_ARRAY,
     unitQueue = STABLE_EMPTY_ARRAY, units = STABLE_EMPTY_ARRAY, unitTypes = STABLE_EMPTY_ARRAY,
-    ataquesRecebidos = STABLE_EMPTY_ARRAY, ataquesEnviados = STABLE_EMPTY_ARRAY
+    ataquesRecebidos = STABLE_EMPTY_ARRAY, ataquesEnviados = STABLE_EMPTY_ARRAY,
+    diplomaties = STABLE_EMPTY_ARRAY, myAllianceId
 }: DashboardProps) {
     // 0. ECS ENGINE INTEGRATION
     const { globalState } = useGameEntities();
@@ -246,6 +247,8 @@ export function VillageDashboard({
                         troops={units.length > 0 ? units.map((u: any) => ({ tipo: u.type?.name, quantidade: u.quantity })) : (base?.tropas ?? [])} 
                         gameConfig={gameConfig} 
                         unitTypes={unitTypes}
+                        diplomaties={diplomaties}
+                        myAllianceId={myAllianceId}
                     />
                     ) : (
                         <VisualVillageView base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} buildingQueue={buildingQueue} />

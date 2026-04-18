@@ -133,4 +133,6 @@ export interface DashboardProps {
             received: any[];
         };
     };
+    diplomaties: any[];
+    myAllianceId?: number | null;
 }

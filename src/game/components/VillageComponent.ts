@@ -29,7 +29,8 @@ export class VillageComponent implements Component {
         public isRebel: boolean = false,
         public loyalty: number = 100,
         public isProtected: boolean = false,
-        public protectionUntil: number = 0
+        public protectionUntil: number = 0,
+        public aliancaId: number | null = null
     ) {
         // Regra: isRebel = true -> ownerId = null
         this.ownerId = isRebel ? null : ownerId;

@@ -84,7 +84,8 @@ export class WorldMapSyncSystem implements GameSystem {
                         !b.ownerId,
                         b.loyalty || 100,
                         b.is_protected,
-                        b.protection_until ? new Date(b.protection_until).getTime() : 0
+                        b.protection_until ? new Date(b.protection_until).getTime() : 0,
+                        b.jogador?.alianca_id || null
                     ));
                     entityManager.addComponent(entityId, new GridPositionComponent(b.coordenada_x, b.coordenada_y, true));
                 } else {
@@ -95,6 +96,7 @@ export class WorldMapSyncSystem implements GameSystem {
                         village.loyalty = b.loyalty || 100;
                         village.isProtected = b.is_protected;
                         village.protectionUntil = b.protection_until ? new Date(b.protection_until).getTime() : 0;
+                        village.aliancaId = b.jogador?.alianca_id || null;
                     }
                 }
             });

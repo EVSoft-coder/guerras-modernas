@@ -75,10 +75,10 @@ class MapaController extends Controller
         $minY = $cy * $size;
         $maxY = $minY + $size - 1;
 
-        $bases = Base::with('jogador:id,username')
+        $bases = Base::with('jogador:id,username,alianca_id')
             ->whereBetween('coordenada_x', [$minX, $maxX])
             ->whereBetween('coordenada_y', [$minY, $maxY])
-            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel']);
+            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel', 'loyalty']);
 
         return response()->json([
             'chunk' => ['x' => $cx, 'y' => $cy],

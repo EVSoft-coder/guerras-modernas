@@ -16,6 +16,8 @@ interface WorldMapViewProps {
     troops?: any[];
     gameConfig?: any;
     unitTypes?: any[];
+    diplomaties?: any[];
+    myAllianceId?: number | null;
 }
 
 const TILE_SIZE = 80;
@@ -36,7 +38,7 @@ const getTerrain = (tx: number, ty: number) => {
     return 'grass';
 };
 
-export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes }: WorldMapViewProps) {
+export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, diplomaties = [], myAllianceId }: WorldMapViewProps) {
     const [center, setCenter] = useState({ x: playerBase?.coordenada_x || 50, y: playerBase?.coordenada_y || 50 });
     const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: any } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
@@ -130,7 +132,14 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes }:
                             const isSelected = selectedSector?.x === x && selectedSector?.y === y;
                             const terrain = getTerrain(x, y);
                             const isPlayer = baseAt?.ownerId === playerBase?.ownerId;
-                            const isEnemy = baseAt && baseAt.ownerId && baseAt.ownerId !== playerBase?.ownerId;
+                            
+                            // DIPLOMACY ENGINE (Tribal)
+                            const baseAllianceId = baseAt?.aliancaId;
+                            const dip = diplomaties.find(d => d.target_alianca_id === baseAllianceId && d.status === 'ACCEPTED');
+                            
+                            const isAlly = baseAllianceId && (baseAllianceId === myAllianceId || dip?.tipo === 'ALLY');
+                            const isNAP  = dip?.tipo === 'NAP';
+                            const isEnemy = dip?.tipo === 'ENEMY' || (baseAt?.ownerId && !isAlly && !isNAP && !isPlayer);
                             const isRebel = baseAt && !baseAt.ownerId;
 
                             // Calcular posição visual relativa ao centro
@@ -166,6 +175,8 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes }:
                                                 animate={{ scale: 1 }}
                                                 className={`p-1 rounded-xl border-2 backdrop-blur-md relative shadow-2xl transition-all duration-500
                                                     ${isPlayer ? 'bg-sky-500/30 border-sky-400/50 shadow-sky-500/20' : ''}
+                                                    ${isAlly && !isPlayer ? 'bg-cyan-500/30 border-cyan-400/50 shadow-cyan-500/20' : ''}
+                                                    ${isNAP ? 'bg-purple-500/30 border-purple-400/50 shadow-purple-500/20' : ''}
                                                     ${isEnemy ? 'bg-red-500/30 border-red-400/50 shadow-red-500/20' : ''}
                                                     ${isRebel ? 'bg-amber-600/30 border-amber-400/50 shadow-amber-600/20' : ''}
                                                 `}
@@ -174,11 +185,11 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes }:
                                                     src="/assets/structures/base.png" 
                                                     className="w-12 h-12 object-contain"
                                                     style={{ 
-                                                        filter: isPlayer ? 'drop-shadow(0 0 10px #0ea5e9)' : (isEnemy ? 'drop-shadow(0 0 10px #ef4444)' : 'drop-shadow(0 0 10px #f59e0b)')
+                                                        filter: isPlayer ? 'drop-shadow(0 0 10px #0ea5e9)' : (isAlly ? 'drop-shadow(0 0 10px #06b6d4)' : (isNAP ? 'drop-shadow(0 0 10px #a855f7)' : (isEnemy ? 'drop-shadow(0 0 10px #ef4444)' : 'drop-shadow(0 0 10px #f59e0b)')))
                                                     }}
                                                 />
                                                 <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white/40 shadow-lg animate-pulse 
-                                                    ${isPlayer ? 'bg-sky-500' : (isEnemy ? 'bg-red-500' : 'bg-amber-500')}`} />
+                                                    ${isPlayer ? 'bg-sky-500' : (isAlly ? 'bg-cyan-500' : (isNAP ? 'bg-purple-500' : (isEnemy ? 'bg-red-500' : 'bg-amber-500')))}`} />
                                             </motion.div>
                                         </div>
                                     )}

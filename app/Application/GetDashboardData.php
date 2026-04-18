@@ -111,6 +111,8 @@ class GetDashboardData
                     'build_time'       => $economy->getUnitTime($ut->name, $buildingLevel, 1)
                 ]);
             }),
+            'diplomaties'      => $user->alianca_id ? \App\Models\AliancaDiplomacia::where('alianca_id', $user->alianca_id)->get() : [],
+            'myAllianceId'     => $user->alianca_id,
             'gameData'         => [
                 'resources'  => $resources,
                 'units'      => $base->units,

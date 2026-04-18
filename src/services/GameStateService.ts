@@ -114,6 +114,7 @@ class GameStateService {
                 coordenada_y: Math.round(p?.y || 0),
                 loyalty: v?.loyalty || 100,
                 ownerId: v?.ownerId || null,
+                aliancaId: v?.aliancaId || null,
                 is_protected: v?.isProtected || false,
                 protection_until: v?.protectionUntil || 0
             };
