@@ -5,14 +5,13 @@ namespace App\Services;
 use App\Models\Base;
 use App\Models\UnitType;
 use App\Models\UnitQueue;
-use App\Models\MovementUnit;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * UnitQueueService - Mobilização em Escala (PASSO 1 — FASE HARDEN 3).
- * Gere recrutamento com suporte a retries e consistência atómica.
+ * UnitQueueService - Modelo Determinístico de Batelada (FASE QUEUE V19).
+ * Unidades são criadas APENAS após a conclusão do intervalo total (finishes_at).
  */
 class UnitQueueService
 {
@@ -23,19 +22,21 @@ class UnitQueueService
         $this->timeService = $timeService;
     }
 
+    /**
+     * Iniciar recrutamento: Valida, debita e enfileira com cronometragem real.
+     */
     public function startRecruitment(Base $base, int $unitTypeId, int $quantidade)
     {
         return DB::transaction(function() use ($base, $unitTypeId, $quantidade) {
             $unitType = UnitType::findOrFail($unitTypeId);
             
-            // Lock Resources
+            // 1. Lock de Recursos
             $rec = $base->recursos()->lockForUpdate()->first();
             
-            // Calcular custos baseados no EconomyService (Fase 14)
+            // 2. Cálculo de Custos (Sincronizado com EconomyService)
             $economy = app(EconomyService::class);
             $buildingLevel = (new GameService($this->timeService))->obterNivelEdificio($base, $unitType->building_type);
             
-            // FÓRMULA ECONOMY: Custo escala com nível do edifício produtor
             $costs = $economy->getUnitCost($unitType->name, $buildingLevel);
             $durationPerUnit = $economy->getUnitTime($unitType->name, $buildingLevel);
 
@@ -47,86 +48,83 @@ class UnitQueueService
                 }
             }
 
-            // Deduzir Recursos
+            // 3. Débito Transacional
             foreach ($totalCosts as $res => $amount) {
                 if ($amount > 0) $rec->decrement($res, $amount);
             }
 
-            $costPerUnit = $costs['suprimentos'] ?? 0;
+            // 4. Determinação de Cronograma (Encadeamento)
+            $lastItem = DB::table('unit_queue')
+                ->where('base_id', $base->id)
+                ->orderBy('position', 'desc')
+                ->first();
 
-            $lastPos = DB::table('unit_queue')->where('base_id', $base->id)->max('position') ?? 0;
-            
+            $startedAt = $lastItem ? Carbon::parse($lastItem->finishes_at) : GameClock::now();
+            $totalDuration = $quantidade * $durationPerUnit;
+            $finishesAt = $startedAt->copy()->addSeconds($totalDuration);
+            $lastPos = $lastItem ? $lastItem->position : 0;
+
+            // 5. Inserção na Fila
             $id = DB::table('unit_queue')->insertGetId([
                 'base_id' => $base->id,
                 'unit_type_id' => $unitTypeId,
-                'quantity' => $quantidade,
+                'quantity' => $quantidade, // Batch size
                 'quantity_remaining' => $quantidade,
                 'units_produced' => 0,
                 'duration_per_unit' => $durationPerUnit,
-                'cost_suprimentos' => $costPerUnit,
-                'cost_combustivel' => $unitType->base_cost_combustivel,
-                'cost_municoes' => $unitType->base_cost_municoes,
+                'cost_suprimentos' => $costs['suprimentos'] ?? 0,
+                'cost_combustivel' => $costs['combustivel'] ?? 0,
+                'cost_municoes' => $costs['municoes'] ?? 0,
                 'position' => $lastPos + 1,
-                'status' => ($lastPos + 1) === 1 ? 'active' : 'pending',
-                'started_at' => ($lastPos + 1) === 1 ? GameClock::now() : null,
+                'status' => 'pending',
+                'started_at' => $startedAt,
+                'finishes_at' => $finishesAt,
                 'created_at' => GameClock::now(),
                 'updated_at' => GameClock::now()
             ]);
 
-            Log::channel('game')->info('[UNIT_ENQUEUED]', ['id' => $id, 'qty' => $quantidade]);
+            Log::channel('game')->info("[UNIT_RECRUITMENT_STARTED] Base: {$base->id}, Type: {$unitType->name}, Qty: {$quantidade}");
 
             return $id;
         }, 5);
     }
 
+    /**
+     * Processamento Determinístico: Liberta lotes concluídos.
+     */
     public function processQueue(Base $base)
     {
         $now = GameClock::now();
         
         DB::transaction(function() use ($base, $now) {
-            $active = DB::table('unit_queue')
+            // Unidades concluídas: finishes_at <= AGORA
+            $completed = DB::table('unit_queue')
                 ->where('base_id', $base->id)
-                ->where('position', 1)
-                ->whereNull('cancelled_at')
+                ->where('finishes_at', '<=', $now)
+                ->orderBy('position', 'asc')
                 ->lockForUpdate()
-                ->first();
+                ->get();
 
-            if (!$active) {
-                $this->refreshQueue($base->id);
-                return;
+            if ($completed->isEmpty()) return;
+
+            foreach ($completed as $item) {
+                // Adicionar unidades concluídas à base
+                $this->addUnitsToBase($base, $item->unit_type_id, $item->quantity);
+                
+                // Remover lote da fila
+                DB::table('unit_queue')->where('id', $item->id)->delete();
+                
+                Log::channel('game')->info("[UNIT_RECRUITMENT_FINISHED] Item ID: {$item->id}, Qty: {$item->quantity}");
             }
 
-            $startedAt = Carbon::parse($active->started_at);
-            $elapsed = $now->diffInSeconds($startedAt);
-            
-            $totalShouldBeProduced = floor($elapsed / $active->duration_per_unit);
-            $newUnits = $totalShouldBeProduced - ($active->units_produced ?? 0);
-            
-            $actualToProduce = min((int)$newUnits, $active->quantity_remaining);
-
-            if ($actualToProduce > 0) {
-                $this->addUnitsToBase($base, $active->unit_type_id, $actualToProduce);
-                
-                $newQuantityRemaining = $active->quantity_remaining - $actualToProduce;
-                $newUnitsProduced = ($active->units_produced ?? 0) + $actualToProduce;
-                
-                if ($newQuantityRemaining <= 0) {
-                    DB::table('unit_queue')->where('id', $active->id)->delete();
-                } else {
-                    DB::table('unit_queue')->where('id', $active->id)->update([
-                        'quantity_remaining' => $newQuantityRemaining,
-                        'units_produced' => $newUnitsProduced,
-                        'updated_at' => $now
-                    ]);
-                }
-                
-                if ($newQuantityRemaining <= 0) {
-                    $this->refreshQueue($base->id);
-                }
-            }
+            // Recalcular tempos para as unidades pendentes remanescentes
+            $this->refreshQueue($base->id);
         }, 5);
     }
 
+    /**
+     * Cancelar recrutamento: Reembolsa e reorganiza a fila.
+     */
     public function cancelRecruitment(int $queueId)
     {
         return DB::transaction(function() use ($queueId) {
@@ -137,11 +135,10 @@ class UnitQueueService
             $base = Base::find($baseId);
             $rec = $base->recursos()->lockForUpdate()->first();
 
-            $qtyRemaining = (int) $item->quantity_remaining;
-            
-            $rec->increment('suprimentos', (float) ($item->cost_suprimentos * $qtyRemaining));
-            $rec->increment('combustivel', (float) ($item->cost_combustivel * $qtyRemaining));
-            $rec->increment('municoes',    (float) ($item->cost_municoes * $qtyRemaining));
+            // Reembolsar 100% dos recursos do lote
+            $rec->increment('suprimentos', (float) ($item->cost_suprimentos * $item->quantity));
+            $rec->increment('combustivel', (float) ($item->cost_combustivel * $item->quantity));
+            $rec->increment('municoes',    (float) ($item->cost_municoes    * $item->quantity));
 
             DB::table('unit_queue')->where('id', $item->id)->delete();
             $this->refreshQueue($baseId);
@@ -159,6 +156,9 @@ class UnitQueueService
         );
     }
 
+    /**
+     * Reorganizar cronograma: Encadeia novamente os tempos de started_at e finishes_at.
+     */
     private function refreshQueue(int $baseId)
     {
         $items = DB::table('unit_queue')
@@ -167,17 +167,22 @@ class UnitQueueService
             ->get();
 
         $now = GameClock::now();
+        $currentTime = $now;
         $pos = 1;
 
         foreach ($items as $item) {
-            $update = ['position' => $pos, 'updated_at' => $now];
-            
-            if ($pos === 1 && $item->status !== 'active') {
-                $update['status'] = 'active';
-                $update['started_at'] = $now;
-                $update['finishes_at'] = $now->copy()->addSeconds($item->quantity_remaining * $item->duration_per_unit);
-            }
-            DB::table('unit_queue')->where('id', $item->id)->update($update);
+            $totalDuration = $item->quantity * $item->duration_per_unit;
+            $finishesAt = $currentTime->copy()->addSeconds($totalDuration);
+
+            DB::table('unit_queue')->where('id', $item->id)->update([
+                'position' => $pos,
+                'started_at' => $currentTime,
+                'finishes_at' => $finishesAt,
+                'status' => $pos === 1 ? 'active' : 'pending',
+                'updated_at' => $now
+            ]);
+
+            $currentTime = $finishesAt;
             $pos++;
         }
     }
@@ -190,7 +195,7 @@ class UnitQueueService
 
             $prev = DB::table('unit_queue')->where('base_id', $item->base_id)->where('position', $item->position - 1)->first();
             if ($prev) {
-                DB::table('unit_queue')->where('id', $prev->id)->update(['position' => $item->position, 'status' => 'pending', 'started_at' => null, 'finishes_at' => null]);
+                DB::table('unit_queue')->where('id', $prev->id)->update(['position' => $item->position]);
                 DB::table('unit_queue')->where('id', $item->id)->update(['position' => $item->position - 1]);
                 $this->refreshQueue($item->base_id);
             }
@@ -207,7 +212,7 @@ class UnitQueueService
             $next = DB::table('unit_queue')->where('base_id', $item->base_id)->where('position', $item->position + 1)->first();
             if ($next) {
                 DB::table('unit_queue')->where('id', $next->id)->update(['position' => $item->position]);
-                DB::table('unit_queue')->where('id', $item->id)->update(['position' => $item->position + 1, 'status' => 'pending', 'started_at' => null, 'finishes_at' => null]);
+                DB::table('unit_queue')->where('id', $item->id)->update(['position' => $item->position + 1]);
                 $this->refreshQueue($item->base_id);
             }
             return true;
