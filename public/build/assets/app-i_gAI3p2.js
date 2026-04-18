@@ -28178,25 +28178,20 @@ const AnimatedNumber = ({ value, customValue }) => {
 };
 const REFERENCE_WIDTH = 800;
 const BUILDING_LAYOUT = {
-  // HQ - PONTO FOCAL AMPLIADO (PASSO 5)
-  qg: { x: 400, y: 260, w: 300, h: 300, anchor: "center" },
-  // MID ROW (ANCOHRED BOTTOM - PASSO 2)
-  quartel: { x: 260, y: 340, w: 150, h: 150, anchor: "bottom" },
-  refinaria: { x: 580, y: 340, w: 150, h: 150, anchor: "bottom" },
-  // BACK ROW
-  central_energia: { x: 180, y: 240, w: 120, h: 120, anchor: "center" },
-  centro_pesquisa: { x: 620, y: 240, w: 130, h: 130, anchor: "center" },
-  mina_suprimentos: { x: 120, y: 150, w: 110, h: 110, anchor: "center" },
-  radar_estrategico: { x: 280, y: 100, w: 100, h: 100, anchor: "center" },
-  // FRONT ROW
-  aerodromo: { x: 420, y: 500, w: 220, h: 220, anchor: "center" },
-  fabrica_municoes: { x: 160, y: 460, w: 180, h: 180, anchor: "center" },
-  mina_metal: { x: 700, y: 480, w: 140, h: 140, anchor: "center" },
-  posto_recrutamento: { x: 740, y: 360, w: 110, h: 110, anchor: "center" },
-  housing: { x: 180, y: 320, w: 110, h: 110, anchor: "center" },
-  // MARGINALS
-  muralha: { x: 400, y: 540, w: 320, h: 160, anchor: "center" },
-  parlamento: { x: 550, y: 560, w: 110, h: 110, anchor: "center" }
+  qg: { x: 400, y: 260, w: 300, h: 300, anchor: "center", assetName: "hq.png" },
+  quartel: { x: 260, y: 340, w: 150, h: 150, anchor: "bottom", assetName: "barracks.png" },
+  refinaria: { x: 580, y: 340, w: 150, h: 150, anchor: "bottom", assetName: "factory.png" },
+  central_energia: { x: 180, y: 240, w: 120, h: 120, anchor: "center", assetName: "energy.png" },
+  centro_pesquisa: { x: 620, y: 240, w: 130, h: 130, anchor: "center", assetName: "research.png" },
+  mina_suprimentos: { x: 120, y: 150, w: 110, h: 110, anchor: "center", assetName: "mine.png" },
+  radar_estrategico: { x: 280, y: 100, w: 100, h: 100, anchor: "center", assetName: "radar.png" },
+  aerodromo: { x: 420, y: 500, w: 220, h: 220, anchor: "center", assetName: "aerodrome.png" },
+  fabrica_municoes: { x: 160, y: 460, w: 180, h: 180, anchor: "center", assetName: "factory.png" },
+  mina_metal: { x: 700, y: 480, w: 140, h: 140, anchor: "center", assetName: "mine.png" },
+  posto_recrutamento: { x: 740, y: 360, w: 110, h: 110, anchor: "center", assetName: "housing.png" },
+  housing: { x: 180, y: 320, w: 110, h: 110, anchor: "center", assetName: "housing.png" },
+  muralha: { x: 400, y: 540, w: 320, h: 160, anchor: "center", assetName: "" },
+  parlamento: { x: 550, y: 560, w: 110, h: 110, anchor: "center", assetName: "" }
 };
 const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name, onClick }) => {
   const layout2 = BUILDING_LAYOUT[type2];
@@ -28213,13 +28208,13 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
     left -= width / 2;
     top -= height;
   }
-  const assetPath = `/assets/structures/v2/${type2 === "qg" ? "hq" : type2 === "quartel" ? "barracks" : type2 === "fabrica_municoes" ? "factory" : type2 === "refinaria" ? "factory" : type2.replace("central_", "").replace("mina_", "")}.png`.replace("pesquisa", "research").replace("suprimentos", "mine").replace("metal", "mine");
+  const assetPath = layout2.assetName ? `/assets/structures/v2/${layout2.assetName}` : null;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
-      initial: { opacity: 0, y: 10 },
-      animate: { opacity: 1, y: 0 },
-      whileHover: { scale: 1.08, zIndex: 9999 },
+      initial: { opacity: 0, scale: 0.9 },
+      animate: { opacity: 1, scale: 1 },
+      whileHover: { scale: 1.05, zIndex: 9999 },
       onClick,
       className: "absolute cursor-pointer transition-all hover:filter hover:brightness-125 group/node",
       style: {
@@ -28228,19 +28223,22 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
         width,
         height,
         zIndex: Math.floor(layout2.y)
-        // PASSO 3 — PROFUNDIDADE DINÂMICA
       },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
+        assetPath ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
             src: assetPath,
             className: `w-full h-full object-contain pointer-events-none mix-blend-screen
-                    ${isConstructing ? "brightness-50 grayscale" : "brightness-[1.1] filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"}
-                `,
-            alt: name
+                        ${isConstructing ? "brightness-50 grayscale" : "brightness-[1.1] filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.6)]"}
+                    `,
+            alt: name,
+            onError: (e) => {
+              console.error(`Asset mismatch: ${assetPath}`);
+              e.currentTarget.style.display = "none";
+            }
           }
-        ),
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-full flex items-center justify-center bg-black/40 border border-white/10 rounded-xl backdrop-blur-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-white/20 font-black uppercase text-center px-1 leading-none", children: name }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
@@ -44450,7 +44448,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-YIMjY56X.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Dyhr1uvv.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44486,4 +44484,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CLSsnM7p.js.map
+//# sourceMappingURL=app-i_gAI3p2.js.map

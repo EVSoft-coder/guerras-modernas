@@ -31,20 +31,16 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
         top -= height;
     }
 
-    // RESOLVER PATH DO ATIVO
-    const assetPath = `/assets/structures/v2/${
-        type === 'qg' ? 'hq' : 
-        type === 'quartel' ? 'barracks' : 
-        type === 'fabrica_municoes' ? 'factory' :
-        type === 'refinaria' ? 'factory' :
-        type.replace('central_', '').replace('mina_', '')
-    }.png`.replace('pesquisa', 'research').replace('suprimentos', 'mine').replace('metal', 'mine');
+    // RESOLVER PATH DO ATIVO (USANDO ASSET_NAME DO LAYOUT)
+    const assetPath = layout.assetName 
+        ? `/assets/structures/v2/${layout.assetName}`
+        : null;
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.08, zIndex: 9999 }} // PASSO 3 — PRIORIDADE MÁXIMA NO HOVER
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05, zIndex: 9999 }}
             onClick={onClick}
             className="absolute cursor-pointer transition-all hover:filter hover:brightness-125 group/node"
             style={{
@@ -52,17 +48,27 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 top,
                 width,
                 height,
-                zIndex: Math.floor(layout.y) // PASSO 3 — PROFUNDIDADE DINÂMICA
+                zIndex: Math.floor(layout.y)
             }}
         >
-            {/* PASSO 4 — ESTILO VISUAL REAL SEM QUADRADOS PRETOS */}
-            <img 
-                src={assetPath} 
-                className={`w-full h-full object-contain pointer-events-none mix-blend-screen
-                    ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.1] filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]'}
-                `}
-                alt={name}
-            />
+            {/* ASSET VISUAL REAL */}
+            {assetPath ? (
+                <img 
+                    src={assetPath} 
+                    className={`w-full h-full object-contain pointer-events-none mix-blend-screen
+                        ${isConstructing ? 'brightness-50 grayscale' : 'brightness-[1.1] filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.6)]'}
+                    `}
+                    alt={name}
+                    onError={(e) => {
+                        console.error(`Asset mismatch: ${assetPath}`);
+                        e.currentTarget.style.display = 'none';
+                    }}
+                />
+            ) : (
+                <div className="w-full h-full flex items-center justify-center bg-black/40 border border-white/10 rounded-xl backdrop-blur-sm">
+                    <span className="text-[10px] text-white/20 font-black uppercase text-center px-1 leading-none">{name}</span>
+                </div>
+            )}
 
             {/* LEVEL BADGE — POSIÇÃO TÁTICA CORRIGIDA */}
             <div 
