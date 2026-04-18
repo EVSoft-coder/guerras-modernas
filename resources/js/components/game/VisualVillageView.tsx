@@ -51,6 +51,19 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     aspectRatio: '800/600' 
                 }}
             >
+                {/* PASSO 11 — MOTOR DE TRANSPARÊNCIA SVG (CHROMA KEY) */}
+                <svg width="0" height="0" className="absolute invisible">
+                    <defs>
+                        <filter id="alpha-purge" colorInterpolationFilters="sRGB">
+                            <feColorMatrix type="matrix" 
+                                values="1 0 0 0 0
+                                        0 1 0 0 0
+                                        0 0 1 0 0
+                                        1 1 1 0 -1.5" />
+                        </filter>
+                    </defs>
+                </svg>
+
                 {/* PASSO 1 & 2 — VILLAGE-BG */}
                 <div className="absolute inset-0 z-0">
                     <img 

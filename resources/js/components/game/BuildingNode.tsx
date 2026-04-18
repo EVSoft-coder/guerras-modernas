@@ -61,16 +61,16 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 style={{ transform: 'translateX(-50%)' }}
             />
 
-            {/* ASSET VISUAL REAL (PREMIUM FORCE BLENDING) */}
+            {/* ASSET VISUAL REAL (SVG ALPHA PURGE ENGINE) */}
             {assetPath ? (
                 <img 
                     src={assetPath} 
-                    className={`w-full h-full object-contain pointer-events-none mix-blend-screen transition-all duration-500
-                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.25] contrast-[1.5] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 active:scale-95'}
+                    className={`w-full h-full object-contain pointer-events-none transition-all duration-500
+                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.1] contrast-[1.2] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 active:scale-95'}
                     `}
                     alt={name}
                     style={{
-                        filter: 'drop-shadow(0 0 20px rgba(0,0,0,0.8))'
+                        filter: 'url(#alpha-purge) drop-shadow(0 0 20px rgba(0,0,0,0.8))'
                     }}
                     onError={(e) => {
                         e.currentTarget.style.display = 'none';

@@ -28178,25 +28178,25 @@ const AnimatedNumber = ({ value, customValue }) => {
 };
 const REFERENCE_WIDTH = 800;
 const BUILDING_LAYOUT = {
-  // PRECISÃO PREMIUM V10 (BLUEPRINT SYNCHRONIZED)
-  qg: { x: 490, y: 320, w: 220, h: 220, anchor: "center", assetName: "hq.png" },
-  // INTEL & RESEARCH
-  radar_estrategico: { x: 230, y: 260, w: 100, h: 100, anchor: "center", assetName: "radar.png" },
-  central_energia: { x: 430, y: 190, w: 100, h: 100, anchor: "center", assetName: "energy.png" },
-  centro_pesquisa: { x: 550, y: 180, w: 100, h: 100, anchor: "center", assetName: "research.png" },
-  parlamento: { x: 700, y: 150, w: 110, h: 110, anchor: "center", assetName: "research.png" },
-  // PRODUCTION & RESOURCES
-  quartel: { x: 740, y: 250, w: 110, h: 110, anchor: "center", assetName: "barracks.png" },
-  fabrica_municoes: { x: 140, y: 440, w: 120, h: 120, anchor: "center", assetName: "factory.png" },
-  refinaria: { x: 140, y: 550, w: 120, h: 120, anchor: "center", assetName: "factory.png" },
-  mina_suprimentos: { x: 140, y: 240, w: 110, h: 110, anchor: "center", assetName: "mine.png" },
-  mina_metal: { x: 860, y: 550, w: 130, h: 130, anchor: "center", assetName: "mine.png" },
-  // LOGISTICS
-  aerodromo: { x: 650, y: 420, w: 220, h: 220, anchor: "center", assetName: "aerodrome.png" },
-  housing: { x: 280, y: 110, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
-  posto_recrutamento: { x: 760, y: 100, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
-  // PERIMETER
-  muralha: { x: 400, y: 560, w: 420, h: 180, anchor: "center", assetName: "wall.png" }
+  // PRECISÃO MILIMÉTRICA V10 (SONDA DE RECONHECIMENTO FINAL)
+  qg: { x: 470, y: 340, w: 220, h: 220, anchor: "center", assetName: "hq.png" },
+  // ANEL SUPERIOR
+  central_energia: { x: 410, y: 210, w: 100, h: 100, anchor: "center", assetName: "energy.png" },
+  centro_pesquisa: { x: 530, y: 200, w: 100, h: 100, anchor: "center", assetName: "research.png" },
+  radar_estrategico: { x: 220, y: 280, w: 110, h: 110, anchor: "center", assetName: "radar.png" },
+  parlamento: { x: 140, y: 130, w: 110, h: 110, anchor: "center", assetName: "research.png" },
+  // INDÚSTRIA E RECURSOS
+  mina_suprimentos: { x: 125, y: 245, w: 110, h: 110, anchor: "center", assetName: "mine.png" },
+  quartel: { x: 630, y: 240, w: 120, h: 120, anchor: "center", assetName: "barracks.png" },
+  fabrica_municoes: { x: 130, y: 410, w: 130, h: 130, anchor: "center", assetName: "factory.png" },
+  refinaria: { x: 350, y: 470, w: 120, h: 120, anchor: "center", assetName: "factory.png" },
+  // LOGÍSTICA
+  aerodromo: { x: 590, y: 475, w: 220, h: 220, anchor: "center", assetName: "aerodrome.png" },
+  housing: { x: 325, y: 100, w: 100, h: 100, anchor: "center", assetName: "housing.png" },
+  posto_recrutamento: { x: 725, y: 430, w: 100, h: 100, anchor: "center", assetName: "housing.png" },
+  // PERÍMETRO
+  mina_metal: { x: 640, y: 350, w: 130, h: 130, anchor: "center", assetName: "mine.png" },
+  muralha: { x: 465, y: 525, w: 420, h: 180, anchor: "center", assetName: "wall.png" }
 };
 const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name, onClick }) => {
   const layout2 = BUILDING_LAYOUT[type2];
@@ -28243,12 +28243,12 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
           "img",
           {
             src: assetPath,
-            className: `w-full h-full object-contain pointer-events-none mix-blend-screen transition-all duration-500
-                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.25] contrast-[1.5] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 active:scale-95"}
+            className: `w-full h-full object-contain pointer-events-none transition-all duration-500
+                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.1] contrast-[1.2] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-105 active:scale-95"}
                     `,
             alt: name,
             style: {
-              filter: "drop-shadow(0 0 20px rgba(0,0,0,0.8))"
+              filter: "url(#alpha-purge) drop-shadow(0 0 20px rgba(0,0,0,0.8))"
             },
             onError: (e) => {
               e.currentTarget.style.display = "none";
@@ -28310,6 +28310,13 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
           aspectRatio: "800/600"
         },
         children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "0", height: "0", className: "absolute invisible", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("filter", { id: "alpha-purge", colorInterpolationFilters: "sRGB", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "feColorMatrix",
+            {
+              type: "matrix",
+              values: "1 0 0 0 0\n                                        0 1 0 0 0\n                                        0 0 1 0 0\n                                        1 1 1 0 -1.5"
+            }
+          ) }) }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 z-0", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
@@ -44465,7 +44472,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-BAiGEGWq.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-K_Ng5dRj.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44501,4 +44508,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BIXGzGAq.js.map
+//# sourceMappingURL=app-DczzN_iF.js.map
