@@ -1,123 +1,141 @@
 export interface BuildingLayout {
-    top: string;
-    left: string;
-    width: string;
-    height: string;
+    x: number;      // Pixel X em relação a 800px
+    y: number;      // Pixel Y em relação a 600px
+    w: number;      // Largura base em pixels
+    h: number;      // Altura base em pixels
     zIndex: number;
     assetPath: string;
+    anchor?: 'center' | 'bottom';
 }
+
+export const REFERENCE_WIDTH = 800;
+export const REFERENCE_HEIGHT = 600;
 
 export const BUILDING_LAYOUT_CONFIG: Record<string, BuildingLayout> = {
     qg: {
-        top: '45%',
-        left: '52%',
-        width: '320px',
-        height: '320px',
+        x: 430,
+        y: 280,
+        w: 240,
+        h: 240,
         zIndex: 30,
-        assetPath: '/assets/structures/v2/hq.png'
+        assetPath: '/assets/structures/v2/hq.png',
+        anchor: 'center'
     },
     central_energia: {
-        top: '8%',
-        left: '50%',
-        width: '140px',
-        height: '140px',
+        x: 400,
+        y: 60,
+        w: 110,
+        h: 110,
         zIndex: 10,
-        assetPath: '/assets/structures/v2/energy.png'
+        assetPath: '/assets/structures/v2/energy.png',
+        anchor: 'center'
     },
     mina_suprimentos: {
-        top: '18%',
-        left: '15%',
-        width: '130px',
-        height: '130px',
+        x: 120,
+        y: 110,
+        w: 110,
+        h: 110,
         zIndex: 11,
-        assetPath: '/assets/structures/v2/mine.png'
+        assetPath: '/assets/structures/v2/mine.png',
+        anchor: 'center'
     },
     mina_metal: {
-        top: '82%',
-        left: '85%',
-        width: '140px',
-        height: '140px',
+        x: 680,
+        y: 480,
+        w: 120,
+        h: 120,
         zIndex: 45,
-        assetPath: '/assets/structures/v2/mine.png'
+        assetPath: '/assets/structures/v2/mine.png',
+        anchor: 'center'
     },
     radar_estrategico: {
-        top: '12%',
-        left: '32%',
-        width: '110px',
-        height: '110px',
+        x: 270,
+        y: 80,
+        w: 90,
+        h: 90,
         zIndex: 12,
-        assetPath: '/assets/structures/v2/radar.png'
+        assetPath: '/assets/structures/v2/radar.png',
+        anchor: 'center'
     },
     centro_pesquisa: {
-        top: '22%',
-        left: '80%',
-        width: '150px',
-        height: '150px',
+        x: 640,
+        y: 130,
+        w: 120,
+        h: 120,
         zIndex: 13,
-        assetPath: '/assets/structures/v2/research.png'
+        assetPath: '/assets/structures/v2/research.png',
+        anchor: 'center'
     },
     quartel: {
-        top: '38%',
-        left: '25%',
-        width: '170px',
-        height: '170px',
+        x: 200,
+        y: 220,
+        w: 140,
+        h: 140,
         zIndex: 20,
-        assetPath: '/assets/structures/v2/barracks.png'
+        assetPath: '/assets/structures/v2/barracks.png',
+        anchor: 'center'
     },
     fabrica_municoes: {
-        top: '72%',
-        left: '15%',
-        width: '200px',
-        height: '200px',
+        x: 140,
+        y: 450,
+        w: 160,
+        h: 160,
         zIndex: 40,
-        assetPath: '/assets/structures/v2/factory.png'
+        assetPath: '/assets/structures/v2/factory.png',
+        anchor: 'center'
     },
     refinaria: {
-        top: '35%',
-        left: '92%',
-        width: '140px',
-        height: '140px',
+        x: 720,
+        y: 210,
+        w: 110,
+        h: 110,
         zIndex: 21,
-        assetPath: '/assets/structures/v2/factory.png'
+        assetPath: '/assets/structures/v2/factory.png',
+        anchor: 'center'
     },
     aerodromo: {
-        top: '86%',
-        left: '48%',
-        width: '240px',
-        height: '240px',
+        x: 400,
+        y: 500,
+        w: 220,
+        h: 220,
         zIndex: 42,
-        assetPath: '/assets/structures/v2/aerodrome.png'
+        assetPath: '/assets/structures/v2/aerodrome.png',
+        anchor: 'center'
     },
     housing: {
-        top: '55%',
-        left: '24%',
-        width: '120px',
-        height: '120px',
+        x: 210,
+        y: 330,
+        w: 100,
+        h: 100,
         zIndex: 25,
-        assetPath: '/assets/structures/v2/housing.png'
+        assetPath: '/assets/structures/v2/housing.png',
+        anchor: 'center'
     },
     posto_recrutamento: {
-        top: '68%',
-        left: '80%',
-        width: '120px',
-        height: '120px',
+        x: 640,
+        y: 400,
+        w: 100,
+        h: 100,
         zIndex: 43,
-        assetPath: '/assets/structures/v2/housing.png'
+        assetPath: '/assets/structures/v2/housing.png',
+        anchor: 'center'
     },
     muralha: {
-        top: '6%',
-        left: '92%',
-        width: '90px',
-        height: '90px',
+        x: 740,
+        y: 40,
+        w: 80,
+        h: 80,
         zIndex: 5,
-        assetPath: '' // Usar fallback se vazio
+        assetPath: '',
+        anchor: 'center'
     },
     parlamento: {
-        top: '92%',
-        left: '50%',
-        width: '110px',
-        height: '110px',
+        x: 400,
+        y: 550,
+        w: 90,
+        h: 90,
         zIndex: 50,
-        assetPath: ''
+        assetPath: '',
+        anchor: 'center'
     }
 };

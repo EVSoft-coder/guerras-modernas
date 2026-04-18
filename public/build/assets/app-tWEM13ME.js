@@ -28176,124 +28176,149 @@ const AnimatedNumber = ({ value, customValue }) => {
   }, [value]);
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
+const REFERENCE_WIDTH = 800;
 const BUILDING_LAYOUT_CONFIG = {
   qg: {
-    top: "45%",
-    left: "52%",
-    width: "320px",
-    height: "320px",
+    x: 430,
+    y: 280,
+    w: 240,
+    h: 240,
     zIndex: 30,
-    assetPath: "/assets/structures/v2/hq.png"
+    assetPath: "/assets/structures/v2/hq.png",
+    anchor: "center"
   },
   central_energia: {
-    top: "8%",
-    left: "50%",
-    width: "140px",
-    height: "140px",
+    x: 400,
+    y: 60,
+    w: 110,
+    h: 110,
     zIndex: 10,
-    assetPath: "/assets/structures/v2/energy.png"
+    assetPath: "/assets/structures/v2/energy.png",
+    anchor: "center"
   },
   mina_suprimentos: {
-    top: "18%",
-    left: "15%",
-    width: "130px",
-    height: "130px",
+    x: 120,
+    y: 110,
+    w: 110,
+    h: 110,
     zIndex: 11,
-    assetPath: "/assets/structures/v2/mine.png"
+    assetPath: "/assets/structures/v2/mine.png",
+    anchor: "center"
   },
   mina_metal: {
-    top: "82%",
-    left: "85%",
-    width: "140px",
-    height: "140px",
+    x: 680,
+    y: 480,
+    w: 120,
+    h: 120,
     zIndex: 45,
-    assetPath: "/assets/structures/v2/mine.png"
+    assetPath: "/assets/structures/v2/mine.png",
+    anchor: "center"
   },
   radar_estrategico: {
-    top: "12%",
-    left: "32%",
-    width: "110px",
-    height: "110px",
+    x: 270,
+    y: 80,
+    w: 90,
+    h: 90,
     zIndex: 12,
-    assetPath: "/assets/structures/v2/radar.png"
+    assetPath: "/assets/structures/v2/radar.png",
+    anchor: "center"
   },
   centro_pesquisa: {
-    top: "22%",
-    left: "80%",
-    width: "150px",
-    height: "150px",
+    x: 640,
+    y: 130,
+    w: 120,
+    h: 120,
     zIndex: 13,
-    assetPath: "/assets/structures/v2/research.png"
+    assetPath: "/assets/structures/v2/research.png",
+    anchor: "center"
   },
   quartel: {
-    top: "38%",
-    left: "25%",
-    width: "170px",
-    height: "170px",
+    x: 200,
+    y: 220,
+    w: 140,
+    h: 140,
     zIndex: 20,
-    assetPath: "/assets/structures/v2/barracks.png"
+    assetPath: "/assets/structures/v2/barracks.png",
+    anchor: "center"
   },
   fabrica_municoes: {
-    top: "72%",
-    left: "15%",
-    width: "200px",
-    height: "200px",
+    x: 140,
+    y: 450,
+    w: 160,
+    h: 160,
     zIndex: 40,
-    assetPath: "/assets/structures/v2/factory.png"
+    assetPath: "/assets/structures/v2/factory.png",
+    anchor: "center"
   },
   refinaria: {
-    top: "35%",
-    left: "92%",
-    width: "140px",
-    height: "140px",
+    x: 720,
+    y: 210,
+    w: 110,
+    h: 110,
     zIndex: 21,
-    assetPath: "/assets/structures/v2/factory.png"
+    assetPath: "/assets/structures/v2/factory.png",
+    anchor: "center"
   },
   aerodromo: {
-    top: "86%",
-    left: "48%",
-    width: "240px",
-    height: "240px",
+    x: 400,
+    y: 500,
+    w: 220,
+    h: 220,
     zIndex: 42,
-    assetPath: "/assets/structures/v2/aerodrome.png"
+    assetPath: "/assets/structures/v2/aerodrome.png",
+    anchor: "center"
   },
   housing: {
-    top: "55%",
-    left: "24%",
-    width: "120px",
-    height: "120px",
+    x: 210,
+    y: 330,
+    w: 100,
+    h: 100,
     zIndex: 25,
-    assetPath: "/assets/structures/v2/housing.png"
+    assetPath: "/assets/structures/v2/housing.png",
+    anchor: "center"
   },
   posto_recrutamento: {
-    top: "68%",
-    left: "80%",
-    width: "120px",
-    height: "120px",
+    x: 640,
+    y: 400,
+    w: 100,
+    h: 100,
     zIndex: 43,
-    assetPath: "/assets/structures/v2/housing.png"
+    assetPath: "/assets/structures/v2/housing.png",
+    anchor: "center"
   },
   muralha: {
-    top: "6%",
-    left: "92%",
-    width: "90px",
-    height: "90px",
+    x: 740,
+    y: 40,
+    w: 80,
+    h: 80,
     zIndex: 5,
-    assetPath: ""
-    // Usar fallback se vazio
+    assetPath: "",
+    anchor: "center"
   },
   parlamento: {
-    top: "92%",
-    left: "50%",
-    width: "110px",
-    height: "110px",
+    x: 400,
+    y: 550,
+    w: 90,
+    h: 90,
     zIndex: 50,
-    assetPath: ""
+    assetPath: "",
+    anchor: "center"
   }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
-  U$2.useEffect(() => {
-    console.log(">>> VILLAGE_VIEW_PREMIUM_INITIALIZED <<<");
+  const containerRef = reactExports.useRef(null);
+  const [scale2, setScale] = reactExports.useState(1);
+  reactExports.useEffect(() => {
+    const updateScale = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.clientWidth;
+        setScale(width / REFERENCE_WIDTH);
+      }
+    };
+    const observer2 = new ResizeObserver(updateScale);
+    if (containerRef.current) observer2.observe(containerRef.current);
+    updateScale();
+    return () => observer2.disconnect();
   }, []);
   const getBuildingLevel = (type2) => {
     var _a2;
@@ -28305,99 +28330,105 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
     });
     return (b2 == null ? void 0 : b2.nivel) || 0;
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full aspect-video bg-[#010203] rounded-[3rem] overflow-hidden border border-white/10 shadow-[0_0_120px_rgba(0,0,0,1)] select-none", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "img",
-      {
-        src: "/assets/structures/v2/terrain.png",
-        className: "w-full h-full object-cover brightness-[0.5] contrast-[1.2]",
-        alt: "Base Terrain"
-      }
-    ) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Object.entries(BUILDING_LAYOUT_CONFIG).map(([type2, layout2]) => {
-      var _a2;
-      const level = getBuildingLevel(type2);
-      const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
-      const config = (_a2 = gameConfig == null ? void 0 : gameConfig.buildings) == null ? void 0 : _a2[type2];
-      if (level === 0 && !isConstructing) return null;
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "absolute -translate-x-1/2 -translate-y-1/2",
-          style: {
-            top: layout2.top,
-            left: layout2.left,
-            zIndex: layout2.zIndex,
-            width: layout2.width,
-            height: layout2.height
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Tooltip, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              motion.button,
-              {
-                whileHover: { scale: 1.05 },
-                whileTap: { scale: 0.95 },
-                onClick: () => onBuildingClick({ id: type2, buildingType: type2, name: (config == null ? void 0 : config.name) || type2, level }),
-                className: "relative w-full h-full cursor-pointer group/building outline-none",
-                children: [
-                  layout2.assetPath ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "img",
-                    {
-                      src: layout2.assetPath,
-                      className: `w-full h-full object-contain transition-all duration-500 mix-blend-screen
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      ref: containerRef,
+      className: "relative w-full aspect-video bg-[#010203] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl select-none",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: "/assets/structures/v2/terrain.png",
+            className: "w-full h-full object-cover brightness-[0.5] contrast-[1.2]",
+            alt: "Terrain"
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-20 pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: Object.entries(BUILDING_LAYOUT_CONFIG).map(([type2, layout2]) => {
+          var _a2;
+          const level = getBuildingLevel(type2);
+          const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
+          const config = (_a2 = gameConfig == null ? void 0 : gameConfig.buildings) == null ? void 0 : _a2[type2];
+          if (level === 0 && !isConstructing) return null;
+          const scaledX = layout2.x * scale2;
+          const scaledY = layout2.y * scale2;
+          const scaledW = layout2.w * scale2;
+          const scaledH = layout2.h * scale2;
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "absolute pointer-events-auto",
+              style: {
+                top: scaledY,
+                left: scaledX,
+                zIndex: layout2.zIndex,
+                width: scaledW,
+                height: scaledH,
+                transform: "translate(-50%, -50%)"
+                // PASSO 4 — CENTER ANCHOR
+              },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Tooltip, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  motion.button,
+                  {
+                    whileHover: { scale: 1.05 },
+                    whileTap: { scale: 0.95 },
+                    onClick: () => onBuildingClick({ id: type2, buildingType: type2, name: (config == null ? void 0 : config.name) || type2, level }),
+                    className: `relative w-full h-full cursor-pointer group/building outline-none
+                                                ${""} 
+                                            `,
+                    children: [
+                      layout2.assetPath ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "img",
+                        {
+                          src: layout2.assetPath,
+                          className: `w-full h-full object-contain mix-blend-screen transition-all
                                                         ${isConstructing ? "brightness-50 grayscale" : "brightness-[1.2] group-hover/building:brightness-[1.4]"}
                                                     `,
-                      alt: type2
-                    }
-                  ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1/2 h-1/2 bg-black/60 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-white opacity-40", children: type2.slice(0, 3) }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 px-3 py-1 bg-black/90 border border-white/20 rounded-full shadow-2xl backdrop-blur-xl group-hover/building:border-white/40 transition-all opacity-80 group-hover:opacity-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${isConstructing ? "bg-orange-500 animate-pulse" : "bg-emerald-500 shadow-[0_0_8px_currentColor]"}` }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black font-mono text-white tracking-widest", children: level })
-                  ] }) }),
-                  isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-orange-500/5 animate-pulse rounded-full blur-2xl" })
-                ]
-              }
-            ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipContent, { className: "bg-black/95 border-white/10 text-white p-6 rounded-[2.5rem] shadow-3xl min-w-[200px] backdrop-blur-3xl z-[1000]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[9px] font-black text-neutral-600 uppercase tracking-widest leading-none", children: [
-                "Authorization_Ref_",
-                type2
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black uppercase text-xl tracking-tighter leading-none", children: (config == null ? void 0 : config.name) || type2 }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-px bg-white/5" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center text-[10px] font-black uppercase", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-neutral-500", children: "Status" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: isConstructing ? "text-orange-400 animate-pulse" : "text-emerald-400", children: isConstructing ? "Em Expansão" : "Operacional" })
+                          style: { transform: "scale(1.2)" },
+                          alt: type2
+                        }
+                      ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1/2 h-1/2 mx-auto mt-[25%] bg-black/60 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-white/40", children: type2.slice(0, 3) }) }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "absolute top-0 left-1/2 -translate-x-1/2 bg-black/90 border border-white/20 px-2 py-0.5 rounded-full shadow-2xl backdrop-blur-xl transition-all",
+                          style: { fontSize: Math.max(8, 12 * scale2) },
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 px-1", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${isConstructing ? "bg-orange-500 animate-pulse" : "bg-emerald-500 shadow-[0_0_8px_currentColor]"}` }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-black font-mono text-white", children: [
+                              "L.",
+                              level
+                            ] })
+                          ] })
+                        }
+                      )
+                    ]
+                  }
+                ) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipContent, { className: "bg-black/95 border-white/10 text-white p-4 rounded-3xl shadow-3xl backdrop-blur-3xl z-[1000]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] font-black text-neutral-500 uppercase tracking-widest", children: type2 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black uppercase text-sm tracking-tighter", children: (config == null ? void 0 : config.name) || type2 })
+                ] }) })
               ] })
-            ] }) })
+            },
+            type2
+          );
+        }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-6 left-6 z-[100] pointer-events-none", style: { transform: `scale(${Math.max(0.7, scale2)})`, transformOrigin: "top left" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 bg-black/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-2xl", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Radio, { size: 16, className: "text-sky-400 animate-pulse" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] font-black text-white uppercase tracking-[0.2em]", children: [
+            base.nome,
+            " // COMMAND_PIXEL_PERFECT"
           ] })
-        },
-        type2
-      );
-    }) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-10 left-10 z-[100] pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 bg-black/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-2xl", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Radio, { size: 16, className: "text-sky-400 animate-pulse" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] font-black text-white uppercase tracking-[0.2em]", children: [
-        base.nome,
-        " // SECTOR_ACTIVE"
-      ] })
-    ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-10 right-10 z-[100] pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 bg-black/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-2xl", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { size: 16, className: "text-emerald-500 animate-pulse" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-black text-white uppercase tracking-widest", children: [
-        "Base_Integrity: ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-500", children: "OPTIMAL" })
-      ] })
-    ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: "absolute inset-0 z-[110] pointer-events-none opacity-[0.03]",
-        style: { backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px)", backgroundSize: "100% 4px" }
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { style: { visibility: "hidden", position: "absolute", width: 0, height: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("filter", { id: "chroma-key-black", children: /* @__PURE__ */ jsxRuntimeExports.jsx("feColorMatrix", { type: "matrix", values: "1 0 0 0 0\n                                                        0 1 0 0 0\n                                                        0 0 1 0 0\n                                                        1.8 1.8 1.8 0 -0.8" }) }) })
-  ] });
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-6 right-6 z-[100] pointer-events-none", style: { transform: `scale(${Math.max(0.7, scale2)})`, transformOrigin: "top right" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 bg-black/60 px-6 py-3 rounded-full border border-white/10 backdrop-blur-2xl", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { size: 16, className: "text-emerald-500 animate-pulse" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-white uppercase tracking-widest", children: "Base_Integrity: 100%" })
+        ] }) })
+      ]
+    }
+  );
 };
 const Dialog = Root$4;
 const DialogTrigger = Trigger$2;
@@ -44512,7 +44543,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DESDt8N2.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DcvLXkS2.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44548,4 +44579,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CqeuQtgJ.js.map
+//# sourceMappingURL=app-tWEM13ME.js.map
