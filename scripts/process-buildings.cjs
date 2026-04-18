@@ -16,7 +16,9 @@ const TARGET_SIZES = {
   aerodromo: 120,
   muralha: 140,
   mine: 100,
-  housing: 110
+  housing: 110,
+  refinaria: 110,
+  posto_recrutamento: 110
 };
 
 const DEFAULT_SIZE = 100;
