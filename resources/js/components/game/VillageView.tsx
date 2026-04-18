@@ -7,9 +7,10 @@ interface VillageViewProps {
     base: Base;
     onBuildingClick: (building: any) => void;
     gameConfig: any;
+    buildingQueue: any[];
 }
 
-export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig }) => {
+export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
     const bConfigs = Object.values(buildingConfigs);
     const playerBuildings = React.useMemo(() => {
         const list = [
@@ -35,7 +36,8 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
             ...b,
             uniqueId: existing ? existing.id : `ghost-${b.id}`,
             level: existing ? existing.level : 0,
-            isBuilt: !!existing
+            isBuilt: !!existing,
+            isUpgradingNow: (buildingQueue || []).some(q => q.type === b.id)
         };
     });
 
@@ -52,6 +54,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                             buildingType={b.id}
                             nome={b.name}
                             nivel={b.level}
+                            isConstructing={b.isUpgradingNow}
                             onClick={() => onBuildingClick({ ...b, buildingType: b.id })}
                             isLocked={!b.isBuilt && b.level === 0 && b.id !== 'qg' && b.id !== 'muralha'} // Exemplo de lock
                         />

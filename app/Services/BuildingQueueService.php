@@ -41,15 +41,26 @@ class BuildingQueueService
         return DB::transaction(function() use ($base, $type, $posX, $posY, $buildingId) {
             $type = BuildingType::normalize($type);
 
-            $nivelSincronizado = $this->getCurrentLevel($base, $type);
+            // PASSO 5 - BLOQUEIO DE DUPLICAÇÃO Simultânea
+            // Se já existe o MEMO edifício na fila, impedimos nova ordem para evitar dessincronização
+            $existing = BuildingQueue::where('base_id', $base->id)
+                ->where('type', $type)
+                ->exists();
             
-            // PASSO 4 — VALIDAR NÍVEL: target_level = level_future + 1
-            $targetLevel = $nivelSincronizado + 1;
+            if ($existing) {
+                throw new \Exception("ENGENHARIA: Já existe uma obra em curso ou planeada para " . strtoupper($type));
+            }
 
-            $tempo = BuildingRules::calculateTime($type, $nivelSincronizado);
+            // PASSO 4 - LOCK: Bloquear a base para garantir exclusividade na transação
+            $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
+            
+            $nivelAtual = (new GameService($this->timeService))->obterNivelEdificio($lockedBase, $type);
+            $targetLevel = $nivelAtual + 1;
+
+            $tempo = BuildingRules::calculateTime($type, $nivelAtual);
             $now = $this->timeService->now();
             
-            // LOCK FOR UPDATE no seqüenciamento (Evitar Race Conditions - Audit 1.0)
+            // LOCK FOR UPDATE na fila para sequenciamento
             $lastEntry = BuildingQueue::where('base_id', $base->id)
                 ->orderBy('finishes_at', 'desc')
                 ->lockForUpdate()
@@ -57,7 +68,6 @@ class BuildingQueueService
 
             $startTime = ($lastEntry && $lastEntry->finishes_at > $now) ? $lastEntry->finishes_at : $now;
 
-            // PASSO 3 - Create
             return BuildingQueue::create([
                 'base_id' => $base->id,
                 'building_id' => $buildingId,
@@ -131,17 +141,7 @@ class BuildingQueueService
 
     private function getCurrentLevel(Base $base, string $type): int
     {
-        $dbLevel = 0;
-        if ($type === BuildingType::QG) $dbLevel = (int) ($base->qg_nivel ?? 0);
-        elseif ($type === BuildingType::MURALHA) $dbLevel = (int) ($base->muralha_nivel ?? 0);
-        else $dbLevel = (int) ($base->edificios()->where('tipo', $type)->first()?->nivel ?? 0);
-
-        // Somar o número de upgrades deste tipo já na fila para obter o nível futuro
-        $maxQueueEntry = BuildingQueue::where('base_id', $base->id)
-            ->where('type', $type)
-            ->orderBy('target_level', 'desc')
-            ->first();
-
-        return (int) max($dbLevel, $maxQueueEntry ? $maxQueueEntry->target_level : 0);
+        // Esta função agora é apenas descritiva, a fonte da verdade é o GameService
+        return (new GameService($this->timeService))->obterNivelEdificio($base, $type);
     }
 }

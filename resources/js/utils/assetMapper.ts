@@ -22,14 +22,12 @@ export const getBuildingAsset = (type: string, level: number | 'blueprint' = 1):
 
 export const getUnitAsset = (type: string): string => {
     if (!type) return '/assets/placeholders/unit_unknown.svg';
-    const t = type.toLowerCase();
     
-    // Lista de unidades que ainda dependem de placeholders
-    const placeholders: string[] = []; // Todos agora possuem arte final
-    
-    if (placeholders.includes(t)) {
-        return `/assets/placeholders/unit_${t}.svg`;
-    }
+    // Normalizar nome: lower case + remover parênteses + trocar espaços por hífens
+    const t = type.toLowerCase()
+        .replace(/\((.*?)\)/g, '$1') // remove parênteses mas mantém o conteúdo
+        .trim()
+        .replace(/\s+/g, '-');       // troca espaços por hífens
     
     // Caminho padrão para unidades com arte final
     return `/images/unidades/${t}.png`;

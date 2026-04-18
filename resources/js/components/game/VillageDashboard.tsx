@@ -102,13 +102,15 @@ export function VillageDashboard({
     if (selectedBuildingType) {
         const buildDef = (gameConfig?.buildings || {})[selectedBuildingType];
         
-        // Calcular Nível Futuro (DB + Queue)
+        // Calcular Nível Real e Estado de Obra
         const dbLevel = selectedBuildingType === 'qg' ? Number(base.qg_nivel) : 
                        (selectedBuildingType === 'muralha' ? Number(base.muralha_nivel) : 
                        (foundBuilding?.nivel || 0));
-        const queueEntries = (buildingQueue || []).filter(q => (q.buildingType || q.type) === selectedBuildingType);
+        
+        // Procurar na fila se existe QUALQUER entrada deste tipo
+        const queueEntries = (buildingQueue || []).filter(q => q.type === selectedBuildingType);
         const isUpgradingNow = queueEntries.length > 0;
-        const nextLevel = isUpgradingNow ? Math.max(...queueEntries.map(q => q.target_level)) : dbLevel + 1;
+        const nextLevel = dbLevel + 1;
 
         if (selectedBuildingType === 'qg') {
             currentBuilding = { buildingType: 'qg', nome: 'Quartel General', nivel: dbLevel, nextLevel, isUpgradingNow, base: base };
@@ -246,7 +248,7 @@ export function VillageDashboard({
                         unitTypes={unitTypes}
                     />
                     ) : (
-                        <VillageView base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} />
+                        <VillageView base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} buildingQueue={buildingQueue} />
                     )}
                 </div>
 
