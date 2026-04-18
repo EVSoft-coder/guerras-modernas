@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Auth;
 class UnitRecruitmentController extends Controller
 {
     private \App\Application\TrainUnits $trainUnits;
-
-    private \App\Application\TrainUnits $trainUnits;
     private UnitQueueService $queueService;
 
     public function __construct(\App\Application\TrainUnits $trainUnits, UnitQueueService $queueService)
@@ -22,7 +20,6 @@ class UnitRecruitmentController extends Controller
 
     /**
      * Endpoint para recrutamento de unidades.
-     * PASSO 6 - recruit
      */
     public function recruit(Request $request)
     {
@@ -52,6 +49,8 @@ class UnitRecruitmentController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
     public function cancel(Request $request, $id)
     {
         try {
