@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BUILDING_LAYOUT } from '@/config/buildingLayout';
 import { BUILDING_ASSETS } from '@/config/buildingAssets';
 
@@ -22,6 +22,22 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     name, 
     onClick 
 }) => {
+    const nodeRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!nodeRef.current) return;
+        const style = window.getComputedStyle(nodeRef.current);
+        const bg = style.backgroundColor;
+        const pad = style.padding;
+
+        if (bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+            console.warn(`[QA ALERT] Building "${type}" detects invasive background: ${bg}`);
+        }
+        if (pad !== '0px') {
+            console.warn(`[QA ALERT] Building "${type}" detects invasive padding: ${pad}`);
+        }
+    }, [type]);
+
     const layout = BUILDING_LAYOUT[type];
     if (!layout) return null;
 
@@ -43,6 +59,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     return (
         <div 
             id={`node-${type}`}
+            ref={nodeRef}
             className="building-node"
             style={{ 
                 position: 'absolute',

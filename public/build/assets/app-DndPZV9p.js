@@ -28252,6 +28252,19 @@ const BuildingNode = ({
   name,
   onClick
 }) => {
+  const nodeRef = reactExports.useRef(null);
+  reactExports.useEffect(() => {
+    if (!nodeRef.current) return;
+    const style = window.getComputedStyle(nodeRef.current);
+    const bg = style.backgroundColor;
+    const pad = style.padding;
+    if (bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") {
+      console.warn(`[QA ALERT] Building "${type2}" detects invasive background: ${bg}`);
+    }
+    if (pad !== "0px") {
+      console.warn(`[QA ALERT] Building "${type2}" detects invasive padding: ${pad}`);
+    }
+  }, [type2]);
   const layout2 = BUILDING_LAYOUT[type2];
   if (!layout2) return null;
   const assetConfig = BUILDING_ASSETS[type2] || { width: 100, height: 100 };
@@ -28265,6 +28278,7 @@ const BuildingNode = ({
     "div",
     {
       id: `node-${type2}`,
+      ref: nodeRef,
       className: "building-node",
       style: {
         position: "absolute",
@@ -44522,7 +44536,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-LPX-dwMr.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Cqxn9nct.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44558,4 +44572,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-ItkwtRRW.js.map
+//# sourceMappingURL=app-DndPZV9p.js.map
