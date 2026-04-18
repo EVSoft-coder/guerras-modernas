@@ -181,10 +181,18 @@ export function VillageDashboard({
     };
 
     return (
-        <div className="flex h-full flex-1 flex-col gap-10 p-8 bg-neutral-950 text-white min-h-screen relative overflow-hidden">
-            {/* Background Decorativo Sutil */}
-            <div className="absolute top-0 right-0 w-[60%] h-[60%] bg-sky-500/10 blur-[200px] pointer-events-none animate-pulse duration-[10s]"></div>
-            <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-orange-500/5 blur-[150px] pointer-events-none"></div>
+        <div className="flex h-full flex-1 flex-col gap-10 p-8 bg-[#020406] text-white min-h-screen relative overflow-hidden font-sans">
+            {/* TACTICAL ATMOSPHERE ENGINE */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 right-0 w-[80%] h-[70%] bg-sky-500/10 blur-[180px] opacity-40 animate-pulse" />
+                <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-orange-500/5 blur-[150px] opacity-30" />
+                <div className="absolute inset-0 opacity-[0.03]" 
+                     style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
+                {/* SCANLINES */}
+                <div className="absolute inset-0 opacity-[0.05] pointer-events-none" 
+                     style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px)', backgroundSize: '100% 4px' }} />
+            </div>
 
             <Head title="Centro de Comando Tático" />
             <ResourceBar recursos={resources} taxasPerSecond={taxasPerSecond ?? {}} populacao={population} />
@@ -193,19 +201,24 @@ export function VillageDashboard({
                 <div className="lg:col-span-8 flex flex-col gap-6">
                     <div className="flex justify-between items-center px-4">
                          <div className="flex flex-col">
-                            <h2 className="text-2xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
-                                <Target className="text-orange-500 animate-pulse" size={28} />
-                                CENTRAL: {base?.nome ?? 'Desconhecido'}
+                            <h2 className="text-3xl font-black uppercase tracking-tighter text-white flex items-center gap-4">
+                                <div className="bg-orange-500/10 p-2 rounded-xl border border-orange-500/20 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
+                                    <Target className="text-orange-500 animate-pulse" size={32} />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] text-orange-500/60 font-black tracking-[0.4em] mb-0.5">ESTAÇÃO_OPERACIONAL</span>
+                                    {base?.nome ?? 'Desconhecido'}
+                                </div>
                                 
                                 {displayBases.length > 1 && (
-                                    <div className="flex gap-2 ml-4 self-center">
+                                    <div className="flex gap-1.5 ml-6 self-center bg-white/5 p-1 rounded-xl border border-white/5 backdrop-blur-sm">
                                         {displayBases.map(b => (
                                             <button 
                                                 key={b.id}
                                                 onClick={() => b.id !== base.id && router.get(`/base/switch/${b.id}`)}
                                                 className={`
-                                                    px-4 py-1.5 rounded-sm text-[8px] font-black uppercase tracking-widest border transition-all
-                                                    ${b.id === base.id ? 'bg-orange-500 border-orange-400 text-black shadow-[0_0_15px_rgba(249,115,22,0.4)]' : 'bg-black/40 border-white/10 text-neutral-500 hover:border-white/30 hover:text-white'}
+                                                    px-5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-[0.15em] border transition-all duration-300
+                                                    ${b.id === base.id ? 'bg-orange-500 border-orange-400 text-black shadow-[0_0_20px_rgba(249,115,22,0.3)]' : 'bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5'}
                                                 `}
                                             >
                                                 {b.nome}
@@ -220,18 +233,19 @@ export function VillageDashboard({
                                     <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">Sistemas On-line</span>
                                 </div>
                                 
-                                {base?.loyalty !== undefined && (
-                                     <div className="flex items-center gap-2 bg-black/40 px-3 py-1 rounded-sm border border-white/5">
-                                        <div className="text-[10px] text-orange-500 font-black uppercase tracking-widest">Controlo Civil:</div>
-                                        <div className="w-24 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
-                                            <div 
-                                                className="h-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)] transition-all duration-1000" 
-                                                style={{ width: `${base.loyalty}%` }}
-                                            ></div>
-                                        </div>
-                                        <span className="text-[10px] text-white font-mono font-bold">{base.loyalty}%</span>
-                                     </div>
-                                )}
+                                 {base?.loyalty !== undefined && (
+                                      <div className="flex items-center gap-3 bg-black/40 px-4 py-2 rounded-2xl border border-white/5 shadow-xl backdrop-blur-md">
+                                         <div className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">Civil_Control:</div>
+                                         <div className="w-32 h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5">
+                                             <motion.div 
+                                                 initial={{ width: 0 }}
+                                                 animate={{ width: `${base.loyalty}%` }}
+                                                 className="h-full bg-gradient-to-r from-orange-600 to-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.5)]" 
+                                             />
+                                         </div>
+                                         <span className="text-[11px] text-white font-black font-mono tracking-tighter">{base.loyalty}%</span>
+                                      </div>
+                                 )}
                             </div>
                          </div>
                          <div className="text-[10px] text-neutral-700 font-mono bg-white/5 px-3 py-1 rounded-full border border-white/5">
