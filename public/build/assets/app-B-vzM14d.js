@@ -28177,7 +28177,7 @@ const AnimatedNumber = ({ value, customValue }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: Math.floor(displayValue).toLocaleString() });
 };
 const BUILDING_LAYOUT = {
-  // LAYOUT DETERMINÍSTICO V12.7 — CALIBRAÇÃO FINAL (terrain_v12)
+  // LAYOUT DETERMINÍSTICO V12.8 — SINCRONIZAÇÃO DE ATIVOS REAIS
   qg: { x: 400, y: 300, w: 180, h: 180, anchor: "bottom", assetName: "qg.png" },
   quartel: { x: 670, y: 450, w: 110, h: 110, anchor: "bottom", assetName: "quartel.png" },
   fabrica_municoes: { x: 340, y: 450, w: 110, h: 110, anchor: "bottom", assetName: "fabrica_municoes.png" },
@@ -28188,8 +28188,8 @@ const BUILDING_LAYOUT = {
   muralha: { x: 400, y: 580, w: 260, h: 110, anchor: "bottom", assetName: "muralha.png" },
   // Fallbacks e Edifícios de Produção
   refinaria: { x: 800, y: 550, w: 110, h: 110, anchor: "bottom", assetName: "refinaria.png" },
-  mina_suprimentos: { x: 210, y: 560, w: 100, h: 100, anchor: "bottom", assetName: "mina_suprimentos.png" },
-  mina_metal: { x: 460, y: 580, w: 120, h: 120, anchor: "bottom", assetName: "mina_metal.png" },
+  mina_suprimentos: { x: 210, y: 560, w: 100, h: 100, anchor: "bottom", assetName: "mine.png" },
+  mina_metal: { x: 460, y: 580, w: 120, h: 120, anchor: "bottom", assetName: "mine.png" },
   housing: { x: 140, y: 160, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" },
   posto_recrutamento: { x: 860, y: 160, w: 110, h: 110, anchor: "bottom", assetName: "posto_recrutamento.png" }
 };
@@ -44628,7 +44628,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-BbFbyvz8.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BC6uSU9I.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44664,4 +44664,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BvTxW33Q.js.map
+//# sourceMappingURL=app-B-vzM14d.js.map
