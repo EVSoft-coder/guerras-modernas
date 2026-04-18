@@ -46,6 +46,17 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     boxShadow: '0 0 50px rgba(0,0,0,0.8)'
                 }}
             >
+                <style>{`
+                    #VillageCanvas * {
+                        background-color: transparent !important;
+                    }
+                    @keyframes pulse {
+                        0% { opacity: 0.3; }
+                        50% { opacity: 0.7; }
+                        100% { opacity: 0.3; }
+                    }
+                `}</style>
+
                 {/* CAMADA 1: background-layer */}
                 <div 
                     id="background-layer" 

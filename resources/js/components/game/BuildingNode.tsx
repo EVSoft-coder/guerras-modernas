@@ -38,7 +38,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     return (
         <div 
             id={`node-${type}`}
-            className="building-node group transition-transform duration-200 ease-out hover:scale-[1.08]"
+            className="building-node"
             style={{ 
                 position: 'absolute',
                 left: `${left}px`,
@@ -48,30 +48,33 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 zIndex: staticZ,
                 cursor: 'pointer',
                 pointerEvents: 'auto',
-                background: 'transparent'
+                background: 'transparent',
+                border: 'none',
+                boxShadow: 'none',
+                padding: '0'
             }}
             onClick={(e) => {
                 e.stopPropagation();
                 onClick();
             }}
         >
-            {/* SOMBRA DE CONTACTO AAA */}
+            {/* SOMBRA DE CONTACTO (OPCIONAL - MANTIDA MAS COM OPACIDADE MÍNIMA) */}
             <div 
                 style={{ 
                     position: 'absolute',
-                    bottom: '-5px',
-                    left: '20%',
-                    width: '60%',
-                    height: '20px',
-                    background: 'rgba(0,0,0,0.45)',
-                    filter: 'blur(8px)',
+                    bottom: '-2px',
+                    left: '25%',
+                    width: '50%',
+                    height: '10px',
+                    background: 'rgba(0,0,0,0.2)',
+                    filter: 'blur(10px)',
                     borderRadius: '100%',
                     zIndex: -1,
                     pointerEvents: 'none'
                 }} 
             />
 
-            {/* ASSET (NORMALIZADO COM BLENDING LIGHTEN) */}
+            {/* IMAGEM DO EDIFÍCIO - SEM QUALQUER FUNDO */}
             {assetPath && (
                 <img 
                     src={assetPath} 
@@ -79,58 +82,35 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                         display: 'block',
                         width: '100%', 
                         height: '100%',
+                        objectFit: 'contain',
                         pointerEvents: 'none',
                         mixBlendMode: 'lighten',
                         background: 'transparent',
-                        filter: 'contrast(1.1)',
-                        opacity: isConstructing ? 0.5 : 1
                     }}
                     alt={name}
                 />
             )}
 
-            {/* HUD / LEVEL BADGE (OFF-SET PARA EVITAR SOBREPOSIÇÃO) */}
+            {/* HUD / LEVEL BADGE (MINIMALISTA ABSOLUTO - SEM CAIXAS) */}
             <div 
                 style={{ 
                     position: 'absolute',
-                    width: '140%',
-                    left: '-20%',
-                    bottom: '-10px',
+                    width: '100%',
+                    bottom: '-5px',
                     textAlign: 'center',
-                    pointerEvents: 'none',
-                    zIndex: 10
+                    pointerEvents: 'none'
                 }}
             >
                 <div style={{ 
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    backgroundColor: 'rgba(0,0,0,0.85)',
-                    border: '1px solid rgba(0,255,0,0.2)',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    backdropFilter: 'blur(4px)',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
+                    display: 'inline-block',
+                    color: '#0f0', 
+                    fontSize: '10px', 
+                    fontWeight: '900', 
+                    fontFamily: 'monospace',
+                    textTransform: 'uppercase',
+                    textShadow: '1px 1px 2px black'
                 }}>
-                    <span style={{ 
-                        color: '#fff', 
-                        fontSize: '8px', 
-                        fontWeight: '800', 
-                        fontFamily: 'monospace',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em'
-                    }}>
-                        {name}
-                    </span>
-                    <span style={{ 
-                        color: '#0f0', 
-                        fontSize: '9px', 
-                        fontWeight: 'bold',
-                        paddingLeft: '4px',
-                        borderLeft: '1px solid rgba(0,255,0,0.3)'
-                    }}>
-                        {level}
-                    </span>
+                    {name.split(' ')[0]} L{level}
                 </div>
             </div>
 
