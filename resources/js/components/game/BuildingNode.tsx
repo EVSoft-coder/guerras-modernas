@@ -61,16 +61,16 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, scale, 
                 style={{ transform: 'translateX(-50%)' }}
             />
 
-            {/* ASSET VISUAL REAL (CORREÇÃO DE FUNDO PRETO) */}
+            {/* ASSET VISUAL REAL (PASSO FINAL — PURGA DE PRETOS) */}
             {assetPath ? (
                 <img 
                     src={assetPath} 
                     className={`w-full h-full object-contain pointer-events-none mix-blend-screen transition-all duration-500
-                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.15] contrast-[1.25] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110'}
+                        ${isConstructing ? 'brightness-50 grayscale opacity-40' : 'brightness-[1.2] contrast-[1.4] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110'}
                     `}
                     alt={name}
                     style={{
-                        filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.5))'
+                        filter: 'drop-shadow(0 0 15px rgba(0,0,0,0.6)) grayscale(0.1)'
                     }}
                     onError={(e) => {
                         e.currentTarget.style.display = 'none';

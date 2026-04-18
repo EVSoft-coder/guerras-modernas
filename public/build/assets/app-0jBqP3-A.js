@@ -28178,25 +28178,26 @@ const AnimatedNumber = ({ value, customValue }) => {
 };
 const REFERENCE_WIDTH = 800;
 const BUILDING_LAYOUT = {
-  // REALINHAMENTO VISUAL BASEADO EM SCREENSHOT (HEX PAD CENTRAL)
-  qg: { x: 498, y: 435, w: 230, h: 230, anchor: "bottom", assetName: "hq.png" },
-  // ANEL SUPERIOR (BLUE CIRCLES & RED SQUARES)
-  radar_estrategico: { x: 230, y: 310, w: 100, h: 100, anchor: "bottom", assetName: "radar.png" },
-  central_energia: { x: 355, y: 195, w: 90, h: 90, anchor: "bottom", assetName: "energy.png" },
-  centro_pesquisa: { x: 760, y: 285, w: 110, h: 110, anchor: "bottom", assetName: "research.png" },
-  // ANEL MÉDIO
-  quartel: { x: 780, y: 440, w: 120, h: 120, anchor: "bottom", assetName: "barracks.png" },
-  fabrica_municoes: { x: 190, y: 460, w: 120, h: 120, anchor: "bottom", assetName: "factory.png" },
-  refinaria: { x: 410, y: 240, w: 100, h: 100, anchor: "bottom", assetName: "factory.png" },
-  // ZONA FRONTAL (PADS INFERIORES)
-  aerodromo: { x: 495, y: 560, w: 180, h: 180, anchor: "bottom", assetName: "aerodrome.png" },
-  // RECURSOS (EXTREMIDADES)
-  mina_suprimentos: { x: 140, y: 250, w: 110, h: 110, anchor: "bottom", assetName: "mine.png" },
-  mina_metal: { x: 860, y: 550, w: 120, h: 120, anchor: "bottom", assetName: "mine.png" },
-  housing: { x: 80, y: 430, w: 90, h: 90, anchor: "bottom", assetName: "housing.png" },
-  posto_recrutamento: { x: 740, y: 150, w: 90, h: 90, anchor: "bottom", assetName: "housing.png" },
-  muralha: { x: 500, y: 640, w: 380, h: 160, anchor: "center", assetName: "" },
-  parlamento: { x: 520, y: 175, w: 100, h: 100, anchor: "bottom", assetName: "" }
+  // REALINHAMENTO TOTAL V2 (MAPA V8)
+  qg: { x: 550, y: 440, w: 230, h: 230, anchor: "bottom", assetName: "hq.png" },
+  // ANEL SUPERIOR (PADS VERMELHOS E AZUIS TOPO)
+  radar_estrategico: { x: 230, y: 250, w: 100, h: 100, anchor: "bottom", assetName: "radar.png" },
+  central_energia: { x: 380, y: 180, w: 90, h: 90, anchor: "bottom", assetName: "energy.png" },
+  centro_pesquisa: { x: 740, y: 180, w: 110, h: 110, anchor: "bottom", assetName: "research.png" },
+  // ANEL MÉDIO (PADS AZUIS LATERAIS)
+  quartel: { x: 780, y: 420, w: 120, h: 120, anchor: "bottom", assetName: "barracks.png" },
+  fabrica_municoes: { x: 300, y: 550, w: 130, h: 130, anchor: "bottom", assetName: "factory.png" },
+  refinaria: { x: 440, y: 260, w: 110, h: 110, anchor: "bottom", assetName: "factory.png" },
+  // FRONTAL (PAD GRANDE INFERIOR)
+  aerodromo: { x: 650, y: 680, w: 220, h: 220, anchor: "bottom", assetName: "aerodrome.png" },
+  // EXTREMIDADES (MINAS E HABITAÇÃO)
+  mina_suprimentos: { x: 120, y: 180, w: 110, h: 110, anchor: "bottom", assetName: "mine.png" },
+  mina_metal: { x: 860, y: 580, w: 130, h: 130, anchor: "bottom", assetName: "mine.png" },
+  housing: { x: 140, y: 440, w: 110, h: 110, anchor: "bottom", assetName: "housing.png" },
+  posto_recrutamento: { x: 750, y: 140, w: 90, h: 90, anchor: "bottom", assetName: "housing.png" },
+  // DEFESA E POLÍTICA (MURALHA ATIVA)
+  muralha: { x: 400, y: 560, w: 420, h: 120, anchor: "center", assetName: "wall.png" },
+  parlamento: { x: 550, y: 150, w: 110, h: 110, anchor: "bottom", assetName: "research.png" }
 };
 const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name, onClick }) => {
   const layout2 = BUILDING_LAYOUT[type2];
@@ -28244,11 +28245,11 @@ const BuildingNode = ({ type: type2, level, scale: scale2, isConstructing, name,
           {
             src: assetPath,
             className: `w-full h-full object-contain pointer-events-none mix-blend-screen transition-all duration-500
-                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.15] contrast-[1.25] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110"}
+                        ${isConstructing ? "brightness-50 grayscale opacity-40" : "brightness-[1.2] contrast-[1.4] opacity-95 group-hover/node:opacity-100 group-hover/node:scale-110"}
                     `,
             alt: name,
             style: {
-              filter: "drop-shadow(0 0 10px rgba(0,0,0,0.5))"
+              filter: "drop-shadow(0 0 15px rgba(0,0,0,0.6)) grayscale(0.1)"
             },
             onError: (e) => {
               e.currentTarget.style.display = "none";
@@ -44467,7 +44468,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DR7YiSPh.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DYjEUXrD.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44503,4 +44504,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CPp2h-4g.js.map
+//# sourceMappingURL=app-0jBqP3-A.js.map

@@ -2771,10 +2771,6 @@
     background-color: color-mix(in oklab, var(--color-black) 40%, transparent);
   }
 
-  .bg-black\/50 {
-    background-color: color-mix(in oklab, var(--color-black) 50%, transparent);
-  }
-
   .bg-black\/60 {
     background-color: color-mix(in oklab, var(--color-black) 60%, transparent);
   }
@@ -4342,10 +4338,6 @@
     opacity: .05;
   }
 
-  .mix-blend-lighten {
-    mix-blend-mode: lighten;
-  }
-
   .mix-blend-screen {
     mix-blend-mode: screen;
   }
@@ -4659,8 +4651,8 @@
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
-  .brightness-\[1\.1\] {
-    --tw-brightness: brightness(1.1);
+  .brightness-\[1\.2\] {
+    --tw-brightness: brightness(1.2);
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
@@ -4671,6 +4663,11 @@
 
   .contrast-\[1\.1\] {
     --tw-contrast: contrast(1.1);
+    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+  }
+
+  .contrast-\[1\.4\] {
+    --tw-contrast: contrast(1.4);
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
