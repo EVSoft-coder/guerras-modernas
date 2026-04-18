@@ -92,23 +92,18 @@ const QueueItem = ({ item, isFirst }: { item: QueueItemData, isFirst: boolean })
         const elapsed = now - start;
         const remaining = end - now;
 
-        // Se o tempo acabou e não foi processado pelo backend ainda, omitimos da UI (PASSO 4)
-        if (remaining <= 0) return null;
-
+        const h = Math.max(0, Math.floor(remaining / 3600000));
+        const m = Math.max(0, Math.floor((remaining % 3600000) / 60000));
+        const s = Math.max(0, Math.floor((remaining % 60000) / 1000));
+        
+        const timeStr = remaining <= 0 ? 'A Processar...' : (h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`);
         const percent = Math.min(100, Math.max(0, (elapsed / total) * 100));
-        
-        const h = Math.floor(remaining / 3600000);
-        const m = Math.floor((remaining % 3600000) / 60000);
-        const s = Math.floor((remaining % 60000) / 1000);
-        
-        const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`;
 
         return { percent, timeStr };
     };
 
     const result = calculateProgress();
-    if (!result) return null;
-    const { percent, timeStr } = result;
+    const { percent, timeStr } = result || { percent: 100, timeStr: 'A Processar...' };
 
     return (
         <motion.div 

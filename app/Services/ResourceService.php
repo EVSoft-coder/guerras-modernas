@@ -96,6 +96,14 @@ class ResourceService
                 'calculated' => $calculated
             ]);
 
+            Log::channel('game')->info('[RESOURCE_SYNC] Pre-Update', [
+                'base_id' => $base->id,
+                'db_values' => [
+                    'sup' => $lockedBase->recursos->suprimentos,
+                    'metal' => $lockedBase->recursos->metal
+                ]
+            ]);
+
             // Write 1: Tabela Recursos
             $lockedBase->recursos->update([
                 'suprimentos' => $calculated['suprimentos'],
@@ -110,6 +118,11 @@ class ResourceService
             // Write 2: Tabela Bases
             $lockedBase->update([
                 'ultimo_update' => $now
+            ]);
+
+            Log::channel('game')->info('[RESOURCE_SYNC] Post-Update', [
+                'base_id' => $base->id,
+                'new_values' => $calculated
             ]);
 
             // Atualizar instâncias passadas por referência (se necessário)

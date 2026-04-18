@@ -238,8 +238,13 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                         <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] mb-2 opacity-50">Assinatura de Nível</h2>
                                         <div className="relative inline-block">
                                             <div className="text-8xl font-black text-white italic tracking-tighter leading-none select-none drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-                                                {building.nivel || 0}
+                                                {building.isUpgradingNow ? `${building.nivel} → ${building.nextLevel}` : (building.nivel || 0)}
                                             </div>
+                                            {building.isUpgradingNow && (
+                                                <div className="absolute -top-4 -right-12">
+                                                    <Badge className="bg-orange-500 text-black font-black text-[8px] animate-bounce">UPGRADE</Badge>
+                                                </div>
+                                            )}
                                             <div className="absolute -inset-2 bg-gradient-to-t from-sky-500/10 to-transparent blur-xl -z-10"></div>
                                         </div>
                                     </div>

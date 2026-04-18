@@ -76,10 +76,10 @@ class BuildingQueueService
     {
         $now = $this->timeService->now();
         
-        // Selecionar IDs pendentes para evitar problemas de hidratação em coleções passadas por referência
+        // Selecionar IDs pendentes de forma estrita (Fase 4B - Passo 3)
         $pendingIds = BuildingQueue::where('base_id', $base->id)
-            ->where('finishes_at', '<=', $now->addSeconds(2))
-            ->lockForUpdate() // PASSO 3 - LOCK FOR UPDATE
+            ->where('finishes_at', '<=', $now)
+            ->lockForUpdate()
             ->pluck('id');
 
         if ($pendingIds->isEmpty()) return;

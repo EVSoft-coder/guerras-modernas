@@ -106,26 +106,27 @@ export function VillageDashboard({
         const dbLevel = selectedBuildingType === 'qg' ? Number(base.qg_nivel) : 
                        (selectedBuildingType === 'muralha' ? Number(base.muralha_nivel) : 
                        (foundBuilding?.nivel || 0));
-        
         const queueEntries = (buildingQueue || []).filter(q => (q.buildingType || q.type) === selectedBuildingType);
-        const maxQueueLevel = queueEntries.length > 0 ? Math.max(...queueEntries.map(q => q.target_level)) : 0;
-        const futureLevel = Math.max(dbLevel, maxQueueLevel);
+        const isUpgradingNow = queueEntries.length > 0;
+        const nextLevel = isUpgradingNow ? Math.max(...queueEntries.map(q => q.target_level)) : dbLevel + 1;
 
         if (selectedBuildingType === 'qg') {
-            currentBuilding = { buildingType: 'qg', nome: 'Quartel General', nivel: futureLevel, base: base };
-            fallbackLevel = futureLevel;
+            currentBuilding = { buildingType: 'qg', nome: 'Quartel General', nivel: dbLevel, nextLevel, isUpgradingNow, base: base };
+            fallbackLevel = dbLevel;
         } else if (selectedBuildingType === 'muralha') {
-            currentBuilding = { buildingType: 'muralha', nome: 'Perímetro Defensivo', nivel: futureLevel, base: base };
-            fallbackLevel = futureLevel;
+            currentBuilding = { buildingType: 'muralha', nome: 'Perímetro Defensivo', nivel: dbLevel, nextLevel, isUpgradingNow, base: base };
+            fallbackLevel = dbLevel;
         } else if (foundBuilding) {
-            currentBuilding = { ...foundBuilding, ...buildDef, nome: buildDef?.name || 'Estrutura', nivel: futureLevel, base: base };
-            fallbackLevel = futureLevel;
+            currentBuilding = { ...foundBuilding, ...buildDef, nome: buildDef?.name || 'Estrutura', nivel: dbLevel, nextLevel, isUpgradingNow, base: base };
+            fallbackLevel = dbLevel;
         } else {
             currentBuilding = { 
                 ...buildDef, 
                 buildingType: selectedBuildingType, 
                 nome: buildDef?.name || 'Projeto Padrão', 
-                nivel: futureLevel,
+                nivel: dbLevel,
+                nextLevel,
+                isUpgradingNow,
                 base: base
             };
         }
