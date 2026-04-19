@@ -69,7 +69,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     }
                 `}</style>
 
-                    {/* CAMADA 1: background-layer (TERRENO INTEGRADO V15) */}
+                    {/* CAMADA 1: background-layer (TERRENO REALISTA V13) */}
                     <div 
                         id="background-layer" 
                         className="village-canvas"
@@ -77,11 +77,11 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                             position: 'absolute', 
                             inset: 0, 
                             zIndex: 1,
-                            background: '#1a1c20', 
+                            background: '#000', 
                         }}
                     >
                         <img 
-                            src="/images/village/terrain_v15.png" 
+                            src="/images/village/terrain_v13.png" 
                             style={{ 
                                 position: 'absolute',
                                 top: 0,
@@ -90,8 +90,9 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                                 height: '600px',
                                 objectFit: 'fill',
                                 pointerEvents: 'none',
+                                opacity: 1,
                             }}
-                            alt="Village Terrain V15"
+                            alt="Village Terrain"
                         />
                     </div>
 
