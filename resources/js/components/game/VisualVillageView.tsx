@@ -75,16 +75,19 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     className="village-canvas"
                     style={{ position: 'absolute', inset: 0, zIndex: 1 }}
                 >
+                    {/* TERRENO TÁTICO V13 — SIMPLIFICADO */}
                     <img 
-                        src="/assets/structures/v2/terrain_v12.png" 
-                        className="village-bg"
+                        src="/images/village/terrain_v13.png" 
                         style={{ 
-                            width: '800px', 
-                            height: '600px', 
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '800px',
+                            height: '600px',
                             objectFit: 'cover',
-                            filter: 'brightness(0.9) contrast(1.2)'
+                            pointerEvents: 'none',
                         }}
-                        alt="Mapa Tático" 
+                        alt="Village Terrain"
                     />
                 </div>
 
@@ -106,9 +109,8 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                                 key={type}
                                 type={type}
                                 level={level}
-                                scale={1}
+                                layout={layout}
                                 isConstructing={isConstructing}
-                                name={config?.name || type}
                                 onClick={() => onBuildingClick({ id: type, buildingType: type, name: config?.name || type, level })}
                             />
                         );

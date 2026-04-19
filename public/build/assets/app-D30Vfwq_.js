@@ -28309,15 +28309,17 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
-                src: "/assets/structures/v2/terrain_v12.png",
-                className: "village-bg",
+                src: "/images/village/terrain_v13.png",
                 style: {
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
                   width: "800px",
                   height: "600px",
                   objectFit: "cover",
-                  filter: "brightness(0.9) contrast(1.2)"
+                  pointerEvents: "none"
                 },
-                alt: "Mapa Tático"
+                alt: "Village Terrain"
               }
             )
           }
@@ -28339,9 +28341,8 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                 {
                   type: type2,
                   level,
-                  scale: 1,
+                  layout: layout2,
                   isConstructing,
-                  name: (config == null ? void 0 : config.name) || type2,
                   onClick: () => onBuildingClick({ id: type2, buildingType: type2, name: (config == null ? void 0 : config.name) || type2, level })
                 },
                 type2
@@ -44478,7 +44479,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CAD6LADW.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DGMDqUlr.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44514,4 +44515,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CzkFV2hK.js.map
+//# sourceMappingURL=app-D30Vfwq_.js.map
