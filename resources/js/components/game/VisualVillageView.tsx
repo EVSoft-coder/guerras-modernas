@@ -81,7 +81,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                         }}
                     >
                         <img 
-                            src="/images/village/terrain_v17.png" 
+                            src="/images/village/terrain_v18.png" 
                             style={{ 
                                 position: 'absolute',
                                 top: 0,
@@ -92,7 +92,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                                 pointerEvents: 'none',
                                 opacity: 1,
                             }}
-                            alt="Village Terrain Clean V17"
+                            alt="Village Terrain Clean V18"
                         />
                     </div>
 
