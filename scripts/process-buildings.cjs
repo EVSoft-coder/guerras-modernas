@@ -5,7 +5,6 @@ const path = require('path');
 const INPUT_DIR = path.join(__dirname, '../resources/assets/buildings_raw');
 const OUTPUT_DIR = path.join(__dirname, '../public/images/buildings');
 
-// Escalas padrão (ajustáveis conforme a Grelha V21)
 const TARGET_SIZES = {
   qg: 260,
   quartel: 110,
@@ -26,32 +25,37 @@ async function processImage(file) {
 
   const size = TARGET_SIZES[name] || DEFAULT_SIZE;
 
-  console.log(`[PROCESS] 🏗️  ${name} -> ${size}px (Fundo Transparente Forçado)`);
+  console.log(`[PROCESS] 🏗️  ${name} -> Purificando Fake Transparency...`);
 
   try {
-    // 1. CARREGAR E PREPARAR CANAL ALFA
     let pipeline = sharp(inputPath).ensureAlpha();
 
-    // 2. REMOÇÃO DE FUNDO PRETO (THRESHOLD)
-    // Criamos uma máscara onde pixels escuros (quase pretos) tornam-se transparentes
-    // Usamos pipeline.raw() para manipular se necessário, mas o threshold no Alpha é mais rápido
     const { data, info } = await pipeline.raw().toBuffer({ resolveWithObject: true });
     
-    // Threshold para considerar "preto": RGB < 15
-    const threshold = 15;
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i];
       const g = data[i+1];
       const b = data[i+2];
       
-      if (r < threshold && g < threshold && b < threshold) {
-        data[i+3] = 0; // Set Alpha to 0
+      // 1. REMOVER FUNDO PRETO
+      if (r < 25 && g < 25 && b < 25) {
+        data[i+3] = 0; 
+      }
+      
+      // 2. REMOVER FALSO XADREZ (Cinza 204 e Branco 255)
+      // Detetamos o padrão típico de "Fake Transparent PNG"
+      const isCheckerGrey = (r === 204 && g === 204 && b === 204);
+      const isCheckerWhite = (r === 255 && g === 255 && b === 255);
+      
+      if (isCheckerGrey || isCheckerWhite) {
+          // Apenas removemos se estivermos numa zona provável de fundo 
+          // (ou simplesmente removemos tudo o que for essa cor exata, já que são ativos militares cinza-escuro/metálico)
+          data[i+3] = 0;
       }
     }
 
-    // 3. RECONSTRUIR, TRIM E REDIMENSIONAR
     await sharp(data, { raw: info })
-      .trim() // Remove bordas vazias
+      .trim()
       .resize(size, size, {
         fit: 'contain',
         background: { r: 0, g: 0, b: 0, alpha: 0 }
@@ -59,7 +63,7 @@ async function processImage(file) {
       .png()
       .toFile(outputPath);
 
-    console.log(`[SUCCESS] ✅ ${name} exportado.`);
+    console.log(`[SUCCESS] ✅ ${name} purificado.`);
   } catch (err) {
     console.error(`[ERROR] ❌ Erro ao processar ${name}:`, err.message);
   }
@@ -67,23 +71,14 @@ async function processImage(file) {
 
 async function start() {
   await fs.ensureDir(OUTPUT_DIR);
-  
-  if (!await fs.exists(INPUT_DIR)) {
-    console.error(`[CRITICAL] ❌ Diretório de entrada não existe: ${INPUT_DIR}`);
-    return;
-  }
-
   const files = (await fs.readdir(INPUT_DIR)).filter(f => 
     ['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(f).toLowerCase())
   );
-
-  console.log(`[INIT] 🚀 Iniciando purificação de ${files.length} ativos...`);
   
   for (const file of files) {
     await processImage(file);
   }
-
-  console.log(`[DONE] 🏆 Todos os ativos foram purificados.`);
+  console.log(`[DONE] 🏆 Ativos limpos com sucesso.`);
 }
 
 start();
