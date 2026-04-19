@@ -28364,7 +28364,16 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
           {
             id: "buildings-layer",
             className: "buildings-layer",
-            style: { position: "absolute", inset: 0, zIndex: 2 },
+            style: {
+              position: "absolute",
+              inset: 0,
+              zIndex: 10,
+              // Camada acima do terreno
+              isolation: "auto",
+              // Permite que o zIndex dos filhos dite a ordem
+              pointerEvents: "none"
+              // Cliques passam para os filhos com pointer-events: auto
+            },
             children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
               var _a2;
               const level = getBuildingLevel(type2);
@@ -44514,7 +44523,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-kCzhicF1.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-sCG4J-En.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44550,4 +44559,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Bt-_wd_k.js.map
+//# sourceMappingURL=app-DiNSbgd4.js.map

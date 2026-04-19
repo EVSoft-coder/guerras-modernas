@@ -96,11 +96,17 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                         />
                     </div>
 
-                {/* CAMADA 2: buildings-layer */}
+                {/* CAMADA 2: buildings-layer (STACKING ISOMÉTRICO) */}
                 <div 
                     id="buildings-layer"
                     className="buildings-layer"
-                    style={{ position: 'absolute', inset: 0, zIndex: 2 }}
+                    style={{ 
+                        position: 'absolute', 
+                        inset: 0, 
+                        zIndex: 10, // Camada acima do terreno
+                        isolation: 'auto', // Permite que o zIndex dos filhos dite a ordem
+                        pointerEvents: 'none' // Cliques passam para os filhos com pointer-events: auto
+                    }}
                 >
                     {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
                         const level = getBuildingLevel(type);
