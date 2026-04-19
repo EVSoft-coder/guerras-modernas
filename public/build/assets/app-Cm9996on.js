@@ -28321,7 +28321,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
-                src: "/images/village/terrain_v20.png",
+                src: "/images/village/terrain_v21.png",
                 style: {
                   position: "absolute",
                   top: 0,
@@ -28332,11 +28332,46 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                   pointerEvents: "none",
                   opacity: 1
                 },
-                alt: "Village Terrain Balanced V20"
+                alt: "Village Terrain Naked V21"
               }
             )
           }
         ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pads-layer", style: { position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none" }, children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
+          const level = getBuildingLevel(type2);
+          const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
+          if (level === 0 && !isConstructing) return null;
+          let r2 = 75;
+          if (type2 === "qg") r2 = 110;
+          if (type2 === "aerodromo") r2 = 100;
+          if (type2 === "muralha") r2 = 120;
+          if (type2 === "fabrica_municoes" || type2 === "quartel") r2 = 85;
+          const w2 = r2 * 2;
+          const h2 = w2 * 0.66;
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              style: {
+                position: "absolute",
+                left: `${layout2.x}px`,
+                top: `${layout2.y}px`,
+                width: `${w2}px`,
+                height: `${h2}px`,
+                background: "rgba(0, 0, 0, 0.25)",
+                // Solicitado Fase Visual
+                backdropFilter: "blur(2px)",
+                // Solicitado Fase Visual
+                WebkitBackdropFilter: "blur(2px)",
+                borderRadius: "50%",
+                transform: "translate(-50%, -50%)",
+                border: "1px solid rgba(255,255,255,0.05)",
+                // Reforço de borda
+                boxShadow: "inset 0 0 20px rgba(0,0,0,0.3), 0 2px 10px rgba(0,0,0,0.4)"
+              }
+            },
+            `pad-${type2}`
+          );
+        }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -28346,11 +28381,9 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
               position: "absolute",
               inset: 0,
               zIndex: 10,
-              // Camada acima do terreno
+              // Camada acima dos pads
               isolation: "auto",
-              // Permite que o zIndex dos filhos dite a ordem
               pointerEvents: "none"
-              // Cliques passam para os filhos com pointer-events: auto
             },
             children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
               var _a2;
@@ -44501,7 +44534,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C68dmcU1.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BnAxG1L1.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44537,4 +44570,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DVXLNgeA.js.map
+//# sourceMappingURL=app-Cm9996on.js.map

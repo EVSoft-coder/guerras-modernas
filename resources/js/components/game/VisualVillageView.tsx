@@ -69,7 +69,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     }
                 `}</style>
 
-                    {/* CAMADA 1: background-layer (TERRENO BALANCEADO V20) */}
+                    {/* CAMADA 1: background-layer (TERRENO NÚ V21) */}
                     <div 
                         id="background-layer" 
                         className="village-canvas"
@@ -81,7 +81,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                         }}
                     >
                         <img 
-                            src="/images/village/terrain_v20.png" 
+                            src="/images/village/terrain_v21.png" 
                             style={{ 
                                 position: 'absolute',
                                 top: 0,
@@ -92,8 +92,47 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                                 pointerEvents: 'none',
                                 opacity: 1,
                             }}
-                            alt="Village Terrain Balanced V20"
+                            alt="Village Terrain Naked V21"
                         />
+                    </div>
+
+                    {/* CAMADA 1.5: PADS-LAYER (FUSÃO DINÂMICA) */}
+                    <div id="pads-layer" style={{ position: 'absolute', inset: 0, zIndex: 5, pointerEvents: 'none' }}>
+                        {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
+                            const level = getBuildingLevel(type);
+                            const isConstructing = (buildingQueue || []).some(q => q.type === type);
+                            if (level === 0 && !isConstructing) return null;
+
+                            // Definir tamanho do pad baseado no tipo (Sincronizado com V20)
+                            let r = 75; // Default
+                            if (type === 'qg') r = 110;
+                            if (type === 'aerodromo') r = 100;
+                            if (type === 'muralha') r = 120;
+                            if (type === 'fabrica_municoes' || type === 'quartel') r = 85;
+
+                            const w = r * 2;
+                            const h = w * 0.66; // PERSPECTIVA ISOMÉTRICA
+
+                            return (
+                                <div 
+                                    key={`pad-${type}`}
+                                    style={{
+                                        position: 'absolute',
+                                        left: `${layout.x}px`,
+                                        top: `${layout.y}px`,
+                                        width: `${w}px`,
+                                        height: `${h}px`,
+                                        background: 'rgba(0, 0, 0, 0.25)', // Solicitado Fase Visual
+                                        backdropFilter: 'blur(2px)',       // Solicitado Fase Visual
+                                        WebkitBackdropFilter: 'blur(2px)',
+                                        borderRadius: '50%',
+                                        transform: 'translate(-50%, -50%)',
+                                        border: '1px solid rgba(255,255,255,0.05)', // Reforço de borda
+                                        boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3), 0 2px 10px rgba(0,0,0,0.4)',
+                                    }}
+                                />
+                            );
+                        })}
                     </div>
 
                 {/* CAMADA 2: buildings-layer (STACKING ISOMÉTRICO) */}
@@ -103,9 +142,9 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     style={{ 
                         position: 'absolute', 
                         inset: 0, 
-                        zIndex: 10, // Camada acima do terreno
-                        isolation: 'auto', // Permite que o zIndex dos filhos dite a ordem
-                        pointerEvents: 'none' // Cliques passam para os filhos com pointer-events: auto
+                        zIndex: 10, // Camada acima dos pads
+                        isolation: 'auto', 
+                        pointerEvents: 'none' 
                     }}
                 >
                     {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
