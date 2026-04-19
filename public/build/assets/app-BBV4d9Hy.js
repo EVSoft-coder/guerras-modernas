@@ -28315,8 +28315,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
               position: "absolute",
               inset: 0,
               zIndex: 1,
-              background: "#0a0c10"
-              // Fundo Militar Base
+              background: "#1a1c20"
             },
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -28331,32 +28330,44 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                     height: "600px",
                     objectFit: "cover",
                     pointerEvents: "none",
-                    opacity: 0.6
-                    // Blend com o fundo sólido
+                    opacity: 0.4,
+                    filter: "grayscale(0.5) contrast(1.2)"
                   },
-                  alt: "Village Terrain"
+                  alt: "Sand Texture"
                 }
               ),
-              Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "div",
-                {
-                  style: {
-                    position: "absolute",
-                    left: `${layout2.x}px`,
-                    top: `${layout2.y}px`,
-                    width: `${layout2.w}px`,
-                    height: `${layout2.w * 0.6}px`,
-                    // Elipse isométrica
-                    background: "radial-gradient(circle, rgba(100,100,100,0.3) 0%, transparent 70%)",
-                    border: "1px dashed rgba(255,255,255,0.05)",
-                    borderRadius: "50%",
-                    transform: "translate(-50%, -50%)",
-                    pointerEvents: "none",
-                    zIndex: 1
-                  }
-                },
-                `slot-${type2}`
-              ))
+              Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
+                const level = getBuildingLevel(type2);
+                const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
+                if (level === 0 && !isConstructing) return null;
+                return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    style: {
+                      position: "absolute",
+                      left: `${layout2.x}px`,
+                      top: `${layout2.y}px`,
+                      width: `${layout2.w * 1.1}px`,
+                      height: `${layout2.w * 0.6}px`,
+                      background: "radial-gradient(ellipse at center, #333 0%, #222 50%, transparent 70%)",
+                      border: "2px solid rgba(255,255,255,0.05)",
+                      borderRadius: "50%",
+                      transform: "translate(-50%, -50%)",
+                      boxShadow: "inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4)",
+                      zIndex: 1,
+                      opacity: 0.8
+                    },
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+                      position: "absolute",
+                      inset: "10%",
+                      border: "1px solid rgba(255,255,255,0.03)",
+                      borderRadius: "50%",
+                      background: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)"
+                    } })
+                  },
+                  `pad-${type2}`
+                );
+              })
             ]
           }
         ),
@@ -44515,7 +44526,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DTDTVdJm.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BNBmo3nr.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44551,4 +44562,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CP9xxiH6.js.map
+//# sourceMappingURL=app-BBV4d9Hy.js.map
