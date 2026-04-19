@@ -28192,11 +28192,13 @@ const BuildingNode = ({
         position: "absolute",
         left: `${layout2.x}px`,
         top: `${layout2.y}px`,
-        width: `${layout2.w}px`,
-        height: `${layout2.h || layout2.w}px`,
-        zIndex: Math.floor(layout2.y + (layout2.h || layout2.w)),
+        height: `${layout2.h}px`,
+        // ALTURA OBRIGATÓRIA (Fase 2)
+        width: "auto",
+        // LARGURA FLEXÍVEL (Auto-ajuste)
+        zIndex: Math.floor(layout2.y + layout2.h),
         transform: "translate(-50%, -100%)",
-        // Pivô na base central
+        // ANCHOR REAL
         transition: "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         cursor: "pointer",
         display: "flex",
@@ -28229,12 +28231,13 @@ const BuildingNode = ({
             src: `/images/buildings/${layout2.assetName}`,
             alt: type2,
             style: {
-              width: "100%",
               height: "100%",
+              // Preenche a altura H definida no layout
+              width: "auto",
+              // Mantém o rácio de aspecto original
               display: "block",
               objectFit: "contain",
               objectPosition: "bottom center",
-              // Base do sprite toca na dBase do div
               filter: isConstructing ? "grayscale(0.8) opacity(0.7)" : "none",
               pointerEvents: "none"
             }
@@ -28251,20 +28254,20 @@ const BuildingNode = ({
   );
 };
 const BUILDING_LAYOUT = {
-  // FILA SUPERIOR (Logística e Pesquisa)
-  radar_estrategico: { x: 150, y: 120, w: 100, h: 100, anchor: "center", assetName: "radar_estrategico.png" },
-  central_energia: { x: 320, y: 100, w: 90, h: 90, anchor: "center", assetName: "central_energia.png" },
-  centro_pesquisa: { x: 480, y: 100, w: 100, h: 100, anchor: "center", assetName: "centro_pesquisa.png" },
-  housing: { x: 650, y: 120, w: 90, h: 90, anchor: "center", assetName: "housing.png" },
-  // FILA CENTRAL (Comando e Recursos)
-  qg: { x: 400, y: 280, w: 220, h: 220, anchor: "center", assetName: "qg.png" },
-  fabrica_municoes: { x: 150, y: 300, w: 110, h: 110, anchor: "center", assetName: "fabrica_municoes.png" },
-  quartel: { x: 650, y: 300, w: 110, h: 110, anchor: "center", assetName: "quartel.png" },
-  // FILA INFERIOR (Operações e Defesa)
-  mina_suprimentos: { x: 150, y: 480, w: 110, h: 110, anchor: "center", assetName: "mine.png" },
-  refinaria: { x: 300, y: 500, w: 110, h: 110, anchor: "center", assetName: "fabrica_municoes.png" },
-  aerodromo: { x: 500, y: 500, w: 130, h: 130, anchor: "center", assetName: "aerodromo.png" },
-  muralha: { x: 680, y: 480, w: 200, h: 100, anchor: "center", assetName: "muralha.png" }
+  // COMANDO (DOMINANTE)
+  qg: { x: 480, y: 310, w: 320, h: 320, anchor: "center", assetName: "qg.png" },
+  // FILA SUPERIOR (Métrica 120-140px)
+  radar_estrategico: { x: 260, y: 160, w: 120, h: 120, anchor: "center", assetName: "radar_estrategico.png" },
+  central_energia: { x: 480, y: 80, w: 140, h: 140, anchor: "center", assetName: "central_energia.png" },
+  centro_pesquisa: { x: 740, y: 160, w: 140, h: 140, anchor: "center", assetName: "centro_pesquisa.png" },
+  // FILA INTERMÉDIA (Métrica 180px)
+  fabrica_municoes: { x: 200, y: 300, w: 180, h: 180, anchor: "center", assetName: "fabrica_municoes.png" },
+  quartel: { x: 740, y: 300, w: 180, h: 180, anchor: "center", assetName: "quartel.png" },
+  // FILA INFERIOR (Métrica 110-200px)
+  mina_suprimentos: { x: 280, y: 530, w: 110, h: 110, anchor: "center", assetName: "mine.png" },
+  aerodromo: { x: 680, y: 530, w: 200, h: 200, anchor: "center", assetName: "aerodromo.png" },
+  // PERÍMETRO (Métrica 100px altura)
+  muralha: { x: 860, y: 560, w: 240, h: 100, anchor: "center", assetName: "muralha.png" }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   const getBuildingLevel = (type2) => {
@@ -44511,7 +44514,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Bu3cs2qM.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BfcpaeRC.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44547,4 +44550,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-LyLAUNpA.js.map
+//# sourceMappingURL=app-D1UXGiNK.js.map

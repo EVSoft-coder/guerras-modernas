@@ -24,10 +24,10 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 position: 'absolute',
                 left: `${layout.x}px`,
                 top: `${layout.y}px`,
-                width: `${layout.w}px`,
-                height: `${layout.h || layout.w}px`,
-                zIndex: Math.floor(layout.y + (layout.h || layout.w)),
-                transform: 'translate(-50%, -100%)', // Pivô na base central
+                height: `${layout.h}px`, // ALTURA OBRIGATÓRIA (Fase 2)
+                width: 'auto',          // LARGURA FLEXÍVEL (Auto-ajuste)
+                zIndex: Math.floor(layout.y + layout.h),
+                transform: 'translate(-50%, -100%)', // ANCHOR REAL
                 transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                 cursor: 'pointer',
                 display: 'flex',
@@ -56,11 +56,11 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 src={`/images/buildings/${layout.assetName}`}
                 alt={type}
                 style={{
-                    width: '100%',
-                    height: '100%',
+                    height: '100%',     // Preenche a altura H definida no layout
+                    width: 'auto',       // Mantém o rácio de aspecto original
                     display: 'block',
                     objectFit: 'contain',
-                    objectPosition: 'bottom center', // Base do sprite toca na dBase do div
+                    objectPosition: 'bottom center',
                     filter: isConstructing ? 'grayscale(0.8) opacity(0.7)' : 'none',
                     pointerEvents: 'none'
                 }}
