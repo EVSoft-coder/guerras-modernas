@@ -28196,7 +28196,8 @@ const BuildingNode = ({
         // ALTURA OBRIGATÓRIA (Fase 2)
         width: "auto",
         // LARGURA FLEXÍVEL (Auto-ajuste)
-        zIndex: Math.floor(layout2.y + layout2.h),
+        zIndex: Math.floor(layout2.y),
+        // PROFUNDIDADE CORRETA (Fase 5)
         transform: "translate(-50%, -100%)",
         // ANCHOR REAL
         transition: "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -44513,7 +44514,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DKR4FeQD.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-kCzhicF1.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44549,4 +44550,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-UH_1J5Cn.js.map
+//# sourceMappingURL=app-Bt-_wd_k.js.map

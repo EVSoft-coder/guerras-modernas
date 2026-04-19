@@ -26,7 +26,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 top: `${layout.y}px`,
                 height: `${layout.h}px`, // ALTURA OBRIGATÓRIA (Fase 2)
                 width: 'auto',          // LARGURA FLEXÍVEL (Auto-ajuste)
-                zIndex: Math.floor(layout.y + layout.h),
+                zIndex: Math.floor(layout.y), // PROFUNDIDADE CORRETA (Fase 5)
                 transform: 'translate(-50%, -100%)', // ANCHOR REAL
                 transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                 cursor: 'pointer',
