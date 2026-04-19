@@ -28178,53 +28178,75 @@ const AnimatedNumber = ({ value, customValue }) => {
 };
 const BuildingNode = ({
   type: type2,
+  level,
   layout: layout2,
-  onClick
+  onClick,
+  isConstructing
 }) => {
-  const width = layout2.w;
-  const height = layout2.h;
-  const left = layout2.x - width / 2;
-  const top = layout2.anchor === "bottom" ? layout2.y - height : layout2.y - height / 2;
-  const staticZ = Math.floor(layout2.y + height);
-  const assetPath = layout2.assetName ? `/images/buildings/${layout2.assetName}` : null;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      id: `node-${type2}`,
       className: "building-node",
+      onClick,
       style: {
         position: "absolute",
-        left: `${left}px`,
-        top: `${top}px`,
-        width: `${width}px`,
-        height: `${height}px`,
-        zIndex: staticZ,
+        left: `${layout2.x}px`,
+        top: `${layout2.y}px`,
+        width: `${layout2.w}px`,
+        height: `${layout2.h || layout2.w}px`,
+        zIndex: Math.floor(layout2.y + (layout2.h || layout2.w)),
+        transform: "translate(-50%, -100%)",
+        // Pivô na base central
+        transition: "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         cursor: "pointer",
-        pointerEvents: "auto",
-        // PUREZA TOTAL: Reset Forçado
-        background: "none",
-        boxShadow: "none",
-        padding: 0,
-        border: "none"
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "center"
       },
-      onClick: (e) => {
-        e.stopPropagation();
-        onClick();
-      },
-      children: assetPath && /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          src: assetPath,
-          style: {
-            display: "block",
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            pointerEvents: "none"
-          },
-          alt: type2
-        }
-      )
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "anchor-point",
+            style: {
+              position: "absolute",
+              bottom: "0",
+              left: "50%",
+              width: "6px",
+              height: "6px",
+              background: "#ff0000",
+              borderRadius: "50%",
+              transform: "translate(-50%, 50%)",
+              zIndex: 9999,
+              boxShadow: "0 0 10px #ff0000",
+              pointerEvents: "none"
+            }
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: `/images/buildings/${layout2.assetName}`,
+            alt: type2,
+            style: {
+              width: "100%",
+              height: "100%",
+              display: "block",
+              objectFit: "contain",
+              objectPosition: "bottom center",
+              // Base do sprite toca na dBase do div
+              filter: isConstructing ? "grayscale(0.8) opacity(0.7)" : "none",
+              pointerEvents: "none"
+            }
+          }
+        ),
+        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+          position: "absolute",
+          inset: 0,
+          background: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,165,0,0.1) 10px, rgba(255,165,0,0.1) 20px)",
+          pointerEvents: "none"
+        } })
+      ]
     }
   );
 };
@@ -28313,12 +28335,12 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
               position: "absolute",
               inset: 0,
               zIndex: 1,
-              background: "#000"
+              background: "#0a0c10"
             },
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
-                src: "/images/village/terrain_v13.png",
+                src: "/images/village/terrain_v16.png",
                 style: {
                   position: "absolute",
                   top: 0,
@@ -28329,7 +28351,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                   pointerEvents: "none",
                   opacity: 1
                 },
-                alt: "Village Terrain"
+                alt: "Village Terrain Panzer V16"
               }
             )
           }
@@ -44489,7 +44511,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Kwk2B-ZM.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Bu3cs2qM.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44525,4 +44547,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DGWwXvXu.js.map
+//# sourceMappingURL=app-LyLAUNpA.js.map
