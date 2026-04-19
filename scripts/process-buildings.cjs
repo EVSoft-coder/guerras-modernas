@@ -5,7 +5,6 @@ const path = require('path');
 const INPUT_DIR = path.join(__dirname, '../resources/assets/buildings_raw');
 const OUTPUT_DIR = path.join(__dirname, '../public/images/buildings');
 
-// Metas de altura conforme FASE 2
 const TARGET_SIZES = {
   qg: 320,
   quartel: 180,
@@ -22,71 +21,67 @@ async function processImage(file) {
   const inputPath = path.join(INPUT_DIR, file);
   const outputPath = path.join(OUTPUT_DIR, `${name}.png`);
   
-  // Altura Alvo (H)
   const targetH = TARGET_SIZES[name] || 150;
 
-  console.log(`[PROCESS] 🛡️ Purificando ${name} -> Alvo H: ${targetH}px`);
+  console.log(`[AUDIT] 🔍 Analisando ${name}...`);
 
   try {
-    // 1. CARREGAR E PREPARAR CANAL ALPHA
     let pipeline = sharp(inputPath).ensureAlpha();
-    
-    // Obter buffer bruto para manipulação cromática agressiva
     const { data, info } = await pipeline.raw().toBuffer({ resolveWithObject: true });
     
-    // 2. ERRADICAÇÃO DE FUNDO E XADREZ (Threshold Avançado)
+    let rejected = false;
+    let checkerCount = 0;
+
+    // 1. ALGORITMO DE PURGAÇÃO AGRESSIVA (V42)
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i];
       const g = data[i+1];
       const b = data[i+2];
+      const a = data[i+3];
       
       const max = Math.max(r, g, b);
       const min = Math.min(r, g, b);
       const delta = max - min;
       const saturation = max === 0 ? 0 : delta / max;
 
-      // REGRA DE OURO V41: 
-      // Se for neutro (cinza/branco) e estiver fora de um certo threshold de cor militar
-      // Cores militares tendem a ter saturação > 0.1 (azul, verde, bege)
-      // O xadrez de fundo é SEMPRE cinza neutro (saturation < 0.05)
-      if (saturation < 0.08) {
-          if (max > 130 || max < 40) { // Cinzas claros ou pretos de fundo
-              data[i+3] = 0; // Transparência Total
+      // DETEÇÃO DE XADREZ (Cinza neutro repetitivo)
+      if (saturation < 0.05) {
+          // Se for cinza de "falso fundo"
+          if ((max > 150 && max < 210) || max > 245) {
+              data[i+3] = 0; // Mata o pixel
+              checkerCount++;
           }
       }
     }
 
-    // 3. RECONSTRUIR E FINALIZAR (Trim + Resize)
+    // 2. TESTE DE REJEIÇÃO (Fase 3)
+    // Se o script teve de remover DEMASIADOS pixels neutros claros em zonas onde deveria haver edifício,
+    // ou se ainda restarem artefactos óbvios (analisando amostras da borda)
+    if (checkerCount > (info.width * info.height * 0.8)) {
+        console.warn(`[REJECTED] ❌ ${name}: Imagem identificada como lixo visual (apenas fundo/xadrez).`);
+        return;
+    }
+
+    // 3. RECONSTRUÇÃO COM TRIM RIGOROSO
     await sharp(data, { raw: info })
-      .trim() // REMOVE BORDAS VAZIAS
-      .resize(null, targetH, { // Força a altura H mantendo o rácio
-          fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
-      })
-      .png({ compressionLevel: 9, quality: 100 })
+      .trim()
+      .resize(null, targetH, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 }})
+      .png()
       .toFile(outputPath);
 
-    console.log(`[SUCCESS] ✅ ${name} purificado e redimensionado.`);
+    console.log(`[SUCCESS] ✅ ${name} aprovado e purificado.`);
   } catch (err) {
-    console.error(`[ERROR] ❌ Erro em ${name}: ${err.message}`);
+    console.error(`[ERROR] ❌ ${name}: ${err.message}`);
   }
 }
 
 async function start() {
   await fs.ensureDir(OUTPUT_DIR);
-  const files = (await fs.readdir(INPUT_DIR)).filter(f => ['.png', '.jpg', '.jpeg', '.webp'].then?.includes ? f.endsWith('.png') : true);
-  
-  // Limpar diretório de saída para evitar resíduos
   await fs.emptyDir(OUTPUT_DIR);
+  const files = (await fs.readdir(INPUT_DIR)).filter(f => ['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(f).toLowerCase()));
 
-  for (const file of files) {
-    const ext = path.extname(file).toLowerCase();
-    if (['.png', '.jpg', '.jpeg', '.webp'].includes(ext)) {
-        await processImage(file);
-    }
-  }
-  
-  console.log("🏁 Operação Purificação V41 concluída.");
+  for (const file of files) await processImage(file);
+  console.log("🏁 Operação Limpeza Total V42 Concluída.");
 }
 
 start();
