@@ -1,9 +1,9 @@
 const sharp = require('sharp');
 const path = require('path');
 
-// CONFIGURAÇÃO PIXEL PRECISION V51/V52
+// CONFIGURAÇÃO BALANCEAMENTO V53
 const SLOTS = [
-    { x: 400, y: 300, r: 140 }, // HQ
+    { x: 400, y: 300, r: 110 }, // HQ (Reduzido para r=110 -> w=220)
     { x: 200, y: 140, r: 65 },  // Radar
     { x: 400, y: 120, r: 70 },  // Energia
     { x: 600, y: 140, r: 70 },  // Pesquisa
@@ -14,21 +14,17 @@ const SLOTS = [
 ];
 
 async function generateTerrain() {
-    console.log("🏗️  Iniciando Geração de Terreno V19 (Pads Isométricos 0.66)...");
+    console.log("🏗️  Iniciando Geração de Terreno V20 (Balanceamento HQ)...");
 
     const terrainWidth = 800;
     const terrainHeight = 600;
 
-    // RÁCIO ISOMÉTRICO V52: 120/80 = 0.66
     const createPad = (size) => {
         const h = Math.floor(size * 0.66); 
         const svg = `
             <svg width="${size}" height="${h}" viewBox="0 0 ${size} ${h}">
-                <!-- Sombra -->
-                <ellipse cx="${size / 2}" cy="${h / 2 + 4}" rx="${size / 2}" ry="${h / 2}" fill="rgba(0,0,0,0.25)" />
-                <!-- Base (Elipse Isométrica) -->
+                <ellipse cx="${size / 2}" cy="${h / 2 + 3}" rx="${size / 2}" ry="${h / 2}" fill="rgba(0,0,0,0.25)" />
                 <ellipse cx="${size / 2}" cy="${h / 2}" rx="${size / 2 - 2}" ry="${h / 2 - 2}" fill="#35383c" stroke="#444" stroke-width="1" />
-                <!-- Luz -->
                 <ellipse cx="${size / 2}" cy="${h / 2 - 1}" rx="${size / 2 - 4}" ry="${h / 2 - 4}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
             </svg>
         `;
@@ -48,9 +44,9 @@ async function generateTerrain() {
             .modulate({ brightness: 0.85, saturation: 0.6 })
             .composite(composites)
             .png()
-            .toFile(path.join(__dirname, '../public/images/village/terrain_v19.png'));
+            .toFile(path.join(__dirname, '../public/images/village/terrain_v20.png'));
 
-        console.log("✅ Terreno V19 (Pads Isométricos) gerado com sucesso.");
+        console.log("✅ Terreno V20 (Balanceamento) gerado com sucesso.");
     } catch (err) {
         console.error("❌ Erro:", err);
     }

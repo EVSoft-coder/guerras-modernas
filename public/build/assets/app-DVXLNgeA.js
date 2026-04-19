@@ -28234,16 +28234,16 @@ const BuildingNode = ({
   );
 };
 const BUILDING_LAYOUT = {
-  // CENTRO
-  qg: { x: 400, y: 300, w: 320, h: 320, anchor: "center", assetName: "qg.png" },
-  // TOPO (ESTRATÉGICO)
+  // CENTRO (Redimensionado para 220px de base)
+  qg: { x: 400, y: 300, w: 220, h: 260, anchor: "center", assetName: "qg.png" },
+  // TOPO
   radar_estrategico: { x: 200, y: 140, w: 120, h: 120, anchor: "center", assetName: "radar_estrategico.png" },
   central_energia: { x: 400, y: 120, w: 140, h: 140, anchor: "center", assetName: "central_energia.png" },
   centro_pesquisa: { x: 600, y: 140, w: 140, h: 140, anchor: "center", assetName: "centro_pesquisa.png" },
-  // LATERAIS (OPERACIONAL)
+  // LATERAIS
   fabrica_municoes: { x: 220, y: 330, w: 180, h: 180, anchor: "center", assetName: "fabrica_municoes.png" },
   quartel: { x: 580, y: 330, w: 180, h: 180, anchor: "center", assetName: "quartel.png" },
-  // BASE (LOGÍSTICA / DEFESA)
+  // BASE
   aerodromo: { x: 400, y: 480, w: 200, h: 200, anchor: "center", assetName: "aerodromo.png" },
   muralha: { x: 400, y: 560, w: 280, h: 100, anchor: "center", assetName: "muralha.png" }
 };
@@ -28321,7 +28321,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
-                src: "/images/village/terrain_v19.png",
+                src: "/images/village/terrain_v20.png",
                 style: {
                   position: "absolute",
                   top: 0,
@@ -28332,7 +28332,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                   pointerEvents: "none",
                   opacity: 1
                 },
-                alt: "Village Terrain Isometric V19"
+                alt: "Village Terrain Balanced V20"
               }
             )
           }
@@ -44501,7 +44501,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Bt2-wxp-.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-C68dmcU1.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44537,4 +44537,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CX8sALtJ.js.map
+//# sourceMappingURL=app-DVXLNgeA.js.map
