@@ -28304,28 +28304,58 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                         box-shadow: none !important;
                     }
                 ` }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
             id: "background-layer",
             className: "village-canvas",
-            style: { position: "absolute", inset: 0, zIndex: 1 },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "img",
-              {
-                src: "/images/village/terrain_v13.png",
-                style: {
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "800px",
-                  height: "600px",
-                  objectFit: "cover",
-                  pointerEvents: "none"
+            style: {
+              position: "absolute",
+              inset: 0,
+              zIndex: 1,
+              background: "#0a0c10"
+              // Fundo Militar Base
+            },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
+                {
+                  src: "/images/village/terrain_v13.png",
+                  style: {
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "800px",
+                    height: "600px",
+                    objectFit: "cover",
+                    pointerEvents: "none",
+                    opacity: 0.6
+                    // Blend com o fundo sólido
+                  },
+                  alt: "Village Terrain"
+                }
+              ),
+              Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  style: {
+                    position: "absolute",
+                    left: `${layout2.x}px`,
+                    top: `${layout2.y}px`,
+                    width: `${layout2.w}px`,
+                    height: `${layout2.w * 0.6}px`,
+                    // Elipse isométrica
+                    background: "radial-gradient(circle, rgba(100,100,100,0.3) 0%, transparent 70%)",
+                    border: "1px dashed rgba(255,255,255,0.05)",
+                    borderRadius: "50%",
+                    transform: "translate(-50%, -50%)",
+                    pointerEvents: "none",
+                    zIndex: 1
+                  }
                 },
-                alt: "Village Terrain"
-              }
-            )
+                `slot-${type2}`
+              ))
+            ]
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -44483,7 +44513,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-BEyWH7cK.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CDQTPgp0.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44519,4 +44549,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DJgVYHBe.js.map
+//# sourceMappingURL=app-CvX8Eg2T.js.map

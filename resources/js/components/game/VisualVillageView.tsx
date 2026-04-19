@@ -73,9 +73,14 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                 <div 
                     id="background-layer" 
                     className="village-canvas"
-                    style={{ position: 'absolute', inset: 0, zIndex: 1 }}
+                    style={{ 
+                        position: 'absolute', 
+                        inset: 0, 
+                        zIndex: 1,
+                        background: '#0a0c10', // Fundo Militar Base
+                    }}
                 >
-                    {/* TERRENO TÁTICO V13 — SIMPLIFICADO */}
+                    {/* TERRENO TÁTICO V13 — TEXTURA BASE */}
                     <img 
                         src="/images/village/terrain_v13.png" 
                         style={{ 
@@ -86,9 +91,30 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                             height: '600px',
                             objectFit: 'cover',
                             pointerEvents: 'none',
+                            opacity: 0.6, // Blend com o fundo sólido
                         }}
                         alt="Village Terrain"
                     />
+
+                    {/* OVERLAY DE SLOTS DINÂMICOS (V27.5) */}
+                    {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => (
+                        <div 
+                            key={`slot-${type}`}
+                            style={{
+                                position: 'absolute',
+                                left: `${layout.x}px`,
+                                top: `${layout.y}px`,
+                                width: `${layout.w}px`,
+                                height: `${layout.w * 0.6}px`, // Elipse isométrica
+                                background: 'radial-gradient(circle, rgba(100,100,100,0.3) 0%, transparent 70%)',
+                                border: '1px dashed rgba(255,255,255,0.05)',
+                                borderRadius: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                pointerEvents: 'none',
+                                zIndex: 1
+                            }}
+                        />
+                    ))}
                 </div>
 
                 {/* CAMADA 2: buildings-layer */}
