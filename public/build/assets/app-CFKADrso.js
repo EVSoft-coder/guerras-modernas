@@ -28229,22 +28229,22 @@ const BuildingNode = ({
   );
 };
 const BUILDING_LAYOUT = {
-  // NÚCLEO CENTRAL
   qg: { x: 400, y: 260, w: 260, h: 260, anchor: "center", assetName: "qg.png" },
-  // LINHA SUPERIOR (TOP PADS)
+  // LINHA SUPERIOR
   radar_estrategico: { x: 230, y: 80, w: 120, h: 120, anchor: "center", assetName: "radar_estrategico.png" },
   central_energia: { x: 400, y: 70, w: 100, h: 100, anchor: "center", assetName: "central_energia.png" },
   centro_pesquisa: { x: 570, y: 80, w: 120, h: 120, anchor: "center", assetName: "centro_pesquisa.png" },
-  // FLANCO INTERMÉDIO
-  fabrica_municoes: { x: 190, y: 300, w: 120, h: 120, anchor: "center", assetName: "fabrica_municoes.png" },
-  quartel: { x: 610, y: 300, w: 120, h: 120, anchor: "center", assetName: "quartel.png" },
-  // FUNDO (BASE PADS)
-  mina_suprimentos: { x: 280, y: 530, w: 120, h: 120, anchor: "center", assetName: "mine.png" },
-  aerodromo: { x: 520, y: 530, w: 150, h: 150, anchor: "center", assetName: "aerodromo.png" },
-  muralha: { x: 400, y: 500, w: 400, h: 120, anchor: "center", assetName: "muralha.png" },
-  // SLOTS PERIFÉRICOS
-  refinaria: { x: 100, y: 250, w: 110, h: 110, anchor: "center", assetName: "fabrica_municoes.png" },
-  housing: { x: 180, y: 440, w: 110, h: 110, anchor: "center", assetName: "housing.png" }
+  // LINHA INTERMÉDIA
+  fabrica_municoes: { x: 150, y: 320, w: 120, h: 120, anchor: "center", assetName: "fabrica_municoes.png" },
+  quartel: { x: 650, y: 320, w: 120, h: 120, anchor: "center", assetName: "quartel.png" },
+  // RETAGUARDA E PERÍMETRO
+  mina_suprimentos: { x: 200, y: 530, w: 110, h: 110, anchor: "center", assetName: "mine.png" },
+  aerodromo: { x: 400, y: 530, w: 140, h: 140, anchor: "center", assetName: "aerodromo.png" },
+  muralha: { x: 720, y: 560, w: 240, h: 120, anchor: "center", assetName: "muralha.png" },
+  // CANTO DIREITO FUNDO
+  // OUTROS
+  refinaria: { x: 100, y: 500, w: 110, h: 110, anchor: "center", assetName: "fabrica_municoes.png" },
+  housing: { x: 800, y: 150, w: 110, h: 110, anchor: "center", assetName: "housing.png" }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   const getBuildingLevel = (type2) => {
@@ -44526,7 +44526,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-BNBmo3nr.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-B2FT9rhZ.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44562,4 +44562,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BBV4d9Hy.js.map
+//# sourceMappingURL=app-CFKADrso.js.map
