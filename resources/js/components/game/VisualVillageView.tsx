@@ -69,7 +69,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     }
                 `}</style>
 
-                    {/* CAMADA 1: background-layer (SOLO PROCEDURAL V31) */}
+                    {/* CAMADA 1: background-layer (TERRENO INTEGRADO V15) */}
                     <div 
                         id="background-layer" 
                         className="village-canvas"
@@ -80,59 +80,19 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                             background: '#1a1c20', 
                         }}
                     >
-                        {/* TEXTURA DE AREIA BASE */}
                         <img 
-                            src="/images/village/terrain_v13.png" 
+                            src="/images/village/terrain_v15.png" 
                             style={{ 
                                 position: 'absolute',
                                 top: 0,
                                 left: 0,
                                 width: '800px',
                                 height: '600px',
-                                objectFit: 'cover',
+                                objectFit: 'fill',
                                 pointerEvents: 'none',
-                                opacity: 0.4,
-                                filter: 'grayscale(0.5) contrast(1.2)'
                             }}
-                            alt="Sand Texture"
+                            alt="Village Terrain V15"
                         />
-
-                        {/* SLOTS DE BETÃO AUTO-GENERADOS (Para TODOS os edifícios) */}
-                        {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
-                             const level = getBuildingLevel(type);
-                             const isConstructing = (buildingQueue || []).some(q => q.type === type);
-                             // Apenas mostrar slot se o edifício existir ou estiver em construção
-                             if (level === 0 && !isConstructing) return null;
-
-                             return (
-                                <div 
-                                    key={`pad-${type}`}
-                                    style={{
-                                        position: 'absolute',
-                                        left: `${layout.x}px`,
-                                        top: `${layout.y}px`,
-                                        width: `${layout.w * 1.1}px`,
-                                        height: `${layout.w * 0.6}px`,
-                                        background: 'radial-gradient(ellipse at center, #333 0%, #222 50%, transparent 70%)',
-                                        border: '2px solid rgba(255,255,255,0.05)',
-                                        borderRadius: '50%',
-                                        transform: 'translate(-50%, -50%)',
-                                        boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4)',
-                                        zIndex: 1,
-                                        opacity: 0.8
-                                    }}
-                                >
-                                    {/* Detalhe de textura de betão no pad */}
-                                    <div style={{
-                                        position: 'absolute',
-                                        inset: '10%',
-                                        border: '1px solid rgba(255,255,255,0.03)',
-                                        borderRadius: '50%',
-                                        background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)'
-                                    }} />
-                                </div>
-                             );
-                        })}
                     </div>
 
                 {/* CAMADA 2: buildings-layer */}

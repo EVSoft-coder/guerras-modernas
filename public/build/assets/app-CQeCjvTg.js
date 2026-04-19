@@ -28306,7 +28306,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                         box-shadow: none !important;
                     }
                 ` }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
             id: "background-layer",
@@ -28317,58 +28317,22 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
               zIndex: 1,
               background: "#1a1c20"
             },
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "img",
-                {
-                  src: "/images/village/terrain_v13.png",
-                  style: {
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "800px",
-                    height: "600px",
-                    objectFit: "cover",
-                    pointerEvents: "none",
-                    opacity: 0.4,
-                    filter: "grayscale(0.5) contrast(1.2)"
-                  },
-                  alt: "Sand Texture"
-                }
-              ),
-              Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
-                const level = getBuildingLevel(type2);
-                const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
-                if (level === 0 && !isConstructing) return null;
-                return /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "div",
-                  {
-                    style: {
-                      position: "absolute",
-                      left: `${layout2.x}px`,
-                      top: `${layout2.y}px`,
-                      width: `${layout2.w * 1.1}px`,
-                      height: `${layout2.w * 0.6}px`,
-                      background: "radial-gradient(ellipse at center, #333 0%, #222 50%, transparent 70%)",
-                      border: "2px solid rgba(255,255,255,0.05)",
-                      borderRadius: "50%",
-                      transform: "translate(-50%, -50%)",
-                      boxShadow: "inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4)",
-                      zIndex: 1,
-                      opacity: 0.8
-                    },
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
-                      position: "absolute",
-                      inset: "10%",
-                      border: "1px solid rgba(255,255,255,0.03)",
-                      borderRadius: "50%",
-                      background: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)"
-                    } })
-                  },
-                  `pad-${type2}`
-                );
-              })
-            ]
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: "/images/village/terrain_v15.png",
+                style: {
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "800px",
+                  height: "600px",
+                  objectFit: "fill",
+                  pointerEvents: "none"
+                },
+                alt: "Village Terrain V15"
+              }
+            )
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -44526,7 +44490,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-B2FT9rhZ.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DLXtJ4Do.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44562,4 +44526,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CFKADrso.js.map
+//# sourceMappingURL=app-CQeCjvTg.js.map
