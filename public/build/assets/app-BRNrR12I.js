@@ -28183,6 +28183,7 @@ const BuildingNode = ({
   onClick,
   isConstructing
 }) => {
+  const DEBUG_MODE = false;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
@@ -28207,25 +28208,7 @@ const BuildingNode = ({
         justifyContent: "center"
       },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "anchor-point",
-            style: {
-              position: "absolute",
-              bottom: "0",
-              left: "50%",
-              width: "6px",
-              height: "6px",
-              background: "#ff0000",
-              borderRadius: "50%",
-              transform: "translate(-50%, 50%)",
-              zIndex: 9999,
-              boxShadow: "0 0 10px #ff0000",
-              pointerEvents: "none"
-            }
-          }
-        ),
+        DEBUG_MODE,
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
@@ -44523,7 +44506,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CDJA2UdY.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-yLwTSyG9.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44559,4 +44542,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-j5ytzaYy.js.map
+//# sourceMappingURL=app-BRNrR12I.js.map

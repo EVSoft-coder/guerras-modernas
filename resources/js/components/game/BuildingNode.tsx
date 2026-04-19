@@ -16,6 +16,8 @@ interface BuildingNodeProps {
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick, isConstructing 
 }) => {
+    const DEBUG_MODE = false; // INTERRUPTOR DE TELEMETRIA
+
     return (
         <div 
             className="building-node"
@@ -35,22 +37,24 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 justifyContent: 'center'
             }}
         >
-            {/* PONTO DE DIAGNÓSTICO (ANCHOR REAL) */}
-            <div className="anchor-point" 
-                style={{
-                    position: 'absolute',
-                    bottom: '0',
-                    left: '50%',
-                    width: '6px',
-                    height: '6px',
-                    background: '#ff0000',
-                    borderRadius: '50%',
-                    transform: 'translate(-50%, 50%)',
-                    zIndex: 9999,
-                    boxShadow: '0 0 10px #ff0000',
-                    pointerEvents: 'none'
-                }} 
-            />
+            {/* PONTO DE DIAGNÓSTICO (Apenas em Debug) */}
+            {DEBUG_MODE && (
+                <div className="anchor-point" 
+                    style={{
+                        position: 'absolute',
+                        bottom: '0',
+                        left: '50%',
+                        width: '6px',
+                        height: '6px',
+                        background: '#ff0000',
+                        borderRadius: '50%',
+                        transform: 'translate(-50%, 50%)',
+                        zIndex: 9999,
+                        boxShadow: '0 0 10px #ff0000',
+                        pointerEvents: 'none'
+                    }} 
+                />
+            )}
 
             <img 
                 src={`/images/buildings/${layout.assetName}`}
