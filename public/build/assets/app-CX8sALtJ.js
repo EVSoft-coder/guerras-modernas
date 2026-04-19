@@ -28321,7 +28321,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
-                src: "/images/village/terrain_v18.png",
+                src: "/images/village/terrain_v19.png",
                 style: {
                   position: "absolute",
                   top: 0,
@@ -28332,7 +28332,7 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                   pointerEvents: "none",
                   opacity: 1
                 },
-                alt: "Village Terrain Clean V18"
+                alt: "Village Terrain Isometric V19"
               }
             )
           }
@@ -44501,7 +44501,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CmnwJL-h.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Bt2-wxp-.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44537,4 +44537,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-RGsmFQy9.js.map
+//# sourceMappingURL=app-CX8sALtJ.js.map

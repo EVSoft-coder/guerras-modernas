@@ -1,7 +1,7 @@
 const sharp = require('sharp');
 const path = require('path');
 
-// CONFIGURAÇÃO PIXEL PRECISION V51
+// CONFIGURAÇÃO PIXEL PRECISION V51/V52
 const SLOTS = [
     { x: 400, y: 300, r: 140 }, // HQ
     { x: 200, y: 140, r: 65 },  // Radar
@@ -14,17 +14,21 @@ const SLOTS = [
 ];
 
 async function generateTerrain() {
-    console.log("🏗️  Iniciando Geração de Terreno V18 (Pixel Precision)...");
+    console.log("🏗️  Iniciando Geração de Terreno V19 (Pads Isométricos 0.66)...");
 
     const terrainWidth = 800;
     const terrainHeight = 600;
 
+    // RÁCIO ISOMÉTRICO V52: 120/80 = 0.66
     const createPad = (size) => {
-        const h = size * 0.6;
+        const h = Math.floor(size * 0.66); 
         const svg = `
             <svg width="${size}" height="${h}" viewBox="0 0 ${size} ${h}">
-                <ellipse cx="${size / 2}" cy="${h / 2 + 3}" rx="${size / 2}" ry="${h / 2}" fill="rgba(0,0,0,0.25)" />
+                <!-- Sombra -->
+                <ellipse cx="${size / 2}" cy="${h / 2 + 4}" rx="${size / 2}" ry="${h / 2}" fill="rgba(0,0,0,0.25)" />
+                <!-- Base (Elipse Isométrica) -->
                 <ellipse cx="${size / 2}" cy="${h / 2}" rx="${size / 2 - 2}" ry="${h / 2 - 2}" fill="#35383c" stroke="#444" stroke-width="1" />
+                <!-- Luz -->
                 <ellipse cx="${size / 2}" cy="${h / 2 - 1}" rx="${size / 2 - 4}" ry="${h / 2 - 4}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
             </svg>
         `;
@@ -33,7 +37,7 @@ async function generateTerrain() {
 
     const composites = SLOTS.map(slot => ({
         input: createPad(slot.r * 2),
-        top: Math.floor(slot.y - (slot.r * 0.6) / 2),
+        top: Math.floor(slot.y - (slot.r * 0.66) / 2),
         left: Math.floor(slot.x - slot.r),
     }));
 
@@ -44,9 +48,9 @@ async function generateTerrain() {
             .modulate({ brightness: 0.85, saturation: 0.6 })
             .composite(composites)
             .png()
-            .toFile(path.join(__dirname, '../public/images/village/terrain_v18.png'));
+            .toFile(path.join(__dirname, '../public/images/village/terrain_v19.png'));
 
-        console.log("✅ Terreno V18 (Pixel Precision) gerado com sucesso.");
+        console.log("✅ Terreno V19 (Pads Isométricos) gerado com sucesso.");
     } catch (err) {
         console.error("❌ Erro:", err);
     }
