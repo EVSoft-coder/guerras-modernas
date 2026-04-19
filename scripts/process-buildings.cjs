@@ -16,62 +16,61 @@ const TARGET_SIZES = {
   muralha: 100,
 };
 
-async function processImage(file) {
+async function validateAndProcess(file) {
   const name = path.parse(file).name;
   const inputPath = path.join(INPUT_DIR, file);
   const outputPath = path.join(OUTPUT_DIR, `${name}.png`);
   
-  const targetH = TARGET_SIZES[name] || 150;
-
-  console.log(`[AUDIT] 🔍 Analisando ${name}...`);
-
   try {
-    let pipeline = sharp(inputPath).ensureAlpha();
-    const { data, info } = await pipeline.raw().toBuffer({ resolveWithObject: true });
+    const image = sharp(inputPath);
+    const metadata = await image.metadata();
+    const stats = await image.stats();
     
-    let rejected = false;
-    let checkerCount = 0;
-
-    // 1. ALGORITMO DE PURGAÇÃO AGRESSIVA (V42)
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i+1];
-      const b = data[i+2];
-      const a = data[i+3];
-      
-      const max = Math.max(r, g, b);
-      const min = Math.min(r, g, b);
-      const delta = max - min;
-      const saturation = max === 0 ? 0 : delta / max;
-
-      // DETEÇÃO DE XADREZ (Cinza neutro repetitivo)
-      if (saturation < 0.05) {
-          // Se for cinza de "falso fundo"
-          if ((max > 150 && max < 210) || max > 245) {
-              data[i+3] = 0; // Mata o pixel
-              checkerCount++;
-          }
-      }
+    // 1. TESTE DE TRANSPARÊNCIA (Fundo não transparente)
+    // Se a média do alpha não for próxima da transparência esperada ou se o canal alpha nem existir
+    if (!metadata.hasAlpha) {
+       console.error(`INVALID ASSET: ${file} (FALTA CANAL ALPHA/FUNDO OPACO)`);
+       return;
     }
 
-    // 2. TESTE DE REJEIÇÃO (Fase 3)
-    // Se o script teve de remover DEMASIADOS pixels neutros claros em zonas onde deveria haver edifício,
-    // ou se ainda restarem artefactos óbvios (analisando amostras da borda)
-    if (checkerCount > (info.width * info.height * 0.8)) {
-        console.warn(`[REJECTED] ❌ ${name}: Imagem identificada como lixo visual (apenas fundo/xadrez).`);
+    // 2. TESTE DE MARGENS (Margens vazias excessivas)
+    // Usamos trim() e comparamos as dimensões
+    const trimmed = await sharp(inputPath).trim().toBuffer({ resolveWithObject: true });
+    const trimmedMeta = trimmed.info;
+    if (trimmedMeta.width < metadata.width * 0.4 || trimmedMeta.height < metadata.height * 0.4) {
+        console.error(`INVALID ASSET: ${file} (MARGENS VAZIAS EXCESSIVAS)`);
         return;
     }
 
-    // 3. RECONSTRUÇÃO COM TRIM RIGOROSO
-    await sharp(data, { raw: info })
-      .trim()
+    // 3. TESTE DE XADREZ (Checkerboard/Artefactos)
+    // Analisamos os dados brutos para padrões neutros repetitivos no fundo
+    const { data, info } = await sharp(inputPath).raw().toBuffer({ resolveWithObject: true });
+    let neutralPixels = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+      const saturation = (Math.max(r,g,b) - Math.min(r,g,b)) / Math.max(r,g,b);
+      // Se for um cinza claro e "meio transparente" (artefacto comum de checkerboard mal limpo)
+      if (saturation < 0.05 && a > 0 && a < 255) {
+        neutralPixels++;
+      }
+    }
+    
+    if (neutralPixels > (info.width * info.height * 0.05)) { // Mais de 5% de 'ruído cinza'
+        console.error(`INVALID ASSET: ${file} (PADRÃO CHECKERBOARD/GRIDS DETECTADO)`);
+        return;
+    }
+
+    // 4. PROCESSAMENTO FINAL (SE APROVADO)
+    const targetH = TARGET_SIZES[name] || 150;
+    await sharp(trimmed.data)
       .resize(null, targetH, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 }})
       .png()
       .toFile(outputPath);
 
-    console.log(`[SUCCESS] ✅ ${name} aprovado e purificado.`);
+    console.log(`[APPROVED] ✅ ${file} passou na auditoria crítica.`);
+
   } catch (err) {
-    console.error(`[ERROR] ❌ ${name}: ${err.message}`);
+    console.error(`[ERROR] ❌ ${file}: ${err.message}`);
   }
 }
 
@@ -80,8 +79,9 @@ async function start() {
   await fs.emptyDir(OUTPUT_DIR);
   const files = (await fs.readdir(INPUT_DIR)).filter(f => ['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(f).toLowerCase()));
 
-  for (const file of files) await processImage(file);
-  console.log("🏁 Operação Limpeza Total V42 Concluída.");
+  console.log("🛑 Iniciando Auditoria Crítica de Ativos (Tolerância Zero)...");
+  for (const file of files) await validateAndProcess(file);
+  console.log("🏁 Operação V46 Concluída.");
 }
 
 start();
