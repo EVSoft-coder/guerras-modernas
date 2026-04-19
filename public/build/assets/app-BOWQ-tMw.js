@@ -28234,19 +28234,8 @@ const BuildingNode = ({
   );
 };
 const BUILDING_LAYOUT = {
-  // CENTRO DE COMANDO
-  qg: { x: 400, y: 300, w: 320, h: 320, anchor: "center", assetName: "qg.png" },
-  // LINHA DE OPERAÇÕES (CENTRAL)
-  fabrica_municoes: { x: 150, y: 350, w: 180, h: 180, anchor: "center", assetName: "fabrica_municoes.png" },
-  quartel: { x: 650, y: 350, w: 180, h: 180, anchor: "center", assetName: "quartel.png" },
-  // LINHA ESTRATÉGICA (TOPO)
-  radar_estrategico: { x: 150, y: 150, w: 120, h: 120, anchor: "center", assetName: "radar_estrategico.png" },
-  central_energia: { x: 400, y: 120, w: 140, h: 140, anchor: "center", assetName: "central_energia.png" },
-  centro_pesquisa: { x: 650, y: 150, w: 140, h: 140, anchor: "center", assetName: "centro_pesquisa.png" },
-  // LOGÍSTICA (FUNDO)
-  aerodromo: { x: 400, y: 500, w: 200, h: 200, anchor: "center", assetName: "aerodromo.png" },
-  // PERÍMETRO DEFENSIVO
-  muralha: { x: 400, y: 580, w: 280, h: 100, anchor: "center", assetName: "muralha.png" }
+  // 1. QUARTEL-GENERAL (HQ) - O ALICERCE
+  qg: { x: 400, y: 300, w: 320, h: 320, anchor: "center", assetName: "qg.png" }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   const getBuildingLevel = (type2) => {
@@ -44502,7 +44491,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DkJI8vJ4.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BdPnMspB.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44538,4 +44527,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-n28yR77q.js.map
+//# sourceMappingURL=app-BOWQ-tMw.js.map
