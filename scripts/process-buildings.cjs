@@ -10,7 +10,7 @@ const TARGET_SIZES = {
   quartel: 110,
   fabrica_municoes: 110,
   central_energia: 90,
-  centro_pesquisa: 90,
+  centro_pesquisa: 110,
   radar_estrategico: 110,
   aerodromo: 140,
   muralha: 260,
@@ -22,36 +22,48 @@ async function processImage(file) {
   const outputPath = path.join(OUTPUT_DIR, `${name}.png`);
   const size = TARGET_SIZES[name] || 100;
 
-  console.log(`[PROCESS] 🏗️  ${name} -> Purificação Agressiva (V29)...`);
+  console.log(`[PROCESS] 🏗️  ${name} -> Erradicação de Fundo V32 (Perimetral)...`);
 
   try {
     let pipeline = sharp(inputPath).ensureAlpha();
     const { data, info } = await pipeline.raw().toBuffer({ resolveWithObject: true });
     
+    // 1. ANALISAR CANTO (0,0) PARA DETETAR COR DE FUNDO
+    const bgR = data[0];
+    const bgG = data[1];
+    const bgB = data[2];
+
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i];
       const g = data[i+1];
       const b = data[i+2];
       
-      // ANÁLISE DE SATURAÇÃO (Eradicação de Xadrez)
       const max = Math.max(r, g, b);
       const min = Math.min(r, g, b);
       const delta = max - min;
       const saturation = max === 0 ? 0 : delta / max;
 
-      // 1. Remover se for quase preto 
-      if (max < 40) {
-        data[i+3] = 0; 
-      }
-      
-      // 2. Remover se for quase cinza/branco (Xadrez)
-      // Edifícios militares são cinzentos, mas o xadrez é muito "flat"
-      if (saturation < 0.05 && max > 180) {
+      // REGRAS DE ERRADICAÇÃO (V32)
+      // A) Se for a cor exata do canto superior esquerdo (Fundo Típico)
+      if (Math.abs(r - bgR) < 3 && Math.abs(g - bgG) < 3 && Math.abs(b - bgB) < 3) {
           data[i+3] = 0;
+          continue;
       }
 
-      // 3. Remover cinzas médios suspeitos (Padrão 204)
-      if (saturation < 0.02 && r > 190 && r < 210) {
+      // B) Se for quase neutro (R=G=B) e claro (Xadrez branco/cinza)
+      if (saturation < 0.05 && max > 120) {
+          data[i+3] = 0;
+          continue;
+      }
+
+      // C) Se for quase neutro e muito escuro (Xadrez cinza-escuro/preto)
+      if (saturation < 0.05 && max < 50) {
+          data[i+3] = 0;
+          continue;
+      }
+      
+      // D) Hard fix para o padrão Research (Cinzas variados)
+      if (r > 180 && g > 180 && b > 180 && saturation < 0.03) {
           data[i+3] = 0;
       }
     }
