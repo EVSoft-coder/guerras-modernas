@@ -1,35 +1,40 @@
 const sharp = require('sharp');
 const path = require('path');
 
-// CONFIGURAÇÃO PANZER V38 (Sincronizada com buildingLayout.ts)
+// CONFIGURAÇÃO ABSOLUTA V43/V45
 const SLOTS = [
-    { x: 150, y: 120, r: 60 }, { x: 320, y: 100, r: 55 }, { x: 480, y: 100, r: 55 }, { x: 650, y: 120, r: 60 },
-    { x: 400, y: 280, r: 120 }, { x: 150, y: 300, r: 65 }, { x: 650, y: 300, r: 65 },
-    { x: 150, y: 480, r: 65 }, { x: 300, y: 500, r: 65 }, { x: 500, y: 500, r: 75 }, { x: 680, y: 480, r: 80 }
+    { x: 400, y: 300, r: 140 }, // HQ Mestre
+    { x: 150, y: 350, r: 85 },  // Fabrica
+    { x: 650, y: 350, r: 85 },  // Quartel
+    { x: 150, y: 150, r: 65 },  // Radar
+    { x: 400, y: 120, r: 70 },  // Energia
+    { x: 650, y: 150, r: 70 },  // Pesquisa
+    { x: 400, y: 500, r: 100 }, // Aerodromo
+    { x: 400, y: 580, r: 120 }, // Muralha (Pad base)
 ];
 
 async function generateTerrain() {
-    console.log("🏗️  Iniciando Composição de Terreno V16 (Panzer Grid)...");
+    console.log("🏗️  Iniciando Limpeza de Terreno V17 (Background Clean)...");
 
     const terrainWidth = 800;
     const terrainHeight = 600;
 
-    // Criar um Pad de Betão com efeito 3D Realista
+    // Criar Pad de Betão Suavizado V45
     const createPad = (size) => {
         const h = size * 0.6;
         const svg = `
             <svg width="${size}" height="${h}" viewBox="0 0 ${size} ${h}">
-                <!-- Sombra do Pad -->
-                <ellipse cx="${size / 2}" cy="${h / 2 + 4}" rx="${size / 2}" ry="${h / 2}" fill="rgba(0,0,0,0.4)" />
+                <!-- Sombra Difusa (Suave) -->
+                <ellipse cx="${size / 2}" cy="${h / 2 + 3}" rx="${size / 2}" ry="${h / 2}" fill="rgba(0,0,0,0.25)" />
                 <!-- Base de Betão -->
                 <ellipse cx="${size / 2}" cy="${h / 2}" rx="${size / 2 - 2}" ry="${h / 2 - 2}" 
-                    fill="#3a3d41" 
-                    stroke="#555" 
-                    stroke-width="1.5" />
-                <!-- Borda de luz (3D) -->
+                    fill="#35383c" 
+                    stroke="#444" 
+                    stroke-width="1" />
+                <!-- Luz Superior -->
                 <ellipse cx="${size / 2}" cy="${h / 2 - 1}" rx="${size / 2 - 4}" ry="${h / 2 - 4}" 
                     fill="none" 
-                    stroke="rgba(255,255,255,0.08)" 
+                    stroke="rgba(255,255,255,0.05)" 
                     stroke-width="1" />
             </svg>
         `;
@@ -45,12 +50,17 @@ async function generateTerrain() {
     try {
         await sharp(path.join(__dirname, '../public/images/village/terrain_v13.png'))
             .resize(terrainWidth, terrainHeight)
-            .modulate({ saturation: 0.7, brightness: 0.9 }) // Desaturar areia para destacar betão
+            // OPERAÇÃO CLEAN V45
+            .median(3) // Reduz ruído de pedras pequenas e grão
+            .modulate({ 
+                brightness: 0.85, // Escurece ligeiramente para edifícios brilharem
+                saturation: 0.6,  // Desatura areia
+            })
             .composite(composites)
             .png()
-            .toFile(path.join(__dirname, '../public/images/village/terrain_v16.png'));
+            .toFile(path.join(__dirname, '../public/images/village/terrain_v17.png'));
 
-        console.log("✅ Terreno V16 gerado com sucesso.");
+        console.log("✅ Terreno V17 (Clean) gerado com sucesso.");
     } catch (err) {
         console.error("❌ Erro:", err);
     }
