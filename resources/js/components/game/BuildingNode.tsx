@@ -10,13 +10,23 @@ interface BuildingNodeProps {
 }
 
 /**
- * BuildingNode — ANCHOR REAL V39
- * Renderização bottom-center para alinhamento perfeito com o solo.
+ * BuildingNode — ANCHOR FINAL V49
+ * Implementação de coordenadas absolutas explícitas:
+ * Left = X - W/2
+ * Top  = Y - H
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick, isConstructing 
 }) => {
-    const DEBUG_MODE = false; // INTERRUPTOR DE TELEMETRIA
+    const DEBUG_MODE = false;
+
+    // Dimensões do Layout (V40)
+    const w = layout.w;
+    const h = layout.h || layout.w;
+
+    // CÁLCULO DE ÂNCORA FINAL (FASE 6)
+    const exactLeft = layout.x - (w / 2);
+    const exactTop = layout.y - h;
 
     return (
         <div 
@@ -24,20 +34,20 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
             onClick={onClick}
             style={{ 
                 position: 'absolute',
-                left: `${layout.x}px`,
-                top: `${layout.y}px`,
-                height: `${layout.h}px`, // ALTURA OBRIGATÓRIA (Fase 2)
-                width: 'auto',          // LARGURA FLEXÍVEL (Auto-ajuste)
-                zIndex: Math.floor(layout.y), // PROFUNDIDADE CORRETA (Fase 5)
-                transform: 'translate(-50%, -100%)', // ANCHOR REAL
-                transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                left: `${exactLeft}px`,
+                top: `${exactTop}px`,
+                width: `${w}px`,
+                height: `${h}px`,
+                zIndex: Math.floor(layout.y),
+                transition: 'none', // Estabilidade total no posicionamento
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'flex-end',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                overflow: 'visible' // Garante que transparências de sobra não cortem
             }}
         >
-            {/* PONTO DE DIAGNÓSTICO (Apenas em Debug) */}
+            {/* PONTO DE DIAGNÓSTICO (ANCHOR REAL) */}
             {DEBUG_MODE && (
                 <div className="anchor-point" 
                     style={{
@@ -50,7 +60,6 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                         borderRadius: '50%',
                         transform: 'translate(-50%, 50%)',
                         zIndex: 9999,
-                        boxShadow: '0 0 10px #ff0000',
                         pointerEvents: 'none'
                     }} 
                 />
@@ -60,8 +69,9 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 src={`/images/buildings/${layout.assetName}`}
                 alt={type}
                 style={{
-                    height: '100%',     // Preenche a altura H definida no layout
-                    width: 'auto',       // Mantém o rácio de aspecto original
+                    height: '100%',     
+                    width: 'auto',       
+                    maxWidth: '100%',   // Segurança contra distorsão
                     display: 'block',
                     objectFit: 'contain',
                     objectPosition: 'bottom center',
@@ -69,16 +79,6 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                     pointerEvents: 'none'
                 }}
             />
-            
-            {/* Overlay de Construção */}
-            {isConstructing && (
-                <div style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,165,0,0.1) 10px, rgba(255,165,0,0.1) 20px)',
-                    pointerEvents: 'none'
-                }} />
-            )}
         </div>
     );
 };

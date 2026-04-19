@@ -28184,6 +28184,10 @@ const BuildingNode = ({
   isConstructing
 }) => {
   const DEBUG_MODE = false;
+  const w2 = layout2.w;
+  const h2 = layout2.h || layout2.w;
+  const exactLeft = layout2.x - w2 / 2;
+  const exactTop = layout2.y - h2;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
@@ -28191,21 +28195,19 @@ const BuildingNode = ({
       onClick,
       style: {
         position: "absolute",
-        left: `${layout2.x}px`,
-        top: `${layout2.y}px`,
-        height: `${layout2.h}px`,
-        // ALTURA OBRIGATÓRIA (Fase 2)
-        width: "auto",
-        // LARGURA FLEXÍVEL (Auto-ajuste)
+        left: `${exactLeft}px`,
+        top: `${exactTop}px`,
+        width: `${w2}px`,
+        height: `${h2}px`,
         zIndex: Math.floor(layout2.y),
-        // PROFUNDIDADE CORRETA (Fase 5)
-        transform: "translate(-50%, -100%)",
-        // ANCHOR REAL
-        transition: "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "none",
+        // Estabilidade total no posicionamento
         cursor: "pointer",
         display: "flex",
         alignItems: "flex-end",
-        justifyContent: "center"
+        justifyContent: "center",
+        overflow: "visible"
+        // Garante que transparências de sobra não cortem
       },
       children: [
         DEBUG_MODE,
@@ -28216,9 +28218,9 @@ const BuildingNode = ({
             alt: type2,
             style: {
               height: "100%",
-              // Preenche a altura H definida no layout
               width: "auto",
-              // Mantém o rácio de aspecto original
+              maxWidth: "100%",
+              // Segurança contra distorsão
               display: "block",
               objectFit: "contain",
               objectPosition: "bottom center",
@@ -28226,13 +28228,7 @@ const BuildingNode = ({
               pointerEvents: "none"
             }
           }
-        ),
-        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
-          position: "absolute",
-          inset: 0,
-          background: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,165,0,0.1) 10px, rgba(255,165,0,0.1) 20px)",
-          pointerEvents: "none"
-        } })
+        )
       ]
     }
   );
@@ -44506,7 +44502,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-yLwTSyG9.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DkJI8vJ4.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44542,4 +44538,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BRNrR12I.js.map
+//# sourceMappingURL=app-n28yR77q.js.map
