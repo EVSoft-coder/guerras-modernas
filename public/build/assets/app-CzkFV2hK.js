@@ -28188,7 +28188,7 @@ const BuildingNode = ({
   const left = layout2.x - width / 2;
   const top = layout2.anchor === "bottom" ? layout2.y - height : layout2.y - height / 2;
   const assetPath = layout2.assetName ? `/images/buildings/${layout2.assetName}` : null;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
       id: `node-${type2}`,
@@ -28207,40 +28207,20 @@ const BuildingNode = ({
         e.stopPropagation();
         onClick();
       },
-      children: [
-        assetPath && /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            src: assetPath,
-            style: {
-              display: "block",
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              pointerEvents: "none",
-              mixBlendMode: "screen"
-            },
-            alt: type2
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
-          position: "absolute",
-          bottom: "-15px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "rgba(0,0,0,0.7)",
-          color: "#fff",
-          fontSize: "9px",
-          padding: "1px 4px",
-          borderRadius: "3px",
-          pointerEvents: "none",
-          fontFamily: "monospace",
-          whiteSpace: "nowrap"
-        }, children: [
-          "LVL ",
-          level
-        ] })
-      ]
+      children: assetPath && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          src: assetPath,
+          style: {
+            display: "block",
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            pointerEvents: "none"
+          },
+          alt: type2
+        }
+      )
     }
   );
 };
@@ -44498,7 +44478,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-B2d8X8jB.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CAD6LADW.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44534,4 +44514,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-b7kjzS4b.js.map
+//# sourceMappingURL=app-CzkFV2hK.js.map

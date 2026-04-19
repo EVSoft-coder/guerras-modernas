@@ -57,29 +57,10 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                         height: '100%',
                         objectFit: 'contain',
                         pointerEvents: 'none',
-                        mixBlendMode: 'screen',
                     }}
                     alt={type}
                 />
             )}
-            
-            {/* ETILQUETA DE NÍVEL SIMPLIFICADA */}
-            <div style={{
-                position: 'absolute',
-                bottom: '-15px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'rgba(0,0,0,0.7)',
-                color: '#fff',
-                fontSize: '9px',
-                padding: '1px 4px',
-                borderRadius: '3px',
-                pointerEvents: 'none',
-                fontFamily: 'monospace',
-                whiteSpace: 'nowrap'
-            }}>
-                LVL {level}
-            </div>
         </div>
     );
 };

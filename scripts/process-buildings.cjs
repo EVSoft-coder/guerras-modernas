@@ -5,20 +5,16 @@ const path = require('path');
 const INPUT_DIR = path.join(__dirname, '../resources/assets/buildings_raw');
 const OUTPUT_DIR = path.join(__dirname, '../public/images/buildings');
 
-// Escalas padrão AAA
+// Escalas padrão (ajustáveis conforme a Grelha V21)
 const TARGET_SIZES = {
-  qg: 200,
+  qg: 260,
   quartel: 110,
   fabrica_municoes: 110,
   central_energia: 90,
   centro_pesquisa: 90,
-  radar_estrategico: 90,
-  aerodromo: 120,
-  muralha: 140,
-  mine: 100,
-  housing: 110,
-  refinaria: 110,
-  posto_recrutamento: 110
+  radar_estrategico: 110,
+  aerodromo: 140,
+  muralha: 260,
 };
 
 const DEFAULT_SIZE = 100;
@@ -28,73 +24,66 @@ async function processImage(file) {
   const inputPath = path.join(INPUT_DIR, file);
   const outputPath = path.join(OUTPUT_DIR, `${name}.png`);
 
-  const targetHeight = TARGET_SIZES[name] || DEFAULT_SIZE;
+  const size = TARGET_SIZES[name] || DEFAULT_SIZE;
+
+  console.log(`[PROCESS] 🏗️  ${name} -> ${size}px (Fundo Transparente Forçado)`);
 
   try {
-    // 1. Carregar e fazer trim (remover bordas vazias)
-    const trimmedBuffer = await sharp(inputPath)
-      .ensureAlpha()
-      .trim()
-      .toBuffer();
+    // 1. CARREGAR E PREPARAR CANAL ALFA
+    let pipeline = sharp(inputPath).ensureAlpha();
 
-    // 2. Redimensionar preservando proporção
-    const resizedImage = sharp(trimmedBuffer).resize({
-      height: targetHeight,
-      withoutEnlargement: false,
-    });
+    // 2. REMOÇÃO DE FUNDO PRETO (THRESHOLD)
+    // Criamos uma máscara onde pixels escuros (quase pretos) tornam-se transparentes
+    // Usamos pipeline.raw() para manipular se necessário, mas o threshold no Alpha é mais rápido
+    const { data, info } = await pipeline.raw().toBuffer({ resolveWithObject: true });
+    
+    // Threshold para considerar "preto": RGB < 15
+    const threshold = 15;
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i+1];
+      const b = data[i+2];
+      
+      if (r < threshold && g < threshold && b < threshold) {
+        data[i+3] = 0; // Set Alpha to 0
+      }
+    }
 
-    const { width: resizedWidth, height: resizedHeight } = await resizedImage.metadata();
-
-    // 3. Criar canvas final (Garantindo que a base do edifício toca o fundo)
-    // Usamos um canvas de largura proporcional para não sobrar espaço lateral
-    const finalWidth = resizedWidth; 
-    const finalHeight = resizedHeight;
-
-    await sharp({
-      create: {
-        width: finalWidth,
-        height: finalHeight,
-        channels: 4,
-        background: { r: 0, g: 0, b: 0, alpha: 0 },
-      },
-    })
-      .composite([
-        {
-          input: await resizedImage.toBuffer(),
-          top: 0, // Como o canvas tem o tamanho da imagem redimensionada, 0 ja é o topo
-          left: 0,
-        },
-      ])
+    // 3. RECONSTRUIR, TRIM E REDIMENSIONAR
+    await sharp(data, { raw: info })
+      .trim() // Remove bordas vazias
+      .resize(size, size, {
+        fit: 'contain',
+        background: { r: 0, g: 0, b: 0, alpha: 0 }
+      })
       .png()
       .toFile(outputPath);
 
-    console.log(`✔ Processado com precisão: ${file} (Altura: ${targetHeight}px)`);
-  } catch (error) {
-    console.error(`❌ Falha crítica em ${file}:`, error);
+    console.log(`[SUCCESS] ✅ ${name} exportado.`);
+  } catch (err) {
+    console.error(`[ERROR] ❌ Erro ao processar ${name}:`, err.message);
   }
 }
 
-async function run() {
-  console.log('--- INICIANDO PIPELINE DE ASSETS PROFISSIONAL ---');
-  
-  await fs.ensureDir(INPUT_DIR);
+async function start() {
   await fs.ensureDir(OUTPUT_DIR);
-
-  const files = await fs.readdir(INPUT_DIR);
-  const images = files.filter(f =>
-    ['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(f).toLowerCase())
-  );
-
-  if (images.length === 0) {
-    console.log('⚠ Nenhuma imagem encontrada em /resources/assets/buildings_raw');
+  
+  if (!await fs.exists(INPUT_DIR)) {
+    console.error(`[CRITICAL] ❌ Diretório de entrada não existe: ${INPUT_DIR}`);
     return;
   }
 
-  for (const file of images) {
+  const files = (await fs.readdir(INPUT_DIR)).filter(f => 
+    ['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(f).toLowerCase())
+  );
+
+  console.log(`[INIT] 🚀 Iniciando purificação de ${files.length} ativos...`);
+  
+  for (const file of files) {
     await processImage(file);
   }
 
-  console.log('\n🚀 Missão cumprida: Todos os assets estão normalizados!');
+  console.log(`[DONE] 🏆 Todos os ativos foram purificados.`);
 }
 
-run();
+start();
