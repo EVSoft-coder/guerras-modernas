@@ -10,13 +10,14 @@ interface BuildingNodeProps {
 }
 
 /**
- * BuildingNode V61 — ESCUDO DE FIDELIDADE
- * Sistema de bloqueio de assets inválidos com placeholder temporário.
+ * BuildingNode V62 — PLACEHOLDER CONTROLADO
+ * Modo de diagnóstico para validação de layout independente de assets.
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick, isConstructing 
 }) => {
-    const DEBUG_MODE = false;
+    // FASE 5: ATIVAR VISÃO DE RAIO-X
+    const DEBUG_MODE = true; 
     const [isValid, setIsValid] = useState<boolean | null>(null);
 
     // Métrica Isométrica V60
@@ -25,28 +26,19 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const exactLeft = layout.x - (w / 2);
     const exactTop = layout.y - h;
 
-    // SENTINELA DE RUNTIME V61: Border Audit via Canvas
     useEffect(() => {
         const img = new Image();
         img.crossOrigin = "Anonymous";
         img.src = `/images/buildings/${layout.assetName}`;
-        
         img.onload = () => {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             if (!ctx) { setIsValid(true); return; }
-            
-            canvas.width = 10;
-            canvas.height = 10;
-            // Desenha apenas o canto superior esquerdo (ponto crítico de checkerboard/bg)
+            canvas.width = 10; canvas.height = 10;
             ctx.drawImage(img, 0, 0, 10, 10, 0, 0, 10, 10);
             const pixel = ctx.getImageData(0, 0, 1, 1).data;
-            
-            // Se o alpha for 255 (opaco) no canto, o asset é INVÁLIDO (tem fundo)
-            const isOpaque = pixel[3] === 255;
-            setIsValid(!isOpaque);
+            setIsValid(pixel[3] !== 255);
         };
-
         img.onerror = () => setIsValid(false);
     }, [layout.assetName]);
 
@@ -64,50 +56,46 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'flex-end',
-                justifyContent: 'center',
-                overflow: 'visible'
+                justifyContent: 'center'
             }}
         >
-            {/* PONTO DE DIAGNÓSTICO (DEBUG) */}
-            {DEBUG_MODE && (
-                <div style={{ position: 'absolute', bottom: 0, left: '50%', width: 6, height: 6, background: 'red', borderRadius: '50%', transform: 'translate(-50%, 50%)', zIndex: 9999 }} />
-            )}
-
-            {isValid === false ? (
-                /* PLACEHOLDER SIMPLES (Fase 4) */
-                <div style={{
-                    width: '60%',
-                    height: '40%',
-                    background: 'rgba(50, 50, 50, 0.8)',
-                    border: '2px dashed #555',
-                    borderRadius: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#888',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                    backdropFilter: 'blur(4px)'
-                }}>
-                    Invalid Asset
-                </div>
-            ) : (
-                /* ASSET VALIDADO OU EM CARREGAMENTO */
-                <img 
-                    src={`/images/buildings/${layout.assetName}`}
-                    alt={type}
+            {/* FASE 5: PLACEHOLDER CONTROLADO (VISÃO DE GRELHA) */}
+            {DEBUG_MODE ? (
+                <div 
+                    className="building-placeholder"
                     style={{
-                        height: '100%',     
-                        width: 'auto',       
-                        maxWidth: '100%',
-                        display: isValid === null ? 'none' : 'block', // Esconde até validar
-                        objectFit: 'contain',
-                        objectPosition: 'bottom center',
-                        filter: isConstructing ? 'grayscale(0.8) opacity(0.7)' : 'none',
+                        width: '80px',
+                        height: '80px',
+                        background: 'rgba(0, 255, 0, 0.3)',
+                        border: '2px solid lime',
+                        position: 'absolute',
+                        bottom: 0,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'lime',
+                        fontSize: '9px',
+                        fontWeight: 'bold',
+                        textAlign: 'center',
                         pointerEvents: 'none'
                     }}
-                />
+                >
+                    {type.toUpperCase()}
+                </div>
+            ) : (
+                isValid === false ? (
+                    <div style={{ width: '60%', height: '40%', background: 'rgba(50, 50, 50, 0.8)', border: '2px dashed #555', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: '10px', fontWeight: 'bold', backdropFilter: 'blur(4px)' }}>
+                        Invalid Asset
+                    </div>
+                ) : (
+                    <img 
+                        src={`/images/buildings/${layout.assetName}`}
+                        alt={type}
+                        style={{ height: '100%', width: 'auto', maxWidth: '100%', display: isValid === null ? 'none' : 'block', objectFit: 'contain', objectPosition: 'bottom center', filter: isConstructing ? 'grayscale(0.8) opacity(0.7)' : 'none', pointerEvents: 'none' }}
+                    />
+                )
             )}
         </div>
     );

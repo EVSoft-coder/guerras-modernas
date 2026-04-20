@@ -28183,7 +28183,6 @@ const BuildingNode = ({
   onClick,
   isConstructing
 }) => {
-  const DEBUG_MODE = false;
   const [isValid, setIsValid] = reactExports.useState(null);
   const w2 = layout2.w;
   const h2 = layout2.h || layout2.w;
@@ -28204,12 +28203,11 @@ const BuildingNode = ({
       canvas.height = 10;
       ctx.drawImage(img, 0, 0, 10, 10, 0, 0, 10, 10);
       const pixel = ctx.getImageData(0, 0, 1, 1).data;
-      const isOpaque = pixel[3] === 255;
-      setIsValid(!isOpaque);
+      setIsValid(pixel[3] !== 255);
     };
     img.onerror = () => setIsValid(false);
   }, [layout2.assetName]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
       className: "building-node",
@@ -28224,50 +28222,33 @@ const BuildingNode = ({
         cursor: "pointer",
         display: "flex",
         alignItems: "flex-end",
-        justifyContent: "center",
-        overflow: "visible"
+        justifyContent: "center"
       },
-      children: [
-        DEBUG_MODE,
-        isValid === false ? (
-          /* PLACEHOLDER SIMPLES (Fase 4) */
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
-            width: "60%",
-            height: "40%",
-            background: "rgba(50, 50, 50, 0.8)",
-            border: "2px dashed #555",
-            borderRadius: "4px",
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "building-placeholder",
+          style: {
+            width: "80px",
+            height: "80px",
+            background: "rgba(0, 255, 0, 0.3)",
+            border: "2px solid lime",
+            position: "absolute",
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#888",
-            fontSize: "10px",
+            color: "lime",
+            fontSize: "9px",
             fontWeight: "bold",
-            textTransform: "uppercase",
-            backdropFilter: "blur(4px)"
-          }, children: "Invalid Asset" })
-        ) : (
-          /* ASSET VALIDADO OU EM CARREGAMENTO */
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "img",
-            {
-              src: `/images/buildings/${layout2.assetName}`,
-              alt: type2,
-              style: {
-                height: "100%",
-                width: "auto",
-                maxWidth: "100%",
-                display: isValid === null ? "none" : "block",
-                // Esconde até validar
-                objectFit: "contain",
-                objectPosition: "bottom center",
-                filter: isConstructing ? "grayscale(0.8) opacity(0.7)" : "none",
-                pointerEvents: "none"
-              }
-            }
-          )
-        )
-      ]
+            textAlign: "center",
+            pointerEvents: "none"
+          },
+          children: type2.toUpperCase()
+        }
+      )
     }
   );
 };
@@ -44582,7 +44563,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C8_o-5Fj.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BUyufhDC.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44618,4 +44599,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-0jNQG1-K.js.map
+//# sourceMappingURL=app-CChDYAyT.js.map
