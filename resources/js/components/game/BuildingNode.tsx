@@ -10,19 +10,15 @@ interface BuildingNodeProps {
 }
 
 /**
- * BuildingNode V68 — MIRA DE PRECISÃO
- * Diagnóstico final com retículo de sniper para alinhamento de solo.
+ * BuildingNode V69 — MIRA AZUL ELÉTRICO
+ * Retículo de alta visibilidade contra concreto e areia.
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick 
 }) => {
-    // MODO DIAGNÓSTICO ATIVO
     const DEBUG_MODE = true; 
+    const size = 30; // Mira compacta
 
-    // Dimensões da Mira (32x32)
-    const size = 32;
-
-    // Centralização absoluta no ponto (X, Y)
     const left = layout.x - (size / 2);
     const top = layout.y - (size / 2);
 
@@ -43,25 +39,26 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'rgba(255, 255, 255, 0.4)', // Vidro de Mira
+                background: 'rgba(0, 242, 255, 0.2)', // Brilho Azul
                 borderRadius: '50%',
-                border: '2px solid red', // Retículo
-                boxShadow: '0 0 10px rgba(255, 0, 0, 0.8)',
+                border: '2px solid #00f2ff', // Mira Azul Elétrico
+                boxShadow: '0 0 15px #00f2ff',
                 pointerEvents: 'auto'
             }}
         >
-            {/* LINHAS DE RETÍCULO */}
-            <div style={{ position: 'absolute', width: '100%', height: '1px', background: 'red' }} />
-            <div style={{ position: 'absolute', width: '1px', height: '100%', background: 'red' }} />
+            {/* RETÍCULO DE PRECISÃO */}
+            <div style={{ position: 'absolute', width: '100%', height: '1px', background: '#00f2ff' }} />
+            <div style={{ position: 'absolute', width: '1px', height: '100%', background: '#00f2ff' }} />
             
             <span style={{ 
                 position: 'absolute', 
-                color: 'white', 
-                fontSize: '10px', 
-                fontWeight: 'bold', 
-                textShadow: '0 0 3px black, 0 0 6px black',
+                color: '#00f2ff', 
+                fontSize: '9px', 
+                fontWeight: '900', 
+                textShadow: '0 0 4px black, 0 0 8px black',
                 whiteSpace: 'nowrap',
-                pointerEvents: 'none'
+                pointerEvents: 'none',
+                bottom: '-15px'
             }}>
                 {type.toUpperCase()}
             </span>

@@ -11,17 +11,18 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 8 — CALIBRAÇÃO DOURADA V68
- * Alinhamento final baseado na zona de equilíbrio 400.
+ * FASE 8 — GRELHA ISOMÉTRICA V69
+ * Calibração final baseada na lógica de 200px step (150-350-550).
+ * Alinhado com os pads visíveis (Círculos Brancos).
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 400 }, // O Ponto de Equilíbrio
-    RADAR:     { x: 230, y: 140 }, // Subindo o topo
-    ENERGY:    { x: 405, y: 120 }, // Subindo o topo
-    RESEARCH:  { x: 580, y: 140 }, // Subindo o topo
-    FACTORY:   { x: 190, y: 400 }, // Alinhado com HQ
-    BARRACKS:  { x: 610, y: 400 }, // Alinhado com HQ
-    AIRPORT:   { x: 400, y: 520 }, // Fila Base
+    HQ:        { x: 400, y: 350 }, // Centralizado no pad médio
+    RADAR:     { x: 200, y: 150 }, // Topo Left
+    ENERGY:    { x: 400, y: 130 }, // Topo Center (ligeiramente mais alto para profundidade)
+    RESEARCH:  { x: 600, y: 150 }, // Topo Right
+    FACTORY:   { x: 150, y: 350 }, // Lat. Centro
+    BARRACKS:  { x: 650, y: 350 }, // Lat. Centro
+    AIRPORT:   { x: 400, y: 530 }, // Fila Base
     WALL:      { x: 400, y: 580 }, // Perímetro
 };
 
