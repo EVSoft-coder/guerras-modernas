@@ -28180,43 +28180,92 @@ const BuildingNode = ({
   type: type2,
   level,
   layout: layout2,
-  onClick
+  onClick,
+  isConstructing
 }) => {
-  const size2 = 40;
-  const left = layout2.x - size2 / 2;
-  const top = layout2.y - size2 / 2;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  const [imgError, setImgError] = reactExports.useState(false);
+  const w2 = layout2.w;
+  const h2 = layout2.h;
+  const left = layout2.x - w2 / 2;
+  const top = layout2.y - h2;
+  const buildingSlug = type2.toLowerCase();
+  const assetPath = `/assets/buildings/${layout2.assetName || buildingSlug + ".png"}`;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: "building-node",
+      className: `building-node building-${buildingSlug}`,
       onClick,
       style: {
         position: "absolute",
         left: `${left}px`,
         top: `${top}px`,
-        width: `${size2}px`,
-        height: `${size2}px`,
-        zIndex: 1e4,
+        width: `${w2}px`,
+        height: `${h2}px`,
+        zIndex: Math.floor(layout2.y),
+        // Depth Sorting Automático
         cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#ff0000",
-        // Vermelho Puro
-        borderRadius: "50%",
-        border: "2px solid white",
-        boxShadow: "0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 255, 255, 0.5)",
-        pointerEvents: "auto"
+        transition: "transform 0.2s ease-out, filter 0.2s",
+        filter: isConstructing ? "grayscale(0.5) contrast(0.8)" : "none"
       },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: {
-        color: "white",
-        fontSize: "9px",
-        fontWeight: "900",
-        textShadow: "1px 1px 2px black",
-        textAlign: "center",
-        pointerEvents: "none",
-        lineHeight: "1"
-      }, children: type2.replace("_", "\n").toUpperCase() })
+      children: [
+        !imgError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: assetPath,
+            alt: type2,
+            style: {
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              pointerEvents: "none",
+              // Sombra Isométrica Suave
+              filter: "drop-shadow(0 10px 15px rgba(0,0,0,0.5))"
+            },
+            onError: () => setImgError(true)
+          }
+        ) : (
+          // Placeholder de fallback de alta fidelidade
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+            width: "100%",
+            height: "100%",
+            background: "rgba(255,255,255,0.1)",
+            border: "1px dashed white",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { fontSize: "8px", color: "white" }, children: [
+            "MISSING_",
+            type2
+          ] }) })
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
+          position: "absolute",
+          bottom: "-15px",
+          width: "100%",
+          textAlign: "center",
+          color: "white",
+          fontSize: "10px",
+          fontWeight: "bold",
+          textShadow: "1px 1px 2px black",
+          opacity: 0.8
+        }, children: [
+          type2.replace("_", " ").toUpperCase(),
+          " (Lvl ",
+          level,
+          ")"
+        ] }),
+        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "construction-ring", style: {
+          position: "absolute",
+          bottom: 0,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "60px",
+          height: "30px",
+          border: "2px solid gold",
+          borderRadius: "50%",
+          animation: "spin 2s linear infinite"
+        } })
+      ]
     }
   );
 };
@@ -44535,7 +44584,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Bd3HKIZO.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-D_w2XRZE.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44571,4 +44620,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-B8amnK0I.js.map
+//# sourceMappingURL=app-BQLKs_lI.js.map
