@@ -28188,7 +28188,7 @@ const BuildingNode = ({
   const h2 = layout2.h;
   const left = layout2.x - w2 / 2;
   const top = layout2.y - h2;
-  const labelY = h2;
+  const labelY = -20;
   const buildingSlug = type2.toLowerCase();
   const assetPath = `/assets/buildings/${layout2.assetName || buildingSlug + ".png"}`;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -28263,22 +28263,22 @@ const BuildingNode = ({
   );
 };
 const BUILDING_SLOTS = {
-  HQ: { x: 400, y: 310 },
-  // Geometria Central
-  RADAR: { x: 265, y: 180 },
-  // Recuo Superior Esquerdo
-  ENERGY: { x: 400, y: 50 },
-  // Ponta Norte
-  RESEARCH: { x: 535, y: 180 },
-  // Recuo Superior Direito
-  FACTORY: { x: 130, y: 310 },
-  // Flanco Esquerdo
-  BARRACKS: { x: 670, y: 310 },
-  // Flanco Direito
-  AIRPORT: { x: 400, y: 440 },
-  // Vetor Sul
-  WALL: { x: 400, y: 570 }
-  // Fronteira Extrema
+  HQ: { x: 400, y: 350 },
+  // Antes 310
+  RADAR: { x: 265, y: 220 },
+  // Antes 180
+  ENERGY: { x: 400, y: 90 },
+  // Antes 50
+  RESEARCH: { x: 535, y: 220 },
+  // Antes 180
+  FACTORY: { x: 130, y: 350 },
+  // Antes 310
+  BARRACKS: { x: 670, y: 350 },
+  // Antes 310
+  AIRPORT: { x: 400, y: 480 },
+  // Antes 440
+  WALL: { x: 400, y: 585 }
+  // Limite do Canvas (Antes 570)
 };
 const BUILDING_LAYOUT = {
   qg: { ...BUILDING_SLOTS.HQ, w: 140, h: 160, anchor: "center", assetName: "hq_v2.png" },
@@ -44577,7 +44577,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C6ZVkdL4.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Cf5I0-R3.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44613,4 +44613,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BrxJ6hkI.js.map
+//# sourceMappingURL=app-pZuDuJF5.js.map

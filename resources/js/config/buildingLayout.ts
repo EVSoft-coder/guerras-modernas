@@ -11,19 +11,19 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 11 — TELEMETRIA DE PRECISÃO V75
- * Coordenadas extraídas via Click-Mapping (100% Precisão Real).
- * Padrão de 130px vertical entre linhas e simetria absoluta em X=400.
+ * FASE 12 — CALIBRAÇÃO DE IMERSÃO V76
+ * Aplicando Offset de Solo (+40px) para compensar a perspetiva 3D dos assets.
+ * As etiquetas serão movidas para o topo do componente no BuildingNode.
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 310 }, // Geometria Central
-    RADAR:     { x: 265, y: 180 }, // Recuo Superior Esquerdo
-    ENERGY:    { x: 400, y: 50  }, // Ponta Norte
-    RESEARCH:  { x: 535, y: 180 }, // Recuo Superior Direito
-    FACTORY:   { x: 130, y: 310 }, // Flanco Esquerdo
-    BARRACKS:  { x: 670, y: 310 }, // Flanco Direito
-    AIRPORT:   { x: 400, y: 440 }, // Vetor Sul
-    WALL:      { x: 400, y: 570 }, // Fronteira Extrema
+    HQ:        { x: 400, y: 350 }, // Antes 310
+    RADAR:     { x: 265, y: 220 }, // Antes 180
+    ENERGY:    { x: 400, y: 90  }, // Antes 50
+    RESEARCH:  { x: 535, y: 220 }, // Antes 180
+    FACTORY:   { x: 130, y: 350 }, // Antes 310
+    BARRACKS:  { x: 670, y: 350 }, // Antes 310
+    AIRPORT:   { x: 400, y: 480 }, // Antes 440
+    WALL:      { x: 400, y: 585 }, // Limite do Canvas (Antes 570)
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {

@@ -25,7 +25,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const h = layout.h;
     const left = layout.x - (w / 2);
     const top = layout.y - h; 
-    const labelY = h; 
+    const labelY = -20; 
 
     // Protocolo de Sombras e Efeitos
     const buildingSlug = type.toLowerCase();
