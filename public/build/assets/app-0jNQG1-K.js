@@ -18980,16 +18980,16 @@ function useImageLoadingStatus(src, referrerPolicy) {
   return loadingStatus;
 }
 var Root = Avatar$1;
-var Image = AvatarImage$1;
+var Image$1 = AvatarImage$1;
 var Fallback = AvatarFallback$1;
 const Avatar = reactExports.forwardRef(
   ({ className, ...props }, ref2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Root, { ref: ref2, className: cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className), ...props })
 );
 Avatar.displayName = Root.displayName;
 const AvatarImage = reactExports.forwardRef(
-  ({ className, ...props }, ref2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Image, { ref: ref2, className: cn("aspect-square h-full w-full", className), ...props })
+  ({ className, ...props }, ref2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { ref: ref2, className: cn("aspect-square h-full w-full", className), ...props })
 );
-AvatarImage.displayName = Image.displayName;
+AvatarImage.displayName = Image$1.displayName;
 const AvatarFallback = reactExports.forwardRef(({ className, ...props }, ref2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
   Fallback,
   {
@@ -28184,10 +28184,31 @@ const BuildingNode = ({
   isConstructing
 }) => {
   const DEBUG_MODE = false;
+  const [isValid, setIsValid] = reactExports.useState(null);
   const w2 = layout2.w;
   const h2 = layout2.h || layout2.w;
   const exactLeft = layout2.x - w2 / 2;
   const exactTop = layout2.y - h2;
+  reactExports.useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.src = `/images/buildings/${layout2.assetName}`;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        setIsValid(true);
+        return;
+      }
+      canvas.width = 10;
+      canvas.height = 10;
+      ctx.drawImage(img, 0, 0, 10, 10, 0, 0, 10, 10);
+      const pixel = ctx.getImageData(0, 0, 1, 1).data;
+      const isOpaque = pixel[3] === 255;
+      setIsValid(!isOpaque);
+    };
+    img.onerror = () => setIsValid(false);
+  }, [layout2.assetName]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
@@ -28200,34 +28221,51 @@ const BuildingNode = ({
         width: `${w2}px`,
         height: `${h2}px`,
         zIndex: Math.floor(layout2.y),
-        transition: "none",
-        // Estabilidade total no posicionamento
         cursor: "pointer",
         display: "flex",
         alignItems: "flex-end",
         justifyContent: "center",
         overflow: "visible"
-        // Garante que transparências de sobra não cortem
       },
       children: [
         DEBUG_MODE,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            src: `/images/buildings/${layout2.assetName}`,
-            alt: type2,
-            style: {
-              height: "100%",
-              width: "auto",
-              maxWidth: "100%",
-              // Segurança contra distorsão
-              display: "block",
-              objectFit: "contain",
-              objectPosition: "bottom center",
-              filter: isConstructing ? "grayscale(0.8) opacity(0.7)" : "none",
-              pointerEvents: "none"
+        isValid === false ? (
+          /* PLACEHOLDER SIMPLES (Fase 4) */
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+            width: "60%",
+            height: "40%",
+            background: "rgba(50, 50, 50, 0.8)",
+            border: "2px dashed #555",
+            borderRadius: "4px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#888",
+            fontSize: "10px",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            backdropFilter: "blur(4px)"
+          }, children: "Invalid Asset" })
+        ) : (
+          /* ASSET VALIDADO OU EM CARREGAMENTO */
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              src: `/images/buildings/${layout2.assetName}`,
+              alt: type2,
+              style: {
+                height: "100%",
+                width: "auto",
+                maxWidth: "100%",
+                display: isValid === null ? "none" : "block",
+                // Esconde até validar
+                objectFit: "contain",
+                objectPosition: "bottom center",
+                filter: isConstructing ? "grayscale(0.8) opacity(0.7)" : "none",
+                pointerEvents: "none"
+              }
             }
-          }
+          )
         )
       ]
     }
@@ -44544,7 +44582,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Cc1GwRL8.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-C8_o-5Fj.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44580,4 +44618,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CN4vJ-9u.js.map
+//# sourceMappingURL=app-0jNQG1-K.js.map
