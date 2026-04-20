@@ -10,23 +10,27 @@ interface BuildingNodeProps {
 }
 
 /**
- * BuildingNode V62 — PLACEHOLDER CONTROLADO
- * Modo de diagnóstico para validação de layout independente de assets.
+ * BuildingNode V63 — ANCHOR SYSTEM
+ * Calibração final de assentamento: Base do objeto toca o centro do pad.
+ * Fórmula: left = x - w/2 | top = y - h
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick, isConstructing 
 }) => {
-    // FASE 5: ATIVAR VISÃO DE RAIO-X
+    // MODO DIAGNÓSTICO ATIVO
     const DEBUG_MODE = true; 
     const [isValid, setIsValid] = useState<boolean | null>(null);
 
-    // Métrica Isométrica V60
-    const w = layout.w;
-    const h = layout.h || layout.w;
-    const exactLeft = layout.x - (w / 2);
-    const exactTop = layout.y - h;
+    // Dimensões do Objeto (80x80 para Placeholder)
+    const objW = DEBUG_MODE ? 80 : layout.w;
+    const objH = DEBUG_MODE ? 80 : (layout.h || layout.w);
+
+    // CÁLCULO DE POSIÇÃO ABSOLUTA (Fase 6)
+    const left = layout.x - (objW / 2);
+    const top = layout.y - objH;
 
     useEffect(() => {
+        if (DEBUG_MODE) return;
         const img = new Image();
         img.crossOrigin = "Anonymous";
         img.src = `/images/buildings/${layout.assetName}`;
@@ -48,30 +52,26 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
             onClick={onClick}
             style={{ 
                 position: 'absolute',
-                left: `${exactLeft}px`,
-                top: `${exactTop}px`,
-                width: `${w}px`,
-                height: `${h}px`,
+                left: `${left}px`,
+                top: `${top}px`,
+                width: `${objW}px`,
+                height: `${objH}px`,
                 zIndex: Math.floor(layout.y),
                 cursor: 'pointer',
                 display: 'flex',
-                alignItems: 'flex-end',
+                alignItems: 'flex-end', // Garante que o conteúdo toca o fundo
                 justifyContent: 'center'
             }}
         >
-            {/* FASE 5: PLACEHOLDER CONTROLADO (VISÃO DE GRELHA) */}
             {DEBUG_MODE ? (
+                /* FASE 6: ANCHOR SYSTEM (Placeholder Lime) */
                 <div 
                     className="building-placeholder"
                     style={{
-                        width: '80px',
-                        height: '80px',
+                        width: '100%',
+                        height: '100%',
                         background: 'rgba(0, 255, 0, 0.3)',
                         border: '2px solid lime',
-                        position: 'absolute',
-                        bottom: 0,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -79,14 +79,15 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                         fontSize: '9px',
                         fontWeight: 'bold',
                         textAlign: 'center',
-                        pointerEvents: 'none'
+                        pointerEvents: 'none',
+                        boxShadow: '0 0 15px rgba(0,255,0,0.2)'
                     }}
                 >
                     {type.toUpperCase()}
                 </div>
             ) : (
                 isValid === false ? (
-                    <div style={{ width: '60%', height: '40%', background: 'rgba(50, 50, 50, 0.8)', border: '2px dashed #555', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: '10px', fontWeight: 'bold', backdropFilter: 'blur(4px)' }}>
+                    <div style={{ width: '60%', height: '40%', background: 'rgba(50, 50, 50, 0.8)', border: '2px dashed #555', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: '10px', fontWeight: 'bold' }}>
                         Invalid Asset
                     </div>
                 ) : (
