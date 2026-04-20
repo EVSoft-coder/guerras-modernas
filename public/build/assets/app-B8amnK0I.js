@@ -28222,21 +28222,21 @@ const BuildingNode = ({
 };
 const BUILDING_SLOTS = {
   HQ: { x: 400, y: 300 },
-  // Subindo para 300
-  RADAR: { x: 200, y: 100 },
-  // Subindo para 100
+  // GOLD
+  RADAR: { x: 120, y: 130 },
+  // Expansão Lateral Topo
   ENERGY: { x: 400, y: 80 },
-  // Subindo para 80
-  RESEARCH: { x: 600, y: 100 },
-  // Subindo para 100
-  FACTORY: { x: 150, y: 300 },
-  // Alinhado com HQ a 300
-  BARRACKS: { x: 650, y: 300 },
-  // Alinhado com HQ a 300
+  // GOLD
+  RESEARCH: { x: 680, y: 130 },
+  // Expansão Lateral Topo
+  FACTORY: { x: 100, y: 275 },
+  // Expansão Lateral Meio + Subida
+  BARRACKS: { x: 700, y: 275 },
+  // Expansão Lateral Meio + Subida
   AIRPORT: { x: 400, y: 480 },
-  // Subindo para 480
+  // GOLD
   WALL: { x: 400, y: 560 }
-  // Perímetro base
+  // GOLD
 };
 const BUILDING_LAYOUT = {
   qg: { ...BUILDING_SLOTS.HQ, w: 220, h: 260, anchor: "center", assetName: "qg.png" },
@@ -44535,7 +44535,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C0qm22JC.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Bd3HKIZO.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44571,4 +44571,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-C-J11L_Y.js.map
+//# sourceMappingURL=app-B8amnK0I.js.map

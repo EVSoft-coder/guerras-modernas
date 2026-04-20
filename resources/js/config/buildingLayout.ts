@@ -11,19 +11,19 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 8 — CALIBRAÇÃO FINAL V70
- * Ascensão de grelha (-50px offset Y universal).
- * Alinhamento milimétrico com o centro dos pads baked.
+ * FASE 8 — EXPANÇÃO LATERAL V71
+ * Ajuste de envergadura baseado na divergência isométrica.
+ * HQ/Energia/Aeródromo bloqueados (sucesso V70).
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 300 }, // Subindo para 300
-    RADAR:     { x: 200, y: 100 }, // Subindo para 100
-    ENERGY:    { x: 400, y: 80  }, // Subindo para 80
-    RESEARCH:  { x: 600, y: 100 }, // Subindo para 100
-    FACTORY:   { x: 150, y: 300 }, // Alinhado com HQ a 300
-    BARRACKS:  { x: 650, y: 300 }, // Alinhado com HQ a 300
-    AIRPORT:   { x: 400, y: 480 }, // Subindo para 480
-    WALL:      { x: 400, y: 560 }, // Perímetro base
+    HQ:        { x: 400, y: 300 }, // GOLD
+    RADAR:     { x: 120, y: 130 }, // Expansão Lateral Topo
+    ENERGY:    { x: 400, y: 80  }, // GOLD
+    RESEARCH:  { x: 680, y: 130 }, // Expansão Lateral Topo
+    FACTORY:   { x: 100, y: 275 }, // Expansão Lateral Meio + Subida
+    BARRACKS:  { x: 700, y: 275 }, // Expansão Lateral Meio + Subida
+    AIRPORT:   { x: 400, y: 480 }, // GOLD
+    WALL:      { x: 400, y: 560 }, // GOLD
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
