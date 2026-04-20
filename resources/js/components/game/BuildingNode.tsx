@@ -63,6 +63,24 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 justifyContent: 'center'
             }}
         >
+            {/* FASE 7: DEBUG PONTO BASE (anchor-dot) */}
+            <div 
+                className="anchor-dot" 
+                style={{
+                    width: '6px',
+                    height: '6px',
+                    background: 'red',
+                    position: 'absolute',
+                    borderRadius: '50%',
+                    bottom: '0',
+                    left: '50%',
+                    transform: 'translate(-50%, 50%)',
+                    zIndex: 9999,
+                    boxShadow: '0 0 10px red',
+                    pointerEvents: 'none'
+                }} 
+            />
+
             {DEBUG_MODE ? (
                 /* FASE 6: ANCHOR SYSTEM (Placeholder Lime) */
                 <div 

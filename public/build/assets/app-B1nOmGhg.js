@@ -28191,7 +28191,7 @@ const BuildingNode = ({
   reactExports.useEffect(() => {
     return;
   }, [layout2.assetName]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
       className: "building-node",
@@ -28209,7 +28209,26 @@ const BuildingNode = ({
         // Garante que o conteúdo toca o fundo
         justifyContent: "center"
       },
-      children: (
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "anchor-dot",
+            style: {
+              width: "6px",
+              height: "6px",
+              background: "red",
+              position: "absolute",
+              borderRadius: "50%",
+              bottom: "0",
+              left: "50%",
+              transform: "translate(-50%, 50%)",
+              zIndex: 9999,
+              boxShadow: "0 0 10px red",
+              pointerEvents: "none"
+            }
+          }
+        ),
         /* FASE 6: ANCHOR SYSTEM (Placeholder Lime) */
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -28233,7 +28252,7 @@ const BuildingNode = ({
             children: type2.toUpperCase()
           }
         )
-      )
+      ]
     }
   );
 };
@@ -44548,7 +44567,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Bir6pcOy.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-NEebU_Q_.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44584,4 +44603,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CuiHKCdX.js.map
+//# sourceMappingURL=app-B1nOmGhg.js.map
