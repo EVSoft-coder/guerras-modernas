@@ -28265,20 +28265,20 @@ const BuildingNode = ({
 const BUILDING_SLOTS = {
   HQ: { x: 400, y: 350 },
   // OK
-  RADAR: { x: 265, y: 225 },
-  // Reajuste -5px
-  ENERGY: { x: 400, y: 100 },
-  // Reajuste +10px (Imersão)
-  RESEARCH: { x: 535, y: 225 },
-  // Reajuste -5px
+  RADAR: { x: 265, y: 170 },
+  // Recuperado V77 (User: Correct)
+  ENERGY: { x: 400, y: 45 },
+  // Norte Extremo
+  RESEARCH: { x: 535, y: 170 },
+  // Simetria V77
   FACTORY: { x: 130, y: 350 },
   // OK
   BARRACKS: { x: 670, y: 350 },
   // OK
-  AIRPORT: { x: 400, y: 480 },
-  // Reajuste +40px (Imersão)
-  WALL: { x: 400, y: 595 }
-  // Reajuste +10px (Imersão)
+  AIRPORT: { x: 400, y: 420 },
+  // Ajuste Fino Sul
+  WALL: { x: 400, y: 550 }
+  // Ajuste Fino Sul (Muralha)
 };
 const BUILDING_LAYOUT = {
   qg: { ...BUILDING_SLOTS.HQ, w: 140, h: 160, anchor: "center", assetName: "hq_v2.png" },
@@ -44577,7 +44577,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CTfFtE8O.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BY6nL_E6.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44613,4 +44613,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-CWVeVYnT.js.map
+//# sourceMappingURL=app-DqYRNpSj.js.map

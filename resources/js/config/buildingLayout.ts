@@ -11,20 +11,19 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 14 — MATRIZ DE SINCRONIA V78
- * Aplicação de Offsets Isométricos Baseados em Teste de Campo V77.
- * Linha Média (Y=350) trancada (Perfeição Visual).
- * Slots Superior e Inferior ajustados para imersão total.
+ * FASE 15 — OPERAÇÃO UNIFICAÇÃO V79
+ * Fusão de Telemetria V77 (Radar OK) com Equador V78 (HQ OK).
+ * Ajuste de latitude Norte/Sul para eliminar flutuação.
  */
 export const BUILDING_SLOTS = {
     HQ:        { x: 400, y: 350 }, // OK
-    RADAR:     { x: 265, y: 225 }, // Reajuste -5px
-    ENERGY:    { x: 400, y: 100 }, // Reajuste +10px (Imersão)
-    RESEARCH:  { x: 535, y: 225 }, // Reajuste -5px
+    RADAR:     { x: 265, y: 170 }, // Recuperado V77 (User: Correct)
+    ENERGY:    { x: 400, y: 45  }, // Norte Extremo
+    RESEARCH:  { x: 535, y: 170 }, // Simetria V77
     FACTORY:   { x: 130, y: 350 }, // OK
     BARRACKS:  { x: 670, y: 350 }, // OK
-    AIRPORT:   { x: 400, y: 480 }, // Reajuste +40px (Imersão)
-    WALL:      { x: 400, y: 595 }, // Reajuste +10px (Imersão)
+    AIRPORT:   { x: 400, y: 420 }, // Ajuste Fino Sul
+    WALL:      { x: 400, y: 550 }, // Ajuste Fino Sul (Muralha)
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
