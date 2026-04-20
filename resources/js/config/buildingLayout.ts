@@ -11,18 +11,18 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 8 — ULTRA-CALIBRAÇÃO V66
- * Afundando a grelha para latitudes profundas (+80px offset geral).
+ * FASE 8 — CALIBRAÇÃO CIRÚRGICA V67
+ * Ajuste médio entre V65 e V66. Latitude central fixada em 420.
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 480 }, // Afundado para 480
-    RADAR:     { x: 230, y: 220 }, // Afundado para 220
-    ENERGY:    { x: 405, y: 200 }, // Afundado para 200
-    RESEARCH:  { x: 580, y: 220 }, // Afundado para 220
-    FACTORY:   { x: 170, y: 480 }, // Alinhado com HQ
-    BARRACKS:  { x: 630, y: 480 }, // Alinhado com HQ
-    AIRPORT:   { x: 400, y: 620 }, // Quase no rodapé
-    WALL:      { x: 400, y: 700 }, // Fora do canvas (Perímetro exterior)
+    HQ:        { x: 400, y: 420 }, // Meio termo entre 380 e 480
+    RADAR:     { x: 230, y: 160 }, // Latitude Topo Fixa
+    ENERGY:    { x: 405, y: 140 }, // Latitude Topo Fixa
+    RESEARCH:  { x: 580, y: 160 }, // Latitude Topo Fixa
+    FACTORY:   { x: 190, y: 420 }, // Alinhado com HQ
+    BARRACKS:  { x: 610, y: 420 }, // Alinhado com HQ
+    AIRPORT:   { x: 400, y: 550 }, // Base da Vila
+    WALL:      { x: 400, y: 620 }, // Perímetro
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {

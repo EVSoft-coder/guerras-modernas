@@ -28180,18 +28180,13 @@ const BuildingNode = ({
   type: type2,
   level,
   layout: layout2,
-  onClick,
-  isConstructing
+  onClick
 }) => {
-  const [isValid, setIsValid] = reactExports.useState(null);
-  const objW = 20;
-  const objH = 20;
+  const objW = 16;
+  const objH = 16;
   const left = layout2.x - objW / 2;
   const top = layout2.y - objH / 2;
-  reactExports.useEffect(() => {
-    return;
-  }, [layout2.assetName]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
       className: "building-node",
@@ -28207,32 +28202,53 @@ const BuildingNode = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "red",
+        background: "#ccff00",
+        // Neon Yellow-Green
         borderRadius: "50%",
-        boxShadow: "0 0 20px 5px rgba(255, 0, 0, 0.6)",
-        border: "2px solid white"
+        boxShadow: "0 0 20px #ccff00, 0 0 40px rgba(204, 255, 0, 0.4)",
+        border: "2px solid white",
+        animation: "pulse 1.5s infinite ease-in-out"
       },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "absolute", top: "-25px", color: "white", fontSize: "10px", fontWeight: "bold", textShadow: "1px 1px 2px black", whiteSpace: "nowrap" }, children: type2.toUpperCase() })
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
+                @keyframes pulse {
+                    0% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.5); opacity: 0.7; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+            ` }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: {
+          position: "absolute",
+          top: "20px",
+          // Texto abaixo da baliza agora
+          color: "#ccff00",
+          fontSize: "11px",
+          fontWeight: "900",
+          textShadow: "0 0 5px black, 0 0 10px black",
+          whiteSpace: "nowrap",
+          pointerEvents: "none"
+        }, children: type2.toUpperCase() })
+      ]
     }
   );
 };
 const BUILDING_SLOTS = {
-  HQ: { x: 400, y: 480 },
-  // Afundado para 480
-  RADAR: { x: 230, y: 220 },
-  // Afundado para 220
-  ENERGY: { x: 405, y: 200 },
-  // Afundado para 200
-  RESEARCH: { x: 580, y: 220 },
-  // Afundado para 220
-  FACTORY: { x: 170, y: 480 },
+  HQ: { x: 400, y: 420 },
+  // Meio termo entre 380 e 480
+  RADAR: { x: 230, y: 160 },
+  // Latitude Topo Fixa
+  ENERGY: { x: 405, y: 140 },
+  // Latitude Topo Fixa
+  RESEARCH: { x: 580, y: 160 },
+  // Latitude Topo Fixa
+  FACTORY: { x: 190, y: 420 },
   // Alinhado com HQ
-  BARRACKS: { x: 630, y: 480 },
+  BARRACKS: { x: 610, y: 420 },
   // Alinhado com HQ
-  AIRPORT: { x: 400, y: 620 },
-  // Quase no rodapé
-  WALL: { x: 400, y: 700 }
-  // Fora do canvas (Perímetro exterior)
+  AIRPORT: { x: 400, y: 550 },
+  // Base da Vila
+  WALL: { x: 400, y: 620 }
+  // Perímetro
 };
 const BUILDING_LAYOUT = {
   qg: { ...BUILDING_SLOTS.HQ, w: 220, h: 260, anchor: "center", assetName: "qg.png" },
@@ -44531,7 +44547,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-gI3l2nST.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-COakQyv1.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44567,4 +44583,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-C3L1g6jI.js.map
+//# sourceMappingURL=app-B1tt39sd.js.map
