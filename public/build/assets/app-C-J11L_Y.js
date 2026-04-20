@@ -28182,10 +28182,10 @@ const BuildingNode = ({
   layout: layout2,
   onClick
 }) => {
-  const size2 = 30;
+  const size2 = 40;
   const left = layout2.x - size2 / 2;
   const top = layout2.y - size2 / 2;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
       className: "building-node",
@@ -28196,53 +28196,47 @@ const BuildingNode = ({
         top: `${top}px`,
         width: `${size2}px`,
         height: `${size2}px`,
-        zIndex: 9999,
+        zIndex: 1e4,
         cursor: "pointer",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "rgba(0, 242, 255, 0.2)",
-        // Brilho Azul
+        background: "#ff0000",
+        // Vermelho Puro
         borderRadius: "50%",
-        border: "2px solid #00f2ff",
-        // Mira Azul Elétrico
-        boxShadow: "0 0 15px #00f2ff",
+        border: "2px solid white",
+        boxShadow: "0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 255, 255, 0.5)",
         pointerEvents: "auto"
       },
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", width: "100%", height: "1px", background: "#00f2ff" } }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", width: "1px", height: "100%", background: "#00f2ff" } }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: {
-          position: "absolute",
-          color: "#00f2ff",
-          fontSize: "9px",
-          fontWeight: "900",
-          textShadow: "0 0 4px black, 0 0 8px black",
-          whiteSpace: "nowrap",
-          pointerEvents: "none",
-          bottom: "-15px"
-        }, children: type2.toUpperCase() })
-      ]
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: {
+        color: "white",
+        fontSize: "9px",
+        fontWeight: "900",
+        textShadow: "1px 1px 2px black",
+        textAlign: "center",
+        pointerEvents: "none",
+        lineHeight: "1"
+      }, children: type2.replace("_", "\n").toUpperCase() })
     }
   );
 };
 const BUILDING_SLOTS = {
-  HQ: { x: 400, y: 350 },
-  // Centralizado no pad médio
-  RADAR: { x: 200, y: 150 },
-  // Topo Left
-  ENERGY: { x: 400, y: 130 },
-  // Topo Center (ligeiramente mais alto para profundidade)
-  RESEARCH: { x: 600, y: 150 },
-  // Topo Right
-  FACTORY: { x: 150, y: 350 },
-  // Lat. Centro
-  BARRACKS: { x: 650, y: 350 },
-  // Lat. Centro
-  AIRPORT: { x: 400, y: 530 },
-  // Fila Base
-  WALL: { x: 400, y: 580 }
-  // Perímetro
+  HQ: { x: 400, y: 300 },
+  // Subindo para 300
+  RADAR: { x: 200, y: 100 },
+  // Subindo para 100
+  ENERGY: { x: 400, y: 80 },
+  // Subindo para 80
+  RESEARCH: { x: 600, y: 100 },
+  // Subindo para 100
+  FACTORY: { x: 150, y: 300 },
+  // Alinhado com HQ a 300
+  BARRACKS: { x: 650, y: 300 },
+  // Alinhado com HQ a 300
+  AIRPORT: { x: 400, y: 480 },
+  // Subindo para 480
+  WALL: { x: 400, y: 560 }
+  // Perímetro base
 };
 const BUILDING_LAYOUT = {
   qg: { ...BUILDING_SLOTS.HQ, w: 220, h: 260, anchor: "center", assetName: "qg.png" },
@@ -44541,7 +44535,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-otTJpML3.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-C0qm22JC.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44577,4 +44571,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BustkxFT.js.map
+//# sourceMappingURL=app-C-J11L_Y.js.map

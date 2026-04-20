@@ -11,19 +11,19 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 8 — GRELHA ISOMÉTRICA V69
- * Calibração final baseada na lógica de 200px step (150-350-550).
- * Alinhado com os pads visíveis (Círculos Brancos).
+ * FASE 8 — CALIBRAÇÃO FINAL V70
+ * Ascensão de grelha (-50px offset Y universal).
+ * Alinhamento milimétrico com o centro dos pads baked.
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 350 }, // Centralizado no pad médio
-    RADAR:     { x: 200, y: 150 }, // Topo Left
-    ENERGY:    { x: 400, y: 130 }, // Topo Center (ligeiramente mais alto para profundidade)
-    RESEARCH:  { x: 600, y: 150 }, // Topo Right
-    FACTORY:   { x: 150, y: 350 }, // Lat. Centro
-    BARRACKS:  { x: 650, y: 350 }, // Lat. Centro
-    AIRPORT:   { x: 400, y: 530 }, // Fila Base
-    WALL:      { x: 400, y: 580 }, // Perímetro
+    HQ:        { x: 400, y: 300 }, // Subindo para 300
+    RADAR:     { x: 200, y: 100 }, // Subindo para 100
+    ENERGY:    { x: 400, y: 80  }, // Subindo para 80
+    RESEARCH:  { x: 600, y: 100 }, // Subindo para 100
+    FACTORY:   { x: 150, y: 300 }, // Alinhado com HQ a 300
+    BARRACKS:  { x: 650, y: 300 }, // Alinhado com HQ a 300
+    AIRPORT:   { x: 400, y: 480 }, // Subindo para 480
+    WALL:      { x: 400, y: 560 }, // Perímetro base
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {

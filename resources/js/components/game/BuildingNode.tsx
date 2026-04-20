@@ -10,14 +10,14 @@ interface BuildingNodeProps {
 }
 
 /**
- * BuildingNode V69 — MIRA AZUL ELÉTRICO
- * Retículo de alta visibilidade contra concreto e areia.
+ * BuildingNode V70 — BALIZA DE FOGO EXTREMO
+ * Máxima visibilidade para validação final de solo.
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick 
 }) => {
     const DEBUG_MODE = true; 
-    const size = 30; // Mira compacta
+    const size = 40; // Baliza Grande
 
     const left = layout.x - (size / 2);
     const top = layout.y - (size / 2);
@@ -34,33 +34,28 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 top: `${top}px`,
                 width: `${size}px`,
                 height: `${size}px`,
-                zIndex: 9999,
+                zIndex: 10000,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'rgba(0, 242, 255, 0.2)', // Brilho Azul
+                background: '#ff0000', // Vermelho Puro
                 borderRadius: '50%',
-                border: '2px solid #00f2ff', // Mira Azul Elétrico
-                boxShadow: '0 0 15px #00f2ff',
+                border: '2px solid white',
+                boxShadow: '0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 255, 255, 0.5)',
                 pointerEvents: 'auto'
             }}
         >
-            {/* RETÍCULO DE PRECISÃO */}
-            <div style={{ position: 'absolute', width: '100%', height: '1px', background: '#00f2ff' }} />
-            <div style={{ position: 'absolute', width: '1px', height: '100%', background: '#00f2ff' }} />
-            
             <span style={{ 
-                position: 'absolute', 
-                color: '#00f2ff', 
+                color: 'white', 
                 fontSize: '9px', 
                 fontWeight: '900', 
-                textShadow: '0 0 4px black, 0 0 8px black',
-                whiteSpace: 'nowrap',
+                textShadow: '1px 1px 2px black',
+                textAlign: 'center',
                 pointerEvents: 'none',
-                bottom: '-15px'
+                lineHeight: '1'
             }}>
-                {type.toUpperCase()}
+                {type.replace('_', '\n').toUpperCase()}
             </span>
         </div>
     );
