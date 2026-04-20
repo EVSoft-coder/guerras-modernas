@@ -28345,13 +28345,15 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
           const level = getBuildingLevel(type2);
           const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
           if (level === 0 && !isConstructing) return null;
-          let r2 = 75;
-          if (type2 === "qg") r2 = 110;
-          if (type2 === "aerodromo") r2 = 100;
-          if (type2 === "muralha") r2 = 120;
-          if (type2 === "fabrica_municoes" || type2 === "quartel") r2 = 85;
-          const w2 = r2 * 2;
-          const h2 = w2 * 0.66;
+          let w2 = 140;
+          let h2 = 80;
+          if (type2 === "qg") {
+            w2 = 220;
+            h2 = 130;
+          } else if (type2 === "aerodromo" || type2 === "muralha") {
+            w2 = 180;
+            h2 = 100;
+          }
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
@@ -28362,14 +28364,12 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                 width: `${w2}px`,
                 height: `${h2}px`,
                 background: "rgba(0, 0, 0, 0.25)",
-                // Solicitado Fase Visual
                 backdropFilter: "blur(2px)",
-                // Solicitado Fase Visual
                 WebkitBackdropFilter: "blur(2px)",
                 borderRadius: "50%",
-                transform: "translate(-50%, -50%)",
+                transform: "translate(-50%, -50%) rotate(-15deg)",
+                // ROTAÇÃO V57
                 border: "1px solid rgba(255,255,255,0.05)",
-                // Reforço de borda
                 boxShadow: "inset 0 0 20px rgba(0,0,0,0.3), 0 2px 10px rgba(0,0,0,0.4)"
               }
             },
@@ -44538,7 +44538,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CizPK2rD.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DrHkVnKk.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44574,4 +44574,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Cci6RemO.js.map
+//# sourceMappingURL=app-p4S3GlXd.js.map
