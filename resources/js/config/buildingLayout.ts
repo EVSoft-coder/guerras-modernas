@@ -11,19 +11,20 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 12 — CALIBRAÇÃO DE IMERSÃO V76
- * Aplicando Offset de Solo (+40px) para compensar a perspetiva 3D dos assets.
- * As etiquetas serão movidas para o topo do componente no BuildingNode.
+ * FASE 13 — CALIBRAÇÃO FINAL V77
+ * Sincronia de Latitude Baseada em Feedback Visual (Vila Híbrida).
+ * Linha Central (Y=350) confirmada como Correta. 
+ * Polos Norte e Sul elevados para reconexão com os Pads.
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 350 }, // Antes 310
-    RADAR:     { x: 265, y: 220 }, // Antes 180
-    ENERGY:    { x: 400, y: 90  }, // Antes 50
-    RESEARCH:  { x: 535, y: 220 }, // Antes 180
-    FACTORY:   { x: 130, y: 350 }, // Antes 310
-    BARRACKS:  { x: 670, y: 350 }, // Antes 310
-    AIRPORT:   { x: 400, y: 480 }, // Antes 440
-    WALL:      { x: 400, y: 585 }, // Limite do Canvas (Antes 570)
+    HQ:        { x: 400, y: 350 }, // CONFIRMADO
+    RADAR:     { x: 265, y: 170 }, // ELEVADO (-50px)
+    ENERGY:    { x: 400, y: 60  }, // ELEVADO (-30px)
+    RESEARCH:  { x: 535, y: 170 }, // ELEVADO (-50px)
+    FACTORY:   { x: 130, y: 350 }, // CONFIRMADO
+    BARRACKS:  { x: 670, y: 350 }, // CONFIRMADO
+    AIRPORT:   { x: 400, y: 440 }, // ELEVADO (-40px)
+    WALL:      { x: 400, y: 570 }, // ELEVADO (-15px)
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
