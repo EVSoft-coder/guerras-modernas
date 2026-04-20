@@ -11,18 +11,18 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 8 — CALIBRAÇÃO CIRÚRGICA V67
- * Ajuste médio entre V65 e V66. Latitude central fixada em 420.
+ * FASE 8 — CALIBRAÇÃO DOURADA V68
+ * Alinhamento final baseado na zona de equilíbrio 400.
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 420 }, // Meio termo entre 380 e 480
-    RADAR:     { x: 230, y: 160 }, // Latitude Topo Fixa
-    ENERGY:    { x: 405, y: 140 }, // Latitude Topo Fixa
-    RESEARCH:  { x: 580, y: 160 }, // Latitude Topo Fixa
-    FACTORY:   { x: 190, y: 420 }, // Alinhado com HQ
-    BARRACKS:  { x: 610, y: 420 }, // Alinhado com HQ
-    AIRPORT:   { x: 400, y: 550 }, // Base da Vila
-    WALL:      { x: 400, y: 620 }, // Perímetro
+    HQ:        { x: 400, y: 400 }, // O Ponto de Equilíbrio
+    RADAR:     { x: 230, y: 140 }, // Subindo o topo
+    ENERGY:    { x: 405, y: 120 }, // Subindo o topo
+    RESEARCH:  { x: 580, y: 140 }, // Subindo o topo
+    FACTORY:   { x: 190, y: 400 }, // Alinhado com HQ
+    BARRACKS:  { x: 610, y: 400 }, // Alinhado com HQ
+    AIRPORT:   { x: 400, y: 520 }, // Fila Base
+    WALL:      { x: 400, y: 580 }, // Perímetro
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {

@@ -28182,10 +28182,9 @@ const BuildingNode = ({
   layout: layout2,
   onClick
 }) => {
-  const objW = 16;
-  const objH = 16;
-  const left = layout2.x - objW / 2;
-  const top = layout2.y - objH / 2;
+  const size2 = 32;
+  const left = layout2.x - size2 / 2;
+  const top = layout2.y - size2 / 2;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
@@ -28195,36 +28194,30 @@ const BuildingNode = ({
         position: "absolute",
         left: `${left}px`,
         top: `${top}px`,
-        width: `${objW}px`,
-        height: `${objH}px`,
+        width: `${size2}px`,
+        height: `${size2}px`,
         zIndex: 9999,
         cursor: "pointer",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#ccff00",
-        // Neon Yellow-Green
+        background: "rgba(255, 255, 255, 0.4)",
+        // Vidro de Mira
         borderRadius: "50%",
-        boxShadow: "0 0 20px #ccff00, 0 0 40px rgba(204, 255, 0, 0.4)",
-        border: "2px solid white",
-        animation: "pulse 1.5s infinite ease-in-out"
+        border: "2px solid red",
+        // Retículo
+        boxShadow: "0 0 10px rgba(255, 0, 0, 0.8)",
+        pointerEvents: "auto"
       },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
-                @keyframes pulse {
-                    0% { transform: scale(1); opacity: 1; }
-                    50% { transform: scale(1.5); opacity: 0.7; }
-                    100% { transform: scale(1); opacity: 1; }
-                }
-            ` }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", width: "100%", height: "1px", background: "red" } }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", width: "1px", height: "100%", background: "red" } }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: {
           position: "absolute",
-          top: "20px",
-          // Texto abaixo da baliza agora
-          color: "#ccff00",
-          fontSize: "11px",
-          fontWeight: "900",
-          textShadow: "0 0 5px black, 0 0 10px black",
+          color: "white",
+          fontSize: "10px",
+          fontWeight: "bold",
+          textShadow: "0 0 3px black, 0 0 6px black",
           whiteSpace: "nowrap",
           pointerEvents: "none"
         }, children: type2.toUpperCase() })
@@ -28233,21 +28226,21 @@ const BuildingNode = ({
   );
 };
 const BUILDING_SLOTS = {
-  HQ: { x: 400, y: 420 },
-  // Meio termo entre 380 e 480
-  RADAR: { x: 230, y: 160 },
-  // Latitude Topo Fixa
-  ENERGY: { x: 405, y: 140 },
-  // Latitude Topo Fixa
-  RESEARCH: { x: 580, y: 160 },
-  // Latitude Topo Fixa
-  FACTORY: { x: 190, y: 420 },
+  HQ: { x: 400, y: 400 },
+  // O Ponto de Equilíbrio
+  RADAR: { x: 230, y: 140 },
+  // Subindo o topo
+  ENERGY: { x: 405, y: 120 },
+  // Subindo o topo
+  RESEARCH: { x: 580, y: 140 },
+  // Subindo o topo
+  FACTORY: { x: 190, y: 400 },
   // Alinhado com HQ
-  BARRACKS: { x: 610, y: 420 },
+  BARRACKS: { x: 610, y: 400 },
   // Alinhado com HQ
-  AIRPORT: { x: 400, y: 550 },
-  // Base da Vila
-  WALL: { x: 400, y: 620 }
+  AIRPORT: { x: 400, y: 520 },
+  // Fila Base
+  WALL: { x: 400, y: 580 }
   // Perímetro
 };
 const BUILDING_LAYOUT = {
@@ -44547,7 +44540,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-COakQyv1.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-CbIZdf9f.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44583,4 +44576,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-B1tt39sd.js.map
+//# sourceMappingURL=app-cw8FqmxM.js.map

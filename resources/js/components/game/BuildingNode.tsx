@@ -10,8 +10,8 @@ interface BuildingNodeProps {
 }
 
 /**
- * BuildingNode V67 — BALIZA NEON PULSE
- * Diagnóstico de alta visibilidade com pulsação tática.
+ * BuildingNode V68 — MIRA DE PRECISÃO
+ * Diagnóstico final com retículo de sniper para alinhamento de solo.
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick 
@@ -19,15 +19,14 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     // MODO DIAGNÓSTICO ATIVO
     const DEBUG_MODE = true; 
 
-    // Baliza Centralizada de 16x16
-    const objW = 16; 
-    const objH = 16;
+    // Dimensões da Mira (32x32)
+    const size = 32;
 
-    // Pouso Exato no ponto (X, Y)
-    const left = layout.x - (objW / 2);
-    const top = layout.y - (objH / 2);
+    // Centralização absoluta no ponto (X, Y)
+    const left = layout.x - (size / 2);
+    const top = layout.y - (size / 2);
 
-    if (!DEBUG_MODE) return null; // Não renderiza nada fora do debug V67
+    if (!DEBUG_MODE) return null;
 
     return (
         <div 
@@ -37,35 +36,30 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 position: 'absolute',
                 left: `${left}px`,
                 top: `${top}px`,
-                width: `${objW}px`,
-                height: `${objH}px`,
+                width: `${size}px`,
+                height: `${size}px`,
                 zIndex: 9999,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: '#ccff00', // Neon Yellow-Green
+                background: 'rgba(255, 255, 255, 0.4)', // Vidro de Mira
                 borderRadius: '50%',
-                boxShadow: '0 0 20px #ccff00, 0 0 40px rgba(204, 255, 0, 0.4)',
-                border: '2px solid white',
-                animation: 'pulse 1.5s infinite ease-in-out'
+                border: '2px solid red', // Retículo
+                boxShadow: '0 0 10px rgba(255, 0, 0, 0.8)',
+                pointerEvents: 'auto'
             }}
         >
-            <style>{`
-                @keyframes pulse {
-                    0% { transform: scale(1); opacity: 1; }
-                    50% { transform: scale(1.5); opacity: 0.7; }
-                    100% { transform: scale(1); opacity: 1; }
-                }
-            `}</style>
+            {/* LINHAS DE RETÍCULO */}
+            <div style={{ position: 'absolute', width: '100%', height: '1px', background: 'red' }} />
+            <div style={{ position: 'absolute', width: '1px', height: '100%', background: 'red' }} />
             
             <span style={{ 
                 position: 'absolute', 
-                top: '20px', // Texto abaixo da baliza agora
-                color: '#ccff00', 
-                fontSize: '11px', 
-                fontWeight: '900', 
-                textShadow: '0 0 5px black, 0 0 10px black',
+                color: 'white', 
+                fontSize: '10px', 
+                fontWeight: 'bold', 
+                textShadow: '0 0 3px black, 0 0 6px black',
                 whiteSpace: 'nowrap',
                 pointerEvents: 'none'
             }}>
