@@ -11,19 +11,19 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 10 — HARMONIA ISOMÉTRICA V74
- * Redução radical de escala (Aprox. 40%) para evitar overlapping e oclusão.
- * Coordenadas mantidas conforme Reconhecimento V73 (Precisão Gold).
+ * FASE 11 — TELEMETRIA DE PRECISÃO V75
+ * Coordenadas extraídas via Click-Mapping (100% Precisão Real).
+ * Padrão de 130px vertical entre linhas e simetria absoluta em X=400.
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 260 }, 
-    RADAR:     { x: 120, y: 110 },
-    ENERGY:    { x: 400, y: 35  }, 
-    RESEARCH:  { x: 680, y: 110 }, 
-    FACTORY:   { x: 110, y: 245 }, 
-    BARRACKS:  { x: 690, y: 245 }, 
-    AIRPORT:   { x: 400, y: 430 }, // Ajuste fino -5px
-    WALL:      { x: 400, y: 530 }, // Ajuste fino +10px
+    HQ:        { x: 400, y: 310 }, // Geometria Central
+    RADAR:     { x: 265, y: 180 }, // Recuo Superior Esquerdo
+    ENERGY:    { x: 400, y: 50  }, // Ponta Norte
+    RESEARCH:  { x: 535, y: 180 }, // Recuo Superior Direito
+    FACTORY:   { x: 130, y: 310 }, // Flanco Esquerdo
+    BARRACKS:  { x: 670, y: 310 }, // Flanco Direito
+    AIRPORT:   { x: 400, y: 440 }, // Vetor Sul
+    WALL:      { x: 400, y: 570 }, // Fronteira Extrema
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
@@ -33,7 +33,6 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
     centro_pesquisa:    { ...BUILDING_SLOTS.RESEARCH, w: 90, h: 90, anchor: 'center', assetName: 'pesquisa_v1.png' },
     fabrica_municoes:   { ...BUILDING_SLOTS.FACTORY, w: 100, h: 110, anchor: 'center', assetName: 'fabrica_v2.png' },
     quartel:            { ...BUILDING_SLOTS.BARRACKS, w: 100, h: 110, anchor: 'center', assetName: 'quartel_v2.png' },
-
     aerodromo:          { ...BUILDING_SLOTS.AIRPORT, w: 140, h: 120, anchor: 'center', assetName: 'aerodromo_v1.png' },
     muralha:            { ...BUILDING_SLOTS.WALL, w: 200, h: 80, anchor: 'center', assetName: 'muralha_v1.png' },
 };
