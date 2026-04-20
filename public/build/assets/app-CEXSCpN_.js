@@ -28183,17 +28183,18 @@ const BuildingNode = ({
   onClick,
   isConstructing
 }) => {
-  const [imgError, setImgError] = reactExports.useState(false);
+  const [isInvalid, setIsInvalid] = reactExports.useState(false);
   const w2 = layout2.w;
   const h2 = layout2.h;
   const left = layout2.x - w2 / 2;
   const top = layout2.y - h2;
+  const labelY = h2;
   const buildingSlug = type2.toLowerCase();
   const assetPath = `/assets/buildings/${layout2.assetName || buildingSlug + ".png"}`;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: `building-node building-${buildingSlug}`,
+      className: "building-node",
       onClick,
       style: {
         position: "absolute",
@@ -28202,13 +28203,12 @@ const BuildingNode = ({
         width: `${w2}px`,
         height: `${h2}px`,
         zIndex: Math.floor(layout2.y),
-        // Depth Sorting Automático
-        cursor: "pointer",
-        transition: "transform 0.2s ease-out, filter 0.2s",
-        filter: isConstructing ? "grayscale(0.5) contrast(0.8)" : "none"
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        filter: isInvalid ? "sepia(1) hue-rotate(-50deg) saturate(2)" : "none",
+        opacity: isInvalid ? 0.6 : 1
       },
       children: [
-        !imgError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        !isInvalid ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
             src: assetPath,
@@ -28217,85 +28217,72 @@ const BuildingNode = ({
               width: "100%",
               height: "100%",
               objectFit: "contain",
-              pointerEvents: "none",
-              // Sombra Isométrica Suave
-              filter: "drop-shadow(0 10px 15px rgba(0,0,0,0.5))"
+              filter: isConstructing ? "grayscale(0.5) brightness(0.7)" : "none"
             },
-            onError: () => setImgError(true)
+            onError: () => setIsInvalid(true)
           }
-        ) : (
-          // Placeholder de fallback de alta fidelidade
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
-            width: "100%",
-            height: "100%",
-            background: "rgba(255,255,255,0.1)",
-            border: "1px dashed white",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { fontSize: "8px", color: "white" }, children: [
-            "MISSING_",
-            type2
-          ] }) })
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
-          position: "absolute",
-          bottom: "-15px",
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
           width: "100%",
-          textAlign: "center",
-          color: "white",
+          height: "100%",
+          background: "rgba(255,0,0,0.1)",
+          border: "1px dashed red",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           fontSize: "10px",
+          color: "red"
+        }, children: "INVALID ASSET" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+          position: "absolute",
+          left: "50%",
+          top: `${labelY}px`,
+          transform: "translateX(-50%)",
+          whiteSpace: "nowrap",
+          pointerEvents: "none",
+          zIndex: 20
+        }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: {
+          background: "rgba(0,0,0,0.7)",
+          padding: "2px 6px",
+          borderRadius: "4px",
+          color: "#fff",
+          fontSize: "11px",
           fontWeight: "bold",
-          textShadow: "1px 1px 2px black",
-          opacity: 0.8
+          border: "1px solid rgba(255,255,255,0.1)",
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.5)"
         }, children: [
-          type2.replace("_", " ").toUpperCase(),
+          type2.replace(/_/g, " "),
           " (Lvl ",
           level,
-          ")"
-        ] }),
-        isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "construction-ring", style: {
-          position: "absolute",
-          bottom: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "60px",
-          height: "30px",
-          border: "2px solid gold",
-          borderRadius: "50%",
-          animation: "spin 2s linear infinite"
-        } })
+          ")",
+          isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1 text-yellow-400", children: "🔨" })
+        ] }) })
       ]
     }
   );
 };
 const BUILDING_SLOTS = {
   HQ: { x: 400, y: 260 },
-  // Centro Absoluto
   RADAR: { x: 120, y: 110 },
-  // Topo Esquerdo
   ENERGY: { x: 400, y: 35 },
-  // Topo Extremo
   RESEARCH: { x: 680, y: 110 },
-  // Topo Direito
   FACTORY: { x: 110, y: 245 },
-  // Meio Esquerdo
   BARRACKS: { x: 690, y: 245 },
-  // Meio Direito
-  AIRPORT: { x: 400, y: 440 },
-  // Base Inferior
-  WALL: { x: 400, y: 520 }
-  // Perímetro
+  AIRPORT: { x: 400, y: 430 },
+  // Ajuste fino -5px
+  WALL: { x: 400, y: 530 }
+  // Ajuste fino +10px
 };
 const BUILDING_LAYOUT = {
-  qg: { ...BUILDING_SLOTS.HQ, w: 220, h: 260, anchor: "center", assetName: "hq_v1.png" },
-  radar_estrategico: { ...BUILDING_SLOTS.RADAR, w: 120, h: 120, anchor: "center", assetName: "radar_v1.png" },
-  central_energia: { ...BUILDING_SLOTS.ENERGY, w: 140, h: 140, anchor: "center", assetName: "energia_v1.png" },
-  centro_pesquisa: { ...BUILDING_SLOTS.RESEARCH, w: 140, h: 140, anchor: "center", assetName: "pesquisa_v1.png" },
-  fabrica_municoes: { ...BUILDING_SLOTS.FACTORY, w: 180, h: 180, anchor: "center", assetName: "fabrica_v1.png" },
-  quartel: { ...BUILDING_SLOTS.BARRACKS, w: 180, h: 180, anchor: "center", assetName: "quartel_v1.png" },
-  aerodromo: { ...BUILDING_SLOTS.AIRPORT, w: 200, h: 200, anchor: "center", assetName: "aerodromo_v1.png" },
-  muralha: { ...BUILDING_SLOTS.WALL, w: 280, h: 100, anchor: "center", assetName: "muralha_v1.png" }
+  qg: { ...BUILDING_SLOTS.HQ, w: 140, h: 160, anchor: "center", assetName: "hq_v2.png" },
+  radar_estrategico: { ...BUILDING_SLOTS.RADAR, w: 80, h: 90, anchor: "center", assetName: "radar_v1.png" },
+  central_energia: { ...BUILDING_SLOTS.ENERGY, w: 90, h: 90, anchor: "center", assetName: "energia_v1.png" },
+  centro_pesquisa: { ...BUILDING_SLOTS.RESEARCH, w: 90, h: 90, anchor: "center", assetName: "pesquisa_v1.png" },
+  fabrica_municoes: { ...BUILDING_SLOTS.FACTORY, w: 100, h: 110, anchor: "center", assetName: "fabrica_v2.png" },
+  quartel: { ...BUILDING_SLOTS.BARRACKS, w: 100, h: 110, anchor: "center", assetName: "quartel_v2.png" },
+  aerodromo: { ...BUILDING_SLOTS.AIRPORT, w: 140, h: 120, anchor: "center", assetName: "aerodromo_v1.png" },
+  muralha: { ...BUILDING_SLOTS.WALL, w: 200, h: 80, anchor: "center", assetName: "muralha_v1.png" }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   const getBuildingLevel = (type2) => {
@@ -44584,7 +44571,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-B4yJTF1n.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-B_nlc06f.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44620,4 +44607,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-6z9fjy7-.js.map
+//# sourceMappingURL=app-CEXSCpN_.js.map

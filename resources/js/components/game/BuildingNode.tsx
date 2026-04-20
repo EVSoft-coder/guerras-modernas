@@ -18,13 +18,14 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
 }) => {
     // DESLIGANDO DIAGNÓSTICO PARA PRODUÇÃO
     const DEBUG_MODE = false; 
-    const [imgError, setImgError] = useState(false);
+    const [isInvalid, setIsInvalid] = useState(false);
 
     // Lógica de Ancoragem: A Base do edifício toca no Centro do Pad (layout.x, layout.y)
     const w = layout.w;
     const h = layout.h;
     const left = layout.x - (w / 2);
     const top = layout.y - h; 
+    const labelY = h; 
 
     // Protocolo de Sombras e Efeitos
     const buildingSlug = type.toLowerCase();
@@ -32,71 +33,75 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
 
     return (
         <div 
-            className={`building-node building-${buildingSlug}`}
+            className="building-node"
             onClick={onClick}
-            style={{ 
+            style={{
                 position: 'absolute',
                 left: `${left}px`,
                 top: `${top}px`,
                 width: `${w}px`,
                 height: `${h}px`,
-                zIndex: Math.floor(layout.y), // Depth Sorting Automático
-                cursor: 'pointer',
-                transition: 'transform 0.2s ease-out, filter 0.2s',
-                filter: isConstructing ? 'grayscale(0.5) contrast(0.8)' : 'none'
+                zIndex: Math.floor(layout.y),
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                filter: isInvalid ? 'sepia(1) hue-rotate(-50deg) saturate(2)' : 'none',
+                opacity: isInvalid ? 0.6 : 1,
             }}
         >
-            {/* O Edifício Real */}
-            {!imgError ? (
+            {/* Asset Visual */}
+            {!isInvalid ? (
                 <img 
-                    src={assetPath}
+                    src={assetPath} 
                     alt={type}
-                    style={{ 
-                        width: '100%', 
-                        height: '100%', 
+                    style={{
+                        width: '100%',
+                        height: '100%',
                         objectFit: 'contain',
-                        pointerEvents: 'none',
-                        // Sombra Isométrica Suave
-                        filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.5))'
+                        filter: isConstructing ? 'grayscale(0.5) brightness(0.7)' : 'none',
                     }}
-                    onError={() => setImgError(true)}
+                    onError={() => setIsInvalid(true)}
                 />
             ) : (
-                // Placeholder de fallback de alta fidelidade
-                <div style={{ 
-                    width: '100%', height: '100%', 
-                    background: 'rgba(255,255,255,0.1)', 
-                    border: '1px dashed white',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                <div style={{
+                    width: '100%',
+                    height: '100%',
+                    background: 'rgba(255,0,0,0.1)',
+                    border: '1px dashed red',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '10px',
+                    color: 'red'
                 }}>
-                    <span style={{ fontSize: '8px', color: 'white' }}>MISSING_{type}</span>
+                    INVALID ASSET
                 </div>
             )}
 
-            {/* Nome do Edifício (Elegante) */}
+            {/* Tactical Label */}
             <div style={{
                 position: 'absolute',
-                bottom: '-15px',
-                width: '100%',
-                textAlign: 'center',
-                color: 'white',
-                fontSize: '10px',
-                fontWeight: 'bold',
-                textShadow: '1px 1px 2px black',
-                opacity: 0.8
+                left: '50%',
+                top: `${labelY}px`,
+                transform: 'translateX(-50%)',
+                whiteSpace: 'nowrap',
+                pointerEvents: 'none',
+                zIndex: 20
             }}>
-                {type.replace('_', ' ').toUpperCase()} (Lvl {level})
+                <span style={{
+                    background: 'rgba(0,0,0,0.7)',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                }}>
+                    {type.replace(/_/g, ' ')} (Lvl {level})
+                    {isConstructing && <span className="ml-1 text-yellow-400">🔨</span>}
+                </span>
             </div>
-
-            {/* Efeitos de Construção */}
-            {isConstructing && (
-                <div className="construction-ring" style={{
-                    position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-                    width: '60px', height: '30px', 
-                    border: '2px solid gold', borderRadius: '50%',
-                    animation: 'spin 2s linear infinite'
-                }} />
-            )}
         </div>
     );
 };
