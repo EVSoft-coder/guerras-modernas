@@ -28233,23 +28233,29 @@ const BuildingNode = ({
     }
   );
 };
-const ROW_TOP = 120;
-const ROW_MID = 300;
-const ROW_BOTTOM = 480;
-const ROW_PERIMETER = 560;
+const BUILDING_SLOTS = {
+  HQ: { x: 400, y: 300 },
+  RADAR: { x: 200, y: 140 },
+  ENERGY: { x: 400, y: 120 },
+  RESEARCH: { x: 600, y: 140 },
+  FACTORY: { x: 220, y: 330 },
+  BARRACKS: { x: 580, y: 330 },
+  AIRPORT: { x: 400, y: 480 },
+  WALL: { x: 400, y: 560 }
+};
 const BUILDING_LAYOUT = {
-  // FILA SUPERIOR (ROW_TOP: 120)
-  radar_estrategico: { x: 200, y: ROW_TOP, w: 120, h: 120, anchor: "center", assetName: "radar_estrategico.png" },
-  central_energia: { x: 400, y: ROW_TOP, w: 140, h: 140, anchor: "center", assetName: "central_energia.png" },
-  centro_pesquisa: { x: 600, y: ROW_TOP, w: 140, h: 140, anchor: "center", assetName: "centro_pesquisa.png" },
-  // FILA CENTRAL (ROW_MID: 300)
-  qg: { x: 400, y: ROW_MID, w: 220, h: 260, anchor: "center", assetName: "qg.png" },
-  fabrica_municoes: { x: 180, y: ROW_MID + 30, w: 180, h: 180, anchor: "center", assetName: "fabrica_municoes.png" },
-  quartel: { x: 620, y: ROW_MID + 30, w: 180, h: 180, anchor: "center", assetName: "quartel.png" },
-  // FILA INFERIOR (ROW_BOTTOM: 480)
-  aerodromo: { x: 400, y: ROW_BOTTOM, w: 200, h: 200, anchor: "center", assetName: "aerodromo.png" },
-  // PERÍMETRO (ROW_PERIMETER: 560)
-  muralha: { x: 400, y: ROW_PERIMETER, w: 280, h: 100, anchor: "center", assetName: "muralha.png" }
+  // CENTRO
+  qg: { ...BUILDING_SLOTS.HQ, w: 220, h: 260, anchor: "center", assetName: "qg.png" },
+  // TOPO
+  radar_estrategico: { ...BUILDING_SLOTS.RADAR, w: 120, h: 120, anchor: "center", assetName: "radar_estrategico.png" },
+  central_energia: { ...BUILDING_SLOTS.ENERGY, w: 140, h: 140, anchor: "center", assetName: "central_energia.png" },
+  centro_pesquisa: { ...BUILDING_SLOTS.RESEARCH, w: 140, h: 140, anchor: "center", assetName: "centro_pesquisa.png" },
+  // LATERAIS
+  fabrica_municoes: { ...BUILDING_SLOTS.FACTORY, w: 180, h: 180, anchor: "center", assetName: "fabrica_municoes.png" },
+  quartel: { ...BUILDING_SLOTS.BARRACKS, w: 180, h: 180, anchor: "center", assetName: "quartel.png" },
+  // BASE
+  aerodromo: { ...BUILDING_SLOTS.AIRPORT, w: 200, h: 200, anchor: "center", assetName: "aerodromo.png" },
+  muralha: { ...BUILDING_SLOTS.WALL, w: 280, h: 100, anchor: "center", assetName: "muralha.png" }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   const getBuildingLevel = (type2) => {
@@ -44538,7 +44544,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DrHkVnKk.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Cc1GwRL8.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44574,4 +44580,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-p4S3GlXd.js.map
+//# sourceMappingURL=app-CN4vJ-9u.js.map
