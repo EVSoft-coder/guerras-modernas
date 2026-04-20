@@ -28270,32 +28270,32 @@ const BuildingNode = ({
   );
 };
 const BUILDING_SLOTS = {
-  HQ: { x: 400, y: 300 },
-  // GOLD
-  RADAR: { x: 120, y: 130 },
-  // Expansão Lateral Topo
-  ENERGY: { x: 400, y: 80 },
-  // GOLD
-  RESEARCH: { x: 680, y: 130 },
-  // Expansão Lateral Topo
-  FACTORY: { x: 100, y: 275 },
-  // Expansão Lateral Meio + Subida
-  BARRACKS: { x: 700, y: 275 },
-  // Expansão Lateral Meio + Subida
-  AIRPORT: { x: 400, y: 480 },
-  // GOLD
-  WALL: { x: 400, y: 560 }
-  // GOLD
+  HQ: { x: 400, y: 260 },
+  // Centro Absoluto
+  RADAR: { x: 120, y: 110 },
+  // Topo Esquerdo
+  ENERGY: { x: 400, y: 35 },
+  // Topo Extremo
+  RESEARCH: { x: 680, y: 110 },
+  // Topo Direito
+  FACTORY: { x: 110, y: 245 },
+  // Meio Esquerdo
+  BARRACKS: { x: 690, y: 245 },
+  // Meio Direito
+  AIRPORT: { x: 400, y: 440 },
+  // Base Inferior
+  WALL: { x: 400, y: 520 }
+  // Perímetro
 };
 const BUILDING_LAYOUT = {
-  qg: { ...BUILDING_SLOTS.HQ, w: 220, h: 260, anchor: "center", assetName: "qg.png" },
-  radar_estrategico: { ...BUILDING_SLOTS.RADAR, w: 120, h: 120, anchor: "center", assetName: "radar_estrategico.png" },
-  central_energia: { ...BUILDING_SLOTS.ENERGY, w: 140, h: 140, anchor: "center", assetName: "central_energia.png" },
-  centro_pesquisa: { ...BUILDING_SLOTS.RESEARCH, w: 140, h: 140, anchor: "center", assetName: "centro_pesquisa.png" },
-  fabrica_municoes: { ...BUILDING_SLOTS.FACTORY, w: 180, h: 180, anchor: "center", assetName: "fabrica_municoes.png" },
-  quartel: { ...BUILDING_SLOTS.BARRACKS, w: 180, h: 180, anchor: "center", assetName: "quartel.png" },
-  aerodromo: { ...BUILDING_SLOTS.AIRPORT, w: 200, h: 200, anchor: "center", assetName: "aerodromo.png" },
-  muralha: { ...BUILDING_SLOTS.WALL, w: 280, h: 100, anchor: "center", assetName: "muralha.png" }
+  qg: { ...BUILDING_SLOTS.HQ, w: 220, h: 260, anchor: "center", assetName: "hq_v1.png" },
+  radar_estrategico: { ...BUILDING_SLOTS.RADAR, w: 120, h: 120, anchor: "center", assetName: "radar_v1.png" },
+  central_energia: { ...BUILDING_SLOTS.ENERGY, w: 140, h: 140, anchor: "center", assetName: "energia_v1.png" },
+  centro_pesquisa: { ...BUILDING_SLOTS.RESEARCH, w: 140, h: 140, anchor: "center", assetName: "pesquisa_v1.png" },
+  fabrica_municoes: { ...BUILDING_SLOTS.FACTORY, w: 180, h: 180, anchor: "center", assetName: "fabrica_v1.png" },
+  quartel: { ...BUILDING_SLOTS.BARRACKS, w: 180, h: 180, anchor: "center", assetName: "quartel_v1.png" },
+  aerodromo: { ...BUILDING_SLOTS.AIRPORT, w: 200, h: 200, anchor: "center", assetName: "aerodromo_v1.png" },
+  muralha: { ...BUILDING_SLOTS.WALL, w: 280, h: 100, anchor: "center", assetName: "muralha_v1.png" }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   const getBuildingLevel = (type2) => {
@@ -44584,7 +44584,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-D_w2XRZE.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-B4yJTF1n.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44620,4 +44620,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-BQLKs_lI.js.map
+//# sourceMappingURL=app-6z9fjy7-.js.map
