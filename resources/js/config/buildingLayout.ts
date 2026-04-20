@@ -11,18 +11,18 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 8 — RE-CALIBRAÇÃO VISUAL V65
- * Ajustado para coincidir com os pads "baked" na imagem de terreno.
+ * FASE 8 — ULTRA-CALIBRAÇÃO V66
+ * Afundando a grelha para latitudes profundas (+80px offset geral).
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 380 }, // Descido de 300 para 380
-    RADAR:     { x: 230, y: 160 }, // Ajustado X e Y
-    ENERGY:    { x: 405, y: 140 }, // Ajustado Y
-    RESEARCH:  { x: 580, y: 160 }, // Ajustado X e Y
-    FACTORY:   { x: 190, y: 380 }, // Alinhado com HQ em Y
-    BARRACKS:  { x: 610, y: 380 }, // Alinhado com HQ em Y
-    AIRPORT:   { x: 400, y: 550 }, // Descido para a base
-    WALL:      { x: 400, y: 640 }, // Fora do canvas ou base extrema
+    HQ:        { x: 400, y: 480 }, // Afundado para 480
+    RADAR:     { x: 230, y: 220 }, // Afundado para 220
+    ENERGY:    { x: 405, y: 200 }, // Afundado para 200
+    RESEARCH:  { x: 580, y: 220 }, // Afundado para 220
+    FACTORY:   { x: 170, y: 480 }, // Alinhado com HQ
+    BARRACKS:  { x: 630, y: 480 }, // Alinhado com HQ
+    AIRPORT:   { x: 400, y: 620 }, // Quase no rodapé
+    WALL:      { x: 400, y: 700 }, // Fora do canvas (Perímetro exterior)
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {

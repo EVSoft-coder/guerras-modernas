@@ -28184,14 +28184,14 @@ const BuildingNode = ({
   isConstructing
 }) => {
   const [isValid, setIsValid] = reactExports.useState(null);
-  const objW = 80;
-  const objH = 80;
+  const objW = 20;
+  const objH = 20;
   const left = layout2.x - objW / 2;
-  const top = layout2.y - objH;
+  const top = layout2.y - objH / 2;
   reactExports.useEffect(() => {
     return;
   }, [layout2.assetName]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
       className: "building-node",
@@ -28202,77 +28202,37 @@ const BuildingNode = ({
         top: `${top}px`,
         width: `${objW}px`,
         height: `${objH}px`,
-        zIndex: Math.floor(layout2.y),
+        zIndex: 9999,
         cursor: "pointer",
         display: "flex",
-        alignItems: "flex-end",
-        // Garante que o conteúdo toca o fundo
-        justifyContent: "center"
+        alignItems: "center",
+        justifyContent: "center",
+        background: "red",
+        borderRadius: "50%",
+        boxShadow: "0 0 20px 5px rgba(255, 0, 0, 0.6)",
+        border: "2px solid white"
       },
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "anchor-dot",
-            style: {
-              width: "6px",
-              height: "6px",
-              background: "red",
-              position: "absolute",
-              borderRadius: "50%",
-              bottom: "0",
-              left: "50%",
-              transform: "translate(-50%, 50%)",
-              zIndex: 9999,
-              boxShadow: "0 0 10px red",
-              pointerEvents: "none"
-            }
-          }
-        ),
-        /* FASE 6: ANCHOR SYSTEM (Placeholder Lime) */
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "building-placeholder",
-            style: {
-              width: "100%",
-              height: "100%",
-              background: "rgba(0, 255, 0, 0.3)",
-              border: "2px solid lime",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "lime",
-              fontSize: "9px",
-              fontWeight: "bold",
-              textAlign: "center",
-              pointerEvents: "none",
-              boxShadow: "0 0 15px rgba(0,255,0,0.2)"
-            },
-            children: type2.toUpperCase()
-          }
-        )
-      ]
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "absolute", top: "-25px", color: "white", fontSize: "10px", fontWeight: "bold", textShadow: "1px 1px 2px black", whiteSpace: "nowrap" }, children: type2.toUpperCase() })
     }
   );
 };
 const BUILDING_SLOTS = {
-  HQ: { x: 400, y: 380 },
-  // Descido de 300 para 380
-  RADAR: { x: 230, y: 160 },
-  // Ajustado X e Y
-  ENERGY: { x: 405, y: 140 },
-  // Ajustado Y
-  RESEARCH: { x: 580, y: 160 },
-  // Ajustado X e Y
-  FACTORY: { x: 190, y: 380 },
-  // Alinhado com HQ em Y
-  BARRACKS: { x: 610, y: 380 },
-  // Alinhado com HQ em Y
-  AIRPORT: { x: 400, y: 550 },
-  // Descido para a base
-  WALL: { x: 400, y: 640 }
-  // Fora do canvas ou base extrema
+  HQ: { x: 400, y: 480 },
+  // Afundado para 480
+  RADAR: { x: 230, y: 220 },
+  // Afundado para 220
+  ENERGY: { x: 405, y: 200 },
+  // Afundado para 200
+  RESEARCH: { x: 580, y: 220 },
+  // Afundado para 220
+  FACTORY: { x: 170, y: 480 },
+  // Alinhado com HQ
+  BARRACKS: { x: 630, y: 480 },
+  // Alinhado com HQ
+  AIRPORT: { x: 400, y: 620 },
+  // Quase no rodapé
+  WALL: { x: 400, y: 700 }
+  // Fora do canvas (Perímetro exterior)
 };
 const BUILDING_LAYOUT = {
   qg: { ...BUILDING_SLOTS.HQ, w: 220, h: 260, anchor: "center", assetName: "qg.png" },
@@ -44571,7 +44531,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-CRrOTUga.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-gI3l2nST.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44607,4 +44567,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DvxoQILG.js.map
+//# sourceMappingURL=app-C3L1g6jI.js.map
