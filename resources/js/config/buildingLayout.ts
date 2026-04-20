@@ -11,20 +11,20 @@ export const REFERENCE_WIDTH = 800;
 export const REFERENCE_HEIGHT = 600;
 
 /**
- * FASE 13 — CALIBRAÇÃO FINAL V77
- * Sincronia de Latitude Baseada em Feedback Visual (Vila Híbrida).
- * Linha Central (Y=350) confirmada como Correta. 
- * Polos Norte e Sul elevados para reconexão com os Pads.
+ * FASE 14 — MATRIZ DE SINCRONIA V78
+ * Aplicação de Offsets Isométricos Baseados em Teste de Campo V77.
+ * Linha Média (Y=350) trancada (Perfeição Visual).
+ * Slots Superior e Inferior ajustados para imersão total.
  */
 export const BUILDING_SLOTS = {
-    HQ:        { x: 400, y: 350 }, // CONFIRMADO
-    RADAR:     { x: 265, y: 170 }, // ELEVADO (-50px)
-    ENERGY:    { x: 400, y: 60  }, // ELEVADO (-30px)
-    RESEARCH:  { x: 535, y: 170 }, // ELEVADO (-50px)
-    FACTORY:   { x: 130, y: 350 }, // CONFIRMADO
-    BARRACKS:  { x: 670, y: 350 }, // CONFIRMADO
-    AIRPORT:   { x: 400, y: 440 }, // ELEVADO (-40px)
-    WALL:      { x: 400, y: 570 }, // ELEVADO (-15px)
+    HQ:        { x: 400, y: 350 }, // OK
+    RADAR:     { x: 265, y: 225 }, // Reajuste -5px
+    ENERGY:    { x: 400, y: 100 }, // Reajuste +10px (Imersão)
+    RESEARCH:  { x: 535, y: 225 }, // Reajuste -5px
+    FACTORY:   { x: 130, y: 350 }, // OK
+    BARRACKS:  { x: 670, y: 350 }, // OK
+    AIRPORT:   { x: 400, y: 480 }, // Reajuste +40px (Imersão)
+    WALL:      { x: 400, y: 595 }, // Reajuste +10px (Imersão)
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
