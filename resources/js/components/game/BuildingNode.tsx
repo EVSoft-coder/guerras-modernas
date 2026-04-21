@@ -10,26 +10,47 @@ interface BuildingNodeProps {
 }
 
 /**
- * BuildingNode V85 — NORMALIZAÇÃO VISUAL
- * Implementação de offsets individuais por asset p/ correção de alinhamento.
+ * BuildingNode V86 — DEBUG PROFISSIONAL
+ * Modo de calibração em tempo real p/ ajuste fino de offsets.
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick, isConstructing 
 }) => {
-    // DESLIGANDO DIAGNÓSTICO PARA PRODUÇÃO
-    const DEBUG_MODE = false; 
+    // MODO DE CALIBRAÇÃO ATIVO
+    const CALIBRATION_MODE = true; 
+    
     const [isInvalid, setIsInvalid] = useState(false);
+    
+    // Estado local para calibração em tempo real (não persiste no arquivo, mas ajuda a encontrar os valores)
+    const initialOffset = BUILDING_OFFSETS[layout.id] || { x: 0, y: 0 };
+    const [calibratedX, setCalibratedX] = useState(initialOffset.x);
+    const [calibratedY, setCalibratedY] = useState(initialOffset.y);
+
+    const handleInteraction = (e: React.MouseEvent) => {
+        if (!CALIBRATION_MODE) {
+            onClick();
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (e.type === 'click') {
+            // Click Esquerdo: Desce o edifício
+            setCalibratedY(prev => prev + 2);
+        } else if (e.type === 'contextmenu') {
+            // Click Direito: Sobe o edifício
+            setCalibratedY(prev => prev - 2);
+        }
+    };
 
     // Lógica de Ancoragem: A Base do edifício toca no Centro do Pad (layout.x, layout.y)
     const w = layout.w;
     const h = layout.h;
     
-    // Recuperamos o offset normalizado para este asset específico
-    const offset = BUILDING_OFFSETS[layout.id] || { x: 0, y: 0 };
-    
-    // Cálculo de Posição Normalizado: Centro do Pad + Offset Visual
-    const left = layout.x - (w / 2) + offset.x;
-    const top = layout.y - h + offset.y; 
+    // Cálculo de Posição Normalizado: Centro do Pad + Offset Calibrado
+    const left = layout.x - (w / 2) + calibratedX;
+    const top = layout.y - h + calibratedY; 
     const labelY = -20; 
 
     // Protocolo de Sombras e Efeitos
@@ -39,7 +60,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     return (
         <div 
             className="building-node"
-            onClick={onClick}
+            onClick={handleInteraction}
+            onContextMenu={handleInteraction}
             style={{
                 position: 'absolute',
                 left: `${left}px`,
@@ -47,11 +69,33 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 width: `${w}px`,
                 height: `${h}px`,
                 zIndex: Math.floor(layout.y),
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: CALIBRATION_MODE ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 filter: isInvalid ? 'sepia(1) hue-rotate(-50deg) saturate(2)' : 'none',
                 opacity: isInvalid ? 0.6 : 1,
+                cursor: CALIBRATION_MODE ? 'crosshair' : 'pointer'
             }}
         >
+            {/* Overlay de Calibração */}
+            {CALIBRATION_MODE && (
+                <div style={{
+                    position: 'absolute',
+                    bottom: '-15px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: '#ff0055',
+                    color: 'white',
+                    fontSize: '9px',
+                    padding: '1px 3px',
+                    borderRadius: '2px',
+                    zIndex: 100,
+                    pointerEvents: 'none',
+                    fontWeight: 'bold',
+                    boxShadow: '0 0 10px rgba(255,0,85,0.5)'
+                }}>
+                    X:{calibratedX} Y:{calibratedY}
+                </div>
+            )}
+
             {/* Asset Visual */}
             {!isInvalid ? (
                 <img 

@@ -28220,11 +28220,22 @@ const BuildingNode = ({
   isConstructing
 }) => {
   const [isInvalid, setIsInvalid] = reactExports.useState(false);
+  const initialOffset = BUILDING_OFFSETS[layout2.id] || { x: 0, y: 0 };
+  const [calibratedX, setCalibratedX] = reactExports.useState(initialOffset.x);
+  const [calibratedY, setCalibratedY] = reactExports.useState(initialOffset.y);
+  const handleInteraction = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "click") {
+      setCalibratedY((prev) => prev + 2);
+    } else if (e.type === "contextmenu") {
+      setCalibratedY((prev) => prev - 2);
+    }
+  };
   const w2 = layout2.w;
   const h2 = layout2.h;
-  const offset2 = BUILDING_OFFSETS[layout2.id] || { x: 0, y: 0 };
-  const left = layout2.x - w2 / 2 + offset2.x;
-  const top = layout2.y - h2 + offset2.y;
+  const left = layout2.x - w2 / 2 + calibratedX;
+  const top = layout2.y - h2 + calibratedY;
   const labelY = -20;
   const buildingSlug = type2.toLowerCase();
   const assetPath = `/assets/buildings/${layout2.assetName || buildingSlug + ".png"}`;
@@ -28232,7 +28243,8 @@ const BuildingNode = ({
     "div",
     {
       className: "building-node",
-      onClick,
+      onClick: handleInteraction,
+      onContextMenu: handleInteraction,
       style: {
         position: "absolute",
         left: `${left}px`,
@@ -28240,11 +28252,32 @@ const BuildingNode = ({
         width: `${w2}px`,
         height: `${h2}px`,
         zIndex: Math.floor(layout2.y),
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "none",
         filter: isInvalid ? "sepia(1) hue-rotate(-50deg) saturate(2)" : "none",
-        opacity: isInvalid ? 0.6 : 1
+        opacity: isInvalid ? 0.6 : 1,
+        cursor: "crosshair"
       },
       children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
+          position: "absolute",
+          bottom: "-15px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "#ff0055",
+          color: "white",
+          fontSize: "9px",
+          padding: "1px 3px",
+          borderRadius: "2px",
+          zIndex: 100,
+          pointerEvents: "none",
+          fontWeight: "bold",
+          boxShadow: "0 0 10px rgba(255,0,85,0.5)"
+        }, children: [
+          "X:",
+          calibratedX,
+          " Y:",
+          calibratedY
+        ] }),
         !isInvalid ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
@@ -44586,7 +44619,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-DW9Gv1ZJ.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-8VZC1S_P.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44622,4 +44655,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DsbAecGJ.js.map
+//# sourceMappingURL=app-Dh3CUfiq.js.map
