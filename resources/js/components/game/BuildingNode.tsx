@@ -31,6 +31,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     // Protocolo de Sombras e Efeitos
     const buildingSlug = type.toLowerCase();
     const assetPath = `/assets/buildings/${layout.assetName || buildingSlug + '.png'}`;
+    const isWall = type === 'muralha';
 
     return (
         <div 
@@ -49,7 +50,12 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 cursor: 'pointer'
             }}
         >
-            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <div style={{ 
+                position: 'relative', 
+                width: '100%', 
+                height: '100%',
+                transform: isWall ? 'rotate(90deg)' : 'none' 
+            }}>
                 {!isInvalid ? (
                     <img 
                         src={assetPath}
@@ -78,28 +84,29 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                         INVALID ASSET
                     </div>
                 )}
-                
-                {/* Badge de Nível Tactical V92 */}
-                <div style={{
-                    position: 'absolute',
-                    top: '-20px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: 'rgba(0, 0, 0, 0.8)',
-                    color: '#fff',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    whiteSpace: 'nowrap',
-                    pointerEvents: 'none',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                    textTransform: 'uppercase'
-                }}>
-                    {type.replace(/_/g, ' ')} LVL {level}
-                    {isConstructing && <span className="ml-1 text-yellow-400">🔨</span>}
-                </div>
+            </div>
+
+            {/* Badge de Nível Tactical V92 (Fora do transform de rotação) */}
+            <div style={{
+                position: 'absolute',
+                top: '-20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'rgba(0, 0, 0, 0.8)',
+                color: '#fff',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                fontSize: '10px',
+                fontWeight: 'bold',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                whiteSpace: 'nowrap',
+                pointerEvents: 'none',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                textTransform: 'uppercase',
+                zIndex: 20
+            }}>
+                {type.replace(/_/g, ' ')} LVL {level}
+                {isConstructing && <span className="ml-1 text-yellow-400">🔨</span>}
             </div>
         </div>
     );

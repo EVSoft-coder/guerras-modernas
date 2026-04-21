@@ -28227,7 +28227,8 @@ const BuildingNode = ({
   const top = layout2.y - h2 + baseOffset.y;
   const buildingSlug = type2.toLowerCase();
   const assetPath = `/assets/buildings/${layout2.assetName || buildingSlug + ".png"}`;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  const isWall = type2 === "muralha";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
       className: "building-node",
@@ -28244,8 +28245,13 @@ const BuildingNode = ({
         opacity: isInvalid ? 0.6 : 1,
         cursor: "pointer"
       },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { position: "relative", width: "100%", height: "100%" }, children: [
-        !isInvalid ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          transform: isWall ? "rotate(90deg)" : "none"
+        }, children: !isInvalid ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
             src: assetPath,
@@ -28269,7 +28275,7 @@ const BuildingNode = ({
           justifyContent: "center",
           fontSize: "10px",
           color: "red"
-        }, children: "INVALID ASSET" }),
+        }, children: "INVALID ASSET" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
           position: "absolute",
           top: "-20px",
@@ -28285,14 +28291,15 @@ const BuildingNode = ({
           whiteSpace: "nowrap",
           pointerEvents: "none",
           boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
-          textTransform: "uppercase"
+          textTransform: "uppercase",
+          zIndex: 20
         }, children: [
           type2.replace(/_/g, " "),
           " LVL ",
           level,
           isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1 text-yellow-400", children: "🔨" })
         ] })
-      ] })
+      ]
     }
   );
 };
@@ -44547,7 +44554,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-C4fGRoDE.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-4Y7RZFxa.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44583,4 +44590,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-DSiA9Xyk.js.map
+//# sourceMappingURL=app-ZH9X6yTx.js.map
