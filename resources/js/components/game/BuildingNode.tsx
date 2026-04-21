@@ -25,9 +25,9 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const h = layout.h;
     
     // As coordenadas (layout.x, layout.y) marcam o centro PERFEITO do pad no chão.
-    // Aplicamos yOffset para descer a imagem 3D de forma a que a sua "base visual" 
-    // se alinhe com o centro do pad, e não o pixel inferior (bottom) do PNG.
-    const left = layout.x - (w / 2);
+    // Aplicamos xOffset/yOffset para corrigir o crop da imagem 3D de forma a que a sua "massa visual" 
+    // se alinhe com o centro do pad, compensando assimetrias PNG.
+    const left = layout.x - (w / 2) + (layout.xOffset || 0);
     const top = layout.y - h + (layout.yOffset || 0); 
     const labelY = -20; 
 
