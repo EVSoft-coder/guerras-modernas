@@ -28269,24 +28269,24 @@ const BUILDING_SLOTS = {
   RESEARCH: { x: 532, y: 185 },
   FACTORY: { x: 135, y: 300 },
   BARRACKS: { x: 665, y: 300 },
-  AIRPORT: { x: 268, y: 415 },
-  // Pad Sul-Oeste
+  AIRPORT: { x: 532, y: 415 },
+  // PAD Sudeste p/ afastar do QG central
   WALL: { x: 400, y: 530 }
 };
 const BUILDING_LAYOUT = {
   // LINHA 1 (Fundo)
-  central_energia: { ...BUILDING_SLOTS.ENERGY, w: 90, h: 90, anchor: "center", assetName: "energia_v1.png", xOffset: 0, yOffset: 30 },
+  central_energia: { ...BUILDING_SLOTS.ENERGY, w: 90, h: 90, anchor: "center", assetName: "energia_v1.png", xOffset: 25, yOffset: 15 },
   // LINHA 2
-  radar_estrategico: { ...BUILDING_SLOTS.RADAR, w: 80, h: 90, anchor: "center", assetName: "radar_v1.png", xOffset: 25, yOffset: 25 },
-  centro_pesquisa: { ...BUILDING_SLOTS.RESEARCH, w: 90, h: 90, anchor: "center", assetName: "pesquisa_v1.png", xOffset: -10, yOffset: 25 },
+  radar_estrategico: { ...BUILDING_SLOTS.RADAR, w: 80, h: 90, anchor: "center", assetName: "radar_v1.png", xOffset: 5, yOffset: 20 },
+  centro_pesquisa: { ...BUILDING_SLOTS.RESEARCH, w: 90, h: 90, anchor: "center", assetName: "pesquisa_v1.png", xOffset: 12, yOffset: 15 },
   // LINHA 3 (Equador)
-  fabrica_municoes: { ...BUILDING_SLOTS.FACTORY, w: 100, h: 110, anchor: "center", assetName: "fabrica_v2.png", xOffset: 20, yOffset: 60 },
-  qg: { ...BUILDING_SLOTS.HQ, w: 140, h: 160, anchor: "center", assetName: "hq_v2.png", xOffset: 10, yOffset: 60 },
-  quartel: { ...BUILDING_SLOTS.BARRACKS, w: 100, h: 110, anchor: "center", assetName: "quartel_v2.png", xOffset: -10, yOffset: 65 },
+  fabrica_municoes: { ...BUILDING_SLOTS.FACTORY, w: 100, h: 110, anchor: "center", assetName: "fabrica_v2.png", xOffset: -12, yOffset: 50 },
+  qg: { ...BUILDING_SLOTS.HQ, w: 140, h: 160, anchor: "center", assetName: "hq_v2.png", xOffset: 0, yOffset: 50 },
+  quartel: { ...BUILDING_SLOTS.BARRACKS, w: 100, h: 110, anchor: "center", assetName: "quartel_v2.png", xOffset: 15, yOffset: 45 },
   // LINHA 4
-  aerodromo: { ...BUILDING_SLOTS.AIRPORT, w: 140, h: 120, anchor: "center", assetName: "aerodromo_v1.png", xOffset: 35, yOffset: 35 },
+  aerodromo: { ...BUILDING_SLOTS.AIRPORT, w: 140, h: 120, anchor: "center", assetName: "aerodromo_v1.png", xOffset: 10, yOffset: 15 },
   // LINHA 5 (Frente)
-  muralha: { ...BUILDING_SLOTS.WALL, w: 200, h: 80, anchor: "center", assetName: "muralha_v1.png", xOffset: 15, yOffset: 50 }
+  muralha: { ...BUILDING_SLOTS.WALL, w: 200, h: 80, anchor: "center", assetName: "muralha_v1.png", xOffset: 15, yOffset: 20 }
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
   const getBuildingLevel = (type2) => {
@@ -44575,7 +44575,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-Cpf_sd-o.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-Ccr9de_d.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44611,4 +44611,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-C_YL3OCj.js.map
+//# sourceMappingURL=app-couDUXKP.js.map
