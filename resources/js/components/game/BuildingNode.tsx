@@ -98,7 +98,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                             height: '100%',
                             objectFit: 'contain',
                             pointerEvents: 'none',
-                            filter: isConstructing ? 'grayscale(0.5) brightness(0.7)' : 'none'
+                            filter: isConstructing ? 'grayscale(0.5) brightness(0.7)' : 'none',
+                            mixBlendMode: type === 'muralha' ? 'screen' : 'normal'
                         }}
                         onError={() => setIsInvalid(true)}
                     />
