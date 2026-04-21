@@ -23,8 +23,12 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     // Lógica de Ancoragem: A Base do edifício toca no Centro do Pad (layout.x, layout.y)
     const w = layout.w;
     const h = layout.h;
+    
+    // As coordenadas (layout.x, layout.y) marcam o centro PERFEITO do pad no chão.
+    // Aplicamos yOffset para descer a imagem 3D de forma a que a sua "base visual" 
+    // se alinhe com o centro do pad, e não o pixel inferior (bottom) do PNG.
     const left = layout.x - (w / 2);
-    const top = layout.y - h; 
+    const top = layout.y - h + (layout.yOffset || 0); 
     const labelY = -20; 
 
     // Protocolo de Sombras e Efeitos
