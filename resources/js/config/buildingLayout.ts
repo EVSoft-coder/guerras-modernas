@@ -28,14 +28,14 @@ export const BUILDING_SLOTS = {
 };
 
 export const BUILDING_OFFSETS: Record<string, { x: number, y: number }> = {
-    HQ:        { x: 1, y: 65 },
-    RADAR:     { x: 2, y: -26 },
-    ENERGY:    { x: 83, y: 10 },
-    RESEARCH:  { x: 138, y: -50 },
-    FACTORY:   { x: -5, y: 50 },
+    HQ:        { x: 1, y: 59 },
+    RADAR:     { x: -75, y: 2 },
+    ENERGY:    { x: 25, y: 135 },
+    RESEARCH:  { x: 121, y: 22 },
+    FACTORY:   { x: 28, y: 28 },
     BARRACKS:  { x: 6, y: 55 },
-    AIRPORT:   { x: -17, y: 95 },
-    WALL:      { x: -211, y: 44 },
+    AIRPORT:   { x: -7, y: 89 },
+    WALL:      { x: -244, y: -73 },
 };
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = {
