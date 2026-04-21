@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BuildingLayout, BUILDING_OFFSETS } from '@/config/buildingLayout';
 
 interface BuildingNodeProps {
@@ -7,26 +7,63 @@ interface BuildingNodeProps {
     layout: BuildingLayout;
     onClick: () => void;
     isConstructing?: boolean;
+    isDraggable?: boolean;
+    onDrag?: (id: string, deltaX: number, deltaY: number) => void;
+    offset?: { x: number, y: number };
 }
 
 /**
- * BuildingNode V89 — MASTERPIECE FINAL
- * Renderização isométrica determinística com offsets persistidos.
+ * BuildingNode V91 — REDRAG ACTIVATED
+ * Suporta manipulação direta do asset para ajuste fino sobre o novo terreno V22.
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
-    type, level, layout, onClick, isConstructing 
+    type, level, layout, onClick, isConstructing, isDraggable, onDrag, offset
 }) => {
     const [isInvalid, setIsInvalid] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (!isDraggable) return;
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+        setDragStart({ x: e.clientX, y: e.clientY });
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isDragging || !onDrag) return;
+            const deltaX = e.clientX - dragStart.x;
+            const deltaY = e.clientY - dragStart.y;
+            onDrag(layout.id, deltaX, deltaY);
+            setDragStart({ x: e.clientX, y: e.clientY });
+        };
+
+        const handleMouseUp = () => {
+            setIsDragging(false);
+        };
+
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging, dragStart, onDrag, layout.id]);
 
     // Lógica de Ancoragem
     const w = layout.w;
     const h = layout.h;
     
-    // Recuperamos o offset do BUILDING_OFFSETS (V89 VALIDAÇÃO MANUAL)
-    const baseOffset = BUILDING_OFFSETS[layout.id] || { x: 0, y: 0 };
+    // Recuperamos o offset (prioridade para prop externa durante drag)
+    const currentOffset = offset || BUILDING_OFFSETS[layout.id] || { x: 0, y: 0 };
     
-    const left = layout.x - (w / 2) + baseOffset.x;
-    const top = layout.y - h + baseOffset.y; 
+    const left = layout.x - (w / 2) + currentOffset.x;
+    const top = layout.y - h + currentOffset.y; 
 
     // Protocolo de Sombras e Efeitos
     const buildingSlug = type.toLowerCase();
@@ -34,19 +71,21 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
 
     return (
         <div 
-            className="building-node"
-            onClick={onClick}
+            className={`building-node ${isDragging ? 'is-dragging' : ''}`}
+            onClick={!isDraggable ? onClick : undefined}
+            onMouseDown={handleMouseDown}
             style={{
                 position: 'absolute',
                 left: `${left}px`,
                 top: `${top}px`,
                 width: `${w}px`,
                 height: `${h}px`,
-                zIndex: Math.floor(layout.y),
-                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                zIndex: isDragging ? 1000 : Math.floor(layout.y),
+                transition: isDragging ? 'none' : 'transform 0.2s',
                 filter: isInvalid ? 'sepia(1) hue-rotate(-50deg) saturate(2)' : 'none',
-                opacity: isInvalid ? 0.6 : 1,
-                cursor: 'pointer'
+                opacity: isInvalid ? 0.6 : (isDragging ? 0.8 : 1),
+                cursor: isDraggable ? (isDragging ? 'grabbing' : 'grab') : 'pointer',
+                userSelect: 'none'
             }}
         >
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -85,7 +124,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                     top: '-20px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    background: 'rgba(0, 0, 0, 0.8)',
+                    background: isDragging ? '#ff0055' : 'rgba(0, 0, 0, 0.8)',
                     color: '#fff',
                     padding: '2px 8px',
                     borderRadius: '4px',
@@ -99,6 +138,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 }}>
                     {type.replace(/_/g, ' ')} LVL {level}
                     {isConstructing && <span className="ml-1 text-yellow-400">🔨</span>}
+                    {isDraggable && <span className="ml-2">[X:{currentOffset.x} Y:{currentOffset.y}]</span>}
                 </div>
             </div>
         </div>
