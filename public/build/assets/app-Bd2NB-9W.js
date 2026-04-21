@@ -28210,48 +28210,76 @@ const BUILDING_LAYOUT = {
   // LINHA 4
   aerodromo: { ...BUILDING_SLOTS.AIRPORT, id: "AIRPORT", w: 140, h: 120, anchor: "center", assetName: "aerodromo_v1.png" },
   // LINHA 5 (Frente)
-  muralha: { ...BUILDING_SLOTS.WALL, id: "WALL", w: 200, h: 80, anchor: "center", assetName: "muralha_v1.png" }
+  muralha: { ...BUILDING_SLOTS.WALL, id: "WALL", w: 320, h: 200, anchor: "center", assetName: "muralha_v2.png" }
 };
 const BuildingNode = ({
   type: type2,
   level,
   layout: layout2,
   onClick,
-  isConstructing
+  isConstructing,
+  isDraggable,
+  onDrag,
+  offset: offset2
 }) => {
   const [isInvalid, setIsInvalid] = reactExports.useState(false);
+  const [isDragging2, setIsDragging] = reactExports.useState(false);
+  const [dragStart, setDragStart] = reactExports.useState({ x: 0, y: 0 });
+  const handleMouseDown = (e) => {
+    if (!isDraggable) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
+  };
+  reactExports.useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isDragging2 || !onDrag) return;
+      const deltaX = e.clientX - dragStart.x;
+      const deltaY = e.clientY - dragStart.y;
+      onDrag(layout2.id, deltaX, deltaY);
+      setDragStart({ x: e.clientX, y: e.clientY });
+    };
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+    if (isDragging2) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging2, dragStart, onDrag, layout2.id]);
   const w2 = layout2.w;
   const h2 = layout2.h;
-  const baseOffset = BUILDING_OFFSETS[layout2.id] || { x: 0, y: 0 };
-  const left = layout2.x - w2 / 2 + baseOffset.x;
-  const top = layout2.y - h2 + baseOffset.y;
+  const currentOffset = offset2 || BUILDING_OFFSETS[layout2.id] || { x: 0, y: 0 };
+  const left = layout2.x - w2 / 2 + currentOffset.x;
+  const top = layout2.y - h2 + currentOffset.y;
   const buildingSlug = type2.toLowerCase();
   const assetPath = `/assets/buildings/${layout2.assetName || buildingSlug + ".png"}`;
-  const isWall = type2 === "muralha";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: "building-node",
-      onClick,
+      className: `building-node ${isDragging2 ? "is-dragging" : ""}`,
+      onClick: !isDraggable ? onClick : void 0,
+      onMouseDown: handleMouseDown,
       style: {
         position: "absolute",
         left: `${left}px`,
         top: `${top}px`,
         width: `${w2}px`,
         height: `${h2}px`,
-        zIndex: Math.floor(layout2.y),
-        transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        zIndex: isDragging2 ? 1e3 : Math.floor(layout2.y),
+        transition: isDragging2 ? "none" : "transform 0.2s",
         filter: isInvalid ? "sepia(1) hue-rotate(-50deg) saturate(2)" : "none",
-        opacity: isInvalid ? 0.6 : 1,
-        cursor: "pointer"
+        opacity: isInvalid ? 0.6 : isDragging2 ? 0.8 : 1,
+        cursor: isDraggable ? isDragging2 ? "grabbing" : "grab" : "pointer",
+        userSelect: "none"
       },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
-          position: "relative",
-          width: "100%",
-          height: "100%",
-          transform: isWall ? "rotate(90deg)" : "none"
-        }, children: !isInvalid ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "relative", width: "100%", height: "100%" }, children: !isInvalid ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
             src: assetPath,
@@ -28281,7 +28309,7 @@ const BuildingNode = ({
           top: "-20px",
           left: "50%",
           transform: "translateX(-50%)",
-          background: "rgba(0, 0, 0, 0.8)",
+          background: isDragging2 ? "#ff0055" : "rgba(0, 0, 0, 0.8)",
           color: "#fff",
           padding: "2px 8px",
           borderRadius: "4px",
@@ -28297,13 +28325,39 @@ const BuildingNode = ({
           type2.replace(/_/g, " "),
           " LVL ",
           level,
-          isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1 text-yellow-400", children: "🔨" })
+          isConstructing && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1 text-yellow-400", children: "🔨" }),
+          isDraggable && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "ml-2", children: [
+            "[X:",
+            currentOffset.x,
+            " Y:",
+            currentOffset.y,
+            "]"
+          ] })
         ] })
       ]
     }
   );
 };
 const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
+  const [isCalibrationMode, setIsCalibrationMode] = reactExports.useState(false);
+  const [offsets, setOffsets] = reactExports.useState(BUILDING_OFFSETS);
+  const handleDrag = (id2, deltaX, deltaY) => {
+    setOffsets((prev) => {
+      var _a2, _b;
+      return {
+        ...prev,
+        [id2]: {
+          x: (((_a2 = prev[id2]) == null ? void 0 : _a2.x) || 0) + deltaX,
+          y: (((_b = prev[id2]) == null ? void 0 : _b.y) || 0) + deltaY
+        }
+      };
+    });
+  };
+  const saveCalibration = () => {
+    console.log("=== NOVO BUILDING_OFFSETS VALIDAÇÃO V94 ===");
+    console.log(JSON.stringify(offsets, null, 4));
+    alert("Configuração V94 gerada na Console. Envia para o Antigravity!");
+  };
   const getBuildingLevel = (type2) => {
     var _a2;
     if (type2 === "qg") return base.qg_nivel || 0;
@@ -28314,20 +28368,39 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
     });
     return (b2 == null ? void 0 : b2.nivel) || 0;
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full flex justify-center py-8 bg-[#050608]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    "div",
-    {
-      id: "VillageCanvas",
-      className: "village-root",
-      style: {
-        position: "relative",
-        width: "800px",
-        height: "600px",
-        margin: "0 auto",
-        overflow: "hidden"
-      },
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full flex flex-col items-center py-8 bg-[#050608]", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-4 flex gap-4 z-[9999]", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          onClick: () => setIsCalibrationMode(!isCalibrationMode),
+          className: `px-4 py-2 rounded font-bold text-sm transition-all ${isCalibrationMode ? "bg-red-600 text-white animate-pulse" : "bg-gray-800 text-gray-400"}`,
+          children: isCalibrationMode ? "🟡 MODO DRAG ATIVO (MURALHA V2)" : "🔘 AJUSTAR NOVA MURALHA"
+        }
+      ),
+      isCalibrationMode && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          onClick: saveCalibration,
+          className: "px-4 py-2 bg-green-600 text-white rounded font-bold text-sm hover:bg-green-500",
+          children: "💾 GERAR CONFIG V94 (CONSOLE)"
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        id: "VillageCanvas",
+        className: "village-root",
+        style: {
+          position: "relative",
+          width: "800px",
+          height: "600px",
+          margin: "0 auto",
+          overflow: "hidden"
+        },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
                     .village-root {
                         all: initial;
                         position: relative;
@@ -28362,72 +28435,80 @@ const VisualVillageView = ({ base, onBuildingClick, gameConfig, buildingQueue })
                         border: none !important;
                         box-shadow: none !important;
                     }
+                    .is-dragging {
+                        opacity: 0.8 !important;
+                        z-index: 9999 !important;
+                    }
                 ` }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            id: "background-layer",
-            className: "village-canvas",
-            style: {
-              position: "absolute",
-              inset: 0,
-              zIndex: 1,
-              background: "#0a0c10"
-            },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "img",
-              {
-                src: "/images/village/terrain_v22.png",
-                style: {
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "800px",
-                  height: "600px",
-                  objectFit: "fill",
-                  pointerEvents: "none",
-                  opacity: 1
-                },
-                alt: "Village Terrain Tactical V22"
-              }
-            )
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            id: "buildings-layer",
-            className: "buildings-layer",
-            style: {
-              position: "absolute",
-              inset: 0,
-              zIndex: 10,
-              isolation: "auto",
-              pointerEvents: "none"
-            },
-            children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
-              var _a2;
-              const level = getBuildingLevel(type2);
-              const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
-              const config = (_a2 = gameConfig == null ? void 0 : gameConfig.buildings) == null ? void 0 : _a2[type2];
-              if (level === 0 && !isConstructing) return null;
-              return /* @__PURE__ */ jsxRuntimeExports.jsx(
-                BuildingNode,
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              id: "background-layer",
+              className: "village-canvas",
+              style: {
+                position: "absolute",
+                inset: 0,
+                zIndex: 1,
+                background: "#0a0c10"
+              },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
                 {
-                  type: type2,
-                  level,
-                  layout: layout2,
-                  isConstructing,
-                  onClick: () => onBuildingClick({ id: type2, buildingType: type2, name: (config == null ? void 0 : config.name) || type2, level })
-                },
-                type2
-              );
-            })
-          }
-        )
-      ]
-    }
-  ) });
+                  src: "/images/village/terrain_v22.png",
+                  style: {
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "800px",
+                    height: "600px",
+                    objectFit: "fill",
+                    pointerEvents: "none",
+                    opacity: 1
+                  },
+                  alt: "Village Terrain Tactical V22"
+                }
+              )
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              id: "buildings-layer",
+              className: "buildings-layer",
+              style: {
+                position: "absolute",
+                inset: 0,
+                zIndex: 10,
+                isolation: "auto",
+                pointerEvents: "none"
+              },
+              children: Object.entries(BUILDING_LAYOUT).map(([type2, layout2]) => {
+                var _a2;
+                const level = getBuildingLevel(type2);
+                const isConstructing = (buildingQueue || []).some((q2) => q2.type === type2);
+                const config = (_a2 = gameConfig == null ? void 0 : gameConfig.buildings) == null ? void 0 : _a2[type2];
+                if (level === 0 && !isConstructing) return null;
+                return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  BuildingNode,
+                  {
+                    type: type2,
+                    level,
+                    layout: layout2,
+                    isConstructing,
+                    onClick: () => onBuildingClick({ id: type2, buildingType: type2, name: (config == null ? void 0 : config.name) || type2, level }),
+                    isDraggable: isCalibrationMode,
+                    onDrag: handleDrag,
+                    offset: offsets[layout2.id]
+                  },
+                  type2
+                );
+              })
+            }
+          )
+        ]
+      }
+    )
+  ] });
 };
 const Dialog = Root$4;
 const DialogTrigger = Trigger$2;
@@ -44554,7 +44635,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-4Y7RZFxa.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-BgnlKlR0.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44590,4 +44671,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-ZH9X6yTx.js.map
+//# sourceMappingURL=app-Bd2NB-9W.js.map

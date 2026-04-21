@@ -55,5 +55,5 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
     aerodromo:          { ...BUILDING_SLOTS.AIRPORT, id: 'AIRPORT', w: 140, h: 120, anchor: 'center', assetName: 'aerodromo_v1.png' },
     
     // LINHA 5 (Frente)
-    muralha:            { ...BUILDING_SLOTS.WALL, id: 'WALL', w: 200, h: 80, anchor: 'center', assetName: 'muralha_v1.png' },
+    muralha:            { ...BUILDING_SLOTS.WALL, id: 'WALL', w: 320, h: 200, anchor: 'center', assetName: 'muralha_v2.png' },
 };
