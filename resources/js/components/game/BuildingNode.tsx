@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BuildingLayout } from '@/config/buildingLayout';
+import { BuildingLayout, BUILDING_OFFSETS } from '@/config/buildingLayout';
 
 interface BuildingNodeProps {
     type: string;
@@ -10,8 +10,8 @@ interface BuildingNodeProps {
 }
 
 /**
- * BuildingNode V72 — RENDERIZAÇÃO FINAL
- * Fim do diagnóstico. Ativação dos ativos táticos sobre a grelha calibrada.
+ * BuildingNode V85 — NORMALIZAÇÃO VISUAL
+ * Implementação de offsets individuais por asset p/ correção de alinhamento.
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick, isConstructing 
@@ -24,11 +24,12 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const w = layout.w;
     const h = layout.h;
     
-    // As coordenadas (layout.x, layout.y) marcam o centro PERFEITO do pad no chão.
-    // Aplicamos xOffset/yOffset para corrigir o crop da imagem 3D de forma a que a sua "massa visual" 
-    // se alinhe com o centro do pad, compensando assimetrias PNG.
-    const left = layout.x - (w / 2) + (layout.xOffset || 0);
-    const top = layout.y - h + (layout.yOffset || 0); 
+    // Recuperamos o offset normalizado para este asset específico
+    const offset = BUILDING_OFFSETS[layout.id] || { x: 0, y: 0 };
+    
+    // Cálculo de Posição Normalizado: Centro do Pad + Offset Visual
+    const left = layout.x - (w / 2) + offset.x;
+    const top = layout.y - h + offset.y; 
     const labelY = -20; 
 
     // Protocolo de Sombras e Efeitos

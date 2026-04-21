@@ -1,12 +1,11 @@
 export interface BuildingLayout {
+    id: string;
     x: number;
     y: number;
     w: number;
     h: number;
     anchor: 'center' | 'bottom';
     assetName: string;
-    xOffset?: number;
-    yOffset?: number;
 }
 
 export const REFERENCE_WIDTH = 800;
@@ -28,27 +27,33 @@ export const BUILDING_SLOTS = {
     WALL:      { x: 400, y: 530 }, 
 };
 
-/**
- * ORDENAÇÃO VITAL V84: Masterpiece Final.
- * A renderização processa chaves por ordem. Y Menor (fundo) -> Y Maior (frente).
- * Valores micro-calibrados numéricos baseados na assimetria visual de crop intra-png.
- */
-export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
+export const BUILDING_OFFSETS: Record<string, { x: number, y: number }> = {
+    HQ:        { x: 0, y: 0 },
+    RADAR:     { x: 0, y: 30 },
+    ENERGY:    { x: 0, y: 25 },
+    RESEARCH:  { x: 0, y: 20 },
+    FACTORY:   { x: 0, y: 10 },
+    BARRACKS:  { x: 0, y: 10 },
+    AIRPORT:   { x: 0, y: 15 },
+    WALL:      { x: 0, y: 5 },
+};
+
+export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = {
     // LINHA 1 (Fundo)
-    central_energia:    { ...BUILDING_SLOTS.ENERGY, w: 90, h: 90, anchor: 'center', assetName: 'energia_v1.png', xOffset: 25, yOffset: 15 },
+    central_energia:    { ...BUILDING_SLOTS.ENERGY, id: 'ENERGY', w: 90, h: 90, anchor: 'center', assetName: 'energia_v1.png' },
     
     // LINHA 2
-    radar_estrategico:  { ...BUILDING_SLOTS.RADAR, w: 80, h: 90, anchor: 'center', assetName: 'radar_v1.png', xOffset: 5, yOffset: 20 },
-    centro_pesquisa:    { ...BUILDING_SLOTS.RESEARCH, w: 90, h: 90, anchor: 'center', assetName: 'pesquisa_v1.png', xOffset: 12, yOffset: 15 },
+    radar_estrategico:  { ...BUILDING_SLOTS.RADAR, id: 'RADAR', w: 80, h: 90, anchor: 'center', assetName: 'radar_v1.png' },
+    centro_pesquisa:    { ...BUILDING_SLOTS.RESEARCH, id: 'RESEARCH', w: 90, h: 90, anchor: 'center', assetName: 'pesquisa_v1.png' },
     
     // LINHA 3 (Equador)
-    fabrica_municoes:   { ...BUILDING_SLOTS.FACTORY, w: 100, h: 110, anchor: 'center', assetName: 'fabrica_v2.png', xOffset: -12, yOffset: 50 },
-    qg:                 { ...BUILDING_SLOTS.HQ, w: 140, h: 160, anchor: 'center', assetName: 'hq_v2.png', xOffset: 0, yOffset: 50 },
-    quartel:            { ...BUILDING_SLOTS.BARRACKS, w: 100, h: 110, anchor: 'center', assetName: 'quartel_v2.png', xOffset: 15, yOffset: 45 },
+    fabrica_municoes:   { ...BUILDING_SLOTS.FACTORY, id: 'FACTORY', w: 100, h: 110, anchor: 'center', assetName: 'fabrica_v2.png' },
+    qg:                 { ...BUILDING_SLOTS.HQ, id: 'HQ', w: 140, h: 160, anchor: 'center', assetName: 'hq_v2.png' },
+    quartel:            { ...BUILDING_SLOTS.BARRACKS, id: 'BARRACKS', w: 100, h: 110, anchor: 'center', assetName: 'quartel_v2.png' },
     
     // LINHA 4
-    aerodromo:          { ...BUILDING_SLOTS.AIRPORT, w: 140, h: 120, anchor: 'center', assetName: 'aerodromo_v1.png', xOffset: 10, yOffset: 15 },
+    aerodromo:          { ...BUILDING_SLOTS.AIRPORT, id: 'AIRPORT', w: 140, h: 120, anchor: 'center', assetName: 'aerodromo_v1.png' },
     
     // LINHA 5 (Frente)
-    muralha:            { ...BUILDING_SLOTS.WALL, w: 200, h: 80, anchor: 'center', assetName: 'muralha_v1.png', xOffset: 15, yOffset: 20 },
+    muralha:            { ...BUILDING_SLOTS.WALL, id: 'WALL', w: 200, h: 80, anchor: 'center', assetName: 'muralha_v1.png' },
 };
