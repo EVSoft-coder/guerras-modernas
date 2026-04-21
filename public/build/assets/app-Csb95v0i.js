@@ -28188,14 +28188,14 @@ const BUILDING_SLOTS = {
   WALL: { x: 400, y: 530 }
 };
 const BUILDING_OFFSETS = {
-  HQ: { x: 0, y: 0 },
-  RADAR: { x: 0, y: 30 },
-  ENERGY: { x: 0, y: 25 },
-  RESEARCH: { x: 0, y: 20 },
-  FACTORY: { x: 0, y: 10 },
-  BARRACKS: { x: 0, y: 10 },
-  AIRPORT: { x: 0, y: 15 },
-  WALL: { x: 0, y: 5 }
+  HQ: { x: 0, y: 46 },
+  RADAR: { x: 0, y: 50 },
+  ENERGY: { x: 0, y: 53 },
+  RESEARCH: { x: 0, y: 50 },
+  FACTORY: { x: 0, y: 50 },
+  BARRACKS: { x: 0, y: 46 },
+  AIRPORT: { x: 0, y: 61 },
+  WALL: { x: 0, y: 39 }
 };
 const BUILDING_LAYOUT = {
   // LINHA 1 (Fundo)
@@ -28219,17 +28219,15 @@ const BuildingNode = ({
   onClick,
   isConstructing
 }) => {
+  const CALIBRATION_MODE = false;
   const [isInvalid, setIsInvalid] = reactExports.useState(false);
   const initialOffset = BUILDING_OFFSETS[layout2.id] || { x: 0, y: 0 };
   const [calibratedX, setCalibratedX] = reactExports.useState(initialOffset.x);
   const [calibratedY, setCalibratedY] = reactExports.useState(initialOffset.y);
   const handleInteraction = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "click") {
-      setCalibratedY((prev) => prev + 2);
-    } else if (e.type === "contextmenu") {
-      setCalibratedY((prev) => prev - 2);
+    {
+      onClick();
+      return;
     }
   };
   const w2 = layout2.w;
@@ -28252,32 +28250,13 @@ const BuildingNode = ({
         width: `${w2}px`,
         height: `${h2}px`,
         zIndex: Math.floor(layout2.y),
-        transition: "none",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         filter: isInvalid ? "sepia(1) hue-rotate(-50deg) saturate(2)" : "none",
         opacity: isInvalid ? 0.6 : 1,
-        cursor: "crosshair"
+        cursor: "pointer"
       },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
-          position: "absolute",
-          bottom: "-15px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "#ff0055",
-          color: "white",
-          fontSize: "9px",
-          padding: "1px 3px",
-          borderRadius: "2px",
-          zIndex: 100,
-          pointerEvents: "none",
-          fontWeight: "bold",
-          boxShadow: "0 0 10px rgba(255,0,85,0.5)"
-        }, children: [
-          "X:",
-          calibratedX,
-          " Y:",
-          calibratedY
-        ] }),
+        CALIBRATION_MODE,
         !isInvalid ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
@@ -44619,7 +44598,7 @@ if (rootElement) {
       const isDashboard = (_f = (_e2 = (_d = props == null ? void 0 : props.initialPage) == null ? void 0 : _d.component) == null ? void 0 : _e2.toLowerCase()) == null ? void 0 : _f.includes("dashboard");
       if (isAuth && isDashboard) {
         console.log("[MOTOR] Autorização detectada. Ativando ECS Engine...");
-        __vitePreload(() => import("./index-8VZC1S_P.js"), true ? [] : void 0);
+        __vitePreload(() => import("./index-DHKkqyvW.js"), true ? [] : void 0);
       } else {
         const blockingElements = ["GAME_SCREEN", "MAIN_MENU", "PAUSE_SCREEN", "village-view-container", "tactical-hud", "world-map-view"];
         blockingElements.forEach((id2) => {
@@ -44655,4 +44634,4 @@ export {
   resourceSystem as r,
   stateManager as s
 };
-//# sourceMappingURL=app-Dh3CUfiq.js.map
+//# sourceMappingURL=app-Csb95v0i.js.map

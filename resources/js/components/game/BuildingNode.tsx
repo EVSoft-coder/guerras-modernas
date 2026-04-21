@@ -16,8 +16,8 @@ interface BuildingNodeProps {
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
     type, level, layout, onClick, isConstructing 
 }) => {
-    // MODO DE CALIBRAÇÃO ATIVO
-    const CALIBRATION_MODE = true; 
+    // MODO DE CALIBRAÇÃO DESATIVADO (OFFSETS PERSISTIDOS V87)
+    const CALIBRATION_MODE = false; 
     
     const [isInvalid, setIsInvalid] = useState(false);
     
