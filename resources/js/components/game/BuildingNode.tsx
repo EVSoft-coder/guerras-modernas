@@ -7,50 +7,63 @@ interface BuildingNodeProps {
     layout: BuildingLayout;
     onClick: () => void;
     isConstructing?: boolean;
+    isDraggable?: boolean;
+    onDrag?: (id: string, deltaX: number, deltaY: number) => void;
+    offset?: { x: number, y: number };
 }
 
 /**
- * BuildingNode V86 — DEBUG PROFISSIONAL
- * Modo de calibração em tempo real p/ ajuste fino de offsets.
+ * BuildingNode V88 — CALIBRAÇÃO POR ARRASTAMENTO
+ * Suporta manipulação direta do asset para ajuste fino visual.
  */
 export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
-    type, level, layout, onClick, isConstructing 
+    type, level, layout, onClick, isConstructing, isDraggable, onDrag, offset
 }) => {
-    // MODO DE CALIBRAÇÃO DESATIVADO (OFFSETS PERSISTIDOS V87)
-    const CALIBRATION_MODE = false; 
-    
     const [isInvalid, setIsInvalid] = useState(false);
-    
-    // Estado local para calibração em tempo real (não persiste no arquivo, mas ajuda a encontrar os valores)
-    const initialOffset = BUILDING_OFFSETS[layout.id] || { x: 0, y: 0 };
-    const [calibratedX, setCalibratedX] = useState(initialOffset.x);
-    const [calibratedY, setCalibratedY] = useState(initialOffset.y);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
-    const handleInteraction = (e: React.MouseEvent) => {
-        if (!CALIBRATION_MODE) {
-            onClick();
-            return;
-        }
-
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (!isDraggable) return;
         e.preventDefault();
         e.stopPropagation();
-
-        if (e.type === 'click') {
-            // Click Esquerdo: Desce o edifício
-            setCalibratedY(prev => prev + 2);
-        } else if (e.type === 'contextmenu') {
-            // Click Direito: Sobe o edifício
-            setCalibratedY(prev => prev - 2);
-        }
+        setIsDragging(true);
+        setDragStart({ x: e.clientX, y: e.clientY });
     };
 
-    // Lógica de Ancoragem: A Base do edifício toca no Centro do Pad (layout.x, layout.y)
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isDragging || !onDrag) return;
+            const deltaX = e.clientX - dragStart.x;
+            const deltaY = e.clientY - dragStart.y;
+            onDrag(layout.id, deltaX, deltaY);
+            setDragStart({ x: e.clientX, y: e.clientY });
+        };
+
+        const handleMouseUp = () => {
+            setIsDragging(false);
+        };
+
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging, dragStart, onDrag, layout.id]);
+
+    // Lógica de Ancoragem
     const w = layout.w;
     const h = layout.h;
     
-    // Cálculo de Posição Normalizado: Centro do Pad + Offset Calibrado
-    const left = layout.x - (w / 2) + calibratedX;
-    const top = layout.y - h + calibratedY; 
+    // Recuperamos o offset (prioridade para prop externa durante drag)
+    const currentOffset = offset || BUILDING_OFFSETS[layout.id] || { x: 0, y: 0 };
+    
+    const left = layout.x - (w / 2) + currentOffset.x;
+    const top = layout.y - h + currentOffset.y; 
     const labelY = -20; 
 
     // Protocolo de Sombras e Efeitos
@@ -59,40 +72,42 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
 
     return (
         <div 
-            className="building-node"
-            onClick={handleInteraction}
-            onContextMenu={handleInteraction}
+            className={`building-node ${isDragging ? 'is-dragging' : ''}`}
+            onClick={!isDraggable ? onClick : undefined}
+            onMouseDown={handleMouseDown}
             style={{
                 position: 'absolute',
                 left: `${left}px`,
                 top: `${top}px`,
                 width: `${w}px`,
                 height: `${h}px`,
-                zIndex: Math.floor(layout.y),
-                transition: CALIBRATION_MODE ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                zIndex: isDragging ? 1000 : Math.floor(layout.y),
+                transition: isDragging ? 'none' : 'transform 0.2s',
                 filter: isInvalid ? 'sepia(1) hue-rotate(-50deg) saturate(2)' : 'none',
-                opacity: isInvalid ? 0.6 : 1,
-                cursor: CALIBRATION_MODE ? 'crosshair' : 'pointer'
+                opacity: isInvalid ? 0.6 : (isDragging ? 0.8 : 1),
+                cursor: isDraggable ? (isDragging ? 'grabbing' : 'grab') : 'pointer',
+                userSelect: 'none'
             }}
         >
-            {/* Overlay de Calibração */}
-            {CALIBRATION_MODE && (
+            {/* Overlay de Offsets (Apenas modo visual se DRAG) */}
+            {isDraggable && (
                 <div style={{
                     position: 'absolute',
-                    bottom: '-15px',
+                    bottom: '-25px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    background: '#ff0055',
+                    background: isDragging ? '#ff0055' : 'rgba(0,0,0,0.8)',
                     color: 'white',
-                    fontSize: '9px',
-                    padding: '1px 3px',
-                    borderRadius: '2px',
+                    fontSize: '10px',
+                    padding: '2px 5px',
+                    borderRadius: '4px',
                     zIndex: 100,
                     pointerEvents: 'none',
                     fontWeight: 'bold',
-                    boxShadow: '0 0 10px rgba(255,0,85,0.5)'
+                    whiteSpace: 'nowrap',
+                    border: '1px solid rgba(255,255,255,0.2)'
                 }}>
-                    X:{calibratedX} Y:{calibratedY}
+                    ID: {layout.id} | X:{currentOffset.x} Y:{currentOffset.y}
                 </div>
             )}
 

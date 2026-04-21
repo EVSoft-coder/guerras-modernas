@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Base } from '@/types';
 import { BuildingNode } from './BuildingNode';
-import { BUILDING_LAYOUT } from '@/config/buildingLayout';
+import { BUILDING_LAYOUT, BUILDING_OFFSETS } from '@/config/buildingLayout';
 
 interface VillageViewProps {
     base: Base;
@@ -11,7 +11,26 @@ interface VillageViewProps {
 }
 
 export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
-    
+    // ESTADO DE CALIBRAÇÃO V88
+    const [isCalibrationMode, setIsCalibrationMode] = useState(false);
+    const [offsets, setOffsets] = useState<Record<string, { x: number, y: number }>>(BUILDING_OFFSETS);
+
+    const handleDrag = (id: string, deltaX: number, deltaY: number) => {
+        setOffsets(prev => ({
+            ...prev,
+            [id]: {
+                x: (prev[id]?.x || 0) + deltaX,
+                y: (prev[id]?.y || 0) + deltaY
+            }
+        }));
+    };
+
+    const saveCalibration = () => {
+        console.log("=== NOVO BUILDING_OFFSETS VALIDAÇÃO ===");
+        console.log(JSON.stringify(offsets, null, 4));
+        alert("Configuração gerada na Console (F12). Envia para o Antigravity!");
+    };
+
     const getBuildingLevel = (type: string) => {
         if (type === 'qg') return base.qg_nivel || 0;
         if (type === 'muralha') return base.muralha_nivel || 0;
@@ -20,7 +39,27 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
     };
 
     return (
-        <div className="w-full flex justify-center py-8 bg-[#050608]">
+        <div className="w-full flex flex-col items-center py-8 bg-[#050608]">
+            {/* PAINEL DE CONTROLO DE CALIBRAÇÃO (TEMP) */}
+            <div className="mb-4 flex gap-4 z-[9999]">
+                <button 
+                    onClick={() => setIsCalibrationMode(!isCalibrationMode)}
+                    className={`px-4 py-2 rounded font-bold text-sm transition-all ${
+                        isCalibrationMode ? 'bg-red-600 text-white animate-pulse' : 'bg-gray-800 text-gray-400'
+                    }`}
+                >
+                    {isCalibrationMode ? '🟡 MODO DRAG ATIVO' : '🔘 ATIVAR CALIBRAÇÃO'}
+                </button>
+                {isCalibrationMode && (
+                    <button 
+                        onClick={saveCalibration}
+                        className="px-4 py-2 bg-green-600 text-white rounded font-bold text-sm hover:bg-green-500"
+                    >
+                        💾 GERAR CONFIG (CONSOLE)
+                    </button>
+                )}
+            </div>
+
             <div 
                 id="VillageCanvas"
                 className="village-root"
@@ -66,6 +105,10 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                         background: transparent !important;
                         border: none !important;
                         box-shadow: none !important;
+                    }
+                    .is-dragging {
+                        opacity: 0.8 !important;
+                        z-index: 9999 !important;
                     }
                 `}</style>
 
@@ -164,6 +207,9 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                                 layout={layout}
                                 isConstructing={isConstructing}
                                 onClick={() => onBuildingClick({ id: type, buildingType: type, name: config?.name || type, level })}
+                                isDraggable={isCalibrationMode}
+                                onDrag={handleDrag}
+                                offset={offsets[layout.id]}
                             />
                         );
                     })}
