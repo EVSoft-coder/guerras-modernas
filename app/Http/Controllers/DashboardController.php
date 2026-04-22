@@ -41,6 +41,10 @@ class DashboardController extends Controller
         // 3. Obter Snapshot Único (SSOT) - FASE BLOQUEANTE
         $state = $this->gameStateService->getVillageState($base->id);
 
+        if ($state instanceof \Illuminate\Http\JsonResponse) {
+            return $state;
+        }
+
         if (!$state) {
             throw new \Exception("SISTEMA: GameStateService falhou ao gerar o snapshot para o setor {$base->id}");
         }
