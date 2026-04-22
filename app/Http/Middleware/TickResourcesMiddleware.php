@@ -27,8 +27,10 @@ class TickResourcesMiddleware
     {
         if (Auth::check()) {
             $user = Auth::user();
-            // Garante que o usuário tem as bases carregadas
-            if (!$user->wasRecentlyCreated && $user->bases) {
+
+            // OTIMIZAÇÃO: Evitar processar todas as bases em cada POST/PUT/DELETE
+            // O processamento ocorrerá organicamente nas ações ou no GET /dashboard
+            if ($request->isMethod('GET') && !$user->wasRecentlyCreated && $user->bases) {
                 foreach ($user->bases as $base) {
                     \App\Services\GameEngine::process($base);
                 }

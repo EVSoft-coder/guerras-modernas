@@ -47,8 +47,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/mensagens', [ChatController::class, 'pessoais'])->name('mensagens.index');
     });
 
-    // 2. AÇÕES CRÍTICAS (Rate Limit Estrito - PASSO 5)
-    Route::middleware(['throttle:15,1'])->group(function() {
+    // 2. AÇÕES CRÍTICAS (Rate Limit Elevado para Jogabilidade - PASSO 5)
+    Route::middleware(['throttle:60,1'])->group(function() {
         Route::post('/buildings/upgrade', [BaseController::class, 'upgrade'])->name('buildings.upgrade');
         Route::post('/units/recruit', [UnitRecruitmentController::class, 'recruit'])->name('units.recruit');
         Route::post('/units/cancelar/{id}', [UnitRecruitmentController::class, 'cancel'])->name('units.cancelar');
