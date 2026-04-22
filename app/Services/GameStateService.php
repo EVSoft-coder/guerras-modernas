@@ -33,7 +33,8 @@ class GameStateService
             'edificios', 
             'units.type',
             'buildingQueue',
-            'unitQueue'
+            'unitQueue',
+            'jogador.bases'
         ])->find($villageId);
 
         if (!$base) {
@@ -43,9 +44,20 @@ class GameStateService
         // 2. Cálculo de Recursos (SSOT Económico)
         $resources = $this->resourceService->calculateResources($base);
 
-        // 3. Serialização determinística para o Frontend
+        // 3. Obter dados auxiliares para a UI
+        $jogador = $base->jogador;
+        $unitTypes = \App\Models\UnitType::all();
+        $config = config('game');
+
+        // 4. Serialização determinística para o Frontend (Snapshot Único)
         return [
+            'jogador' => $jogador ? [
+                'id' => $jogador->id,
+                'username' => $jogador->username,
+                'name' => $jogador->username, // Fallback para compatibilidade
+            ] : null,
             'base' => $base->only(['id', 'nome', 'coordenada_x', 'coordenada_y', 'ultimo_update', 'loyalty']),
+            'bases' => $jogador ? $jogador->bases->map(fn($b) => ['id' => $b->id, 'nome' => $b->nome]) : [],
             'buildings' => $base->edificios->map(fn($b) => [
                 'id' => $b->id,
                 'type' => $b->tipo,
@@ -58,9 +70,14 @@ class GameStateService
                 'name' => $u->type->name,
                 'quantity' => $u->quantity,
             ]),
+            'unitTypes' => $unitTypes,
             'buildingQueue' => $base->buildingQueue,
             'unitQueue' => $base->unitQueue,
             'resources' => $resources,
+            'taxas' => $this->resourceService->getRates($base),
+            'ataquesEnviados' => $base->ataquesEnviados ?? [],
+            'ataquesRecebidos' => $base->ataquesRecebidos ?? [],
+            'gameConfig' => $config,
         ];
     }
 }
