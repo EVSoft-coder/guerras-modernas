@@ -76,6 +76,10 @@ class GameStateService
         $base->makeHidden(['recursos', 'jogador']); // Evitar recursão e duplicidade no SSOT
 
         $state = [
+            '_debug' => true,
+            '_village' => $base,
+            '_resources' => $resources,
+            '_buildings' => $base->edificios,
             'jogador' => $base->jogador,
             'base' => $base,
             'bases' => $base->jogador->bases,
