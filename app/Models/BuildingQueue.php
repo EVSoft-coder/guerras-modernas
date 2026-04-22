@@ -32,6 +32,20 @@ class BuildingQueue extends Model
         'duration' => 'integer',
     ];
 
+    public function setTypeAttribute($value)
+    {
+        $normalized = strtolower(str_replace(' ', '_', $value));
+        if ($normalized === 'qg') $normalized = 'hq';
+        $this->attributes['type'] = $normalized;
+    }
+
+    public function getTypeAttribute($value)
+    {
+        $normalized = strtolower(str_replace(' ', '_', $value));
+        if ($normalized === 'qg') return 'hq';
+        return $normalized;
+    }
+
     public function base()
     {
         return $this->belongsTo(Base::class);

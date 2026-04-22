@@ -29,6 +29,20 @@ class Edificio extends Model
         return $this->tipo;
     }
 
+    public function setTipoAttribute($value)
+    {
+        $normalized = strtolower(str_replace(' ', '_', $value));
+        if ($normalized === 'qg') $normalized = 'hq';
+        $this->attributes['tipo'] = $normalized;
+    }
+
+    public function getTipoAttribute($value)
+    {
+        $normalized = strtolower(str_replace(' ', '_', $value));
+        if ($normalized === 'qg') return 'hq';
+        return $normalized;
+    }
+
     public function base()
     {
         return $this->belongsTo(Base::class);

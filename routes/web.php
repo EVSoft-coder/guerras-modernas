@@ -30,6 +30,44 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/debug/normalize-data', function() {
+    $results = [];
+    
+    // 1. BuildingTypes
+    foreach (\App\Models\BuildingType::all() as $bt) {
+        $old = $bt->name;
+        $bt->name = $old; 
+        $bt->save();
+        $results[] = "BuildingType: $old -> {$bt->name}";
+    }
+
+    // 2. Edificios
+    foreach (\App\Models\Edificio::all() as $e) {
+        $old = $e->tipo;
+        $e->tipo = $old; 
+        $e->save();
+        $results[] = "Edificio: $old -> {$e->tipo}";
+    }
+
+    // 3. BuildingQueue
+    foreach (\App\Models\BuildingQueue::all() as $bq) {
+        $old = $bq->type;
+        $bq->type = $old; 
+        $bq->save();
+        $results[] = "BuildingQueue: $old -> {$bq->type}";
+    }
+
+    // 4. UnitTypes
+    foreach (\App\Models\UnitType::all() as $ut) {
+        $old = $ut->name;
+        $ut->name = $old; 
+        $ut->save();
+        $results[] = "UnitType: $old -> {$ut->name}";
+    }
+
+    return implode("<br>", $results) . "<br>NORMALIZACAO CONCLUIDA.";
+});
+
 // Rotas Protegidas - FASE HARDEN 3
 Route::middleware(['auth'])->group(function () {
     

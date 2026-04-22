@@ -16,6 +16,20 @@ class BuildingType extends Model
         'base_build_time'
     ];
 
+    public function setNameAttribute($value)
+    {
+        $normalized = strtolower(str_replace(' ', '_', $value));
+        if ($normalized === 'qg') $normalized = 'hq';
+        $this->attributes['name'] = $normalized;
+    }
+
+    public function getNameAttribute($value)
+    {
+        $normalized = strtolower(str_replace(' ', '_', $value));
+        if ($normalized === 'qg') return 'hq';
+        return $normalized;
+    }
+
     public function edificios()
     {
         return $this->hasMany(Edificio::class);
