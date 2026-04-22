@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Log;
  */
 class GameStateService
 {
-    protected $gameService;
+    protected $resourceService;
 
-    public function __construct(GameService $gameService)
+    public function __construct(ResourceService $resourceService)
     {
-        $this->gameService = $gameService;
+        $this->resourceService = $resourceService;
     }
 
     /**
@@ -27,18 +27,29 @@ class GameStateService
      */
     public function getVillageState(int $villageId): array
     {
-        // 1. Carregamento de dados (Read-Only)
-        // Usamos eager loading para evitar N+1
+        // 1. Carregamento de dados (Read-Only) com falha explícita
         $base = Base::with([
             'recursos', 
             'edificios.type', 
             'units.type'
-        ])->findOrFail($villageId);
+        ])->find($villageId);
 
-        // 2. Cálculo de Recursos (SSOT - Sem persistência)
+        if (!$base) {
+            throw new \Exception("SITUAÇÃO CRÍTICA: O setor militar #{$villageId} não foi localizado no mapa estratégico.");
+        }
+
+        if (!$base->recursos) {
+            throw new \Exception("CORRUPÇÃO DE DADOS: O setor #{$villageId} está operacional mas não possui registos económicos (Recursos NULL).");
+        }
+
+        // 2. Cálculo de Recursos (SSOT Económico)
         $now = GameClock::now();
-        $resources = $this->gameService->calculateResources($base, $now);
-        $productionRates = $this->gameService->obterTaxasProducao($base);
+        $productionRates = $this->resourceService->getRates($base);
+        $resources = $this->resourceService->calculate($base->recursos, $now, $productionRates);
+
+        if (empty($resources)) {
+            throw new \Exception("FALHA DE CÁLCULO: O motor económico falhou ao projetar os recursos para o setor #{$villageId}.");
+        }
 
         // 3. Filas de Produção
         $buildQueue = BuildingQueue::where('base_id', $villageId)
@@ -63,8 +74,9 @@ class GameStateService
             ->get();
 
         $state = [
+            'base' => $base,
             'resources' => $resources,
-            'productionRates' => $productionRates,
+            'production' => $productionRates,
             'buildings' => $base->edificios,
             'buildQueue' => $buildQueue,
             'unitQueue' => $unitQueue,
@@ -72,8 +84,6 @@ class GameStateService
             'movements' => $movements,
             'timestamp' => $now->toIso8601String(),
         ];
-
-        Log::channel('game')->debug("[GAME_STATE_SNAPSHOT] Snapshot gerado para base #{$villageId}");
 
         return $state;
     }

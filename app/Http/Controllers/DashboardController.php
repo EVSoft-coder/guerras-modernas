@@ -38,21 +38,18 @@ class DashboardController extends Controller
         // 2. Processar Motor (Escrita atómica permitida apenas no início do ciclo)
         GameEngine::process($base);
 
-        // 3. Obter Snapshot Único (SSOT)
+        // 3. Obter Snapshot Único (SSOT) - FASE BLOQUEANTE
         $state = $this->gameStateService->getVillageState($base->id);
 
-        // 4. Dados Complementares (User/Context)
-        $payload = array_merge($state, [
-            'jogador' => $user,
-            'bases'   => $user->bases()->with('recursos')->get(),
-            'gameConfig' => config('game'),
-            'unitTypes' => \App\Models\UnitType::all(),
-            'myAllianceId' => $user->alianca_id,
-        ]);
+        if (!$state) {
+            throw new \Exception("SISTEMA: GameStateService falhou ao gerar o snapshot para o setor {$base->id}");
+        }
 
-        // 5. Salvar estado de sessão
+        // 4. Salvar estado de sessão e Renderizar (Snapshot Único encapsulado)
         session(['selected_base_id' => $base->id]);
 
-        return Inertia::render('dashboard', $payload);
+        return Inertia::render('dashboard', [
+            'state' => $state
+        ]);
     }
 }

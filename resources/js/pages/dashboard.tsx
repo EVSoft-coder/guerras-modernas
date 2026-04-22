@@ -19,29 +19,31 @@ const breadcrumbs: BreadcrumbItem[] = [
  * ROOT UI: Orquestrador de Vistas Tácticas.
  * Gere a transição entre Dashboard (Vila) e WorldMapView baseado no estado ECS.
  */
-export default function Dashboard(props: DashboardProps) {
+export default function Dashboard(props: any) {
     const gameMode = useGameMode();
+    const state = props.state || {}; // FASE LIMPEZA: Prioridade ao estado unificado
+    
     const { entities } = useGameEntities() || { entities: [] };
     const hasActiveArmy = entities?.some(e => e.march) ?? false;
     
-    // === RECURSOS: Usar props.resources como fonte da verdade (persistidos no backend) ===
-    const [resources, setResources] = useState(props.resources ?? props.base?.recursos ?? {});
+    // === RECURSOS: Usar state.resources como fonte da verdade (persistidos no backend) ===
+    const [resources, setResources] = useState(state.resources ?? props.resources ?? props.base?.recursos ?? {});
 
     useEffect(() => {
-        // Quando props.resources muda (refresh), atualizar estado local
-        const incoming = props.resources ?? props.gameData?.resources;
+        // Quando props muda (refresh), atualizar estado local
+        const incoming = state.resources ?? props.resources ?? props.gameData?.resources;
         if (incoming && typeof incoming === 'object') {
             setResources(incoming);
             resourceSystem.sync(incoming);
         }
-    }, [props.resources, props.gameData?.resources]);
-
-
+    }, [state.resources, props.resources, props.gameData?.resources]);
 
     // Montar base com recursos corretos
-    const currentBase = props.base ? { ...props.base, recursos: resources } : props.base;
-    const currentBuildings = props.gameData?.buildings ?? props.buildings ?? [];
-    const currentPopulation = props.gameData?.population ?? props.population ?? null;
+    const currentBase = state.base ?? props.base;
+    const currentBuildings = state.buildings ?? props.buildings ?? [];
+    const currentPopulation = state.population ?? props.population ?? null;
+    const currentUnits = state.units ?? props.units ?? [];
+    const currentMovements = state.movements ?? props.movements ?? [];
 
     if (gameMode === "WORLD_MAP") {
         return (
