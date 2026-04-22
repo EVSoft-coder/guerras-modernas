@@ -87,6 +87,13 @@ class GameStateService
             'timestamp' => $now->toIso8601String(),
         ];
 
-        return $state;
+        // return $state;
+
+        return [
+            '_debug' => true,
+            '_village' => $base ? $base->toArray() : null,
+            '_resources' => $resources ?? null,
+            '_buildings' => ($base && $base->edificios) ? $base->edificios->toArray() : [],
+        ];
     }
 }
