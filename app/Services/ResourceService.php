@@ -103,44 +103,34 @@ class ResourceService
         
         // Delta em segundos para máxima precisão
         $deltaSeconds = max(0, $now->getTimestamp() - $lastUpdate->getTimestamp());
-        $hours = $deltaSeconds / 3600;
 
-        $results = ['cap' => $cap];
-        $types = ['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'];
+        $deltaHours = $deltaSeconds / 3600;
 
-        foreach ($types as $type) {
-            // Produção = Taxa Horária * Fração de Hora
-            $rate = $taxasHora[$type] ?? 0;
-            $prod = $rate * $hours;
-            $current = (float) $resource->{$type};
-            $resultado = (int) min($cap, $current + $prod);
+        // FASE CRÍTICA: Economia Real (Baseada em SSOT)
+        $resources = [];
+        foreach (['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'] as $type) {
+            $current = (float) ($resource->{$type} ?? 0);
+            $rate = (float) ($taxasHora[$type] ?? 0);
+            $calculated = $current + ($rate * $deltaHours);
             
-            // FASE DEBUG PROFUNDO — LOG TÁTICO
-            \Illuminate\Support\Facades\Log::channel('game')->info("[ECONOMY_CALC] {$type}", [
-                'delta_hours' => $hours,
-                'rate_hour' => $rate,
-                'current' => $current,
-                'calc_final' => $resultado,
-                'cap' => $cap
-            ]);
+            // Aplicar CAP (SSOT de Armazenamento)
+            $resources[$type] = min($calculated, (float) $cap);
+        }
+        $resources['cap'] = (float) $cap;
 
-            $results[$type] = $resultado;
+        // Instrumentação de auditoria (FASE VALIDAÇÃO)
+        if (config('app.debug')) {
+            return response()->json([
+                'delta_seconds' => $deltaSeconds,
+                'delta_hours' => $deltaHours,
+                'storage_cap' => $cap,
+                'rates' => $taxasHora,
+                'current_db' => $resource->only(['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal']),
+                'calculated' => $resources
+            ]);
         }
 
-        // FASE DEBUG PROFUNDO — ECONOMIA (OUTPUT CONTROLADO)
-        return response()->json([
-            'delta_seconds' => $deltaSeconds,
-            'rates' => [
-                'suprimentos' => $taxasHora['suprimentos'] ?? 0,
-                'combustivel' => $taxasHora['combustivel'] ?? 0,
-                'municoes' => $taxasHora['municoes'] ?? 0,
-                'metal' => $taxasHora['metal'] ?? 0,
-                'energia' => $taxasHora['energia'] ?? 0,
-                'pessoal' => $taxasHora['pessoal'] ?? 0,
-            ],
-            'calculated' => $results,
-            'hours' => $hours
-        ]);
+        return $resources;
     }
 
     public function getRates(Base $base): array
