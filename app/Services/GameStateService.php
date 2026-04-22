@@ -91,12 +91,12 @@ class GameStateService
 
         // return $state;
 
-        $villageDebug = $base->toArray();
-        unset($villageDebug['recursos']);
-
+        $base->unsetRelation('recursos');
+        $base->unsetRelation('jogador');
+        
         return [
             '_debug' => true,
-            '_village' => $villageDebug,
+            '_village' => $base->toArray(),
             '_resources' => $resources ?? null,
             '_buildings' => ($base && $base->edificios) ? $base->edificios->toArray() : [],
         ];
