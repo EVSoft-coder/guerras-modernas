@@ -98,11 +98,21 @@ class ResourceService
 
         foreach ($types as $type) {
             // Produção = Taxa Horária * Fração de Hora
-            $prod = ($taxasHora[$type] ?? 0) * $hours;
+            $rate = $taxasHora[$type] ?? 0;
+            $prod = $rate * $hours;
             $current = (float) $resource->{$type};
+            $resultado = (int) min($cap, $current + $prod);
             
-            // Recurso final = base + produção, limitado ao cap de armazenamento
-            $results[$type] = (int) min($cap, $current + $prod);
+            // FASE DEBUG PROFUNDO — LOG TÁTICO
+            \Illuminate\Support\Facades\Log::channel('game')->info("[ECONOMY_CALC] {$type}", [
+                'delta_hours' => $hours,
+                'rate_hour' => $rate,
+                'current' => $current,
+                'calc_final' => $resultado,
+                'cap' => $cap
+            ]);
+
+            $results[$type] = $resultado;
         }
 
         return $results;
