@@ -21,7 +21,7 @@ class ResourceService
         $this->timeService = $timeService ?? new TimeService();
     }
 
-    public function calculateResources(Base $base)
+    public function calculateResources(Base $base): array
     {
         if (!$base->recursos) return [];
         return $this->calculate($base->recursos);
@@ -83,7 +83,7 @@ class ResourceService
         return false;
     }
 
-    public function calculate(Recurso $resource, $now = null, array $taxasHora = null)
+    public function calculate(Recurso $resource, $now = null, array $taxasHora = null): array
     {
         if (!$now) $now = GameClock::now();
         $base = $resource->base;
@@ -117,18 +117,6 @@ class ResourceService
             $resources[$type] = min($calculated, (float) $cap);
         }
         $resources['cap'] = (float) $cap;
-
-        // Instrumentação de auditoria (FASE VALIDAÇÃO)
-        if (config('app.debug')) {
-            return response()->json([
-                'delta_seconds' => $deltaSeconds,
-                'delta_hours' => $deltaHours,
-                'storage_cap' => $cap,
-                'rates' => $taxasHora,
-                'current_db' => $resource->only(['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal']),
-                'calculated' => $resources
-            ]);
-        }
 
         return $resources;
     }

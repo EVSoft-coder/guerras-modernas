@@ -35,15 +35,11 @@ class DashboardController extends Controller
 
         if (!$base) return redirect('/login');
 
-        // 2. Processar Motor (Escrita atómica suspensa temporariamente para FASE SEGURANÇA)
-        // GameEngine::process($base);
+        // 2. Processar Motor (Escrita atómica permitida apenas no início do ciclo)
+        GameEngine::process($base);
 
         // 3. Obter Snapshot Único (SSOT) - FASE BLOQUEANTE
         $state = $this->gameStateService->getVillageState($base->id);
-
-        if ($state instanceof \Illuminate\Http\JsonResponse) {
-            return $state;
-        }
 
         if (!$state) {
             throw new \Exception("SISTEMA: GameStateService falhou ao gerar o snapshot para o setor {$base->id}");
