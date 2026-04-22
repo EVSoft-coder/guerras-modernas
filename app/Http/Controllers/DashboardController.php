@@ -49,8 +49,7 @@ class DashboardController extends Controller
         session(['selected_base_id' => $base->id]);
 
         return Inertia::render('dashboard', [
-            'state' => $state,
-            '_server_time' => now()->toIso8601String(),
+            'state' => $state
         ]);
     }
 }
