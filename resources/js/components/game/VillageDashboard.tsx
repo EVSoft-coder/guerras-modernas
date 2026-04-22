@@ -105,9 +105,7 @@ export function VillageDashboard({
         const buildDef = (gameConfig?.buildings || {})[selectedBuildingType];
         
         // Calcular Nível Real e Estado de Obra
-        const dbLevel = selectedBuildingType === 'hq' ? Number(base.qg_nivel) : 
-                       (selectedBuildingType === 'muralha' ? Number(base.muralha_nivel) : 
-                       (foundBuilding?.nivel || 0));
+        const dbLevel = foundBuilding?.nivel || 0;
         
         // Procurar na fila se existe QUALQUER entrada deste tipo
         const queueEntries = (buildingQueue || []).filter(q => q.type === selectedBuildingType);
@@ -118,7 +116,7 @@ export function VillageDashboard({
             currentBuilding = { buildingType: 'hq', nome: 'Centro de Comando (HQ)', nivel: dbLevel, nextLevel, isUpgradingNow, base: base };
             fallbackLevel = dbLevel;
         } else if (selectedBuildingType === 'muralha') {
-            currentBuilding = { buildingType: 'muralha', nome: 'Perímetro Defensivo', nivel: dbLevel, nextLevel, isUpgradingNow, base: base };
+            currentBuilding = { buildingType: 'muralha', nome: 'Perímetro Defensivo (Muralha)', nivel: dbLevel, nextLevel, isUpgradingNow, base: base };
             fallbackLevel = dbLevel;
         } else if (foundBuilding) {
             currentBuilding = { ...foundBuilding, ...buildDef, nome: buildDef?.name || 'Estrutura', nivel: dbLevel, nextLevel, isUpgradingNow, base: base };

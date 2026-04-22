@@ -56,8 +56,8 @@ class MapaController extends Controller
         $bases = Base::with('jogador:id,username')
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
-            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel']);
- 
+            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y']);
+
         return response()->json([
             'center' => ['x' => (int)$x, 'y' => (int)$y],
             'bases' => $bases
@@ -78,7 +78,7 @@ class MapaController extends Controller
         $bases = Base::with('jogador:id,username,alianca_id')
             ->whereBetween('coordenada_x', [$minX, $maxX])
             ->whereBetween('coordenada_y', [$minY, $maxY])
-            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'qg_nivel', 'loyalty']);
+            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'loyalty']);
 
         return response()->json([
             'chunk' => ['x' => $cx, 'y' => $cy],

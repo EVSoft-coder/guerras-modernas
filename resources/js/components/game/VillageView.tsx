@@ -13,19 +13,11 @@ interface VillageViewProps {
 export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
     const bConfigs = Object.values(buildingConfigs);
     const playerBuildings = React.useMemo(() => {
-        const list = [
-            { id: 'qg-core', type: 'hq', level: base.qg_nivel ?? 1 },
-            { id: 'muralha-core', type: 'muralha', level: base.muralha_nivel ?? 1 },
-            ...(base.edificios?.filter(eb => {
-                const t = eb.buildingType?.toLowerCase();
-                return t !== 'hq' && t !== 'muralha';
-            }).map(eb => {
-                let type = eb.buildingType?.toLowerCase();
-                return { id: eb.id, type, level: eb.nivel };
-            }) || [])
-        ];
-        return list;
-    }, [base.qg_nivel, base.muralha_nivel, base.edificios]);
+        return (base.edificios?.map(eb => {
+            let type = (eb.buildingType || eb.tipo)?.toLowerCase();
+            return { id: eb.id, type, level: eb.nivel };
+        }) || []);
+    }, [base.edificios]);
 
     const buildings = bConfigs.map(b => {
         const existing = playerBuildings?.find(pb => 

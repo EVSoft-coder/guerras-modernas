@@ -83,7 +83,7 @@ class ResourceService
 
         if (!$taxasHora) $taxasHora = $this->getRates($base);
 
-        $hqLevel = $base->qg_nivel ?? 1;
+        $hqLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HQ) ?: 1;
         $cap = app(EconomyService::class)->getStorageCapacity($hqLevel);
         
         $lastUpdateStr = $base->ultimo_update ?? $base->created_at;

@@ -90,8 +90,6 @@ export interface Base {
     nome: string;
     coordenada_x: number;
     coordenada_y: number;
-    qg_nivel: number;
-    muralha_nivel: number;
     recursos: Recurso;
     edificios: Edificio[];
     buildingQueue?: BuildingQueueMember[];

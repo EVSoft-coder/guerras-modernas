@@ -134,9 +134,6 @@ class GameService
     public function obterNivelEdificio(Base $base, ?string $tipo): int
     {
         if (is_null($tipo)) return 0;
-        
-        if ($tipo === BuildingType::HQ) return (int) $base->qg_nivel;
-        if ($tipo === BuildingType::MURALHA) return (int) $base->muralha_nivel;
         return (int) ($base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0);
     }
 
@@ -152,8 +149,6 @@ class GameService
             $basePessoal = $configs[$edificio->tipo]['cost']['pessoal'] ?? 0;
             $usedByBuildings += $basePessoal * $edificio->nivel;
         }
-        $usedByBuildings += ($configs['hq']['cost']['pessoal'] ?? 0) * $base->qg_nivel;
-        $usedByBuildings += ($configs['muralha']['cost']['pessoal'] ?? 0) * $base->muralha_nivel;
 
         $usedByTroops = 0;
         foreach ($base->units as $unit) {

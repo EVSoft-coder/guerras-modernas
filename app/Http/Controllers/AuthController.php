@@ -141,9 +141,23 @@ class AuthController extends Controller
                             'y' => $coords['y'],
                             'coordenada_x' => $coords['x'],
                             'coordenada_y' => $coords['y'],
-                            'qg_nivel' => 1,
-                            'muralha_nivel' => 1,
                             'ultimo_update' => now(),
+                        ]);
+
+                        // Criar infraestrutura inicial normalizada
+                        $base->edificios()->createMany([
+                            [
+                                'tipo' => \App\Domain\Building\BuildingType::HQ,
+                                'nivel' => 1,
+                                'pos_x' => 400,
+                                'pos_y' => 300,
+                            ],
+                            [
+                                'tipo' => \App\Domain\Building\BuildingType::MURALHA,
+                                'nivel' => 1,
+                                'pos_x' => 400,
+                                'pos_y' => 530,
+                            ]
                         ]);
                         break;
                     } catch (\Illuminate\Database\QueryException $e) {

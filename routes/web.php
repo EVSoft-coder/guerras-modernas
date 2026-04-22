@@ -30,39 +30,6 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/debug/migrate-levels', function() {
-    $results = [];
-    \Illuminate\Support\Facades\DB::transaction(function() use (&$results) {
-        $bases = \App\Models\Base::all();
-        foreach ($bases as $base) {
-            // HQ
-            $hq = $base->edificios()->where('tipo', \App\Domain\Building\BuildingType::HQ)->first();
-            if (!$hq) {
-                $base->edificios()->create([
-                    'tipo' => \App\Domain\Building\BuildingType::HQ,
-                    'nivel' => $base->qg_nivel ?? 1,
-                    'pos_x' => 400,
-                    'pos_y' => 300,
-                ]);
-                $results[] = "Base {$base->id}: Created HQ level {$base->qg_nivel}";
-            }
-
-            // Muralha
-            $muralha = $base->edificios()->where('tipo', \App\Domain\Building\BuildingType::MURALHA)->first();
-            if (!$muralha) {
-                $base->edificios()->create([
-                    'tipo' => \App\Domain\Building\BuildingType::MURALHA,
-                    'nivel' => $base->muralha_nivel ?? 0,
-                    'pos_x' => 400,
-                    'pos_y' => 530,
-                ]);
-                $results[] = "Base {$base->id}: Created Muralha level {$base->muralha_nivel}";
-            }
-        }
-    });
-    return implode("<br>", $results) . "<br>MIGRACAO CONCLUIDA.";
-});
-
 // Rotas Protegidas - FASE HARDEN 3
 Route::middleware(['auth'])->group(function () {
     

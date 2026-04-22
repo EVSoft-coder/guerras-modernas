@@ -42,7 +42,7 @@ class EconomyService
         $rawTime = $baseTime * pow($factor, $nextLevel - 1);
 
         // Aplica redução por nível de QG
-        $hqLevel = $base->qg_nivel ?? 1;
+        $hqLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HQ) ?: 1;
         $reductionPerLevel = config('economy.buildings.hq_reduction_per_level', 0.04);
         
         // Fator de redução: ex: level 10 -> 1 - (9 * 0.04) = 0.64 (36% de redução)
