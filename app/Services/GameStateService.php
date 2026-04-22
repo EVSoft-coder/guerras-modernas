@@ -43,10 +43,6 @@ class GameStateService
         }
 
         // 2. Cálculo de Recursos (SSOT Económico) — FASE CRÍTICA — VALIDAÇÃO EXCLUSIVA
-        $resources = app(ResourceService::class)->calculateResources($base);
-
-        return response()->json([
-            '_resources' => is_array($resources) ? $resources : (array) $resources
-        ]);
+        return app(ResourceService::class)->calculateResources($base);
     }
 }

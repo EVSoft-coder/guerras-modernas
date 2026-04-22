@@ -121,7 +121,20 @@ class ResourceService
             $results[$type] = $resultado;
         }
 
-        return $results;
+        // FASE DEBUG PROFUNDO — ECONOMIA (OUTPUT CONTROLADO)
+        return response()->json([
+            'delta_seconds' => $deltaSeconds,
+            'rates' => [
+                'suprimentos' => $taxasHora['suprimentos'] ?? 0,
+                'combustivel' => $taxasHora['combustivel'] ?? 0,
+                'municoes' => $taxasHora['municoes'] ?? 0,
+                'metal' => $taxasHora['metal'] ?? 0,
+                'energia' => $taxasHora['energia'] ?? 0,
+                'pessoal' => $taxasHora['pessoal'] ?? 0,
+            ],
+            'calculated' => $results,
+            'hours' => $hours
+        ]);
     }
 
     public function getRates(Base $base): array
