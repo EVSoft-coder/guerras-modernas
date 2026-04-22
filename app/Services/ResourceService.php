@@ -82,7 +82,7 @@ class ResourceService
         return false;
     }
 
-    public function calculate(Recurso $resource, $now = null, array $taxasHora = null): array
+    public function calculate(Recurso $resource, $now = null, array $taxasHora = null)
     {
         if (!$now) $now = GameClock::now();
         $base = $resource->base;
