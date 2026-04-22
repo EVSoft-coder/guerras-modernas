@@ -5,13 +5,14 @@ namespace App\Services;
 use App\Models\Base;
 use App\Models\UnitType;
 use App\Models\UnitQueue;
+use App\Models\Unit;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * UnitQueueService - Modelo Determinístico de Batelada (FASE QUEUE V19).
- * Unidades são criadas APENAS após a conclusão do intervalo total (finishes_at).
+ * UnitQueueService - Modelo Determinístico de Batelada (FASE QUEUE V19.7).
+ * Unidades são criadas no inventário moderno (Unit) após a conclusão.
  */
 class UnitQueueService
 {
@@ -106,13 +107,13 @@ class UnitQueueService
             if ($completed->isEmpty()) return;
 
             foreach ($completed as $item) {
-                // Adicionar unidades concluídas à base
+                // Adicionar unidades concluídas à base (Inventário Moderno)
                 $this->addUnitsToBase($base, $item->unit_type_id, $item->quantity);
                 
                 // Remover lote da fila
                 DB::table('unit_queue')->where('id', $item->id)->delete();
                 
-                Log::channel('game')->info("[UNIT_RECRUITMENT_FINISHED] Item ID: {$item->id}, Qty: {$item->quantity}");
+                Log::channel('game')->info("[UNIT_RECRUITMENT_FINISHED] Base: {$base->id}, Item ID: {$item->id}, Qty: {$item->quantity}");
             }
 
             // Recalcular tempos para as unidades pendentes remanescentes
@@ -145,19 +146,32 @@ class UnitQueueService
         }, 5);
     }
 
+    /**
+     * Adiciona unidades ao inventário moderno (tabela units).
+     */
     private function addUnitsToBase(Base $base, int $unitTypeId, int $quantity)
     {
-        $unitName = UnitType::find($unitTypeId)->name;
-        \App\Models\Tropas::updateOrCreate(
-            ['base_id' => $base->id, 'unidade' => $unitName],
-            ['quantidade' => DB::raw("quantidade + {$quantity}")]
+        // 1. Tabela Moderna (units)
+        $unit = Unit::firstOrCreate(
+            ['base_id' => $base->id, 'unit_type_id' => $unitTypeId],
+            ['quantity' => 0]
         );
+        $unit->increment('quantity', $quantity);
+
+        // 2. Compatibilidade Legada (tropas) - Opcional, mas mantemos para evitar quebra em outras partes do sistema
+        $unitType = UnitType::find($unitTypeId);
+        if ($unitType) {
+            \App\Models\Tropas::updateOrCreate(
+                ['base_id' => $base->id, 'unidade' => $unitType->name],
+                ['quantidade' => DB::raw("quantidade + {$quantity}")]
+            );
+        }
     }
 
     /**
      * Reorganizar cronograma: Encadeia novamente os tempos de started_at e finishes_at.
      */
-    private function refreshQueue(int $baseId)
+    public function refreshQueue(int $baseId)
     {
         $items = DB::table('unit_queue')
             ->where('base_id', $baseId)

@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * QueueIntegrityService - Audit & Repair (PASSO 4 — FASE HARDEN 2).
- * Separação clara entre deteção de erros e execução de correções.
+ * QueueIntegrityService - Audit & Repair (PASSO 4 — FASE HARDEN 3).
+ * Garante que as filas mantenham a ordem lógica e estados válidos.
  */
 class QueueIntegrityService
 {
@@ -23,7 +23,7 @@ class QueueIntegrityService
     }
 
     /**
-     * Apenas valida o estado (Pure Check).
+     * Validação do estado das filas.
      */
     public function needsRepair(Base $base): bool
     {
@@ -40,9 +40,14 @@ class QueueIntegrityService
 
         if ($items->isEmpty()) return false;
 
-        $expectedSum = ($items->count() * ($items->count() + 1)) / 2;
-        if ($expectedSum !== (int)$items->sum('position')) return true;
+        // Verificar sequência de posições
+        $pos = 1;
+        foreach ($items as $item) {
+            if ($item->position !== $pos) return true;
+            $pos++;
+        }
 
+        // Verificar se exatamente 1 está ativo
         $activeCount = $items->where('status', 'active')->count();
         if ($activeCount !== 1) return true;
 
@@ -59,25 +64,41 @@ class QueueIntegrityService
 
         if ($items->isEmpty()) return false;
 
-        $activeCount = $items->where('status', 'active')->count();
-        if ($activeCount !== 1) return true;
+        // Verificar sequência de posições
+        $pos = 1;
+        foreach ($items as $item) {
+            if ($item->position !== $pos) return true;
+            $pos++;
+        }
+
+        // Verificar status active no primeiro item
+        if ($items->first()->status !== 'active') return true;
 
         return false;
     }
 
     /**
-     * Executa as correções necessárias (Repair).
+     * Executa as correções necessárias delegando aos serviços especialistas.
      */
     public function repair(Base $base): void
     {
         DB::transaction(function() use ($base) {
-            Log::channel('game')->warning("[INTEGRITY_REPAIR] Iniciando reparação na base {$base->id}");
-            $this->forceReorder('building_queue', $base->id);
-            $this->forceReorder('unit_queue', $base->id);
+            Log::channel('game')->warning("[INTEGRITY_REPAIR] Reparando base {$base->id}");
+
+            // 1. Reordenar Building Queue
+            $this->forcePositionSync('building_queue', $base->id);
+            app(BuildingQueueService::class)->refreshQueue($base->id);
+
+            // 2. Reordenar Unit Queue
+            $this->forcePositionSync('unit_queue', $base->id);
+            app(UnitQueueService::class)->refreshQueue($base->id);
         });
     }
 
-    private function forceReorder(string $table, int $baseId): void
+    /**
+     * Apenas garante que a coluna 'position' seja uma sequência 1, 2, 3...
+     */
+    private function forcePositionSync(string $table, int $baseId): void
     {
         $items = DB::table($table)
             ->where('base_id', $baseId)
@@ -87,27 +108,10 @@ class QueueIntegrityService
             ->get();
 
         $pos = 1;
-        $now = GameClock::now();
-
         foreach ($items as $item) {
-            $update = [
-                'position' => $pos,
-                'status' => $pos === 1 ? 'active' : 'pending'
-            ];
-
-            if ($pos === 1) {
-                $update['started_at'] = $item->started_at ?? $now;
-                $duration = $item->duration ?? 60;
-                if ($table === 'unit_queue') {
-                    $duration = ($item->duration_per_unit ?? 30) * ($item->quantity_remaining ?? 1);
-                }
-                $update['finishes_at'] = $item->finishes_at ?? $now->copy()->addSeconds((int)$duration);
-            } else {
-                $update['started_at'] = null;
-                $update['finishes_at'] = null;
+            if ($item->position !== $pos) {
+                DB::table($table)->where('id', $item->id)->update(['position' => $pos]);
             }
-
-            DB::table($table)->where('id', $item->id)->update($update);
             $pos++;
         }
     }
