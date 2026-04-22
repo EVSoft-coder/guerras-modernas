@@ -53,6 +53,6 @@ class DashboardController extends Controller
         // 5. Salvar estado de sessão
         session(['selected_base_id' => $base->id]);
 
-        return Inertia::render('Dashboard', $payload);
+        return Inertia::render('dashboard', $payload);
     }
 }
