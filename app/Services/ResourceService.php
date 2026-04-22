@@ -92,8 +92,13 @@ class ResourceService
         $hqLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HQ) ?: 1;
         $cap = app(EconomyService::class)->getStorageCapacity($hqLevel);
         
-        $lastUpdateStr = $base->ultimo_update ?? $base->created_at;
-        $lastUpdate = Carbon::parse($lastUpdateStr);
+        // FASE CORREÇÃO: Uso estrito de ultimo_update (SSOT Temporal)
+        if (!$base->ultimo_update) {
+            \Illuminate\Support\Facades\Log::channel('game')->error("[ECONOMY_ERROR] ultimo_update NULL na base #{$base->id}");
+            $lastUpdate = $now->copy()->subMinutes(1); // Fallback de emergência de 1 min apenas para não travar, mas loga erro
+        } else {
+            $lastUpdate = Carbon::parse($base->ultimo_update);
+        }
         
         // Delta em segundos para máxima precisão
         $deltaSeconds = max(0, $now->getTimestamp() - $lastUpdate->getTimestamp());
