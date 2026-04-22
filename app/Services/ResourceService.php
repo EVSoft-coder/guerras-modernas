@@ -84,7 +84,8 @@ class ResourceService
         if (!$taxasHora) $taxasHora = $this->getRates($base);
 
         $hqLevel = $base->qg_nivel ?? 1;
-        $cap = app(EconomyService::class)->getStorageCapacity($hqLevel);
+        // $cap = app(EconomyService::class)->getStorageCapacity($hqLevel);
+        $cap = 10000; // DEBUG: Redução temporária para 10000
         
         $lastUpdateStr = $base->ultimo_update ?? $base->created_at;
         $lastUpdate = Carbon::parse($lastUpdateStr);
