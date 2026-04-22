@@ -125,18 +125,32 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
 
 const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: any) => {
     const [currentTime, setCurrentTime] = useState(new Date().getTime());
+    const [hasTriggeredReload, setHasTriggeredReload] = useState(false);
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date().getTime()), 1000);
         return () => clearInterval(timer);
     }, []);
 
+    // GATILHO DE SINCRONIZAÇÃO AUTOMÁTICA (V19.8)
+    useEffect(() => {
+        if (isFirst && item.ends_at && !hasTriggeredReload) {
+            const end = new Date(item.ends_at).getTime();
+            if (currentTime >= end + 1000) { // Margem de 1s para o backend processar
+                setHasTriggeredReload(true);
+                router.reload({
+                    onFinish: () => setHasTriggeredReload(false)
+                });
+            }
+        }
+    }, [currentTime, isFirst, item.ends_at, hasTriggeredReload]);
+
     const calculateProgress = () => {
         if (!isFirst || !item.ends_at) {
             const h = Math.floor(item.duration / 3600);
             const m = Math.floor((item.duration % 3600) / 60);
             const s = item.duration % 60;
-            return { percent: 0, timeStr: `Aguardadndo (${h > 0 ? h + 'h ' : ''}${m}m ${s}s)` };
+            return { percent: 0, timeStr: `Aguardando (${h > 0 ? h + 'h ' : ''}${m}m ${s}s)` };
         }
 
         const start = new Date(item.started_at).getTime();
@@ -150,7 +164,7 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
         const m = Math.max(0, Math.floor((remaining % 3600000) / 60000));
         const s = Math.max(0, Math.floor((remaining % 60000) / 1000));
         
-        const timeStr = remaining <= 0 ? 'Concluíndo...' : (h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`);
+        const timeStr = remaining <= 0 ? 'Concluindo...' : (h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`);
         
         // No caso de treino, o progresso é da UNIDADE ATUAL
         const percent = Math.min(100, Math.max(0, ((total - remaining) / total) * 100));

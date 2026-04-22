@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { router } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Clock, Zap, Target } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -65,8 +66,20 @@ export const UnitQueue: React.FC<UnitQueueProps> = ({ queue = [] }) => {
 };
 
 const QueueEntry = ({ item, now }: { item: UnitQueueItem, now: number }) => {
+    const [hasTriggeredReload, setHasTriggeredReload] = React.useState(false);
+
     const start = new Date(item.started_at).getTime();
     const end = new Date(item.finishes_at).getTime();
+
+    // GATILHO DE SINCRONIZAÇÃO AUTOMÁTICA (V19.8)
+    React.useEffect(() => {
+        if (item.position === 1 && !hasTriggeredReload && now >= end + 1000) {
+            setHasTriggeredReload(true);
+            router.reload({
+                onFinish: () => setHasTriggeredReload(false)
+            });
+        }
+    }, [now, end, item.position, hasTriggeredReload]);
     
     const total = end - start;
     const elapsed = now - start;
@@ -102,6 +115,11 @@ const QueueEntry = ({ item, now }: { item: UnitQueueItem, now: number }) => {
                     <span className="text-[9px] text-neutral-500 font-bold uppercase tracking-widest mt-0.5">Lote: x{item.quantity}</span>
                 </div>
                 
+                {item.position !== 1 && (
+                    <div className="flex flex-col items-end">
+                        <span className="text-[9px] text-neutral-500 font-bold uppercase tracking-widest">Aguardando ({h}m {s}s)</span>
+                    </div>
+                )}
                 {item.position === 1 && !isFinished ? (
                     <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
                         <Clock className="text-emerald-500 animate-[spin_4s_linear_infinite]" size={12} />
