@@ -73,10 +73,12 @@ class GameStateService
             ->orderBy('arrival_time', 'asc')
             ->get();
 
+        $base->makeHidden(['recursos', 'jogador']); // Evitar recursão e duplicidade no SSOT
+
         $state = [
-            'jogador' => $base->jogador, // O dono desta base
+            'jogador' => $base->jogador,
             'base' => $base,
-            'bases' => $base->jogador->bases, // Todas as bases do comandante
+            'bases' => $base->jogador->bases,
             'resources' => $resources,
             'production' => $productionRates,
             'buildings' => $base->edificios,
@@ -89,9 +91,12 @@ class GameStateService
 
         // return $state;
 
+        $villageDebug = $base->toArray();
+        unset($villageDebug['recursos']);
+
         return [
             '_debug' => true,
-            '_village' => $base ? $base->toArray() : null,
+            '_village' => $villageDebug,
             '_resources' => $resources ?? null,
             '_buildings' => ($base && $base->edificios) ? $base->edificios->toArray() : [],
         ];
