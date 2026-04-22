@@ -12,30 +12,38 @@ return new class extends Migration
     public function up(): void
     {
         // PASSO 1 - BUILDING TYPES
-        Schema::create('building_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 50);
-            $table->integer('base_production')->default(0);
-            $table->string('production_type', 50)->nullable();
-            $table->integer('base_build_time')->default(60);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('building_types')) {
+            Schema::create('building_types', function (Blueprint $table) {
+                $table->id();
+                $table->string('name', 50);
+                $table->integer('base_production')->default(0);
+                $table->string('production_type', 50)->nullable();
+                $table->integer('base_build_time')->default(60);
+                $table->timestamps();
+            });
+        }
 
-        // PASSO 1 - Atualizar edificios
-        Schema::table('edificios', function (Blueprint $table) {
-            $table->foreignId('building_type_id')->nullable()->constrained('building_types');
-        });
+        // PASSO 2 - Atualizar edificios
+        if (Schema::hasTable('edificios') && !Schema::hasColumn('edificios', 'building_type_id')) {
+            Schema::table('edificios', function (Blueprint $table) {
+                $table->foreignId('building_type_id')->nullable()->constrained('building_types');
+            });
+        }
 
         // PASSO 3 - STORAGE CAPACITY
-        Schema::table('recursos', function (Blueprint $table) {
-            $table->integer('storage_capacity')->default(10000);
-        });
+        if (Schema::hasTable('recursos') && !Schema::hasColumn('recursos', 'storage_capacity')) {
+            Schema::table('recursos', function (Blueprint $table) {
+                $table->integer('storage_capacity')->default(10000);
+            });
+        }
 
         // PASSO 6 - COORDENADAS (Normalização para x, y curto)
-        Schema::table('bases', function (Blueprint $table) {
-            $table->integer('x')->default(0);
-            $table->integer('y')->default(0);
-        });
+        if (Schema::hasTable('bases') && !Schema::hasColumn('bases', 'x')) {
+            Schema::table('bases', function (Blueprint $table) {
+                $table->integer('x')->default(0);
+                $table->integer('y')->default(0);
+            });
+        }
     }
 
     /**
