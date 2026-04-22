@@ -30,6 +30,24 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/debug/reset-resources', function() {
+    $r = \App\Models\Recurso::where('base_id', 1)->first();
+    if ($r) {
+        $r->update([
+            'suprimentos' => 5000,
+            'combustivel' => 5000,
+            'municoes' => 5000,
+            'metal' => 5000,
+            'energia' => 5000,
+            'pessoal' => 5000,
+            'updated_at' => now()
+        ]);
+        \App\Models\Base::find(1)->update(['ultimo_update' => now()]);
+        return "RECURSOS RESETADOS PARA 5000";
+    }
+    return "ERRO";
+});
+
 // Rotas Protegidas - FASE HARDEN 3
 Route::middleware(['auth'])->group(function () {
     
