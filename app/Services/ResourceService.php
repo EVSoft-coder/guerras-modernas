@@ -21,7 +21,7 @@ class ResourceService
         $this->timeService = $timeService ?? new TimeService();
     }
 
-    public function calculateResources(Base $base): array
+    public function calculateResources(Base $base)
     {
         if (!$base->recursos) return [];
         return $this->calculate($base->recursos);
