@@ -6,7 +6,6 @@ import { VillageDashboard } from '@/components/game/VillageDashboard';
 import { WorldMapView } from '@/components/game/WorldMapView';
 import { useGameMode } from '@/hooks/use-game-mode';
 import { useGameEntities } from '@/hooks/use-game-entities';
-import PollingService from '@src/services/PollingService';
 import { resourceSystem } from '@src/game/systems/ResourceSystem';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -29,65 +28,15 @@ export default function Dashboard(props: DashboardProps) {
     const [resources, setResources] = useState(props.resources ?? props.base?.recursos ?? {});
 
     useEffect(() => {
-        // Quando props.resources muda (refresh ou polling), atualizar estado local
+        // Quando props.resources muda (refresh), atualizar estado local
         const incoming = props.resources ?? props.gameData?.resources;
         if (incoming && typeof incoming === 'object') {
-            console.log('%cRESOURCES FROM BACKEND', 'color:lime;font-weight:bold', incoming);
             setResources(incoming);
             resourceSystem.sync(incoming);
         }
     }, [props.resources, props.gameData?.resources]);
 
-    // Semáforo de Recarga via Ref (Garante valor atualizado sem disparar re-renders)
-    const reloadingRef = useRef(false);
-    const [lastSync, setLastSync] = useState<Date>(new Date());
-    const [secondsSinceSync, setSecondsSinceSync] = useState(0);
 
-    // Gestão de Polling Estável (Instância Única)
-    useEffect(() => {
-        const POLL_INTERVAL = 15000;
-
-        PollingService.start(() => {
-            if (document.hidden || reloadingRef.current) return;
-            reloadingRef.current = true;
-            
-            router.reload({
-                only: ["gameData", "base", "resources"],
-                onSuccess: () => {
-                    setLastSync(new Date());
-                },
-                onError: (err) => {
-                    if (err?.message?.includes('409')) return;
-                    console.warn("[SYNC] Sincronização parcial falhou:", err);
-                },
-                onFinish: () => {
-                    setTimeout(() => {
-                        reloadingRef.current = false;
-                    }, 3000);
-                }
-            });
-        }, POLL_INTERVAL);
-
-        return () => PollingService.stop();
-    }, []);
-
-    // Timer visual de sincronização
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setSecondsSinceSync(Math.floor((new Date().getTime() - lastSync.getTime()) / 1000));
-        }, 1000);
-        return () => clearInterval(timer);
-    }, [lastSync]);
-
-    const SyncIndicator = (
-        <div className="fixed bottom-4 right-4 z-50 rounded-full bg-black/80 px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-emerald-500 shadow-lg backdrop-blur-sm border border-emerald-500/20 flex flex-col items-end">
-            <div className="flex items-center">
-                <span className="mr-1 inline-block h-1 w-1 animate-pulse rounded-full bg-emerald-500"></span>
-                Sync: {secondsSinceSync}s ago
-            </div>
-            <div className="text-[6px] text-neutral-600 mt-0.5 tracking-normal">BUILD_VER: 2026.04.15</div>
-        </div>
-    );
 
     // Montar base com recursos corretos
     const currentBase = props.base ? { ...props.base, recursos: resources } : props.base;
@@ -105,7 +54,6 @@ export default function Dashboard(props: DashboardProps) {
                         gameConfig={props.gameConfig} 
                     />
                 )}
-                {SyncIndicator}
             </AppLayout>
         );
     }
@@ -120,7 +68,6 @@ export default function Dashboard(props: DashboardProps) {
                  population={currentPopulation}
                  resources={resources}
             />
-            {SyncIndicator}
         </AppLayout>
     );
 }

@@ -71,15 +71,6 @@ const QueueEntry = ({ item, now }: { item: UnitQueueItem, now: number }) => {
     const start = new Date(item.started_at).getTime();
     const end = new Date(item.finishes_at).getTime();
 
-    // GATILHO DE SINCRONIZAÇÃO AUTOMÁTICA (V19.8)
-    React.useEffect(() => {
-        if (item.position === 1 && !hasTriggeredReload && now >= end + 1000) {
-            setHasTriggeredReload(true);
-            router.reload({
-                onFinish: () => setHasTriggeredReload(false)
-            });
-        }
-    }, [now, end, item.position, hasTriggeredReload]);
     
     const total = end - start;
     const elapsed = now - start;

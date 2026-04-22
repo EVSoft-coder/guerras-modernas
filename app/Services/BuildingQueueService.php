@@ -38,6 +38,9 @@ class BuildingQueueService
 
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             
+            // Sincronizar recursos antes de validar custos (Mutação 1)
+            app(ResourceService::class)->sync($lockedBase);
+
             $nivelAtual = (new GameService($this->timeService))->obterNivelEdificio($lockedBase, $type);
             
             $maxTargetInQueue = DB::table('building_queue')
@@ -51,11 +54,29 @@ class BuildingQueueService
             $duration = BuildingRules::calculateTime($type, $nivelAtual);
             $custos = BuildingRules::calculateCost($type, $nivelAtual);
             
-            $lastPos = BuildingQueue::where('base_id', $base->id)->whereNull('cancelled_at')->max('position') ?? 0;
-            $position = $lastPos + 1;
+            // FASE SEGURANÇA: Validar e Debitar Recursos (Atómico)
+            $rec = $lockedBase->recursos()->lockForUpdate()->first();
+            foreach ($custos as $res => $valor) {
+                if ($valor > 0 && (float)$rec->{$res} < $valor) {
+                    throw new \Exception("ENGENHARIA: Saldo insuficiente de " . strtoupper($res));
+                }
+            }
+
+            // Débito
+            foreach ($custos as $res => $valor) {
+                if ($valor > 0) $rec->decrement($res, $valor);
+            }
+
+            $lastItem = BuildingQueue::where('base_id', $base->id)
+                ->whereNull('cancelled_at')
+                ->orderBy('position', 'desc')
+                ->first();
 
             $now = GameClock::now();
-            
+            $startedAt = $lastItem ? $lastItem->finishes_at : $now;
+            $finishesAt = $startedAt->copy()->addSeconds($duration);
+            $position = ($lastItem ? $lastItem->position : 0) + 1;
+
             $queue = BuildingQueue::create([
                 'base_id' => $base->id,
                 'building_id' => $buildingId,
@@ -63,15 +84,21 @@ class BuildingQueueService
                 'type' => $type,
                 'target_level' => $targetLevel,
                 'duration' => $duration,
-                'status' => $position === 1 ? 'active' : 'pending',
-                'started_at' => $position === 1 ? $now : null,
-                'finishes_at' => $position === 1 ? $now->copy()->addSeconds($duration) : null,
+                'started_at' => $startedAt,
+                'finishes_at' => $finishesAt,
                 'cost_suprimentos' => $custos['suprimentos'] ?? 0,
                 'cost_combustivel' => $custos['combustivel'] ?? 0,
                 'cost_municoes' => $custos['municoes'] ?? 0,
+                'cost_metal' => $custos['metal'] ?? 0,
+                'cost_energia' => $custos['energia'] ?? 0,
+                'status' => 'pending'
             ]);
 
-            Log::channel('game')->info('[BUILD_ENQUEUED]', ['id' => $queue->id, 'pos' => $position]);
+            Log::channel('game')->info("[GAME_ENGINE] BUILD_START {$base->id}", [
+                'type' => $type,
+                'target_level' => $targetLevel,
+                'queue_id' => $queue->id
+            ]);
 
             return $queue;
         }, 5);
@@ -82,15 +109,23 @@ class BuildingQueueService
         $now = GameClock::now();
         
         DB::transaction(function() use ($base, $now) {
-            $active = BuildingQueue::where('base_id', $base->id)
-                ->where('position', 1)
-                ->whereNull('cancelled_at')
-                ->lockForUpdate()
-                ->first();
+            while (true) {
+                $active = BuildingQueue::where('base_id', $base->id)
+                    ->where('position', 1)
+                    ->whereNull('cancelled_at')
+                    ->where('finishes_at', '<=', $now)
+                    ->lockForUpdate()
+                    ->first();
 
-            if ($active && $active->finishes_at <= $now) {
+                if (!$active) break;
+
+                // Guardamos o momento em que este item terminou para encadear o próximo
+                $completedAt = $active->finishes_at;
+
                 $this->completeBuilding($active);
-                $this->refreshQueue($base->id);
+                
+                // O próximo item deve começar EXATAMENTE quando o anterior acabou
+                $this->refreshQueue($base->id, $completedAt);
             }
         }, 5);
     }
@@ -99,6 +134,9 @@ class BuildingQueueService
     {
         $base = $item->base;
         $type = $item->type;
+
+        // Sincronizar recursos com a taxa ANTIGA antes de subir o nível (Mutação 2)
+        app(ResourceService::class)->sync($base);
 
         if ($type === BuildingType::QG) {
             $base->increment('qg_nivel');
@@ -119,7 +157,10 @@ class BuildingQueueService
         }
 
         $item->delete();
-        Log::channel('game')->info('[BUILD_COMPLETED]', ['base_id' => $base->id, 'type' => $type]);
+        Log::channel('game')->info("[GAME_ENGINE] BUILD_FINISH {$base->id}", [
+            'type' => $type,
+            'level' => (new GameService($this->timeService))->obterNivelEdificio($base, $type)
+        ]);
     }
 
     public function cancelBuilding(int $queueId)
@@ -142,24 +183,27 @@ class BuildingQueueService
         }, 5);
     }
 
-    public function refreshQueue(int $baseId)
+    public function refreshQueue(int $baseId, $startTime = null)
     {
         $items = BuildingQueue::where('base_id', $baseId)
             ->whereNull('cancelled_at')
             ->orderBy('position', 'asc')
             ->get();
 
-        $now = GameClock::now();
+        $currentTime = $startTime ?? GameClock::now();
         $pos = 1;
 
         foreach ($items as $item) {
-            $update = ['position' => $pos];
-            if ($pos === 1 && $item->status !== 'active') {
-                $update['status'] = 'active';
-                $update['started_at'] = $now;
-                $update['finishes_at'] = $now->copy()->addSeconds($item->duration);
-            }
+            $update = [
+                'position' => $pos,
+                'started_at' => $currentTime,
+                'finishes_at' => $currentTime->copy()->addSeconds($item->duration),
+                'status' => $pos === 1 ? 'active' : 'pending' // Mantemos por compatibilidade legada, mas a lógica usará tempo
+            ];
+            
             DB::table('building_queue')->where('id', $item->id)->update($update);
+            
+            $currentTime = $update['finishes_at'];
             $pos++;
         }
     }

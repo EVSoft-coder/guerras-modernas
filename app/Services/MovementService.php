@@ -31,6 +31,9 @@ class MovementService
     public function sendTroops(Base $origin, Base $target, array $units, string $type = 'attack'): Movement
     {
         return DB::transaction(function() use ($origin, $target, $units, $type) {
+            // Sincronizar recursos antes de qualquer validação tática
+            app(ResourceService::class)->sync($origin);
+
             // 1. Validar ownership base origem (Simplificado: assumimos que o caller validou Auth)
             
             // 2. Validar e Calcular Velocidade do Grupo
@@ -179,6 +182,9 @@ class MovementService
         
         if (!$originBase || !$targetBase) return;
 
+        // Sincronizar recursos do defensor antes do combate/loot (Mutação Económica)
+        app(ResourceService::class)->sync($targetBase);
+
         // 1. Unidades Atacantes
         $atkUnits = $movement->units->map(fn($u) => [
             'id' => $u->unit_type_id,
@@ -237,7 +243,11 @@ class MovementService
             'detalhes' => array_merge($result, ['loot' => $loot])
         ]);
 
-        Log::channel('game')->info("[COMBAT] Batalha finalizada em {$targetBase->nome}. Vencedor: " . ($result['attacker_won'] ? "Atacante" : "Defensor"));
+        Log::channel('game')->info("[GAME_ENGINE] COMBAT_RESULT {$targetBase->id}", [
+            'attacker_id' => $originBase->id,
+            'attacker_won' => $result['attacker_won'],
+            'loot' => $loot
+        ]);
     }
 
     /**
@@ -369,7 +379,9 @@ class MovementService
 
         if ($totalAvailable <= 0) return [];
 
-        // Distribuímos a capacidade total proporcionalmente ao que existe na base
+        // Sincronização final pré-débito (Garantir que o loot é real)
+        app(ResourceService::class)->sync($targetBase);
+        $resources = $targetBase->recursos; // Recarregar após sync
         $actualLootTotal = min($totalCapacity, $totalAvailable * 0.5); // Saqueamos no máximo 50%
 
         foreach ($types as $type) {
@@ -422,6 +434,9 @@ class MovementService
      */
     private function transferLootToBase(Movement $movement, Base $base): void
     {
+        // Sincronizar antes de adicionar para não perder produção offline (Mutação Económica)
+        app(ResourceService::class)->sync($base);
+        
         $resources = $base->recursos;
         if (!$resources) return;
 

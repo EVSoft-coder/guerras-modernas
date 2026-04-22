@@ -31,7 +31,8 @@ class UnitQueueService
         return DB::transaction(function() use ($base, $unitTypeId, $quantidade) {
             $unitType = UnitType::findOrFail($unitTypeId);
             
-            // 1. Lock de Recursos
+            // 1. Lock e Sync de Recursos (Mutação Crítica)
+            app(ResourceService::class)->sync($base);
             $rec = $base->recursos()->lockForUpdate()->first();
             
             // 2. Cálculo de Custos (Sincronizado com EconomyService)
@@ -82,7 +83,11 @@ class UnitQueueService
                 'finishes_at' => $finishesAt,
             ]);
 
-            Log::channel('game')->info("[UNIT_RECRUITMENT_STARTED] ID: {$queueItem->id}, Qty: {$quantidade}");
+            Log::channel('game')->info("[GAME_ENGINE] RECRUIT_START {$base->id}", [
+                'unit_type_id' => $unitTypeId,
+                'quantity' => $quantidade,
+                'queue_id' => $queueItem->id
+            ]);
 
             return $queueItem;
         }, 5);
@@ -106,6 +111,7 @@ class UnitQueueService
 
             if ($completed->isEmpty()) return;
 
+            $lastCompletedAt = null;
             foreach ($completed as $item) {
                 // Adicionar unidades concluídas à base (Inventário Moderno)
                 $this->addUnitsToBase($base, $item->unit_type_id, $item->quantity);
@@ -113,11 +119,15 @@ class UnitQueueService
                 // Remover lote da fila
                 DB::table('unit_queue')->where('id', $item->id)->delete();
                 
-                Log::channel('game')->info("[UNIT_RECRUITMENT_FINISHED] Base: {$base->id}, Item ID: {$item->id}, Qty: {$item->quantity}");
+                $lastCompletedAt = $item->finishes_at;
+                Log::channel('game')->info("[GAME_ENGINE] RECRUIT_FINISH {$base->id}", [
+                    'unit_type_id' => $item->unit_type_id,
+                    'quantity' => $item->quantity
+                ]);
             }
 
-            // Recalcular tempos para as unidades pendentes remanescentes
-            $this->refreshQueue($base->id);
+            // Recalcular tempos para as unidades pendentes remanescentes começando do fim do último lote
+            $this->refreshQueue($base->id, $lastCompletedAt);
         }, 5);
     }
 
@@ -171,7 +181,7 @@ class UnitQueueService
     /**
      * Reorganizar cronograma: Encadeia novamente os tempos de started_at e finishes_at.
      */
-    public function refreshQueue(int $baseId)
+    public function refreshQueue(int $baseId, $startTime = null)
     {
         $items = DB::table('unit_queue')
             ->where('base_id', $baseId)
@@ -179,7 +189,7 @@ class UnitQueueService
             ->get();
 
         $now = GameClock::now();
-        $currentTime = $now;
+        $currentTime = $startTime ?? $now;
         $pos = 1;
 
         foreach ($items as $item) {

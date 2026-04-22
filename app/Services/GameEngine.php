@@ -58,22 +58,18 @@ class GameEngine
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             if (!$lockedBase) return;
 
-            // 2. Sync de Recursos e Lealdade (Tribal)
-            $this->resourceService->sync($lockedBase);
+            // 2. Sync de Lealdade (Tribal) - Mantemos pois é leve e crítico
             $this->loyaltyService->updateLoyalty($lockedBase);
 
             // 3. Auditoria e Reparação de Integridade
             $this->integrityService->validateAndRepair($lockedBase);
 
-            // 4. Processar Filas
+            // 4. Processar Filas (A conclusão de itens chamará o sync internamente se necessário)
             $this->buildingQueueService->processQueue($lockedBase);
             $this->unitQueueService->processQueue($lockedBase);
 
             // 5. Processar Movimentos
             $this->movementService->processMovements($lockedBase);
-
-            // 6. Sync Final (Estado Final)
-            $this->resourceService->sync($lockedBase);
             
             Log::channel('game')->info("[GAME_ENGINE] Ciclo atómico finalizado para base {$base->id}");
         }, 5);

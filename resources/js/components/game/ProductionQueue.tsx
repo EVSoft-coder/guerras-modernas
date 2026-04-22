@@ -132,18 +132,6 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
         return () => clearInterval(timer);
     }, []);
 
-    // GATILHO DE SINCRONIZAÇÃO AUTOMÁTICA (V19.8)
-    useEffect(() => {
-        if (isFirst && item.ends_at && !hasTriggeredReload) {
-            const end = new Date(item.ends_at).getTime();
-            if (currentTime >= end + 1000) { // Margem de 1s para o backend processar
-                setHasTriggeredReload(true);
-                router.reload({
-                    onFinish: () => setHasTriggeredReload(false)
-                });
-            }
-        }
-    }, [currentTime, isFirst, item.ends_at, hasTriggeredReload]);
 
     const calculateProgress = () => {
         if (!isFirst || !item.ends_at) {

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Application\GetDashboardData;
-use App\Application\SyncResources;
+use App\Services\GameStateService;
+use App\Services\GameEngine;
 use Inertia\Inertia;
 use App\Models\Base;
 
@@ -14,9 +14,11 @@ use App\Models\Base;
  */
 class DashboardController extends Controller
 {
-    public function __construct(GetDashboardData $getDashboardData)
+    protected $gameStateService;
+
+    public function __construct(GameStateService $gameStateService)
     {
-        $this->getDashboardData = $getDashboardData;
+        $this->gameStateService = $gameStateService;
     }
 
     public function index(Request $request)
@@ -33,12 +35,24 @@ class DashboardController extends Controller
 
         if (!$base) return redirect('/login');
 
-        // 2. Obter Dados de Vista (O GetDashboardData já corre o GameEngine::process internamente)
-        $data = $this->getDashboardData->execute($user, $base->id);
+        // 2. Processar Motor (Escrita atómica permitida apenas no início do ciclo)
+        GameEngine::process($base);
 
-        // 3. Salvar estado de sessão
+        // 3. Obter Snapshot Único (SSOT)
+        $state = $this->gameStateService->getVillageState($base->id);
+
+        // 4. Dados Complementares (User/Context)
+        $payload = array_merge($state, [
+            'jogador' => $user,
+            'bases'   => $user->bases()->with('recursos')->get(),
+            'gameConfig' => config('game'),
+            'unitTypes' => \App\Models\UnitType::all(),
+            'myAllianceId' => $user->alianca_id,
+        ]);
+
+        // 5. Salvar estado de sessão
         session(['selected_base_id' => $base->id]);
 
-        return Inertia::render('dashboard', $data);
+        return Inertia::render('Dashboard', $payload);
     }
 }
