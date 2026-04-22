@@ -46,7 +46,7 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
     radar_estrategico:  { ...BUILDING_SLOTS.RADAR, id: 'RADAR', w: 80, h: 90, anchor: 'center', assetName: 'radar_v1.png' },
     centro_pesquisa:    { ...BUILDING_SLOTS.RESEARCH, id: 'RESEARCH', w: 90, h: 90, anchor: 'center', assetName: 'pesquisa_v1.png' },
     fabrica_municoes:   { ...BUILDING_SLOTS.FACTORY, id: 'FACTORY', w: 100, h: 110, anchor: 'center', assetName: 'fabrica_v2.png' },
-    qg:                 { ...BUILDING_SLOTS.HQ, id: 'HQ', w: 140, h: 160, anchor: 'center', assetName: 'hq_v2.png' },
+    hq:                 { ...BUILDING_SLOTS.HQ, id: 'HQ', w: 140, h: 160, anchor: 'center', assetName: 'hq_v2.png' },
     quartel:            { ...BUILDING_SLOTS.BARRACKS, id: 'BARRACKS', w: 100, h: 110, anchor: 'center', assetName: 'quartel_v2.png' },
     aerodromo:          { ...BUILDING_SLOTS.AIRPORT, id: 'AIRPORT', w: 140, h: 120, anchor: 'center', assetName: 'aerodromo_v1.png' },
     muralha:            { ...BUILDING_SLOTS.WALL, id: 'WALL', w: 320, h: 200, anchor: 'center', assetName: 'muralha_v2.png' },

@@ -6,7 +6,7 @@ export interface AssetConfig {
 }
 
 export const BUILDING_ASSETS: Record<string, AssetConfig> = {
-  qg: {
+  hq: {
     width: 200,
     height: 200,
     anchor: 'bottom'

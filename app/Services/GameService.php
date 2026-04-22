@@ -88,7 +88,7 @@ class GameService
             }
 
             $buildingId = null;
-            if (!in_array($tipo, [BuildingType::QG, BuildingType::MURALHA])) {
+            if (!in_array($tipo, [BuildingType::HQ, BuildingType::MURALHA])) {
                 $buildingId = $lockedBase->edificios()->where('tipo', $tipo)->first()?->id;
             }
 
@@ -135,7 +135,7 @@ class GameService
     {
         if (is_null($tipo)) return 0;
         
-        if ($tipo === BuildingType::QG) return (int) $base->qg_nivel;
+        if ($tipo === BuildingType::HQ) return (int) $base->qg_nivel;
         if ($tipo === BuildingType::MURALHA) return (int) $base->muralha_nivel;
         return (int) ($base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0);
     }
@@ -152,7 +152,7 @@ class GameService
             $basePessoal = $configs[$edificio->tipo]['cost']['pessoal'] ?? 0;
             $usedByBuildings += $basePessoal * $edificio->nivel;
         }
-        $usedByBuildings += ($configs['qg']['cost']['pessoal'] ?? 0) * $base->qg_nivel;
+        $usedByBuildings += ($configs['hq']['cost']['pessoal'] ?? 0) * $base->qg_nivel;
         $usedByBuildings += ($configs['muralha']['cost']['pessoal'] ?? 0) * $base->muralha_nivel;
 
         $usedByTroops = 0;

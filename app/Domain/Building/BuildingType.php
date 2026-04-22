@@ -4,7 +4,7 @@ namespace App\Domain\Building;
  
 class BuildingType
 {
-    const QG = 'qg';
+    const HQ = 'hq';
     const MURALHA = 'muralha';
     const FAZENDA = 'mina_suprimentos';
     const MINA_SUPRIMENTOS = 'mina_suprimentos';
@@ -28,8 +28,9 @@ class BuildingType
     public static function normalize(string $type): string
     {
         $map = [
-            'qg' => self::QG,
-            'centrocomando' => self::QG,
+            'qg' => self::HQ,
+            'hq' => self::HQ,
+            'centrocomando' => self::HQ,
             'muralha' => self::MURALHA,
             'perimetro' => self::MURALHA,
             'arsenal' => self::FABRICA_MUNICOES,

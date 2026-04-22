@@ -59,7 +59,7 @@ class BuildingService
             DB::transaction(function() use ($base, $fila) {
                 $tipo = $fila->edificio_tipo;
  
-                if ($tipo === BuildingType::QG) {
+                if ($tipo === BuildingType::HQ) {
                     $base->increment('qg_nivel');
                 } elseif ($tipo === BuildingType::MURALHA) {
                     $base->increment('muralha_nivel');
@@ -82,7 +82,7 @@ class BuildingService
      */
     public function obterNivel(Base $base, string $tipo): int
     {
-        if ($tipo === BuildingType::QG) return $base->qg_nivel;
+        if ($tipo === BuildingType::HQ) return $base->qg_nivel;
         if ($tipo === BuildingType::MURALHA) return $base->muralha_nivel;
         
         return $base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0;

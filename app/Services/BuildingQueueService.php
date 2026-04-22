@@ -138,7 +138,7 @@ class BuildingQueueService
         // Sincronizar recursos com a taxa ANTIGA antes de subir o nível (Mutação 2)
         app(ResourceService::class)->sync($base);
 
-        if ($type === BuildingType::QG) {
+        if ($type === BuildingType::HQ) {
             $base->increment('qg_nivel');
         } elseif ($type === BuildingType::MURALHA) {
             $base->increment('muralha_nivel');

@@ -47,7 +47,7 @@ class Base extends Model
 
     private function obterNivelEdificio($tipo)
     {
-        if ($tipo === BuildingType::QG) return (int) ($this->qg_nivel ?? 0);
+        if ($tipo === BuildingType::HQ) return (int) ($this->qg_nivel ?? 0);
         if ($tipo === BuildingType::MURALHA) return (int) ($this->muralha_nivel ?? 0);
         return (int) ($this->edificios->where('tipo', $tipo)->first()?->nivel ?? 0);
     }

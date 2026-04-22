@@ -4,7 +4,7 @@ namespace App\Enums;
  
 enum BuildingType: string
 {
-    case QG = 'qg';
+    case HQ = 'hq';
     case MURALHA = 'muralha';
     case MINA_SUPRIMENTOS = 'mina_suprimentos';
     case REFINARIA = 'refinaria';
@@ -22,7 +22,7 @@ enum BuildingType: string
     public function label(): string
     {
         return match ($this) {
-            self::QG => 'Centro de Comando (QG)',
+            self::HQ => 'Centro de Comando (HQ)',
             self::MURALHA => 'Perímetro Defensivo (Muralha)',
             self::MINA_SUPRIMENTOS => 'Mina de Suprimentos',
             self::REFINARIA => 'Refinaria de Combustível',

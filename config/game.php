@@ -25,8 +25,8 @@ return [
      * Balanço de Edifícios (Regras de Economia e Engenharia)
      */
     'buildings' => [
-        'qg' => [
-            'name' => 'Centro de Comando (QG)',
+        'hq' => [
+            'name' => 'Centro de Comando (HQ)',
             'cost' => ['suprimentos' => 500, 'combustivel' => 200, 'pessoal' => 20],
             'time_base' => 120,
             'scaling' => 1.5

@@ -14,11 +14,11 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
     const bConfigs = Object.values(buildingConfigs);
     const playerBuildings = React.useMemo(() => {
         const list = [
-            { id: 'qg-core', type: 'qg', level: base.qg_nivel ?? 1 },
+            { id: 'qg-core', type: 'hq', level: base.qg_nivel ?? 1 },
             { id: 'muralha-core', type: 'muralha', level: base.muralha_nivel ?? 1 },
             ...(base.edificios?.filter(eb => {
                 const t = eb.buildingType?.toLowerCase();
-                return t !== 'qg' && t !== 'muralha';
+                return t !== 'hq' && t !== 'muralha';
             }).map(eb => {
                 let type = eb.buildingType?.toLowerCase();
                 return { id: eb.id, type, level: eb.nivel };
@@ -56,7 +56,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
                             nivel={b.level}
                             isConstructing={b.isUpgradingNow}
                             onClick={() => onBuildingClick({ ...b, buildingType: b.id })}
-                            isLocked={!b.isBuilt && b.level === 0 && b.id !== 'qg' && b.id !== 'muralha'} // Exemplo de lock
+                            isLocked={!b.isBuilt && b.level === 0 && b.id !== 'hq' && b.id !== 'muralha'} // Exemplo de lock
                         />
                     );
                 })}
