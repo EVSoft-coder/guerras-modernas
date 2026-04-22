@@ -25,7 +25,7 @@ class GameStateService
     /**
      * Retorna o estado completo de uma aldeia.
      */
-    public function getVillageState(int $villageId): array
+    public function getVillageState(int $villageId)
     {
         // 1. Carregamento de dados (Read-Only) com falha explícita
         $base = Base::with([
