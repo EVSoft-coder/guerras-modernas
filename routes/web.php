@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BaseController;
@@ -109,4 +110,20 @@ Route::middleware(['auth', 'can:admin-only'])->group(function () {
             return "[ERRO TÁTICO]: " . $e->getMessage();
         }
     })->name('admin.deploy.refresh');
+
+    Route::get('/mw-deploy-migrate', function() {
+        try {
+            Artisan::call('migrate', ['--force' => true]);
+            return "
+                <div style='background:#0a0c10; color:#0f0; padding:40px; font-family:monospace; border:2px solid #0f0;'>
+                    <h1>[BASE DE DADOS ATUALIZADA]</h1>
+                    <pre>" . Artisan::output() . "</pre>
+                    <hr style='border:1px solid #0f0; margin:20px 0;'>
+                    <a href='/dashboard' style='color:#fff; text-decoration:underline;'>VOLTAR AO COMANDO</a>
+                </div>
+            ";
+        } catch (\Exception $e) {
+            return "[ERRO DE MIGRAÇÃO]: " . $e->getMessage();
+        }
+    })->name('admin.deploy.migrate');
 });
