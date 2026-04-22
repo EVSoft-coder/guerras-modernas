@@ -49,10 +49,10 @@ export default function Dashboard(props: any) {
         return (
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title="SITREP: Mapa Mundial" />
-                {props.base && (
+                {state.base && (
                     <WorldMapView 
                         playerBase={currentBase} 
-                        troops={props.gameData?.units ? props.gameData.units.map((u: any) => ({ unidade: u.type?.name, quantidade: u.quantity })) : props.base?.tropas} 
+                        troops={state.units ? state.units.map((u: any) => ({ unidade: u.type?.name, quantidade: u.quantity })) : []} 
                         gameConfig={props.gameConfig} 
                     />
                 )}
@@ -64,7 +64,7 @@ export default function Dashboard(props: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <VillageDashboard 
-                 {...props} 
+                 {...state} 
                  base={currentBase} 
                  buildings={currentBuildings}
                  population={currentPopulation}

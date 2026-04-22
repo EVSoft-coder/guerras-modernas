@@ -74,7 +74,9 @@ class GameStateService
             ->get();
 
         $state = [
+            'jogador' => $base->jogador, // O dono desta base
             'base' => $base,
+            'bases' => $base->jogador->bases, // Todas as bases do comandante
             'resources' => $resources,
             'production' => $productionRates,
             'buildings' => $base->edificios,
