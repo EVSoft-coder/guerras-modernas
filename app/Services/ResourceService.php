@@ -20,6 +20,12 @@ class ResourceService
     {
         $this->timeService = $timeService ?? new TimeService();
     }
+
+    public function calculateResources(Base $base): array
+    {
+        if (!$base->recursos) return [];
+        return $this->calculate($base->recursos);
+    }
     /**
      * Sincroniza a base com o tempo real se houver mudança de estado.
      */

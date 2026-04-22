@@ -42,57 +42,11 @@ class GameStateService
             throw new \Exception("CORRUPÇÃO DE DADOS: O setor #{$villageId} está operacional mas não possui registos económicos (Recursos NULL).");
         }
 
-        // 2. Cálculo de Recursos (SSOT Económico)
-        $now = GameClock::now();
-        $productionRates = $this->resourceService->getRates($base);
-        $resources = $this->resourceService->calculate($base->recursos, $now, $productionRates);
+        // 2. Cálculo de Recursos (SSOT Económico) — FASE CRÍTICA — VALIDAÇÃO EXCLUSIVA
+        $resources = app(ResourceService::class)->calculateResources($base);
 
-        if (empty($resources)) {
-            throw new \Exception("FALHA DE CÁLCULO: O motor económico falhou ao projetar os recursos para o setor #{$villageId}.");
-        }
-
-        // 3. Filas de Produção
-        $buildQueue = BuildingQueue::where('base_id', $villageId)
-            ->whereNull('cancelled_at')
-            ->orderBy('position', 'asc')
-            ->get();
-
-        $unitQueue = UnitQueue::with('unitType')
-            ->where('base_id', $villageId)
-            ->whereNull('cancelled_at')
-            ->orderBy('position', 'asc')
-            ->get();
-
-        // 4. Movimentos de Tropas (Entrada e Saída)
-        $movements = Movement::with(['units.type', 'origin.jogador', 'target.jogador'])
-            ->where(function ($query) use ($villageId) {
-                $query->where('origin_id', $villageId)
-                      ->orWhere('target_id', $villageId);
-            })
-            ->where('status', 'moving')
-            ->orderBy('arrival_time', 'asc')
-            ->get();
-
-        $base->makeHidden(['recursos', 'jogador']); // Evitar recursão e duplicidade no SSOT
-
-        $state = [
-            '_debug' => true,
-            '_village' => $base,
-            '_resources' => $resources,
-            '_buildings' => $base->edificios,
-            'jogador' => $base->jogador,
-            'base' => $base,
-            'bases' => $base->jogador->bases,
-            'resources' => $resources,
-            'production' => $productionRates,
-            'buildings' => $base->edificios,
-            'buildQueue' => $buildQueue,
-            'unitQueue' => $unitQueue,
-            'units' => $base->units,
-            'movements' => $movements,
-            'timestamp' => $now->toIso8601String(),
-        ];
-
-        return $state;
+        return response()->json([
+            '_resources' => is_array($resources) ? $resources : (array) $resources
+        ]);
     }
 }
