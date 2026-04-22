@@ -39,7 +39,7 @@ class BuildingQueueService
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             
             // Sincronizar recursos antes de validar custos (Mutação 1)
-            app(ResourceService::class)->sync($lockedBase);
+            app(ResourceService::class)->syncResources($lockedBase);
 
             $nivelAtual = (new GameService($this->timeService))->obterNivelEdificio($lockedBase, $type);
             
@@ -136,7 +136,7 @@ class BuildingQueueService
         $type = $item->type;
 
         // Sincronizar recursos com a taxa ANTIGA antes de subir o nível (Mutação 2)
-        app(ResourceService::class)->sync($base);
+        app(ResourceService::class)->syncResources($base);
 
         $edificio = $base->edificios()->where('tipo', $type)->first();
         if ($edificio) {

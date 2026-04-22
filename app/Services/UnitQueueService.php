@@ -32,7 +32,7 @@ class UnitQueueService
             $unitType = UnitType::findOrFail($unitTypeId);
             
             // 1. Lock e Sync de Recursos (Mutação Crítica)
-            app(ResourceService::class)->sync($base);
+            app(ResourceService::class)->syncResources($base);
             $rec = $base->recursos()->lockForUpdate()->first();
             
             // 2. Cálculo de Custos (Sincronizado com EconomyService)

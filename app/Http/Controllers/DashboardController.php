@@ -35,8 +35,8 @@ class DashboardController extends Controller
 
         if (!$base) return redirect('/login');
 
-        // 2. Processar Motor (Escrita atómica permitida apenas no início do ciclo)
-        GameEngine::process($base);
+        // 2. Processar Motor (Escrita atómica suspensa temporariamente para FASE SEGURANÇA)
+        // GameEngine::process($base);
 
         // 3. Obter Snapshot Único (SSOT) - FASE BLOQUEANTE
         $state = $this->gameStateService->getVillageState($base->id);

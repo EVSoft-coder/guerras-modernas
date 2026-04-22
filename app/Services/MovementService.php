@@ -32,7 +32,7 @@ class MovementService
     {
         return DB::transaction(function() use ($origin, $target, $units, $type) {
             // Sincronizar recursos antes de qualquer validação tática
-            app(ResourceService::class)->sync($origin);
+            app(ResourceService::class)->syncResources($origin);
 
             // 1. Validar ownership base origem (Simplificado: assumimos que o caller validou Auth)
             
@@ -183,7 +183,7 @@ class MovementService
         if (!$originBase || !$targetBase) return;
 
         // Sincronizar recursos do defensor antes do combate/loot (Mutação Económica)
-        app(ResourceService::class)->sync($targetBase);
+        app(ResourceService::class)->syncResources($targetBase);
 
         // 1. Unidades Atacantes
         $atkUnits = $movement->units->map(fn($u) => [
@@ -380,7 +380,7 @@ class MovementService
         if ($totalAvailable <= 0) return [];
 
         // Sincronização final pré-débito (Garantir que o loot é real)
-        app(ResourceService::class)->sync($targetBase);
+        app(ResourceService::class)->syncResources($targetBase);
         $resources = $targetBase->recursos; // Recarregar após sync
         $actualLootTotal = min($totalCapacity, $totalAvailable * 0.5); // Saqueamos no máximo 50%
 
@@ -435,7 +435,7 @@ class MovementService
     private function transferLootToBase(Movement $movement, Base $base): void
     {
         // Sincronizar antes de adicionar para não perder produção offline (Mutação Económica)
-        app(ResourceService::class)->sync($base);
+        app(ResourceService::class)->syncResources($base);
         
         $resources = $base->recursos;
         if (!$resources) return;

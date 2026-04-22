@@ -28,8 +28,9 @@ class ResourceService
     }
     /**
      * Sincroniza a base com o tempo real se houver mudança de estado.
+     * FASE SEGURANÇA: Unico ponto de mutação permitido para ultimo_update.
      */
-    public function sync(Base $base): void
+    public function syncResources(Base $base): void
     {
         $now = GameClock::now();
 
