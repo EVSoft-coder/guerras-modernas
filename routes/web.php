@@ -13,7 +13,6 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\ManualController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UnitRecruitmentController;
-use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
