@@ -76,12 +76,12 @@ class ResourceService
         return false;
     }
 
-    public function calculate(Recurso $resource, $now = null, array $taxasMinuto = null): array
+    public function calculate(Recurso $resource, $now = null, array $taxasHora = null): array
     {
         if (!$now) $now = GameClock::now();
         $base = $resource->base;
 
-        if (!$taxasMinuto) $taxasMinuto = $this->getRates($base);
+        if (!$taxasHora) $taxasHora = $this->getRates($base);
 
         $hqLevel = $base->qg_nivel ?? 1;
         $cap = app(EconomyService::class)->getStorageCapacity($hqLevel);
@@ -89,16 +89,20 @@ class ResourceService
         $lastUpdateStr = $base->ultimo_update ?? $base->created_at;
         $lastUpdate = Carbon::parse($lastUpdateStr);
         
-        $diff = max(0, $now->getTimestamp() - $lastUpdate->getTimestamp());
-        $minutes = $diff / 60;
+        // Delta em segundos para máxima precisão
+        $deltaSeconds = max(0, $now->getTimestamp() - $lastUpdate->getTimestamp());
+        $hours = $deltaSeconds / 3600;
 
         $results = ['cap' => $cap];
         $types = ['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'];
 
         foreach ($types as $type) {
-            $prod = ($taxasMinuto[$type] ?? 0) * $minutes;
+            // Produção = Taxa Horária * Fração de Hora
+            $prod = ($taxasHora[$type] ?? 0) * $hours;
             $current = (float) $resource->{$type};
-            $results[$type] = min($cap, $current + $prod);
+            
+            // Recurso final = base + produção, limitado ao cap de armazenamento
+            $results[$type] = (int) min($cap, $current + $prod);
         }
 
         return $results;
