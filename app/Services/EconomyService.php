@@ -9,10 +9,24 @@ class EconomyService
 {
     /**
      * Calcula o custo de upgrade exponencial para um edifício.
-     * PASSO 2: cost = base_cost * factor^(level - 1)
+     * FASE ECONOMIA: custo = base * (factor ^ nível)
      */
     public function getBuildingUpgradeCost(string $type, int $nextLevel): array
     {
+        $specialConfig = config("economy.buildings.upgrade_costs.{$type}");
+        
+        if ($specialConfig) {
+            $baseCosts = $specialConfig['base'];
+            $factor = $specialConfig['factor'];
+            
+            $costs = [];
+            foreach ($baseCosts as $res => $baseValue) {
+                $costs[$res] = (int) ($baseValue * pow($factor, $nextLevel));
+            }
+            return $costs;
+        }
+
+        // Fallback legado
         $config = config("game.buildings.{$type}");
         if (!$config) return [];
 
@@ -21,7 +35,7 @@ class EconomyService
         $costs = [];
 
         foreach ($baseCosts as $res => $baseValue) {
-            $costs[$res] = (int) ($baseValue * pow($factor, $nextLevel - 1));
+            $costs[$res] = (int) ($baseValue * pow($factor, $nextLevel));
         }
 
         return $costs;
@@ -29,7 +43,7 @@ class EconomyService
 
     /**
      * Calcula o tempo de upgrade exponencial para um edifício.
-     * PASSO 3: time = base_time * factor^(level - 1)
+     * FASE TEMPO: tempo = base_time * (factor ^ nível)
      */
     public function getBuildingUpgradeTime(Base $base, string $type, int $nextLevel): int
     {
@@ -39,9 +53,10 @@ class EconomyService
         $factor = config('economy.buildings.time_multiplier', 1.5);
         $baseTime = $config['time_base'] ?? 60;
 
-        $rawTime = $baseTime * pow($factor, $nextLevel - 1);
+        // Fórmua exponencial FASE TEMPO
+        $rawTime = $baseTime * pow($factor, $nextLevel);
 
-        // Aplica redução por nível de QG
+        // Aplica redução por nível de QG (Modificador TribalWars)
         $hqLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HQ) ?: 1;
         $reductionPerLevel = config('economy.buildings.hq_reduction_per_level', 0.04);
         
@@ -53,21 +68,31 @@ class EconomyService
 
     /**
      * Calcula a produção horária de um edifício.
-     * PASSO 4: production = base * (level ^ 1.2)
+     * FASE PRODUÇÃO: production = base * (factor ^ nível)
      */
-    public function getBuildingProduction(int $baseProduction, int $level): float
+    public function getBuildingProduction(string $type, int $level): float
     {
+        $config = config("economy.production.resource_buildings.{$type}");
+        
+        if ($config) {
+            $base = $config['base'];
+            $factor = $config['factor'];
+            return $base * pow($factor, $level);
+        }
+
+        // Fallback legado ou para edifícios genéricos
+        $baseProduction = config("game.buildings.{$type}.production_base", 10);
         $exponent = config('economy.production.exponent', 1.2);
         return $baseProduction * pow($level, $exponent);
     }
 
     /**
      * Calcula a capacidade de armazenamento total.
-     * PASSO 5: capacity = base * 1.25^(level)
+     * FASE CAP: storage = base * (factor ^ nível)
      */
     public function getStorageCapacity(int $hqLevel): int
     {
-        $base = config('economy.storage.base', 10000);
+        $base = config('economy.storage.base', 800);
         $factor = config('economy.storage.factor', 1.25);
 
         return (int) ($base * pow($factor, $hqLevel));

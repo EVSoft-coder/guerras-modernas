@@ -106,11 +106,13 @@ class ResourceService
 
         $deltaHours = $deltaSeconds / 3600;
 
-        // FASE CRÍTICA: Economia Real (Baseada em SSOT)
+        // FASE CRÍTICA — INTEGRAÇÃO: Economia Real baseada em Delta Horário
         $resources = [];
         foreach (['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'] as $type) {
             $current = (float) ($resource->{$type} ?? 0);
             $rate = (float) ($taxasHora[$type] ?? 0);
+            
+            // FÓRMULA: novo = atual + (rate * delta_horas)
             $calculated = $current + ($rate * $deltaHours);
             
             // Aplicar CAP (SSOT de Armazenamento)
@@ -123,16 +125,41 @@ class ResourceService
 
     public function getRates(Base $base): array
     {
-        $taxas = ['suprimentos' => 0, 'combustivel' => 0, 'municoes' => 0, 'metal' => 0, 'energia' => 0, 'pessoal' => 0];
-        $edificios = $base->edificios()->with('type')->get();
+        $edificios = $base->edificios;
+        return $this->calculateProductionRates($edificios);
+    }
 
-        foreach ($edificios as $edificio) {
-            $type = $edificio->type;
-            if (!$type || !$type->production_type) continue;
+    /**
+     * Calcula as taxas de produção reais baseadas nos edifícios.
+     * FASE ENGINE — PRODUÇÃO REAL
+     */
+    private function calculateProductionRates($buildings): array
+    {
+        $taxas = [
+            'suprimentos' => 0,
+            'combustivel' => 0,
+            'municoes'    => 0,
+            'metal'       => 0,
+            'energia'     => 0,
+            'pessoal'     => 0
+        ];
 
-            $prodType = $type->production_type;
-            if (array_key_exists($prodType, $taxas)) {
-                $taxas[$prodType] += app(EconomyService::class)->getBuildingProduction($type->base_production, $edificio->nivel);
+        $configProducao = config('game.production');
+
+        foreach ($buildings as $edificio) {
+            $tipo = $edificio->tipo;
+            $nivel = $edificio->nivel;
+
+            if (isset($configProducao[$tipo])) {
+                $config = $configProducao[$tipo];
+                $recurso = $config['resource'];
+                
+                // FÓRMULA SOBERANA: rate = base * (factor ^ nivel)
+                $rate = $config['base'] * pow($config['factor'], $nivel);
+                
+                if (array_key_exists($recurso, $taxas)) {
+                    $taxas[$recurso] += $rate;
+                }
             }
         }
 

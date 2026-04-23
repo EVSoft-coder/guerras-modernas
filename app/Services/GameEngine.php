@@ -61,7 +61,10 @@ class GameEngine
             // 2. Sync de Lealdade (Tribal) - Mantemos pois é leve e crítico
             $this->loyaltyService->updateLoyalty($lockedBase);
 
-            // 3. Auditoria e Reparação de Integridade
+            // 3. Sync de Recursos (Economia Real) - FASE INTEGRAÇÃO
+            $this->resourceService->syncResources($lockedBase);
+
+            // 4. Auditoria e Reparação de Integridade
             $this->integrityService->validateAndRepair($lockedBase);
 
             // 4. Processar Filas (A conclusão de itens chamará o sync internamente se necessário)

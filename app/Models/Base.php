@@ -15,7 +15,7 @@ class Base extends Model
     use HasFactory, HasResources;
 
     protected $table = 'bases';
-    protected $appends = ['ownerId', 'metal_rate', 'energia_rate', 'comida_rate'];
+    protected $appends = ['ownerId'];
 
     protected $fillable = [
         'jogador_id',
@@ -40,7 +40,7 @@ class Base extends Model
 
     public function getResourcesAttribute()
     {
-        return app(GameService::class)->calculateResources($this);
+        return $this->recursos;
     }
 
     private function obterNivelEdificio($tipo)

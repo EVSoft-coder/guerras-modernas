@@ -24,41 +24,66 @@ class BuildingType
  
     /**
      * Aliases para compatibilidade com nomes legados ou front-end.
+     * FASE DADOS: Garantir snake_case absoluto.
      */
     public static function normalize(string $type): string
     {
+        // 1. Limpeza Base: Lowercase + Trim
+        $raw = trim(strtolower($type));
+        
+        // 2. Mapeamento de Aliases Tácticos
         $map = [
             'qg' => self::HQ,
             'hq' => self::HQ,
+            'quartelgeneral' => self::HQ,
+            'quartel general' => self::HQ,
             'centrocomando' => self::HQ,
+            'centro de comando' => self::HQ,
             'muralha' => self::MURALHA,
             'perimetro' => self::MURALHA,
+            'perimetro defensivo' => self::MURALHA,
             'arsenal' => self::FABRICA_MUNICOES,
             'fabricamunicoes' => self::FABRICA_MUNICOES,
+            'fábrica de munições' => self::FABRICA_MUNICOES,
             'minasuprimentos' => self::MINA_SUPRIMENTOS,
+            'mina de suprimentos' => self::MINA_SUPRIMENTOS,
             'mina' => self::MINA_SUPRIMENTOS,
             'parlamento' => self::PARLAMENTO,
             'refinaria' => self::REFINARIA,
+            'refinaria de combustível' => self::REFINARIA,
             'aerodromo' => self::AERODROMO,
+            'aeródromo militar' => self::AERODROMO,
             'heliponto' => self::AERODROMO,
             'postorecrutamento' => self::POSTO_RECRUTAMENTO,
+            'posto de recrutamento' => self::POSTO_RECRUTAMENTO,
             'quartel' => self::QUARTEL,
+            'quartel regional' => self::QUARTEL,
             'radar' => self::RADAR_ESTRATEGICO,
+            'radar estratégico' => self::RADAR_ESTRATEGICO,
+            'radar de longo alcance' => self::RADAR_ESTRATEGICO,
             'centropesquisa' => self::CENTRO_PESQUISA,
+            'centro de pesquisa' => self::CENTRO_PESQUISA,
             'factory' => self::FACTORY,
             'fabrica' => self::FACTORY,
             'solar' => self::SOLAR,
             'plantasolar' => self::SOLAR,
             'minametal' => self::FACTORY,
+            'mina de metal' => self::FACTORY,
             'centralenergia' => self::SOLAR,
+            'central de energia solar' => self::SOLAR,
             'complexoresidencial' => self::HOUSING,
             'habitacao' => self::HOUSING,
             'complexohabitacional' => self::HOUSING,
+            'complexo residencial' => self::HOUSING,
             'housing' => self::HOUSING,
         ];
- 
-        $cleaned = strtolower(str_replace([' ', '_', '-'], '', $type));
-        return $map[$cleaned] ?? $type;
+
+        if (isset($map[$raw])) {
+            return $map[$raw];
+        }
+
+        // 3. Fallback: Converter para snake_case real
+        return strtolower(str_replace([' ', '-'], '_', $raw));
     }
  
     public static function all(): array

@@ -21,6 +21,38 @@ return [
     /**
      * Outras configurações do jogo (Fase Avançada)
      */
+    'production' => [
+        'mina_suprimentos' => [
+            'resource' => 'suprimentos',
+            'base' => 30,
+            'factor' => 1.163,
+        ],
+        'refinaria' => [
+            'resource' => 'combustivel',
+            'base' => 25,
+            'factor' => 1.155,
+        ],
+        'fabrica_municoes' => [
+            'resource' => 'municoes',
+            'base' => 20,
+            'factor' => 1.14,
+        ],
+        'mina_metal' => [
+            'resource' => 'metal',
+            'base' => 25,
+            'factor' => 1.17,
+        ],
+        'central_energia' => [
+            'resource' => 'energia',
+            'base' => 35,
+            'factor' => 1.16,
+        ],
+        'housing' => [
+            'resource' => 'pessoal',
+            'base' => 15,
+            'factor' => 1.12,
+        ],
+    ],
     /**
      * Balanço de Edifícios (Regras de Economia e Engenharia)
      */

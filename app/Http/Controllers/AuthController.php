@@ -173,12 +173,14 @@ class AuthController extends Controller
                 
                 // Criar recursos iniciais na tabela recursos (fonte de verdade)
                 $base->recursos()->firstOrCreate(['base_id' => $base->id], [
-                    'suprimentos' => 1000,
-                    'combustivel' => 800,
+                    'suprimentos' => 500,
+                    'combustivel' => 500,
                     'municoes' => 500,
-                    'pessoal' => 500,
-                    'metal' => 0,
-                    'energia' => 0,
+                    'pessoal' => 300,
+                    'metal' => 400,
+                    'energia' => 400,
+                    'cap' => 1000,
+                    'storage_capacity' => 1000,
                 ]);
  
                 Auth::login($jogador);
