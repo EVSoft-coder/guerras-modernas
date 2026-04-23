@@ -256,13 +256,35 @@ export function VillageDashboard({
                     
                     {gameMode === 'WORLD_MAP' ? (
                         <WorldMapView 
-                        playerBase={base} 
-                        troops={units.length > 0 ? units.map((u: any) => ({ tipo: u.type?.name, quantidade: u.quantity })) : (base?.tropas ?? [])} 
-                        gameConfig={gameConfig} 
-                        unitTypes={unitTypes}
-                        diplomaties={diplomaties}
-                        myAllianceId={myAllianceId}
-                    />
+                            playerBase={base} 
+                            troops={units.length > 0 ? units.map((u: any) => ({ tipo: u.type?.name, quantidade: u.quantity })) : (base?.tropas ?? [])} 
+                            gameConfig={gameConfig} 
+                            unitTypes={unitTypes}
+                            diplomaties={diplomaties}
+                            myAllianceId={myAllianceId}
+                        />
+                    ) : buildings.length === 0 ? (
+                        <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] bg-black/40 border-2 border-dashed border-orange-500/20 rounded-[2rem] backdrop-blur-xl p-10 text-center gap-6 animate-in fade-in zoom-in duration-500">
+                             <div className="w-20 h-20 bg-orange-500/10 rounded-full flex items-center justify-center border border-orange-500/30 shadow-[0_0_50px_rgba(249,115,22,0.1)]">
+                                 <Zap className="text-orange-500 animate-pulse" size={40} />
+                             </div>
+                             <div className="flex flex-col gap-2">
+                                <h3 className="text-xl font-black uppercase tracking-tighter text-white">Base não inicializada</h3>
+                                <p className="text-xs text-neutral-500 font-medium max-w-xs mx-auto leading-relaxed">
+                                    O setor militar detetado não possui infraestrutura operacional ativa no momento. É necessário realizar a mobilização inicial.
+                                </p>
+                             </div>
+                             <button 
+                                onClick={() => router.post('/base/bootstrap', { base_id: base.id })}
+                                className="group relative px-8 py-4 bg-orange-500 hover:bg-orange-400 text-black font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl transition-all duration-300 shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:scale-105 active:scale-95"
+                             >
+                                <span className="relative z-10 flex items-center gap-3">
+                                    Mobilizar Estruturas Iniciais
+                                    <Target size={18} />
+                                </span>
+                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-2xl" />
+                             </button>
+                        </div>
                     ) : (
                         <VisualVillageView base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} buildingQueue={buildingQueue} />
                     )}

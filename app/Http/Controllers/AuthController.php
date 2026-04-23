@@ -144,20 +144,17 @@ class AuthController extends Controller
                             'ultimo_update' => now(),
                         ]);
 
-                        // Criar infraestrutura inicial normalizada
+                        // FASE CRÍTICA — BOOTSTRAP DO JOGO: Infraestrutura inicial normalizada
                         $base->edificios()->createMany([
-                            [
-                                'tipo' => \App\Domain\Building\BuildingType::HQ,
-                                'nivel' => 1,
-                                'pos_x' => 400,
-                                'pos_y' => 300,
-                            ],
-                            [
-                                'tipo' => \App\Domain\Building\BuildingType::MURALHA,
-                                'nivel' => 1,
-                                'pos_x' => 400,
-                                'pos_y' => 530,
-                            ]
+                            ['tipo' => \App\Domain\Building\BuildingType::HQ, 'nivel' => 1, 'pos_x' => 400, 'pos_y' => 300],
+                            ['tipo' => \App\Domain\Building\BuildingType::MURALHA, 'nivel' => 1, 'pos_x' => 400, 'pos_y' => 530],
+                            ['tipo' => \App\Domain\Building\BuildingType::MINA_SUPRIMENTOS, 'nivel' => 1, 'pos_x' => 268, 'pos_y' => 185],
+                            ['tipo' => \App\Domain\Building\BuildingType::MINA_METAL, 'nivel' => 1, 'pos_x' => 532, 'pos_y' => 185],
+                            ['tipo' => \App\Domain\Building\BuildingType::REFINARIA, 'nivel' => 1, 'pos_x' => 532, 'pos_y' => 415],
+                            ['tipo' => \App\Domain\Building\BuildingType::CENTRAL_ENERGIA, 'nivel' => 1, 'pos_x' => 400, 'pos_y' => 70],
+                            ['tipo' => \App\Domain\Building\BuildingType::FABRICA_MUNICOES, 'nivel' => 1, 'pos_x' => 135, 'pos_y' => 300],
+                            ['tipo' => \App\Domain\Building\BuildingType::HOUSING, 'nivel' => 1, 'pos_x' => 268, 'pos_y' => 415],
+                            ['tipo' => \App\Domain\Building\BuildingType::POSTO_RECRUTAMENTO, 'nivel' => 1, 'pos_x' => 665, 'pos_y' => 300],
                         ]);
                         break;
                     } catch (\Illuminate\Database\QueryException $e) {

@@ -166,4 +166,34 @@ class BaseController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
+
+    /**
+     * FASE UX: Inicializar base vazia manualmente.
+     */
+    public function bootstrap(Request $request)
+    {
+        $baseId = $request->input('base_id') ?? session('selected_base_id');
+        $base = Base::findOrFail($baseId);
+        $this->authorize('update', $base);
+
+        if ($base->edificios()->count() > 0) {
+            return redirect()->back()->withErrors(['error' => 'SÉRIE DE DADOS: A base já possui infraestrutura ativa.']);
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function() use ($base) {
+            $base->edificios()->createMany([
+                ['tipo' => \App\Domain\Building\BuildingType::HQ, 'nivel' => 1, 'pos_x' => 400, 'pos_y' => 300],
+                ['tipo' => \App\Domain\Building\BuildingType::MURALHA, 'nivel' => 1, 'pos_x' => 400, 'pos_y' => 530],
+                ['tipo' => \App\Domain\Building\BuildingType::MINA_SUPRIMENTOS, 'nivel' => 1, 'pos_x' => 268, 'pos_y' => 185],
+                ['tipo' => \App\Domain\Building\BuildingType::MINA_METAL, 'nivel' => 1, 'pos_x' => 532, 'pos_y' => 185],
+                ['tipo' => \App\Domain\Building\BuildingType::REFINARIA, 'nivel' => 1, 'pos_x' => 532, 'pos_y' => 415],
+                ['tipo' => \App\Domain\Building\BuildingType::CENTRAL_ENERGIA, 'nivel' => 1, 'pos_x' => 400, 'pos_y' => 70],
+                ['tipo' => \App\Domain\Building\BuildingType::FABRICA_MUNICOES, 'nivel' => 1, 'pos_x' => 135, 'pos_y' => 300],
+                ['tipo' => \App\Domain\Building\BuildingType::HOUSING, 'nivel' => 1, 'pos_x' => 268, 'pos_y' => 415],
+                ['tipo' => \App\Domain\Building\BuildingType::POSTO_RECRUTAMENTO, 'nivel' => 1, 'pos_x' => 665, 'pos_y' => 300],
+            ]);
+        });
+
+        return redirect()->back()->with('success', 'LOGÍSTICA REINSTALADA: Infraestrutura de Nível 1 operacional.');
+    }
 }

@@ -58,6 +58,11 @@ class GameEngine
             $lockedBase = Base::where('id', $base->id)->lockForUpdate()->first();
             if (!$lockedBase) return;
 
+            // FASE SEGURANÇA: Bloquear processamento de bases sem infraestrutura (Vácuo Tático)
+            if ($lockedBase->edificios()->count() === 0) {
+                throw new \Exception("VÁCUO TÁTICO: Village has no buildings. Inicialização de infraestrutura pendente.");
+            }
+
             // 2. Sync de Lealdade (Tribal) - Mantemos pois é leve e crítico
             $this->loyaltyService->updateLoyalty($lockedBase);
 

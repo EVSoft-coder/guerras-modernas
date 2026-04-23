@@ -147,7 +147,7 @@ class ResourceService
         $configProducao = config('game.production');
 
         foreach ($buildings as $edificio) {
-            $tipo = $edificio->tipo;
+            $tipo = \App\Domain\Building\BuildingType::normalize($edificio->tipo);
             $nivel = $edificio->nivel;
 
             if (isset($configProducao[$tipo])) {

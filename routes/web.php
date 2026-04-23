@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/treinar', [BaseController::class, 'treinar'])->name('treinar');
             Route::post('/atacar', [App\Http\Controllers\AtaqueController::class, 'enviar'])->name('atacar');
             Route::post('/atacar/cancelar/{id}', [App\Http\Controllers\AtaqueController::class, 'cancelar'])->name('atacar.cancelar');
+            Route::post('/bootstrap', [BaseController::class, 'bootstrap'])->name('bootstrap');
             Route::post('/trocar', [BaseController::class, 'trocar'])->name('trocar');
             Route::post('/pesquisar', [App\Http\Controllers\PesquisaController::class, 'pesquisar'])->name('pesquisar');
         });
