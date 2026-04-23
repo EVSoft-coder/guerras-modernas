@@ -60,10 +60,10 @@ class GameStateService
             'bases' => $jogador ? $jogador->bases->map(fn($b) => ['id' => $b->id, 'nome' => $b->nome]) : [],
             'buildings' => $base->edificios->map(fn($b) => [
                 'id' => $b->id,
-                'type' => $b->tipo,
-                'level' => $b->nivel,
-                'posX' => $b->pos_x,
-                'posY' => $b->pos_y,
+                'tipo' => $b->tipo,
+                'nivel' => $b->nivel,
+                'pos_x' => $b->pos_x,
+                'pos_y' => $b->pos_y,
             ]),
             'units' => $base->units->map(fn($u) => [
                 'typeId' => $u->unit_type_id,
