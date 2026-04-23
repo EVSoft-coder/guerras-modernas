@@ -92,6 +92,31 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                         );
                     })}
                 </div>
+
+                {/* CAMADA DEBUG: Marcadores de Alta Visibilidade */}
+                <div style={{ position: 'absolute', inset: 0, zIndex: 9999, pointerEvents: 'none' }}>
+                    {(base.edificios || []).map((b: any) => (
+                        <div
+                            key={b.id}
+                            style={{
+                                position: 'absolute',
+                                top: `${b.pos_y}px`,
+                                left: `${b.pos_x}px`,
+                                background: 'red',
+                                color: 'white',
+                                padding: '2px 6px',
+                                fontSize: '9px',
+                                fontWeight: 'bold',
+                                borderRadius: '4px',
+                                border: '1px solid white',
+                                transform: 'translate(-50%, -50%)',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            {b.tipo} L{b.nivel}
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Rodapé Tático */}

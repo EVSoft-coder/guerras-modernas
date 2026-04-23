@@ -20,6 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
  * Gere a transição entre Dashboard (Vila) e WorldMapView baseado no estado ECS.
  */
 export default function Dashboard(props: any) {
+    console.log("FRONTEND_DEBUG: buildings", props.buildings);
     const gameMode = useGameMode();
     const state = props.state || {}; // FASE LIMPEZA: Prioridade ao estado unificado
     
@@ -63,6 +64,18 @@ export default function Dashboard(props: any) {
     // Default: VILLAGE -> Dashboard UI
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <div className="fixed top-20 left-4 z-[9999] bg-black/80 p-4 border border-orange-500 text-[10px] font-mono text-orange-500 rounded-xl pointer-events-none">
+                <div className="font-black mb-2 uppercase tracking-widest border-b border-orange-500/20 pb-1">Debug_Infra_Monitor</div>
+                {currentBuildings.length === 0 ? (
+                    <div className="text-red-500">NO_BUILDINGS_DETECTED</div>
+                ) : (
+                    currentBuildings.map((b: any) => (
+                        <div key={b.id}>
+                            > {b.type ?? b.tipo} [LVL_{b.level ?? b.nivel}]
+                        </div>
+                    ))
+                )}
+            </div>
             <VillageDashboard 
                  {...state} 
                  base={currentBase} 
