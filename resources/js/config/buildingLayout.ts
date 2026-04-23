@@ -50,4 +50,9 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
     quartel:            { ...BUILDING_SLOTS.BARRACKS, id: 'BARRACKS', w: 100, h: 110, anchor: 'center', assetName: 'quartel_v2.png' },
     aerodromo:          { ...BUILDING_SLOTS.AIRPORT, id: 'AIRPORT', w: 140, h: 120, anchor: 'center', assetName: 'aerodromo_v1.png' },
     muralha:            { ...BUILDING_SLOTS.WALL, id: 'WALL', w: 320, h: 200, anchor: 'center', assetName: 'muralha_v2.png' },
+    mina_metal:         { x: 135, y: 185, id: 'METAL_MINE', w: 80, h: 80, anchor: 'center', assetName: 'mina_v1.png' },
+    mina_suprimentos:   { x: 268, y: 415, id: 'SUPPLY_MINE', w: 80, h: 80, anchor: 'center', assetName: 'mina_v1.png' },
+    refinaria:          { x: 665, y: 185, id: 'REFINERY', w: 90, h: 90, anchor: 'center', assetName: 'refinaria_v1.png' },
+    housing:            { x: 665, y: 415, id: 'HOUSING', w: 80, h: 80, anchor: 'center', assetName: 'housing_v1.png' },
+    posto_recrutamento: { x: 400, y: 185, id: 'RECRUITMENT', w: 90, h: 90, anchor: 'center', assetName: 'recrutamento_v1.png' },
 };
