@@ -48,19 +48,11 @@ class DashboardController extends Controller
         // 4. Salvar estado de sessão e Renderizar (Snapshot Único encapsulado)
         session(['selected_base_id' => $base->id]);
 
-        // TEMPORARIAMENTE: Confirmar dados reais
-        return response()->json([
-            'buildings' => $state['buildings'],
-            'count' => count($state['buildings'])
-        ]);
-
-        /*
         return Inertia::render('dashboard', [
             'state' => $state,
             'base' => $state['base'],
             'resources' => $state['resources'],
             'buildings' => $state['buildings'],
         ]);
-        */
     }
 }
