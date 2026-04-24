@@ -56,7 +56,7 @@ class Base extends Model
 
     public function tropas()
     {
-        return $this->hasMany(Tropas::class);
+        return $this->hasMany(Unit::class, 'base_id');
     }
 
     public function edificios()
@@ -64,19 +64,19 @@ class Base extends Model
         return $this->hasMany(Edificio::class);
     }
 
-    public function construcoes()
-    {
-        return $this->hasMany(Construcao::class, 'base_id');
-    }
-
     public function buildingQueue()
     {
         return $this->hasMany(BuildingQueue::class)->orderBy('position');
     }
 
-    public function treinos()
+    public function movements()
     {
-        return $this->hasMany(Treino::class, 'base_id');
+        return $this->hasMany(Movement::class, 'origin_id');
+    }
+
+    public function incomingMovements()
+    {
+        return $this->hasMany(Movement::class, 'target_id');
     }
 
     public function units()

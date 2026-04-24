@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Base;
 use App\Models\Movement;
 use App\Models\MovementUnit;
-use App\Models\Tropas;
+use App\Models\Unit;
 use App\Models\UnitType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -43,13 +43,13 @@ class MovementService
             foreach ($unitTypes as $unitType) {
                 $qty = $units[$unitType->id];
                 
-                // Verificar disponibilidade na base
-                $current = Tropas::where('base_id', $origin->id)
-                    ->where('unidade', $unitType->name) // O model Tropas usa 'unidade' como string name
+                // Verificar disponibilidade na base (via units table)
+                $current = Unit::where('base_id', $origin->id)
+                    ->where('unit_type_id', $unitType->id)
                     ->lockForUpdate()
                     ->first();
 
-                if (!$current || $current->quantidade < $qty) {
+                if (!$current || $current->quantity < $qty) {
                     throw new \Exception("LOGÍSTICA: Unidades Insuficientes de " . $unitType->name);
                 }
 
@@ -85,11 +85,10 @@ class MovementService
                     'quantity' => $qty
                 ]);
 
-                // Remover da base
-                $unitName = $unitTypes->find($typeId)->name;
-                Tropas::where('base_id', $origin->id)
-                    ->where('unidade', $unitName)
-                    ->decrement('quantidade', $qty);
+                // Remover da base (units table)
+                Unit::where('base_id', $origin->id)
+                    ->where('unit_type_id', $typeId)
+                    ->decrement('quantity', $qty);
             }
 
             Log::channel('game')->info("[MOVEMENT_STARTED] Base {$origin->id} -> Base {$target->id}", [
@@ -195,26 +194,25 @@ class MovementService
             'quantity' => $u->quantity
         ])->toArray();
 
-        // 2. Unidades Defensoras
-        $defUnits = Tropas::where('base_id', $targetBase->id)->get()->map(function($t) {
-            $type = UnitType::where('name', $t->unidade)->first();
+        // 2. Unidades Defensoras (via units table)
+        $defUnits = Unit::where('base_id', $targetBase->id)->with('type')->get()->map(function($u) {
             return [
-                'id' => $type?->id,
-                'name' => $t->unidade,
-                'attack' => $type?->attack ?? 0,
-                'defense' => $type?->defense ?? 0,
-                'quantity' => $t->quantidade
+                'id' => $u->unit_type_id,
+                'name' => $u->type->name,
+                'attack' => $u->type->attack,
+                'defense' => $u->type->defense,
+                'quantity' => $u->quantity
             ];
         })->filter(fn($u) => $u['quantity'] > 0)->toArray();
 
         // 3. EXECUTAR COMBATE
         $result = $this->combatService->resolveBattle($atkUnits, $defUnits);
 
-        // Atualizar tropas defensoras
+        // Atualizar tropas defensoras (via units table)
         foreach ($result['defender_units'] as $unit) {
-            Tropas::where('base_id', $targetBase->id)
-                ->where('unidade', $unit['name'])
-                ->update(['quantidade' => max(0, (int)$unit['quantity'])]);
+            Unit::where('base_id', $targetBase->id)
+                ->where('unit_type_id', $unit['id'])
+                ->update(['quantity' => max(0, (int)$unit['quantity'])]);
         }
 
         $loot = [];
@@ -466,12 +464,10 @@ class MovementService
     private function transferUnitsToGarrison(Movement $movement, Base $base): void
     {
         foreach ($movement->units as $mUnit) {
-            $unitName = $mUnit->type->name;
-            
-            // Adicionar à base destino
-            Tropas::updateOrCreate(
-                ['base_id' => $base->id, 'unidade' => $unitName],
-                ['quantidade' => DB::raw("quantidade + {$mUnit->quantity}")]
+            // Adicionar à base destino (via units table)
+            Unit::updateOrCreate(
+                ['base_id' => $base->id, 'unit_type_id' => $mUnit->unit_type_id],
+                ['quantity' => DB::raw("quantity + {$mUnit->quantity}")]
             );
         }
     }

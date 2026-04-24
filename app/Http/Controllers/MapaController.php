@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
  
 use App\Models\Base;
-use App\Models\Ataque;
+use App\Models\Movement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -30,7 +30,8 @@ class MapaController extends Controller
  
         $jogadorId = Auth::id();
         $selectedBaseId = session('selected_base_id');
-        $origemBase = Base::with('tropas')->find($selectedBaseId) ?? Base::where('jogador_id', $jogadorId)->with('tropas')->first();
+        $origemBase = Base::with('units.type')->find($selectedBaseId) 
+            ?? Base::where('jogador_id', $jogadorId)->with('units.type')->first();
  
         return Inertia::render('mapa', [
             'bases' => $bases,
@@ -38,11 +39,12 @@ class MapaController extends Controller
             'y' => $y,
             'raio' => $raio,
             'origemBase' => $origemBase,
-            'ataquesEnviados' => Ataque::where('origem_base_id', $origemBase?->id)->where('processado', false)->get(),
-            'ataquesRecebidos' => Ataque::where('destino_base_id', $origemBase?->id)->where('processado', false)->get(),
+            'ataquesEnviados' => Movement::where('origin_id', $origemBase?->id)->where('status', 'moving')->get(),
+            'ataquesRecebidos' => Movement::where('target_id', $origemBase?->id)->where('status', 'moving')->get(),
             'gameConfig' => config('game')
         ]);
     }
+
  
     /**
      * API para buscar dados do mapa via Ajax/React.

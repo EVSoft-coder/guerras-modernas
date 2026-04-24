@@ -167,15 +167,6 @@ class UnitQueueService
             ['quantity' => 0]
         );
         $unit->increment('quantity', $quantity);
-
-        // 2. Compatibilidade Legada (tropas) - Opcional, mas mantemos para evitar quebra em outras partes do sistema
-        $unitType = UnitType::find($unitTypeId);
-        if ($unitType) {
-            \App\Models\Tropas::updateOrCreate(
-                ['base_id' => $base->id, 'unidade' => $unitType->name],
-                ['quantidade' => DB::raw("quantidade + {$quantity}")]
-            );
-        }
     }
 
     /**

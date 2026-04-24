@@ -99,12 +99,12 @@ class AuthController extends Controller
             // Payload optimizado para Polling
             'gameData' => [
                 'resources' => $base ? $this->gameService->calculateResources($base) : null,
-                'units' => $base?->tropas,
+                'units' => $base?->units()->with('type')->get(),
                 'buildings' => $base?->edificios,
                 'population' => $populacao,
                 'movements' => [
-                    'sent' => \App\Models\Ataque::where('origem_base_id', $base?->id)->where('processado', false)->get() ?? [],
-                    'received' => \App\Models\Ataque::where('destino_base_id', $base?->id)->where('processado', false)->get() ?? [],
+                    'sent' => \App\Models\Movement::where('origin_id', $base?->id)->where('status', 'moving')->get() ?? [],
+                    'received' => \App\Models\Movement::where('target_id', $base?->id)->where('status', 'moving')->get() ?? [],
                 ],
                 'rebels' => Base::whereNull('jogador_id')->with('recursos')->get()->map(function($b) {
                     return array_merge($b->toArray(), [

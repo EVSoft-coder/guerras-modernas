@@ -75,8 +75,8 @@ class GameStateService
             'unitQueue' => $base->unitQueue,
             'resources' => $resources,
             'taxas' => $this->resourceService->getRates($base),
-            'ataquesEnviados' => $base->ataquesEnviados ?? [],
-            'ataquesRecebidos' => $base->ataquesRecebidos ?? [],
+            'ataquesEnviados' => Movement::where('origin_id', $base->id)->where('status', 'moving')->get(),
+            'ataquesRecebidos' => Movement::where('target_id', $base->id)->where('status', 'moving')->get(),
             'gameConfig' => $config,
         ];
     }
