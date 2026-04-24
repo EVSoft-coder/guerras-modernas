@@ -126,4 +126,40 @@ Route::middleware(['auth', 'can:admin-only'])->group(function () {
             return "[ERRO DE MIGRAÇÃO]: " . $e->getMessage();
         }
     })->name('admin.deploy.migrate');
+
+    // ALDEIAS NPC (FASE 6)
+    Route::get('/mw-npc-generate', function() {
+        $npcService = app(\App\Services\NpcService::class);
+        $existing = $npcService->countNpcVillages();
+        
+        if ($existing >= 200) {
+            return "
+                <div style='background:#0a0c10; color:#ff0; padding:40px; font-family:monospace; border:2px solid #ff0;'>
+                    <h1>[NPC ALERTA]</h1>
+                    <p>Já existem {$existing} aldeias NPC no mapa.</p>
+                    <p>Geração bloqueada para evitar excesso.</p>
+                    <a href='/mw-npc-generate?force=1' style='color:#0f0;'>Forçar geração de +100</a> |
+                    <a href='/dashboard' style='color:#fff;'>VOLTAR</a>
+                </div>
+            ";
+        }
+        
+        $count = request('count', 300);
+        $generated = $npcService->generateNpcVillages((int)$count);
+        return "
+            <div style='background:#0a0c10; color:#0f0; padding:40px; font-family:monospace; border:2px solid #0f0;'>
+                <h1>[NPC GERAÇÃO COMPLETA]</h1>
+                <p>> Aldeias NPC geradas: {$generated}</p>
+                <p>> Total NPC no mapa: " . $npcService->countNpcVillages() . "</p>
+                <hr style='border:1px solid #0f0; margin:20px 0;'>
+                <a href='/dashboard' style='color:#fff; text-decoration:underline;'>VOLTAR AO COMANDO</a>
+            </div>
+        ";
+    })->name('admin.npc.generate');
+
+    Route::get('/mw-npc-grow', function() {
+        $npcService = app(\App\Services\NpcService::class);
+        $grown = $npcService->growNpcVillages();
+        return response()->json(['grown' => $grown, 'message' => "{$grown} aldeias NPC cresceram."]);
+    })->name('admin.npc.grow');
 });

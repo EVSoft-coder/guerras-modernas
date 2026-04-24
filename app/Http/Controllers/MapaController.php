@@ -77,10 +77,16 @@ class MapaController extends Controller
         $minY = $cy * $size;
         $maxY = $minY + $size - 1;
 
-        $bases = Base::with('jogador:id,username,alianca_id')
+        $bases = Base::with(['jogador:id,username,alianca_id', 'edificios:id,base_id,nivel'])
             ->whereBetween('coordenada_x', [$minX, $maxX])
             ->whereBetween('coordenada_y', [$minY, $maxY])
-            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'loyalty']);
+            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'loyalty'])
+            ->map(function ($base) {
+                $base->is_npc = is_null($base->jogador_id);
+                $base->pontos = $base->edificios->sum('nivel') + ($base->is_npc ? 0 : 10);
+                unset($base->edificios); // Não enviar edifícios no chunk
+                return $base;
+            });
 
         return response()->json([
             'chunk' => ['x' => $cx, 'y' => $cy],
