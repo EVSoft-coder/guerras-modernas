@@ -2,20 +2,27 @@
 
 namespace App\Services;
 
+use App\Models\Base;
+use App\Models\Jogador;
 use Illuminate\Support\Facades\Log;
 
 /**
  * CombatService - Centro de Resolução de Batalhas.
- * Calcula o resultado de confrontos militares e perdas de unidades.
+ * Calcula o resultado de confrontos militares com bónus de pesquisa e muralha.
  */
 class CombatService
 {
     /**
      * Resolve uma batalha entre dois grupos de unidades.
-     * PASSO 2 e 3 - Lógica de soma de Atacante e Defesa.
+     * Aplica bónus de pesquisa (ataque/defesa) e muralha (defensor).
      */
-    public function resolveBattle(array $attackerUnits, array $defenderUnits): array
-    {
+    public function resolveBattle(
+        array $attackerUnits, 
+        array $defenderUnits, 
+        ?Jogador $attacker = null, 
+        ?Jogador $defender = null,
+        ?Base $defenderBase = null
+    ): array {
         $totalAttack = 0;
         $totalDefense = 0;
 
@@ -29,29 +36,63 @@ class CombatService
             $totalDefense += $unit['defense'] * $unit['quantity'];
         }
 
-        Log::channel('game')->info("[BATTLE] Iniciada: ATK={$totalAttack} vs DEF={$totalDefense}");
+        // FASE 3: Aplicar Bónus de Pesquisa (Balística / Blindagem)
+        $atkBonus = 0;
+        $defBonus = 0;
+
+        if ($attacker) {
+            $researchService = app(ResearchService::class);
+            $atkBonuses = $researchService->getResearchBonuses($attacker);
+            $atkBonus = $atkBonuses['attack_bonus'] ?? 0;
+            $totalAttack *= (1 + $atkBonus);
+        }
+
+        if ($defender) {
+            $researchService = app(ResearchService::class);
+            $defBonuses = $researchService->getResearchBonuses($defender);
+            $defBonus = $defBonuses['defense_bonus'] ?? 0;
+            $totalDefense *= (1 + $defBonus);
+        }
+
+        // FASE 4: Aplicar Bónus Defensivo da Muralha (+5% DEF por nível)
+        $wallBonus = 0;
+        if ($defenderBase) {
+            $wallLevel = $defenderBase->edificios->where('tipo', 'muralha')->first()?->nivel ?? 0;
+            $wallBonus = $wallLevel * 0.05;
+            $totalDefense *= (1 + $wallBonus);
+        }
+
+        Log::channel('game')->info("[BATTLE] ATK={$totalAttack} (research+{$atkBonus}) vs DEF={$totalDefense} (research+{$defBonus}, wall+{$wallBonus})");
 
         if ($totalAttack <= 0) {
             return $this->formatResult(false, $attackerUnits, $defenderUnits, 0, 1);
         }
 
-        // Determinar Vencedor e Rácio de Perdas (Passo 4)
+        // Determinar Vencedor e Rácio de Perdas
         if ($totalAttack > $totalDefense) {
             $winner = 'attacker';
-            // Se atacante vence, ele perde uma parte menor das tropas
             $attackerLossRatio = min(0.9, $totalDefense / ($totalAttack * 1.5));
-            $defenderLossRatio = 1.0; // Defensor na base morre se perder tudo (simplificado)
+            $defenderLossRatio = 1.0;
         } else {
             $winner = 'defender';
             $defenderLossRatio = min(0.9, $totalAttack / ($totalDefense * 1.5));
             $attackerLossRatio = 1.0;
         }
 
-        // Aplicar Perdas (Passo 4)
+        // Aplicar Perdas
         $finalAttacker = $this->applyLosses($attackerUnits, $attackerLossRatio);
         $finalDefender = $this->applyLosses($defenderUnits, $defenderLossRatio);
 
-        return $this->formatResult($winner === 'attacker', $finalAttacker, $finalDefender, $totalAttack, $totalDefense);
+        return $this->formatResult(
+            $winner === 'attacker', 
+            $finalAttacker, 
+            $finalDefender, 
+            $totalAttack, 
+            $totalDefense,
+            $wallBonus,
+            $atkBonus,
+            $defBonus
+        );
     }
 
     /**
@@ -70,8 +111,16 @@ class CombatService
     /**
      * Formata o relatório final da batalha.
      */
-    private function formatResult(bool $attackerWon, array $atkUnits, array $defUnits, float $atkPower, float $defPower): array
-    {
+    private function formatResult(
+        bool $attackerWon, 
+        array $atkUnits, 
+        array $defUnits, 
+        float $atkPower, 
+        float $defPower,
+        float $wallBonus = 0,
+        float $atkResearchBonus = 0,
+        float $defResearchBonus = 0
+    ): array {
         return [
             'winner' => $attackerWon ? 'attacker' : 'defender',
             'attacker_won' => $attackerWon,
@@ -79,7 +128,10 @@ class CombatService
             'defender_units' => $defUnits,
             'stats' => [
                 'attack_power' => $atkPower,
-                'defense_power' => $defPower
+                'defense_power' => $defPower,
+                'wall_bonus' => $wallBonus,
+                'attacker_research_bonus' => $atkResearchBonus,
+                'defender_research_bonus' => $defResearchBonus,
             ]
         ];
     }

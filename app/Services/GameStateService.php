@@ -16,10 +16,12 @@ use Illuminate\Support\Facades\Log;
 class GameStateService
 {
     protected $resourceService;
+    protected $researchService;
 
-    public function __construct(ResourceService $resourceService)
+    public function __construct(ResourceService $resourceService, ?ResearchService $researchService = null)
     {
         $this->resourceService = $resourceService;
+        $this->researchService = $researchService ?? app(ResearchService::class);
     }
 
     /**
@@ -77,7 +79,10 @@ class GameStateService
             'taxas' => $this->resourceService->getRates($base),
             'ataquesEnviados' => Movement::where('origin_id', $base->id)->where('status', 'moving')->get(),
             'ataquesRecebidos' => Movement::where('target_id', $base->id)->where('status', 'moving')->get(),
+            'research' => $jogador ? $this->researchService->getResearchState($jogador, $base) : null,
+            'researchBonuses' => $jogador ? $this->researchService->getResearchBonuses($jogador) : [],
             'gameConfig' => $config,
+            'researchConfig' => config('research'),
         ];
     }
 }

@@ -18,6 +18,7 @@ import { motion } from 'framer-motion';
 
 import { useGameEntities } from '@/hooks/use-game-entities';
 import { UnitQueue } from '@/components/game/UnitQueue';
+import { ResearchPanel } from '@/components/game/ResearchPanel';
 
 const STABLE_EMPTY_ARRAY: any[] = [];
 
@@ -26,8 +27,9 @@ export function VillageDashboard({
     relatoriosGlobal, buildings = STABLE_EMPTY_ARRAY, population, resources, buildingQueue = STABLE_EMPTY_ARRAY,
     unitQueue = STABLE_EMPTY_ARRAY, units = STABLE_EMPTY_ARRAY, unitTypes = STABLE_EMPTY_ARRAY,
     ataquesRecebidos = STABLE_EMPTY_ARRAY, ataquesEnviados = STABLE_EMPTY_ARRAY,
-    diplomaties = STABLE_EMPTY_ARRAY, myAllianceId
-}: DashboardProps) {
+    diplomaties = STABLE_EMPTY_ARRAY, myAllianceId,
+    research = null, researchBonuses = {}, researchConfig = null
+}: DashboardProps & { research?: any; researchBonuses?: any; researchConfig?: any }) {
     // 0. ECS ENGINE INTEGRATION
     const { globalState } = useGameEntities();
 
@@ -303,6 +305,12 @@ export function VillageDashboard({
                             : (base?.tropas || []).map((t: any) => ({ tipo: t.unidade || t.tipo, quantidade: t.quantidade }))
                         } 
                         gameConfig={gameConfig} 
+                    />
+                    <ResearchPanel 
+                        research={research}
+                        researchBonuses={researchBonuses}
+                        baseId={base?.id}
+                        resources={resources}
                     />
                     
                     <Card className="bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group">

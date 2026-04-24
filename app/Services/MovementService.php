@@ -205,8 +205,10 @@ class MovementService
             ];
         })->filter(fn($u) => $u['quantity'] > 0)->toArray();
 
-        // 3. EXECUTAR COMBATE
-        $result = $this->combatService->resolveBattle($atkUnits, $defUnits);
+        // 3. EXECUTAR COMBATE (com bónus de pesquisa e muralha)
+        $attackerPlayer = $originBase->jogador;
+        $defenderPlayer = $targetBase->jogador;
+        $result = $this->combatService->resolveBattle($atkUnits, $defUnits, $attackerPlayer, $defenderPlayer, $targetBase);
 
         // Atualizar tropas defensoras (via units table)
         foreach ($result['defender_units'] as $unit) {
