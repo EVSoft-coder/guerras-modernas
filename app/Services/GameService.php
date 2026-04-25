@@ -83,8 +83,11 @@ class GameService
                 throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente. Melhore o Complexo Residencial.");
             }
 
-            if (!$this->consumirRecursosInternal($lockedBase, $custos)) {
-                throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
+            // Validação de Recursos (Apenas verificação, o débito real ocorre no BuildingQueueService)
+            foreach ($custos as $res => $qtd) {
+                if ($qtd > 0 && (float)($lockedBase->recursos->$res ?? 0) < $qtd) {
+                    throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
+                }
             }
 
             $buildingId = null;

@@ -58,7 +58,8 @@ class BuildingQueueService
             $rec = $lockedBase->recursos()->lockForUpdate()->first();
             foreach ($custos as $res => $valor) {
                 if ($valor > 0 && (float)$rec->{$res} < $valor) {
-                    throw new \Exception("ENGENHARIA: Saldo insuficiente de " . strtoupper($res));
+                    $atual = (float)$rec->{$res};
+                    throw new \Exception("ENGENHARIA: Saldo insuficiente de " . strtoupper($res) . " (Possui: {$atual}, Necessita: {$valor})");
                 }
             }
 
