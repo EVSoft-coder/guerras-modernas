@@ -77,16 +77,21 @@ class GameService
             $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
 
             $stats = $this->obterEstatisticasPopulacao($lockedBase);
-            $popRequerida = config("game.buildings.{$tipo}.cost.pessoal") ?? 0;
+            $popRequerida = $custos['pessoal'] ?? 0;
 
             if ($stats['available'] < $popRequerida) {
-                throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente. Melhore o Complexo Residencial.");
+                throw new \Exception("LOGÍSTICA: Espaço habitacional insuficiente. Melhore o Complexo Residencial (Disponível: {$stats['available']}, Necessário: {$popRequerida}).");
             }
 
-            // Validação de Recursos (Apenas verificação, o débito real ocorre no BuildingQueueService)
+            // 3. Recarregar recursos após processamento do GameEngine para evitar dados obsoletos em memória
+            $lockedBase->load('recursos');
+
+            // 4. Validação de Recursos (Apenas verificação, o débito real ocorre no BuildingQueueService)
             foreach ($custos as $res => $qtd) {
+                if ($res === 'pessoal') continue; // Pessoal já validado acima como CAP
                 if ($qtd > 0 && (float)($lockedBase->recursos->$res ?? 0) < $qtd) {
-                    throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo));
+                    $atual = (float)($lockedBase->recursos->$res ?? 0);
+                    throw new \Exception("Logística insuficiente para expansão de estrutura: " . strtoupper($tipo) . " (Falta " . strtoupper($res) . ". Tem: {$atual}, Precisa: {$qtd})");
                 }
             }
 
