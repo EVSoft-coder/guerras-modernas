@@ -37,7 +37,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                         src={assetPath}
                         alt={type}
                         targetColor={layout.transparency?.targetColor}
-                        tolerance={layout.transparency?.tolerance || 90}
+                        tolerance={layout.transparency?.tolerance || 30}
                         style={{
                             width: '100%',
                             height: '100%',
