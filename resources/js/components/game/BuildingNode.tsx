@@ -68,7 +68,9 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                             height: '100%',
                             objectFit: 'contain',
                             pointerEvents: 'none',
-                            filter: isConstructing ? 'grayscale(0.5) brightness(0.7)' : 'none'
+                            mixBlendMode: assetPath.includes('_v1') || assetPath.includes('_v2') ? 'screen' : 'normal',
+                            filter: isConstructing ? 'brightness(0.5)' : 'brightness(1.2) contrast(1.1)',
+                            opacity: isConstructing ? 0.6 : 1
                         }}
                         onError={() => setIsInvalid(true)}
                     />

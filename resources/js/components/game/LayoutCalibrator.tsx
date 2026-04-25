@@ -223,10 +223,11 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                     <img 
                                         src={`/assets/buildings/${b.assetName}`} 
                                         className={`w-full h-full object-contain pointer-events-none transition-all ${
-                                            selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl grayscale-[0.2]'
+                                            selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl'
                                         }`}
                                         style={{
-                                            transform: `rotate(${b.rotation || 0}deg)`
+                                            transform: `rotate(${b.rotation || 0}deg)`,
+                                            mixBlendMode: b.assetName.includes('_v1') || b.assetName.includes('_v2') ? 'screen' : 'normal'
                                         }}
                                         alt={type} 
                                     />
