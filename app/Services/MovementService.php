@@ -72,6 +72,8 @@ class MovementService
                 if ($unitType->speed < $minSpeed) {
                     $minSpeed = (float) $unitType->speed;
                 }
+            }
+
             if ($minSpeed === 999999) $minSpeed = config('game.movement.base_speed', 1.0);
 
             // 2.5 Aplicar Multiplicador de Evento Mundial (Movimento)
