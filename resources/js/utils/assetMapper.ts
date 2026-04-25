@@ -22,6 +22,7 @@ export const getBuildingAsset = (type: string, level: number | 'blueprint' = 1):
     if (t === 'muralha') assetBase = 'muralha';
     if (t === 'mina_suprimentos') assetBase = 'mina_suprimentos';
     if (t === 'refinaria') assetBase = 'refinaria';
+    if (t === 'posto_recrutamento') assetBase = 'recrutamento';
 
     // HQ tem hq_v1, hq_v2 e hq_elite_v1
     if (t === 'hq') {
