@@ -23,12 +23,12 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const w = layout.w;
     const h = layout.h;
     
-    // Recuperamos o offset do banco de dados de design
+    // Recuperamos o offset do banco de dados de design (Retrocompatibilidade)
     const currentOffset = (BUILDING_OFFSETS[layout.id] as any) || { x: 0, y: 0, rotation: 0 };
-    const rotation = currentOffset.rotation || 0;
+    const rotation = layout.rotation !== undefined ? layout.rotation : (currentOffset.rotation || 0);
     
     const left = layout.x - (w / 2) + (currentOffset.x || 0);
-    const top = layout.y - h + (currentOffset.y || 0); 
+    const top = layout.y - (h / 2) + (currentOffset.y || 0); 
 
     const assetPath = `/assets/buildings/${layout.assetName || type.toLowerCase() + '.png'}`;
 
