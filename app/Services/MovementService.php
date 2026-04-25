@@ -232,7 +232,7 @@ class MovementService
             $this->createReturnMovement($movement, $targetBase, $originBase, $survivors, $loot);
         }
 
-        // 7. Relatório (Persistência em BD)
+        // 7. Relatório (Persistência em BD - Legacy)
         \App\Models\Relatorio::create([
             'atacante_id' => $originBase->jogador_id,
             'defensor_id' => $targetBase->jogador_id,
@@ -241,6 +241,22 @@ class MovementService
             'origem_nome' => $originBase->nome,
             'destino_nome' => $targetBase->nome,
             'detalhes' => array_merge($result, ['loot' => $loot])
+        ]);
+
+        // 8. Enviar Mensagens Automáticas (FASE 7)
+        // Calcular perdas para a mensagem
+        $atkLosses = collect($result['attacker_units'])->sum('losses');
+        $defLosses = collect($result['defender_units'])->sum('losses');
+
+        \App\Models\Mensagem::criarRelatorioAtaque([
+            'atacante_id' => $originBase->jogador_id,
+            'defensor_id' => $targetBase->jogador_id,
+            'vitoria' => $result['attacker_won'],
+            'atk_base' => $originBase->nome,
+            'def_base' => $targetBase->nome,
+            'atk_perdas' => $atkLosses,
+            'def_perdas' => $defLosses,
+            'saque' => $loot
         ]);
 
         Log::channel('game')->info("[GAME_ENGINE] COMBAT_RESULT {$targetBase->id}", [

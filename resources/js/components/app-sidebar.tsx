@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Map as MapIcon, Home, Target } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Map as MapIcon, Home, Target, Mail } from 'lucide-react';
 import AppLogo from './app-logo';
 import { eventBus, Events } from '@src/core/EventBus';
 
@@ -13,6 +13,11 @@ const mainNavItems: NavItem[] = [
         title: 'TERMINAL',
         url: '/dashboard',
         icon: Target,
+    },
+    {
+        title: 'MENSAGENS',
+        url: '/mensagens',
+        icon: Mail,
     },
 ];
 

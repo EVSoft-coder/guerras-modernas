@@ -81,6 +81,16 @@ Route::middleware(['auth'])->group(function () {
     // Outros
     Route::get('/alianca', [AliancaController::class, 'index'])->name('alianca.index');
     Route::get('/cron-run', function() { Artisan::call('cron:processar'); return redirect()->back(); })->name('cron.processar');
+    
+    // MENSAGENS E RELATÓRIOS (FASE 7)
+    Route::prefix('mensagens')->name('mensagens.')->group(function () {
+        Route::get('/', [App\Http\Controllers\MensagemController::class, 'index'])->name('index');
+        Route::get('/nao-lidas', [App\Http\Controllers\MensagemController::class, 'naoLidasCount'])->name('count');
+        Route::get('/{id}', [App\Http\Controllers\MensagemController::class, 'show'])->name('show');
+        Route::post('/enviar', [App\Http\Controllers\MensagemController::class, 'enviar'])->name('enviar');
+        Route::delete('/{id}', [App\Http\Controllers\MensagemController::class, 'apagar'])->name('apagar');
+        Route::post('/marcar-lidas', [App\Http\Controllers\MensagemController::class, 'marcarTodasLidas'])->name('marcar.lidas');
+    });
 });
 
 // Admin
