@@ -5,6 +5,7 @@ import { BUILDING_LAYOUT } from '@/config/buildingLayout';
 import { LayoutCalibrator } from './LayoutCalibrator';
 
 interface VillageViewProps {
+    jogador: any;
     base: Base;
     onBuildingClick: (building: any) => void;
     gameConfig: any;
@@ -15,7 +16,7 @@ interface VillageViewProps {
  * VisualVillageView V97 — ESTADO FINAL DE PRODUÇÃO
  * Renderização pura e performática da base militar V22.
  */
-export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
+export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, onBuildingClick, gameConfig, buildingQueue }) => {
     const containerRef = React.useRef<HTMLDivElement>(null);
     const [scale, setScale] = React.useState(1);
     const [showCalibrator, setShowCalibrator] = React.useState(false);
@@ -149,12 +150,14 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                 <span className="text-[10px] text-gray-500 font-mono uppercase tracking-[0.2em]">
                     Sincronização Tática V30 - Operacional
                 </span>
-                <button 
-                    onClick={() => setShowCalibrator(true)}
-                    className="ml-4 px-2 py-0.5 border border-gray-800 hover:border-cyan-500/50 hover:text-cyan-400 text-[9px] text-gray-600 font-mono transition-all rounded uppercase"
-                >
-                    [ Calibrar Layout ]
-                </button>
+                {jogador?.username === 'admin' && (
+                    <button 
+                        onClick={() => setShowCalibrator(true)}
+                        className="ml-4 px-2 py-0.5 border border-gray-800 hover:border-cyan-500/50 hover:text-cyan-400 text-[9px] text-gray-600 font-mono transition-all rounded uppercase"
+                    >
+                        [ Calibrar Layout ]
+                    </button>
+                )}
             </div>
 
             {showCalibrator && (

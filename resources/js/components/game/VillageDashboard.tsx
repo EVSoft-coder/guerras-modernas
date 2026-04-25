@@ -354,7 +354,7 @@ export function VillageDashboard({
                              </button>
                         </div>
                     ) : (
-                        <VisualVillageView base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} buildingQueue={buildingQueue} />
+                        <VisualVillageView jogador={jogador} base={base} onBuildingClick={handleBuildingClick} gameConfig={gameConfig} buildingQueue={buildingQueue} />
                     )}
                 </div>
 

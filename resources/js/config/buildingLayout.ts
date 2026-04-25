@@ -18,124 +18,134 @@ export const REFERENCE_HEIGHT = 600;
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = {
     "central_energia": {
-        "x": 485,
-        "y": 140,
+        "x": 480,
+        "y": 177,
         "id": "ENERGY",
-        "w": 134,
-        "h": 134,
+        "w": 80,
+        "h": 80,
         "anchor": "center",
         "assetName": "energia_v1.png",
         "rotation": -1
     },
     "radar_estrategico": {
-        "x": 416,
-        "y": 251,
+        "x": 309,
+        "y": 250,
         "id": "RADAR",
-        "w": 160,
-        "h": 180,
+        "w": 80,
+        "h": 80,
         "anchor": "center",
         "assetName": "radar_v1.png",
         "rotation": 3
     },
     "centro_pesquisa": {
-        "x": 619,
-        "y": 223,
+        "x": 545,
+        "y": 291,
         "id": "RESEARCH",
-        "w": 152,
-        "h": 152,
+        "w": 80,
+        "h": 80,
         "anchor": "center",
         "assetName": "pesquisa_v1.png",
         "rotation": -3
     },
     "fabrica_municoes": {
-        "x": 232,
-        "y": 344,
+        "x": 219,
+        "y": 276,
         "id": "FACTORY",
-        "w": 156,
-        "h": 156,
+        "w": 80,
+        "h": 80,
         "anchor": "center",
         "assetName": "fabrica_v1.png"
     },
     "hq": {
-        "x": 413,
-        "y": 285,
+        "x": 370,
+        "y": 270,
         "id": "HQ",
-        "w": 240,
-        "h": 240,
+        "w": 130,
+        "h": 130,
         "anchor": "center",
         "assetName": "hq_elite_v1.png",
-        "rotation": 0
+        "rotation": 0,
+        "transparency": {
+            "targetColor": {
+                "r": 58,
+                "g": 59,
+                "b": 58
+            },
+            "tolerance": 50
+        }
     },
     "quartel": {
-        "x": 650,
-        "y": 301,
+        "x": 493,
+        "y": 364,
         "id": "BARRACKS",
-        "w": 156,
-        "h": 156,
+        "w": 80,
+        "h": 80,
         "anchor": "center",
-        "assetName": "quartel_v1.png"
+        "assetName": "quartel_v1.png",
+        "rotation": 2
     },
     "aerodromo": {
         "x": 468,
-        "y": 417,
+        "y": 347,
         "id": "AIRPORT",
-        "w": 196,
-        "h": 196,
+        "w": 80,
+        "h": 80,
         "anchor": "center",
         "assetName": "aerodromo_v1.png"
     },
     "muralha": {
-        "x": 535,
-        "y": 470,
+        "x": 544,
+        "y": 442,
         "id": "WALL",
-        "w": 196,
-        "h": 196,
+        "w": 97,
+        "h": 99,
         "anchor": "center",
         "assetName": "muralha_v1.png",
         "rotation": -6
     },
     "mina_metal": {
-        "x": 174,
-        "y": 187,
+        "x": 128,
+        "y": 223,
         "id": "METAL_MINE",
-        "w": 160,
-        "h": 160,
+        "w": 71,
+        "h": 71,
         "anchor": "center",
         "assetName": "mina_metal_v1.png"
     },
     "mina_suprimentos": {
-        "x": 279,
-        "y": 324,
+        "x": 225,
+        "y": 326,
         "id": "SUPPLY_MINE",
-        "w": 160,
-        "h": 160,
+        "w": 71,
+        "h": 71,
         "anchor": "center",
-        "assetName": "mina_suprimentos_v1.png"
+        "assetName": "mina_suprimentos_v1.png",
+        "rotation": 8
     },
     "refinaria": {
-        "x": 531,
-        "y": 181,
+        "x": 560,
+        "y": 222,
         "id": "REFINERY",
-        "w": 180,
-        "h": 180,
+        "w": 80,
+        "h": 80,
         "anchor": "center",
         "assetName": "refinaria_v1.png"
     },
     "housing": {
-        "x": 440,
-        "y": 326,
+        "x": 359,
+        "y": 358,
         "id": "HOUSING",
-        "w": 160,
-        "h": 160,
+        "w": 71,
+        "h": 71,
         "anchor": "center",
         "assetName": "housing_v1.png"
     },
     "posto_recrutamento": {
-        "x": 364,
-        "y": 176,
+        "x": 343,
+        "y": 162,
         "id": "RECRUITMENT",
-        "w": 180,
-        "h": 180,
+        "w": 80,
+        "h": 80,
         "anchor": "center",
         "assetName": "quartel_v1.png"
     }
