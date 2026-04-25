@@ -1,22 +1,84 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BUILDING_LAYOUT as INITIAL_LAYOUT, REFERENCE_WIDTH, REFERENCE_HEIGHT } from '@/config/buildingLayout';
+import { BUILDING_LAYOUT as INITIAL_LAYOUT, REFERENCE_WIDTH, REFERENCE_HEIGHT, BuildingLayout } from '@/config/buildingLayout';
 import { Button } from '@/components/ui/button';
-import { Save, Move, Copy, Check, RotateCcw, X, Maximize2, RotateCw } from 'lucide-react';
+import { Save, Move, Copy, Check, RotateCcw, X, Maximize2, RotateCw, Pipette, Sliders } from 'lucide-react';
+import { TransparentImage } from '@/components/ui/TransparentImage';
 
 interface LayoutCalibratorProps {
+    onSave: (layout: Record<string, BuildingLayout>) => void;
     onClose: () => void;
 }
 
 /**
- * LayoutCalibrator — Ferramenta de Engenharia Militar V3.1 Pro.
- * Agora com suporte a redimensionamento e rotação tática.
+ * LayoutCalibrator — Ferramenta de Engenharia Militar V3.2 Pro.
+ * Agora com suporte a ferramenta de remoção de fundo (Dropper) em tempo real.
  */
-export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) => {
+export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onClose }) => {
     const canvasRef = useRef<HTMLDivElement>(null);
-    const [layout, setLayout] = useState<any>(INITIAL_LAYOUT);
+    const [layout, setLayout] = useState<Record<string, BuildingLayout>>(INITIAL_LAYOUT);
     const [copied, setCopied] = useState(false);
     const [selected, setSelected] = useState<string | null>(null);
+    const [isDropperActive, setIsDropperActive] = useState(false);
+
+    const handleSampleColor = async (e: React.MouseEvent, type: string) => {
+        if (!isDropperActive) return;
+        
+        const img = e.currentTarget as HTMLImageElement;
+        const rect = img.getBoundingClientRect();
+        
+        // Calculate relative coordinates (0 to 1)
+        const rx = (e.clientX - rect.left) / rect.width;
+        const ry = (e.clientY - rect.top) / rect.height;
+        
+        // Create temporary canvas to sample
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        const tempImg = new Image();
+        tempImg.crossOrigin = "anonymous";
+        tempImg.src = img.src;
+        
+        tempImg.onload = () => {
+            canvas.width = tempImg.width;
+            canvas.height = tempImg.height;
+            ctx.drawImage(tempImg, 0, 0);
+            
+            const px = Math.floor(rx * tempImg.width);
+            const py = Math.floor(ry * tempImg.height);
+            const data = ctx.getImageData(px, py, 1, 1).data;
+            
+            const color = { r: data[0], g: data[1], b: data[2] };
+            console.log("Sampled Color:", color);
+            
+            setLayout(prev => ({
+                ...prev,
+                [type]: {
+                    ...prev[type],
+                    transparency: {
+                        ...prev[type].transparency,
+                        targetColor: color,
+                        tolerance: prev[type].transparency?.tolerance || 90
+                    }
+                }
+            }));
+            setIsDropperActive(false);
+        };
+    };
+
+    const handleToleranceChange = (type: string, val: number) => {
+        setLayout(prev => ({
+            ...prev,
+            [type]: {
+                ...prev[type],
+                transparency: {
+                    ...prev[type].transparency,
+                    tolerance: val
+                }
+            }
+        }));
+    };
 
     const handleDragEnd = (buildingType: string, event: any, info: any) => {
         const b = layout[buildingType];
@@ -29,7 +91,6 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
             ...layout,
             [buildingType]: { ...b, x: newX, y: newY }
         });
-        // Não resetamos selected aqui para permitir edição de escala/rotação após o drag
     };
 
     const updateProperty = (buildingType: string, prop: string, value: number) => {
@@ -62,10 +123,10 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                             <Move className="w-6 h-6 text-cyan-400" />
                         </div>
                         <div>
-                            <h2 className="text-white font-bold tracking-[0.2em] uppercase text-base">Calibrador de Layout V3.1 Pro</h2>
+                            <h2 className="text-white font-bold tracking-[0.2em] uppercase text-base">Calibrador de Layout V3.2 Pro</h2>
                             <p className="text-[11px] text-gray-500 font-mono flex items-center gap-2">
                                 <span className="w-1 h-1 rounded-full bg-cyan-500 animate-pulse"></span>
-                                MODO DE EDIÇÃO AVANÇADA ATIVO: POSIÇÃO, ESCALA E ROTAÇÃO
+                                MODO DE EDIÇÃO AVANÇADA: AGORA COM TRATAMENTO DE IMAGEM
                             </p>
                         </div>
                     </div>
@@ -96,7 +157,7 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                     {/* Painel de Propriedades (Esquerda) */}
                     <div className="w-80 border-r border-gray-800 bg-black/20 p-6 flex flex-col gap-8 overflow-y-auto">
                         <div className="space-y-2">
-                            <h3 className="text-[10px] text-gray-600 uppercase font-black tracking-widest">Painel de Controlo</h3>
+                            <h3 className="text-[10px] text-gray-600 uppercase font-black tracking-widest">Painel de Engenharia</h3>
                             <div className="h-px w-full bg-gradient-to-r from-gray-800 to-transparent"></div>
                         </div>
 
@@ -105,6 +166,56 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                 <div className="p-4 bg-cyan-500/5 border border-cyan-500/10 rounded-xl">
                                     <span className="text-[10px] text-cyan-500 font-mono uppercase block mb-1">Selecionado</span>
                                     <span className="text-white font-bold tracking-wider">{selected?.toUpperCase()}</span>
+                                </div>
+
+                                {/* TRATAMENTO DE IMAGEM (NOVO) */}
+                                <div className="space-y-4 p-4 bg-purple-500/5 border border-purple-500/20 rounded-xl">
+                                    <div className="flex items-center gap-2 text-purple-400">
+                                        <Pipette className="w-4 h-4" />
+                                        <span className="text-[10px] uppercase font-bold tracking-wider">Tratamento de Imagem</span>
+                                    </div>
+                                    
+                                    <p className="text-[9px] text-gray-500 font-mono italic">
+                                        Ative o conta-gotas e clique na cor do fundo que deseja remover.
+                                    </p>
+
+                                    <Button
+                                        onClick={() => setIsDropperActive(!isDropperActive)}
+                                        className={`w-full text-[10px] h-9 tracking-widest transition-all ${
+                                            isDropperActive 
+                                                ? 'bg-purple-600 text-white animate-pulse shadow-[0_0_15px_rgba(147,51,234,0.5)]' 
+                                                : 'bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/30'
+                                        }`}
+                                    >
+                                        {isDropperActive ? 'A SELECIONAR COR NO MAPA...' : 'ATIVAR CONTA-GOTAS'}
+                                    </Button>
+
+                                    {selectedBuilding.transparency?.targetColor && (
+                                        <div className="space-y-4 pt-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[9px] text-gray-500 uppercase">Cor Selecionada:</span>
+                                                <div 
+                                                    className="w-8 h-4 rounded border border-white/20 shadow-inner"
+                                                    style={{ 
+                                                        backgroundColor: `rgb(${selectedBuilding.transparency.targetColor.r}, ${selectedBuilding.transparency.targetColor.g}, ${selectedBuilding.transparency.targetColor.b})` 
+                                                    }}
+                                                ></div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between text-[10px] font-mono">
+                                                    <span className="text-gray-500 uppercase">Tolerância</span>
+                                                    <span className="text-purple-400">{selectedBuilding.transparency.tolerance}</span>
+                                                </div>
+                                                <input 
+                                                    type="range" min="10" max="255" step="1"
+                                                    value={selectedBuilding.transparency.tolerance}
+                                                    onChange={(e) => handleToleranceChange(selected!, parseInt(e.target.value))}
+                                                    className="w-full h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Controlo de Tamanho */}
@@ -160,13 +271,6 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                         />
                                     </div>
                                 </div>
-
-                                <div className="pt-4 border-t border-gray-800/50 flex flex-col gap-2">
-                                    <div className="flex justify-between text-[9px] font-mono text-gray-600 uppercase">
-                                        <span>Coord X: {selectedBuilding.x}</span>
-                                        <span>Coord Y: {selectedBuilding.y}</span>
-                                    </div>
-                                </div>
                             </div>
                         ) : (
                             <div className="h-full flex flex-col items-center justify-center text-center p-4">
@@ -174,7 +278,7 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                     <X className="w-5 h-5 text-gray-800" />
                                 </div>
                                 <p className="text-[11px] text-gray-600 font-mono leading-relaxed">
-                                    SELECIONE UM EDIFÍCIO NO MAPA PARA ATIVAR O PAINEL DE ENGENHARIA
+                                    SELECIONE UM EDIFÍCIO NO MAPA PARA ATIVAR O TRATAMENTO DE IMAGEM
                                 </p>
                             </div>
                         )}
@@ -196,21 +300,17 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                 backgroundRepeat: 'no-repeat'
                             }}
                         >
-                            {/* Overlay de Grelha Táctica */}
-                            <div className="absolute inset-0 pointer-events-none opacity-20 border border-cyan-500/10"></div>
-
-                            {Object.entries(layout).map(([type, b]: [string, any]) => (
+                            {Object.entries(layout).map(([type, b]) => (
                                 <motion.div
                                     key={type}
-                                    drag
+                                    drag={!isDropperActive}
                                     dragMomentum={false}
                                     dragConstraints={canvasRef}
                                     dragElastic={0}
-                                    animate={{ x: 0, y: 0 }}
                                     onDragStart={() => setSelected(type)}
                                     onDragEnd={(e, info) => handleDragEnd(type, e, info)}
                                     onClick={() => setSelected(type)}
-                                    className={`absolute cursor-grab active:cursor-grabbing ${selected === type ? 'z-[1000]' : ''}`}
+                                    className={`absolute ${!isDropperActive ? 'cursor-grab active:cursor-grabbing' : 'cursor-crosshair'} ${selected === type ? 'z-[1000]' : ''}`}
                                     style={{
                                         left: b.x - (b.w / 2),
                                         top: b.y - (b.h / 2), 
@@ -220,31 +320,28 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                     }}
                                 >
                                     <div className={`relative w-full h-full transition-transform duration-300 ${selected === type ? 'scale-110' : 'hover:scale-105'}`}>
-                                    <img 
-                                        src={`/assets/buildings/${b.assetName}`} 
-                                        className={`w-full h-full object-contain pointer-events-none transition-all ${
-                                            selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl'
-                                        }`}
-                                        style={{
-                                            transform: `rotate(${b.rotation || 0}deg)`
-                                        }}
-                                        alt={type} 
-                                    />
+                                        <TransparentImage 
+                                            src={`/assets/buildings/${b.assetName}`} 
+                                            targetColor={b.transparency?.targetColor}
+                                            tolerance={b.transparency?.tolerance || 90}
+                                            onClick={(e) => handleSampleColor(e, type)}
+                                            className={`w-full h-full object-contain transition-all ${
+                                                selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl'
+                                            }`}
+                                            style={{
+                                                transform: `rotate(${b.rotation || 0}deg)`,
+                                                pointerEvents: isDropperActive ? 'auto' : 'none'
+                                            }}
+                                            alt={type} 
+                                        />
                                         
-                                        {/* Guia de Alinhamento */}
-                                        {selected === type && (
-                                            <>
-                                                <div className="absolute inset-0 border-2 border-cyan-500/50 rounded-lg animate-pulse"></div>
-                                                <div className="absolute -inset-8 border border-cyan-500/10 rounded-full pointer-events-none"></div>
-                                            </>
+                                        {/* Overlay de Seleção */}
+                                        {selected === type && !isDropperActive && (
+                                            <div className="absolute inset-0 border-2 border-cyan-500/50 rounded-lg pointer-events-none animate-pulse"></div>
                                         )}
-
-                                        {/* Label Tático */}
-                                        <div className={`absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 rounded border font-mono whitespace-nowrap pointer-events-none transition-all ${
-                                            selected === type ? 'bg-cyan-500 text-black border-cyan-400 font-bold scale-110' : 'bg-black/90 text-cyan-400 border-cyan-500/30 text-[9px] opacity-40'
-                                        }`}>
-                                            {type.toUpperCase()}
-                                        </div>
+                                        {isDropperActive && selected === type && (
+                                            <div className="absolute inset-0 border-2 border-purple-500/50 rounded-lg pointer-events-none animate-pulse shadow-[0_0_15px_rgba(147,51,234,0.3)]"></div>
+                                        )}
                                     </div>
                                 </motion.div>
                             ))}
@@ -252,20 +349,25 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                     </div>
                 </div>
 
-                <div className="p-4 border-t border-gray-800 bg-black/60 flex items-center justify-between px-8">
-                    <div className="flex gap-12">
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[9px] text-gray-600 uppercase font-bold">Protocolo</span>
-                            <span className="text-xs text-gray-400 font-mono italic">ENGINEERING_TOOL_V3.1_PRO</span>
-                        </div>
-                        <div className="flex flex-col gap-1 text-center">
-                            <span className="text-[9px] text-gray-600 uppercase font-bold">Unidades</span>
-                            <span className="text-xs text-gray-400 font-mono italic">{Object.keys(layout).length} ESTRUTURAS</span>
-                        </div>
+                {/* Footer Tático */}
+                <div className="p-4 border-t border-gray-800 bg-black/40 flex items-center justify-between text-[10px] font-mono text-gray-600 px-8">
+                    <div className="flex gap-8">
+                        <span className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+                            POSIÇÃO: ARRASTE OS EDIFÍCIOS
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                            IMAGEM: USE O CONTA-GOTAS PARA REMOVER O FUNDO
+                        </span>
                     </div>
-                    
-                    <div className="bg-gray-900/50 px-6 py-3 rounded-xl border border-gray-800 text-[11px] text-gray-500 max-w-xl text-right leading-relaxed italic">
-                        Clique num edifício para ajustar o seu <span className="text-cyan-500">tamanho</span> e <span className="text-cyan-500">orientação</span>.
+                    <div className="flex gap-4">
+                        <Button 
+                            onClick={() => onSave(layout)}
+                            className="bg-green-600 hover:bg-green-500 text-white font-bold tracking-widest px-8"
+                        >
+                            SALVAR CONFIGURAÇÃO TÁTICA
+                        </Button>
                     </div>
                 </div>
             </div>

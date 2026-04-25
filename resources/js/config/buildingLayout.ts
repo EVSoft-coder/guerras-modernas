@@ -7,6 +7,10 @@ export interface BuildingLayout {
     anchor: 'center' | 'bottom';
     assetName: string;
     rotation?: number;
+    transparency?: {
+        targetColor?: { r: number, g: number, b: number };
+        tolerance?: number;
+    };
 }
 
 export const REFERENCE_WIDTH = 800;

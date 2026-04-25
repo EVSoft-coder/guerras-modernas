@@ -60,9 +60,11 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
             
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                 {!isInvalid ? (
-                    <img 
+                    <TransparentImage 
                         src={assetPath}
                         alt={type}
+                        targetColor={layout.transparency?.targetColor}
+                        tolerance={layout.transparency?.tolerance || 90}
                         style={{
                             width: '100%',
                             height: '100%',

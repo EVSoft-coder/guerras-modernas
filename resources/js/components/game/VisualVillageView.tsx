@@ -19,6 +19,14 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
     const containerRef = React.useRef<HTMLDivElement>(null);
     const [scale, setScale] = React.useState(1);
     const [showCalibrator, setShowCalibrator] = React.useState(false);
+    const [currentLayout, setCurrentLayout] = React.useState(BUILDING_LAYOUT);
+
+    const handleSaveLayout = (newLayout: any) => {
+        setCurrentLayout(newLayout);
+        setShowCalibrator(false);
+        // Persistir no console para o desenvolvedor ver também
+        console.log("NOVA CONFIGURAÇÃO TÁTICA:", JSON.stringify(newLayout, null, 4));
+    };
 
     React.useEffect(() => {
         const updateScale = () => {
@@ -60,6 +68,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     marginBottom: `-${600 * (1 - scale)}px`
                 }}
             >
+                {/* ... estilos e terreno ... */}
                 <style>{`
                     .village-root {
                         all: initial;
@@ -86,7 +95,6 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     }
                 `}</style>
 
-                {/* CAMADA 1: TERRENO MILITAR V22 */}
                 <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
                     <img 
                         src="/images/village/terrain_v30.png" 
@@ -95,16 +103,13 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     />
                 </div>
 
-                {/* CAMADA 2: EDIFÍCIOS DE ELITE */}
                 <div style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
-                    {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
+                    {Object.entries(currentLayout).map(([type, layout]) => {
                         const b = base.edificios?.find(e => {
                             const eType = (e.buildingType || e.tipo)?.toLowerCase();
                             const lType = type.toLowerCase();
                             if (eType !== lType) return false;
                             
-                            // Se as coordenadas na DB forem pequenas (grelha 1,1) ou nulas,
-                            // aceitamos o edifício para o slot único definido no layout.
                             if (!e.pos_x || Number(e.pos_x) < 50) return true; 
 
                             return Number(e.pos_x) === layout.x && Number(e.pos_y) === layout.y;
@@ -139,7 +144,6 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                 </div>
             </div>
 
-            {/* Rodapé Tático */}
             <div className="mt-6 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
                 <span className="text-[10px] text-gray-500 font-mono uppercase tracking-[0.2em]">
@@ -153,7 +157,12 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                 </button>
             </div>
 
-            {showCalibrator && <LayoutCalibrator onClose={() => setShowCalibrator(false)} />}
+            {showCalibrator && (
+                <LayoutCalibrator 
+                    onSave={handleSaveLayout}
+                    onClose={() => setShowCalibrator(false)} 
+                />
+            )}
         </div>
     );
 };

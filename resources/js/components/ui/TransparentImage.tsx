@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 interface TransparentImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
     tolerance?: number;
+    targetColor?: { r: number, g: number, b: number } | null;
 }
 
 /**
@@ -40,10 +41,10 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
                     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     const data = imageData.data;
 
-                    // Referências de cores de fundo (Canto superior esquerdo)
-                    const bgR = data[0];
-                    const bgG = data[1];
-                    const bgB = data[2];
+                    // Referências de cores de fundo
+                    const bgR = targetColor ? targetColor.r : data[0];
+                    const bgG = targetColor ? targetColor.g : data[1];
+                    const bgB = targetColor ? targetColor.b : data[2];
 
                     for (let i = 0; i < data.length; i += 4) {
                         const r = data[i];
@@ -73,7 +74,7 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
         };
 
         processImage();
-    }, [src, tolerance]);
+    }, [src, tolerance, JSON.stringify(targetColor)]);
 
     if (!processedSrc) {
         return <img src={src} {...props} style={{ ...props.style, opacity: 0 }} />;
