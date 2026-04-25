@@ -9,20 +9,16 @@ class EventoMundo extends Model
     protected $table = 'eventos_mundo';
 
     protected $fillable = [
-        'nome',
+        'titulo',
         'descricao',
-        'tipo_evento',
-        'multiplicador',
-        'inicia_em',
-        'termina_em',
-        'ativo'
+        'tipo',
+        'dados',
+        'expira_em'
     ];
 
     protected $casts = [
-        'inicia_em' => 'datetime',
-        'termina_em' => 'datetime',
-        'ativo' => 'boolean',
-        'multiplicador' => 'float',
+        'expira_em' => 'datetime',
+        'dados' => 'array',
     ];
 
     /**
@@ -30,16 +26,17 @@ class EventoMundo extends Model
      */
     public static function ativos()
     {
-        return self::where('ativo', true)
-            ->where(function ($query) {
-                $query->whereNull('inicia_em')
-                      ->orWhere('inicia_em', '<=', now());
+        return self::where(function ($query) {
+                $query->whereNull('expira_em')
+                      ->orWhere('expira_em', '>=', now());
             })
-            ->where(function ($query) {
-                $query->whereNull('termina_em')
-                      ->orWhere('termina_em', '>=', now());
-            })
-            ->get();
+            ->get()
+            ->map(function ($evento) {
+                // Compatibilidade com o Frontend e Serviços que esperam 'nome' e 'multiplicador'
+                $evento->nome = $evento->titulo;
+                $evento->multiplicador = $evento->dados['multiplicador'] ?? 1.0;
+                return $evento;
+            });
     }
 
     /**
@@ -48,7 +45,7 @@ class EventoMundo extends Model
      */
     public static function getMultiplicadorAtivo(string $tipo)
     {
-        $evento = self::ativos()->where('tipo_evento', $tipo)->first();
+        $evento = self::ativos()->where('tipo', $tipo)->first();
         return $evento ? $evento->multiplicador : 1.0;
     }
 }
