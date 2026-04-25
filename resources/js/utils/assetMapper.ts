@@ -11,13 +11,30 @@ export const getBuildingAsset = (type: string, level: number | 'blueprint' = 1):
         return "/images/building_blueprint_placeholder.png";
     }
 
-    // Normalização de nomes para pastas de assets reais
-    let assetFolder = t;
-    if (t === 'mina_metal') assetFolder = 'factory';
-    if (t === 'central_energia') assetFolder = 'solar';
-    
-    // Caminho padrão para edifícios com arte final
-    return `/images/edificios/${assetFolder}/lvl_${level}.png`;
+    // Normalização para diretório real /assets/buildings/
+    let assetBase = t;
+    if (t === 'mina_metal') assetBase = 'mina_metal';
+    if (t === 'central_energia') assetBase = 'energia';
+    if (t === 'fabrica_municoes') assetBase = 'fabrica';
+    if (t === 'centro_pesquisa') assetBase = 'pesquisa';
+    if (t === 'radar_estrategico') assetBase = 'radar';
+    if (t === 'quartel') assetBase = 'quartel';
+    if (t === 'muralha') assetBase = 'muralha';
+    if (t === 'mina_suprimentos') assetBase = 'mina_suprimentos';
+    if (t === 'refinaria') assetBase = 'refinaria';
+
+    // HQ tem hq_v1, hq_v2 e hq_elite_v1
+    if (t === 'hq') {
+        if (level >= 2) return `/assets/buildings/hq_v2.png`;
+        return `/assets/buildings/hq_elite_v1.png`;
+    }
+
+    // Outros edifícios que têm v2 (ex: muralha, quartel, fabrica)
+    const hasV2 = ['muralha', 'quartel', 'fabrica'].includes(t);
+    if (hasV2 && level >= 2) return `/assets/buildings/${assetBase}_v2.png`;
+
+    // Fallback padrão para v1 no diretório de assets
+    return `/assets/buildings/${assetBase}_v1.png`;
 };
 
 export const getUnitAsset = (type: string): string => {

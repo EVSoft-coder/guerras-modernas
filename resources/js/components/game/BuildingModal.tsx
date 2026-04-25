@@ -143,7 +143,9 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                 <span className="text-[10px] font-black text-sky-500/60 uppercase tracking-[0.4em]">Protocolo_{tipoLower}</span>
                             </div>
                             <DialogTitle className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white">{config.name}</DialogTitle>
-                            <p className="text-xs text-neutral-400 font-medium leading-relaxed max-w-md">{config.description}</p>
+                            <DialogDescription className="text-xs text-neutral-400 font-medium leading-relaxed max-w-md">
+                                {config.description}
+                            </DialogDescription>
                         </header>
 
                         {isMilitary ? (
