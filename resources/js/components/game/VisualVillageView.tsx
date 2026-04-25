@@ -96,10 +96,17 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                 {/* CAMADA 2: EDIFÍCIOS DE ELITE */}
                 <div style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
                     {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
-                        const b = base.edificios?.find(e => 
-                            (e.buildingType || e.tipo)?.toLowerCase() === type.toLowerCase() &&
-                            e.pos_x === layout.x && e.pos_y === layout.y
-                        );
+                        const b = base.edificios?.find(e => {
+                            const eType = (e.buildingType || e.tipo)?.toLowerCase();
+                            const lType = type.toLowerCase();
+                            if (eType !== lType) return false;
+                            
+                            // Se as coordenadas na DB forem pequenas (grelha 1,1) ou nulas,
+                            // aceitamos o edifício para o slot único definido no layout.
+                            if (!e.pos_x || Number(e.pos_x) < 50) return true; 
+
+                            return Number(e.pos_x) === layout.x && Number(e.pos_y) === layout.y;
+                        });
                         const level = b?.nivel || 0;
                         const isConstructing = (buildingQueue || []).some(q => 
                             q.type === type && q.pos_x === layout.x && q.pos_y === layout.y

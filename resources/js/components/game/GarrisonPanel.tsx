@@ -38,7 +38,7 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameC
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
                     {(tropas || []).map((t, idx) => {
-                        const rawUnitName = t.tipo || t.unidade || 'Unidade';
+                        const rawUnitName = t.tipo || t.name || t.unidade || t.name || 'Unidade';
                         const config = unitsConfig[rawUnitName] || {};
                         
                         // Humanização robusta se o nome não estiver no config
