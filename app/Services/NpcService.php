@@ -83,9 +83,9 @@ class NpcService
 
                 // Edifícios mínimos (nível proporcional)
                 $buildings = [
-                    ['tipo' => 'hq', 'nivel' => $villageLevel],
-                    ['tipo' => 'muralha', 'nivel' => max(0, $villageLevel - 1)],
-                    ['tipo' => 'mina_suprimentos', 'nivel' => $villageLevel],
+                    ['tipo' => 'hq', 'nivel' => $villageLevel, 'pos_x' => 1, 'pos_y' => 1],
+                    ['tipo' => 'muralha', 'nivel' => max(0, $villageLevel - 1), 'pos_x' => 1, 'pos_y' => 2],
+                    ['tipo' => 'mina_suprimentos', 'nivel' => $villageLevel, 'pos_x' => 2, 'pos_y' => 1],
                 ];
 
                 foreach ($buildings as $b) {
@@ -94,6 +94,8 @@ class NpcService
                             'base_id' => $base->id,
                             'tipo' => $b['tipo'],
                             'nivel' => $b['nivel'],
+                            'pos_x' => $b['pos_x'],
+                            'pos_y' => $b['pos_y'],
                         ]);
                     }
                 }
