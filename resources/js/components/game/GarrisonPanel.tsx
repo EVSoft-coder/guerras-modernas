@@ -38,8 +38,15 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameC
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
                     {(tropas || []).map((t, idx) => {
-                        const unitName = t.tipo || t.unidade || 'Unidade';
-                        const config = unitsConfig[unitName] || { name: unitName };
+                        const rawUnitName = t.tipo || t.unidade || 'Unidade';
+                        const config = unitsConfig[rawUnitName] || {};
+                        
+                        // Humanização robusta se o nome não estiver no config
+                        const displayName = config.name || rawUnitName
+                            .replace(/_/g, ' ')
+                            .replace(/-/g, ' ')
+                            .replace(/\b\w/g, l => l.toUpperCase());
+
                         return (
                             <motion.div 
                                 key={idx} 
@@ -56,10 +63,10 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameC
                                     <div className="relative">
                                         <div className="w-12 h-12 bg-black/60 rounded-2xl border border-white/10 flex items-center justify-center p-1.5 group-hover/unit:border-emerald-500/50 shadow-2xl transition-all duration-500 transform group-hover/unit:scale-110">
                                             <img 
-                                                src={getUnitAsset(unitName)} 
+                                                src={getUnitAsset(rawUnitName)} 
                                                 className="w-full h-full object-contain brightness-75 group-hover/unit:brightness-125 transition-all" 
-                                                alt={config.name}
-                                                onError={(e) => (e.currentTarget.src = "/assets/placeholders/unit_unknown.svg")}
+                                                alt={displayName}
+                                                onError={(e) => (e.currentTarget.src = "/images/unidades/unidade.png")}
                                             />
                                         </div>
                                         <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center text-[7px] font-black text-emerald-500 shadow-lg">
@@ -70,7 +77,7 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({ tropas = [], gameC
                                     <div className="flex flex-col flex-1 min-w-0">
                                         <div className="flex justify-between items-center mb-1">
                                             <span className="text-[10px] font-black uppercase text-white tracking-widest truncate">
-                                                {config.name}
+                                                {displayName}
                                             </span>
                                             <div className="px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                                                 <span className="text-xs font-mono font-black text-emerald-400">

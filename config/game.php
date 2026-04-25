@@ -148,33 +148,43 @@ return [
      */
     'units' => [
         'infantaria' => [
+            'name' => 'Infantaria de Elite',
             'time' => 5, // 5 segundos base (Reduzido de 10)
         ],
         'veiculo_leve_apc' => [
+            'name' => 'Veículo Leve APC',
             'time' => 10, // Reduzido de 20
         ],
         'tanque_combate_mbt' => [
+            'name' => 'Tanque de Combate MBT',
             'time' => 20, // Reduzido de 45
         ],
         'politico' => [
+            'name' => 'Líder Político',
             'time' => 150, // Reduzido de 300
         ],
         'agente_espiao' => [
+            'name' => 'Agente de Inteligência (Espião)',
             'time' => 30, // Reduzido de 60
         ],
         'helicoptero_ataque' => [
+            'name' => 'Helicóptero de Ataque',
             'time' => 45, // Reduzido de 90
         ],
         'drone_reconhecimento' => [
+            'name' => 'Drone de Reconhecimento',
             'time' => 15, // Reduzido de 30
         ],
         'artilharia_pesada' => [
+            'name' => 'Artilharia Pesada',
             'time' => 60, // Reduzido de 120
         ],
         'engenheiro' => [
+            'name' => 'Engenheiro Militar',
             'time' => 8, // Reduzido de 15
         ],
         'sniper' => [
+            'name' => 'Atirador Especial (Sniper)',
             'time' => 12, // Reduzido de 25
         ],
     ]
