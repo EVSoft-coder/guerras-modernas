@@ -57,7 +57,7 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onCl
                     transparency: {
                         ...prev[type].transparency,
                         targetColor: color,
-                        tolerance: prev[type].transparency?.tolerance || 90
+                        tolerance: prev[type].transparency?.tolerance || 30
                     }
                 }
             }));
@@ -328,7 +328,7 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onCl
                                         <TransparentImage 
                                             src={`/assets/buildings/${b.assetName}`} 
                                             targetColor={b.transparency?.targetColor}
-                                            tolerance={b.transparency?.tolerance || 90}
+                                            tolerance={b.transparency?.tolerance || 30}
                                             onClick={(e) => handleSampleColor(e, type)}
                                             className={`w-full h-full object-contain transition-all ${
                                                 selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl'
