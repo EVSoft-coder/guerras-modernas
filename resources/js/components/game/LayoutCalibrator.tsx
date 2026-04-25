@@ -226,8 +226,7 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                             selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl'
                                         }`}
                                         style={{
-                                            transform: `rotate(${b.rotation || 0}deg)`,
-                                            mixBlendMode: b.assetName.includes('_v1') || b.assetName.includes('_v2') ? 'screen' : 'normal'
+                                            transform: `rotate(${b.rotation || 0}deg)`
                                         }}
                                         alt={type} 
                                     />
