@@ -18,7 +18,7 @@ export const REFERENCE_HEIGHT = 600;
 
 export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = {
     "central_energia": {
-        "x": 495,
+        "x": 499,
         "y": 184,
         "id": "ENERGY",
         "w": 80,
@@ -28,18 +28,18 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         "rotation": -1
     },
     "radar_estrategico": {
-        "x": 280,
-        "y": 222,
+        "x": 267,
+        "y": 208,
         "id": "RADAR",
         "w": 80,
         "h": 80,
         "anchor": "center",
         "assetName": "radar_v1.png",
-        "rotation": 3
+        "rotation": -2
     },
     "centro_pesquisa": {
-        "x": 524,
-        "y": 270,
+        "x": 510,
+        "y": 256,
         "id": "RESEARCH",
         "w": 80,
         "h": 80,
@@ -57,8 +57,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         "assetName": "fabrica_v1.png"
     },
     "hq": {
-        "x": 370,
-        "y": 270,
+        "x": 379,
+        "y": 261,
         "id": "HQ",
         "w": 130,
         "h": 130,
@@ -75,8 +75,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         }
     },
     "quartel": {
-        "x": 506,
-        "y": 370,
+        "x": 498,
+        "y": 377,
         "id": "BARRACKS",
         "w": 80,
         "h": 80,
@@ -85,8 +85,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         "rotation": 2
     },
     "aerodromo": {
-        "x": 552,
-        "y": 326,
+        "x": 556,
+        "y": 331,
         "id": "AIRPORT",
         "w": 80,
         "h": 80,
@@ -94,18 +94,18 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         "assetName": "aerodromo_v1.png"
     },
     "muralha": {
-        "x": 606,
-        "y": 429,
+        "x": 638,
+        "y": 416,
         "id": "WALL",
         "w": 97,
         "h": 99,
         "anchor": "center",
         "assetName": "muralha_v1.png",
-        "rotation": -6
+        "rotation": -8
     },
     "mina_metal": {
-        "x": 120,
-        "y": 237,
+        "x": 111,
+        "y": 248,
         "id": "METAL_MINE",
         "w": 71,
         "h": 71,
@@ -113,8 +113,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         "assetName": "mina_metal_v1.png"
     },
     "mina_suprimentos": {
-        "x": 215,
-        "y": 323,
+        "x": 207,
+        "y": 324,
         "id": "SUPPLY_MINE",
         "w": 71,
         "h": 71,
@@ -123,8 +123,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         "rotation": -1
     },
     "refinaria": {
-        "x": 595,
-        "y": 230,
+        "x": 609,
+        "y": 233,
         "id": "REFINERY",
         "w": 80,
         "h": 80,
@@ -132,8 +132,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         "assetName": "refinaria_v1.png"
     },
     "housing": {
-        "x": 348,
-        "y": 371,
+        "x": 339,
+        "y": 381,
         "id": "HOUSING",
         "w": 71,
         "h": 71,
@@ -141,8 +141,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         "assetName": "housing_v1.png"
     },
     "posto_recrutamento": {
-        "x": 368,
-        "y": 153,
+        "x": 379,
+        "y": 150,
         "id": "RECRUITMENT",
         "w": 80,
         "h": 80,
