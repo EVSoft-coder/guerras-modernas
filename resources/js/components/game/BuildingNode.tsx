@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BuildingLayout, BUILDING_OFFSETS } from '@/config/buildingLayout';
-import { TransparentImage } from '@/components/ui/TransparentImage';
 
 interface BuildingNodeProps {
     type: string;
@@ -61,10 +60,9 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
             
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                 {!isInvalid ? (
-                    <TransparentImage 
+                    <img 
                         src={assetPath}
                         alt={type}
-                        tolerance={70} // Tolerância maior para lidar com sombras e gradientes
                         style={{
                             width: '100%',
                             height: '100%',
