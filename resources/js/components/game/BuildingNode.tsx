@@ -17,15 +17,16 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.8, x: '-50%', y: '-50%' }}
+            animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+            whileHover={{ scale: 1.05 }}
             className="absolute cursor-pointer group building-node"
             style={{
-                left: `${(layout.x / 800) * 100}%`,
-                top: `${(layout.y / 600) * 100}%`,
-                width: `${(layout.w / 800) * 100}%`,
-                height: `${(layout.h / 600) * 100}%`,
-                transform: `translate(-50%, -50%) rotate(${layout.rotation || 0}deg)`,
+                left: `${layout.x}px`,
+                top: `${layout.y}px`,
+                width: `${layout.w}px`,
+                height: `${layout.h}px`,
+                rotate: `${layout.rotation || 0}deg`,
                 zIndex: Math.floor(layout.y),
                 pointerEvents: 'auto'
             }}
