@@ -88,7 +88,7 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
                 ...props.style,
                 // Fallback visual extra: se a transparência falhar no processamento, 
                 // tentamos suavizar com mix-blend se o fundo for escuro.
-                mixBlendMode: src.includes('mina') || src.includes('hq') ? 'lighten' : 'normal'
+                mixBlendMode: 'normal'
             }} 
         />
     );
