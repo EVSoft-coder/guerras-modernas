@@ -13,23 +13,27 @@ class ManualController extends Controller
             'sections' => [
                 [
                     'title' => 'Fundamentos de Comando',
-                    'content' => 'O Guerras Modernas é um simulador tático de larga escala. O seu objetivo é expandir a sua influência territorial, gerir recursos críticos e neutralizar ameaças através de operações militares coordenadas.'
+                    'content' => 'O Guerras Modernas é um simulador tático de larga escala. O seu objetivo é expandir a sua influência territorial através da gestão estratégica de recursos e da coordenação militar precisa.'
                 ],
                 [
-                    'title' => 'Gestão de Recursos',
-                    'content' => 'Existem 5 recursos vitais: Suprimentos (Base), Combustível (Mobilidade), Munições (Poder de Fogo), Metal (Estruturas) e Energia (Tecnologia). A produção é horária e baseada no nível das suas instalações industriais.'
+                    'title' => 'Gestão de Recursos Críticos',
+                    'content' => 'O sucesso depende de 5 pilares: Suprimentos (Manutenção), Combustível (Logística), Munições (Confronto), Metal (Engenharia) e Energia (Pesquisa). Mantenha as suas instalações industriais atualizadas para garantir um fluxo constante.'
                 ],
                 [
-                    'title' => 'Infraestrutura (Edifícios)',
-                    'content' => 'O Centro de Comando (HQ) desbloqueia novas tecnologias. O Quartel permite a mobilização de tropas. A Muralha oferece bónus defensivos passivos contra incursões inimigas.'
+                    'title' => 'Doutrina de Combate',
+                    'content' => 'A força de ataque é calculada com base na letalidade das tropas e nos seus bónus de pesquisa. A defesa é potenciada pela Muralha e pela Blindagem. Unidades mais pesadas são mais lentas, mas carregam mais recursos (Loot) após a vitória.'
                 ],
                 [
-                    'title' => 'Operações Militares',
-                    'content' => 'Pode enviar tropas para Atacar (pilhar recursos ou conquistar bases) ou Apoiar (defender aliados). O tempo de viagem é real e depende da distância no mapa e da velocidade da unidade mais lenta.'
+                    'title' => 'Apoio e Reforços Aliados',
+                    'content' => 'Pode estacionar tropas em bases aliadas para proteção mútua. Estas tropas participam na defesa como se fossem locais, mas o dono original pode retirá-las a qualquer momento através do painel de logística.'
                 ],
                 [
-                    'title' => 'Proteção de Novatos',
-                    'content' => 'Novos comandantes recebem o "Escudo Operacional" por 72 horas. Durante este período, não podem ser atacados, mas perdem a proteção se iniciarem uma operação ofensiva contra outro jogador.'
+                    'title' => 'Inteligência e Espionagem',
+                    'content' => 'Antes de atacar, envie drones de espionagem para revelar a guarnição e o stock de recursos do inimigo. A eficácia depende da quantidade de drones enviados face à defesa eletrónica do alvo.'
+                ],
+                [
+                    'title' => 'Eventos de Mundo',
+                    'content' => 'O Comando Global pode declarar eventos especiais que alteram as regras temporariamente: "Boom Económico" (Produção x2), "Exercícios Militares" (Recrutamento x2) ou "Avanço Logístico" (Velocidade x2).'
                 ]
             ]
         ]);

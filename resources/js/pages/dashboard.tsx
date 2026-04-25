@@ -45,39 +45,45 @@ export default function Dashboard(props: any) {
     const currentUnits = state.units ?? props.units ?? [];
     const currentMovements = state.movements ?? props.movements ?? [];
 
-    if (gameMode === "WORLD_MAP") {
-        return (
-            <AppLayout breadcrumbs={breadcrumbs}>
-                <Head title="SITREP: Mapa Mundial" />
-                {state.base && (
-                    <WorldMapView 
-                        playerBase={currentBase} 
-                        troops={state.units ? state.units.map((u: any) => ({ unidade: u.type?.name, quantidade: u.quantity })) : []} 
-                        gameConfig={props.gameConfig} 
-                    />
-                )}
-            </AppLayout>
-        );
-    }
-
     // Default: VILLAGE -> Dashboard UI
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <VillageDashboard 
-                 {...state} 
-                 base={currentBase} 
-                 buildings={currentBuildings}
-                 population={currentPopulation}
-                 resources={resources}
-                 units={currentUnits}
-                 movements={currentMovements}
-                 activeEvents={props.activeEvents || []}
-                 gameConfig={props.gameConfig}
-                 unitTypes={props.unitTypes}
-                 unitQueue={props.unitQueue}
-                 buildingQueue={props.buildingQueue}
-                 diplomaties={props.diplomaties}
-            />
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={gameMode}
+                    initial={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
+                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, scale: 1.02, filter: 'blur(10px)' }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex-1 flex flex-col"
+                >
+                    {gameMode === "WORLD_MAP" ? (
+                        <WorldMapView 
+                            playerBase={currentBase} 
+                            troops={state.units ? state.units.map((u: any) => ({ unidade: u.name, quantidade: u.quantity })) : []} 
+                            gameConfig={state.gameConfig || props.gameConfig} 
+                        />
+                    ) : (
+                        <VillageDashboard 
+                            {...state} 
+                            base={currentBase} 
+                            buildings={currentBuildings}
+                            population={currentPopulation}
+                            resources={resources}
+                            units={currentUnits}
+                            movements={currentMovements}
+                            activeEvents={state.activeEvents || props.activeEvents || []}
+                            gameConfig={state.gameConfig || props.gameConfig}
+                            unitTypes={state.unitTypes || props.unitTypes}
+                            unitQueue={state.unitQueue || props.unitQueue}
+                            buildingQueue={state.buildingQueue || props.buildingQueue}
+                            diplomaties={state.diplomaties || props.diplomaties}
+                            reinforcements={state.reinforcements}
+                            stationedOutside={state.stationedOutside}
+                        />
+                    )}
+                </motion.div>
+            </AnimatePresence>
         </AppLayout>
     );
 }

@@ -62,7 +62,12 @@ class CombatService
             $totalDefense *= (1 + $wallBonus);
         }
 
-        Log::channel('game')->info("[BATTLE] ATK={$totalAttack} (research+{$atkBonus}) vs DEF={$totalDefense} (research+{$defBonus}, wall+{$wallBonus})");
+        // FASE 5: Aplicar Multiplicador de Evento Mundial (Combate)
+        $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('combate');
+        $totalAttack *= $eventoMultiplicador;
+        $totalDefense *= $eventoMultiplicador;
+
+        Log::channel('game')->info("[BATTLE] ATK={$totalAttack} (event x{$eventoMultiplicador}) vs DEF={$totalDefense} (event x{$eventoMultiplicador}, wall+{$wallBonus})");
 
         if ($totalAttack <= 0) {
             return $this->formatResult(false, $attackerUnits, $defenderUnits, 0, 1);

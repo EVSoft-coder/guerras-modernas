@@ -72,9 +72,11 @@ class MovementService
                 if ($unitType->speed < $minSpeed) {
                     $minSpeed = (float) $unitType->speed;
                 }
-            }
-
             if ($minSpeed === 999999) $minSpeed = config('game.movement.base_speed', 1.0);
+
+            // 2.5 Aplicar Multiplicador de Evento Mundial (Movimento)
+            $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('movimento');
+            $minSpeed *= $eventoMultiplicador;
 
             // 3. Calcular Tempo de Viagem (Passo 4 - MapService)
             $travelTimeSeconds = $this->mapService->calculateTravelTime($origin, $target, $minSpeed);
