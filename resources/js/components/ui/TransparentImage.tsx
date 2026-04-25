@@ -9,7 +9,7 @@ interface TransparentImageProps extends React.ImgHTMLAttributes<HTMLImageElement
  * TransparentImage V3 — "Nuclear Alpha".
  * Resolve problemas de CORS e cache, removendo fundos complexos (sólidos ou axadrezados).
  */
-export const TransparentImage: React.FC<TransparentImageProps> = ({ src, tolerance = 90, ...props }) => {
+export const TransparentImage: React.FC<TransparentImageProps> = ({ src, tolerance = 90, targetColor, ...props }) => {
     const [processedSrc, setProcessedSrc] = useState<string | null>(null);
 
     useEffect(() => {
