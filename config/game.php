@@ -24,33 +24,33 @@ return [
     'production' => [
         'mina_suprimentos' => [
             'resource' => 'suprimentos',
-            'base' => 60, // Dobrado (de 30)
-            'factor' => 1.163,
+            'base' => 240, 
+            'factor' => 1.28,
         ],
         'refinaria' => [
             'resource' => 'combustivel',
-            'base' => 50, // Dobrado (de 25)
-            'factor' => 1.155,
+            'base' => 200, 
+            'factor' => 1.28,
         ],
         'fabrica_municoes' => [
             'resource' => 'municoes',
-            'base' => 40, // Dobrado (de 20)
-            'factor' => 1.14,
+            'base' => 180, 
+            'factor' => 1.28,
         ],
         'mina_metal' => [
             'resource' => 'metal',
-            'base' => 50, // Dobrado (de 25)
-            'factor' => 1.17,
+            'base' => 220, 
+            'factor' => 1.28,
         ],
         'central_energia' => [
             'resource' => 'energia',
-            'base' => 70, // Dobrado (de 35)
-            'factor' => 1.16,
+            'base' => 300, 
+            'factor' => 1.28,
         ],
         'housing' => [
             'resource' => 'pessoal',
-            'base' => 30, // Dobrado (de 15)
-            'factor' => 1.12,
+            'base' => 50, 
+            'factor' => 1.15,
         ],
     ],
     /**

@@ -145,6 +145,7 @@ class ResourceService
         ];
 
         $configProducao = config('game.production');
+        $economyService = app(EconomyService::class);
         
         // Multiplicador do Evento Mundial de Produção
         $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('producao');
@@ -154,11 +155,10 @@ class ResourceService
             $nivel = $edificio->nivel;
 
             if (isset($configProducao[$tipo])) {
-                $config = $configProducao[$tipo];
-                $recurso = $config['resource'];
+                $recurso = $configProducao[$tipo]['resource'];
                 
-                // FÓRMULA SOBERANA: rate = base * (factor ^ nivel)
-                $rate = $config['base'] * pow($config['factor'], $nivel);
+                // FÓRMULA CENTRALIZADA (SSOT via EconomyService)
+                $rate = $economyService->getBuildingProduction($tipo, $nivel);
                 
                 if (array_key_exists($recurso, $taxas)) {
                     $taxas[$recurso] += ($rate * $eventoMultiplicador);
