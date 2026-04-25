@@ -68,6 +68,7 @@ class GameStateService
             'buildings' => $base->edificios->map(fn($b) => [
                 'id' => $b->id,
                 'tipo' => $b->tipo,
+                'buildingType' => $b->tipo, // Alias para o Frontend
                 'nivel' => $b->nivel,
                 'pos_x' => $b->pos_x,
                 'pos_y' => $b->pos_y,

@@ -52,6 +52,7 @@ export function VillageDashboard({
     const { addToast } = useToasts();
     const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
     const [selectedBuildingType, setSelectedBuildingType] = useState<string | null>(null);
+    const [selectedPos, setSelectedPos] = useState<{x: number, y: number} | null>(null);
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [isTraining, setIsTraining] = useState(false);
     const [gameMode, setGameMode] = useState<'VILLAGE' | 'WORLD_MAP'>('VILLAGE');
@@ -101,7 +102,17 @@ export function VillageDashboard({
     if (!base) return <div className="p-10 text-white uppercase font-mono">Connecting to Satellite...</div>;
 
     // Procura o edifício na base ou prepara um objeto Ghost baseado na config se necessário
-    const foundBuilding = (buildings || []).find(b => b.id === selectedBuildingId || b.buildingType === selectedBuildingType);
+    const foundBuilding = (buildings || []).find(b => {
+        if (selectedBuildingId && b.id === selectedBuildingId) return true;
+        if (selectedBuildingType && b.buildingType === selectedBuildingType) {
+            // Se temos posição, tem de bater a posição também
+            if (selectedPos) {
+                return b.pos_x === selectedPos.x && b.pos_y === selectedPos.y;
+            }
+            return true;
+        }
+        return false;
+    });
     let currentBuilding: any = null;
     let fallbackLevel = 0;
 
@@ -141,15 +152,19 @@ export function VillageDashboard({
     const handleBuildingClick = (building: any) => {
         setSelectedBuildingId(building.id || null);
         setSelectedBuildingType(building.buildingType || null);
+        setSelectedPos(building.pos_x !== undefined ? { x: building.pos_x, y: building.pos_y } : null);
     };
 
     const handleUpgrade = (buildingType: string) => {
         setIsUpgrading(true);
         eventBus.emit(Events.BUILDING_UPGRADE_REQUEST, {
             base_id: base.id,
-            tipo: buildingType
+            tipo: buildingType,
+            pos_x: selectedPos?.x || 0,
+            pos_y: selectedPos?.y || 0
         });
         setSelectedBuildingId(null);
+        setSelectedPos(null);
         addToast('Pedido de atualização estrutural enviado ao Comando.', 'info');
     };
 

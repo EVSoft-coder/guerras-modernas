@@ -96,20 +96,34 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                 {/* CAMADA 2: EDIFÍCIOS DE ELITE */}
                 <div style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
                     {Object.entries(BUILDING_LAYOUT).map(([type, layout]) => {
-                        const level = getBuildingLevel(type);
-                        const isConstructing = (buildingQueue || []).some(q => q.type === type);
+                        const b = base.edificios?.find(e => 
+                            (e.buildingType || e.tipo)?.toLowerCase() === type.toLowerCase() &&
+                            e.pos_x === layout.x && e.pos_y === layout.y
+                        );
+                        const level = b?.nivel || 0;
+                        const isConstructing = (buildingQueue || []).some(q => 
+                            q.type === type && q.pos_x === layout.x && q.pos_y === layout.y
+                        );
                         const config = gameConfig?.buildings?.[type];
                         
                         if (level === 0 && !isConstructing) return null;
 
                         return (
                             <BuildingNode
-                                key={type}
+                                key={`${type}-${layout.x}-${layout.y}`}
                                 type={type}
                                 level={level}
                                 layout={layout}
                                 isConstructing={isConstructing}
-                                onClick={() => onBuildingClick({ id: type, buildingType: type, name: config?.name || type, level })}
+                                onClick={() => onBuildingClick({ 
+                                    ...b, 
+                                    id: b?.id || null, 
+                                    buildingType: type, 
+                                    name: config?.name || type, 
+                                    level,
+                                    pos_x: layout.x,
+                                    pos_y: layout.y
+                                })}
                             />
                         );
                     })}
