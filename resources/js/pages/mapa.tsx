@@ -121,35 +121,51 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                 </div>
 
                 <div className="flex-1 flex items-center justify-center p-4">
-                    <div className="grid gap-1 bg-black/20 p-2 rounded-xl border border-white/10 shadow-2xl overflow-auto max-w-full max-h-[70vh]">
+                    <div className="grid gap-[2px] bg-black/20 p-2 rounded-xl border border-white/10 shadow-2xl overflow-auto max-w-full max-h-[75vh]">
                         {grid.map((row, rowIndex) => (
-                            <div key={rowIndex} className="flex gap-1">
-                                {row.map((cell, cellIndex) => (
-                                    <div 
-                                        key={`${cell.x}-${cell.y}`}
-                                        onClick={() => {
-                                            if (cell.base && cell.base.ownerId === origemBase?.ownerId) return;
-                                            setSelectedTarget(cell.base || { nome: `Setor [${cell.x}:${cell.y}]`, coordenada_x: cell.x, coordenada_y: cell.y, id: null });
-                                        }}
-                                        className={`w-12 h-12 md:w-16 md:h-16 border rounded flex flex-col items-center justify-center relative transition-all duration-300 group cursor-pointer
-                                            ${cell.base ? (cell.base.ownerId === origemBase?.ownerId ? 'bg-green-500/20 border-green-500/40 hover:bg-green-500/40' : 'bg-red-500/10 border-red-500/40 hover:bg-red-500/30 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]') : 'bg-white/5 border-white/5 hover:border-white/20'}
-                                            ${cell.x === x && cell.y === y ? 'border-orange-500/60 ring-1 ring-orange-500/40' : ''}
-                                            ${selectedTarget?.coordenada_x === cell.x && selectedTarget?.coordenada_y === cell.y ? 'ring-2 ring-sky-500 border-sky-500 shadow-[0_0_15px_rgba(14,165,233,0.5)]' : ''}
-                                        `}
-                                    >
-                                        <span className="text-[8px] text-neutral-600 absolute top-1 left-1">{cell.x}:{cell.y}</span>
-                                        {cell.base ? (
-                                            <div className="flex flex-col items-center gap-1 group-hover:scale-110 transition-transform">
-                                                <Radio size={16} className={cell.base.ownerId === 1 ? 'text-green-500' : 'text-red-500'} />
-                                                <span className="text-[8px] font-bold uppercase truncate w-full text-center px-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 absolute -bottom-8 rounded z-10">
-                                                    {cell.base.nome}
-                                                </span>
-                                            </div>
-                                        ) : (
-                                            <Crosshair size={12} className="text-neutral-800 opacity-20 group-hover:opacity-100" />
-                                        )}
-                                    </div>
-                                ))}
+                            <div key={rowIndex} className="flex gap-[2px]">
+                                {row.map((cell, cellIndex) => {
+                                    const isOwn = cell.base && cell.base.ownerId === origemBase?.ownerId;
+                                    const isNpc = cell.base?.is_npc;
+                                    const isCenter = cell.x === x && cell.y === y;
+                                    const isSelected = selectedTarget?.coordenada_x === cell.x && selectedTarget?.coordenada_y === cell.y;
+                                    
+                                    let cellClass = 'bg-white/[0.03] border-white/[0.04] hover:border-white/20';
+                                    if (cell.base) {
+                                        if (isOwn) cellClass = 'bg-emerald-500/20 border-emerald-500/40 hover:bg-emerald-500/40';
+                                        else if (isNpc) cellClass = 'bg-amber-500/15 border-amber-500/30 hover:bg-amber-500/30 hover:shadow-[0_0_10px_rgba(245,158,11,0.15)]';
+                                        else cellClass = 'bg-red-500/10 border-red-500/40 hover:bg-red-500/30 hover:shadow-[0_0_10px_rgba(239,68,68,0.15)]';
+                                    }
+
+                                    return (
+                                        <div 
+                                            key={`${cell.x}-${cell.y}`}
+                                            onClick={() => {
+                                                if (isOwn) return;
+                                                setSelectedTarget(cell.base || { nome: `Setor [${cell.x}:${cell.y}]`, coordenada_x: cell.x, coordenada_y: cell.y, id: null });
+                                            }}
+                                            title={cell.base ? `${cell.base.nome} [${cell.x}:${cell.y}]${isNpc ? ' (NPC)' : ''}` : `${cell.x}:${cell.y}`}
+                                            className={`w-8 h-8 md:w-10 md:h-10 border rounded-sm flex items-center justify-center relative transition-all duration-200 group cursor-pointer
+                                                ${cellClass}
+                                                ${isCenter ? 'border-orange-500/60 ring-1 ring-orange-500/40' : ''}
+                                                ${isSelected ? 'ring-2 ring-sky-500 border-sky-500 shadow-[0_0_15px_rgba(14,165,233,0.5)]' : ''}
+                                            `}
+                                        >
+                                            <span className="text-[6px] text-neutral-700 absolute top-0 left-0.5 hidden md:block">{cell.x}:{cell.y}</span>
+                                            {cell.base ? (
+                                                <div className="flex items-center justify-center">
+                                                    {isNpc ? (
+                                                        <Crosshair size={12} className="text-amber-500" />
+                                                    ) : isOwn ? (
+                                                        <Radio size={12} className="text-emerald-400" />
+                                                    ) : (
+                                                        <Radio size={12} className="text-red-500" />
+                                                    )}
+                                                </div>
+                                            ) : null}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         ))}
                     </div>

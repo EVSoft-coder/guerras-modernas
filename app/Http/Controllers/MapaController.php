@@ -21,12 +21,16 @@ class MapaController extends Controller
         $x = max(0, min(1000, $x));
         $y = max(0, min(1000, $y));
  
-        $raio = 6;
+        $raio = 15;
         
         $bases = Base::with(['jogador.alianca', 'recursos'])
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
-            ->get();
+            ->get()
+            ->map(function ($base) {
+                $base->is_npc = is_null($base->jogador_id);
+                return $base;
+            });
  
         $jogadorId = Auth::id();
         $selectedBaseId = session('selected_base_id');
