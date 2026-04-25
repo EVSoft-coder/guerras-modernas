@@ -73,8 +73,8 @@ const ResourceItem = ({ label, value, icon, max, color, ratePerSecond, customVal
                         </div>
                         
                         {ratePerSecond !== 0 && (
-                            <div className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 border border-white/5 ${ratePerSecond > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                                {ratePerSecond > 0 ? '+' : ''}{Math.abs(ratePerSecond).toFixed(1)}/s
+                            <div className={`text-[8px] font-military-mono font-black px-1.5 py-1 rounded bg-black/60 border shadow-[0_0_15px_rgba(0,0,0,0.5)] ${ratePerSecond > 0 ? 'text-emerald-500 border-emerald-500/20' : 'text-red-500 border-red-500/20'}`}>
+                                {ratePerSecond > 0 ? '+' : ''}{Math.floor(Math.abs(ratePerSecond * 60)).toLocaleString()}/m
                             </div>
                         )}
                     </div>
