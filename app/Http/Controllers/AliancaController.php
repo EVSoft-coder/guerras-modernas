@@ -7,6 +7,7 @@ use App\Models\Jogador;
 use App\Models\PedidoAlianca;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class AliancaController extends Controller
 {
@@ -17,12 +18,17 @@ class AliancaController extends Controller
         if (!$jogador->alianca) {
             $aliancas = Alianca::withCount('membros')->get();
             $pedidoPendente = PedidoAlianca::where('jogador_id', Auth::id())->where('status', 'pendente')->first();
-            return view('alianca.create', compact('aliancas', 'pedidoPendente'));
+            return Inertia::render('alianca', [
+                'temAlianca' => false,
+                'aliancas' => $aliancas,
+                'pedidoPendente' => $pedidoPendente,
+            ]);
         }
 
-        $mensagens = $jogador->alianca->mensagens()->with('jogador')->latest()->take(50)->get()->reverse();
+        $mensagens = $jogador->alianca->mensagens()->with('jogador')->latest()->take(50)->get()->reverse()->values();
 
-        return view('alianca.index', [
+        return Inertia::render('alianca', [
+            'temAlianca' => true,
             'alianca' => $jogador->alianca,
             'jogador' => $jogador,
             'mensagens' => $mensagens
@@ -54,11 +60,11 @@ class AliancaController extends Controller
         $request->validate(['alianca_id' => 'required|exists:aliancas,id']);
         
         if (Jogador::find(Auth::id())->alianca_id) {
-            return redirect()->back()->withErrors(['error' => 'Já pertences a uma aliança.']);
+            return back()->withErrors(['error' => 'Já pertences a uma aliança.']);
         }
 
         if (PedidoAlianca::where('jogador_id', Auth::id())->where('status', 'pendente')->exists()) {
-            return redirect()->back()->withErrors(['error' => 'Já tens um pedido pendente.']);
+            return back()->withErrors(['error' => 'Já tens um pedido pendente.']);
         }
 
         PedidoAlianca::create([
@@ -67,7 +73,7 @@ class AliancaController extends Controller
             'status' => 'pendente'
         ]);
 
-        return redirect()->back()->with('success', 'Pedido de adesão enviado para o Comando Superior!');
+        return back()->with('success', 'Pedido de adesão enviado para o Comando Superior!');
     }
 
     public function decidir($id, $decisao)
@@ -86,7 +92,7 @@ class AliancaController extends Controller
             $pedido->update(['status' => 'rejeitado']);
         }
 
-        return redirect()->back()->with('success', 'Diplomacia processada com sucesso.');
+        return back()->with('success', 'Diplomacia processada com sucesso.');
     }
 
     public function sair()
