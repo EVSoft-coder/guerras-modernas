@@ -9,7 +9,7 @@ class ManualController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Manual', [
+        return Inertia::render('manual', [
             'sections' => [
                 [
                     'title' => 'Fundamentos de Comando',
