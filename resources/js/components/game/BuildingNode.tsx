@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BuildingLayout, BUILDING_OFFSETS } from '@/config/buildingLayout';
+import { TransparentImage } from '@/components/ui/TransparentImage';
 
 interface BuildingNodeProps {
     type: string;
@@ -60,9 +61,10 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
             
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                 {!isInvalid ? (
-                    <img 
+                    <TransparentImage 
                         src={assetPath}
                         alt={type}
+                        removeColor={{ r: 10, g: 12, b: 16, tolerance: 40 }} // Tentar remover tons escuros do fundo
                         style={{
                             width: '100%',
                             height: '100%',

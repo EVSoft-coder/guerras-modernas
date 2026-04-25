@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BUILDING_LAYOUT as INITIAL_LAYOUT, REFERENCE_WIDTH, REFERENCE_HEIGHT } from '@/config/buildingLayout';
 import { Button } from '@/components/ui/button';
+import { TransparentImage } from '@/components/ui/TransparentImage';
 import { Save, Move, Copy, Check, RotateCcw, X, Maximize2, RotateCw } from 'lucide-react';
 
 interface LayoutCalibratorProps {
@@ -220,16 +221,17 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                     }}
                                 >
                                     <div className={`relative w-full h-full transition-transform duration-300 ${selected === type ? 'scale-110' : 'hover:scale-105'}`}>
-                                        <img 
-                                            src={`/assets/buildings/${b.assetName}`} 
-                                            className={`w-full h-full object-contain pointer-events-none transition-all ${
-                                                selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl grayscale-[0.2]'
-                                            }`}
-                                            style={{
-                                                transform: `rotate(${b.rotation || 0}deg)`
-                                            }}
-                                            alt={type} 
-                                        />
+                                    <TransparentImage 
+                                        src={`/assets/buildings/${b.assetName}`} 
+                                        removeColor={{ r: 10, g: 12, b: 16, tolerance: 50 }}
+                                        className={`w-full h-full object-contain pointer-events-none transition-all ${
+                                            selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl grayscale-[0.2]'
+                                        }`}
+                                        style={{
+                                            transform: `rotate(${b.rotation || 0}deg)`
+                                        }}
+                                        alt={type} 
+                                    />
                                         
                                         {/* Guia de Alinhamento */}
                                         {selected === type && (
