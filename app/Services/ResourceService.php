@@ -145,6 +145,9 @@ class ResourceService
         ];
 
         $configProducao = config('game.production');
+        
+        // Multiplicador do Evento Mundial de Produção
+        $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('producao');
 
         foreach ($buildings as $edificio) {
             $tipo = \App\Domain\Building\BuildingType::normalize($edificio->tipo);
@@ -158,7 +161,7 @@ class ResourceService
                 $rate = $config['base'] * pow($config['factor'], $nivel);
                 
                 if (array_key_exists($recurso, $taxas)) {
-                    $taxas[$recurso] += $rate;
+                    $taxas[$recurso] += ($rate * $eventoMultiplicador);
                 }
             }
         }

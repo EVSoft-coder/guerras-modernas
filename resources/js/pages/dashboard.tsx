@@ -69,6 +69,7 @@ export default function Dashboard(props: any) {
                  buildings={currentBuildings}
                  population={currentPopulation}
                  resources={resources}
+                 activeEvents={props.activeEvents || []}
             />
         </AppLayout>
     );

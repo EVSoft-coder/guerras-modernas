@@ -40,7 +40,11 @@ class UnitQueueService
             $buildingLevel = (new GameService($this->timeService))->obterNivelEdificio($base, $unitType->building_type);
             
             $costs = $economy->getUnitCost($unitType->name, $buildingLevel);
-            $durationPerUnit = $economy->getUnitTime($unitType->name, $buildingLevel);
+            $baseDurationPerUnit = $economy->getUnitTime($unitType->name, $buildingLevel);
+
+            // Multiplicador do Evento Mundial de Recrutamento (Aumenta velocidade -> Reduz tempo)
+            $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('recrutamento');
+            $durationPerUnit = max(1, (int) round($baseDurationPerUnit / $eventoMultiplicador));
 
             $totalCosts = [];
             foreach ($costs as $res => $val) {

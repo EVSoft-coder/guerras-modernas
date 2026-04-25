@@ -8,7 +8,7 @@ import { GarrisonPanel } from '@/components/game/GarrisonPanel';
 import { ProductionQueue } from '@/components/game/ProductionQueue';
 import { useToasts } from '@/components/game/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Target, Zap, Shield } from 'lucide-react';
+import { Target, Zap, Shield, Globe } from 'lucide-react';
 import { ArmyMovementPanel } from '@/components/game/ArmyMovementPanel';
 import { gameStateService } from '@src/services/GameStateService';
 import { eventBus, Events } from '@src/core/EventBus';
@@ -28,8 +28,9 @@ export function VillageDashboard({
     unitQueue = STABLE_EMPTY_ARRAY, units = STABLE_EMPTY_ARRAY, unitTypes = STABLE_EMPTY_ARRAY,
     ataquesRecebidos = STABLE_EMPTY_ARRAY, ataquesEnviados = STABLE_EMPTY_ARRAY,
     diplomaties = STABLE_EMPTY_ARRAY, myAllianceId,
-    research = null, researchBonuses = {}, researchConfig = null
-}: DashboardProps & { research?: any; researchBonuses?: any; researchConfig?: any }) {
+    research = null, researchBonuses = {}, researchConfig = null,
+    activeEvents = []
+}: DashboardProps & { research?: any; researchBonuses?: any; researchConfig?: any; activeEvents?: any[] }) {
     // 0. ECS ENGINE INTEGRATION
     const { globalState } = useGameEntities();
 
@@ -197,6 +198,28 @@ export function VillageDashboard({
 
             <Head title="Centro de Comando Tático" />
             <ResourceBar recursos={resources} taxasPerSecond={taxasPerSecond ?? {}} populacao={population} />
+
+            {activeEvents && activeEvents.length > 0 && (
+                <div className="flex flex-col gap-2 relative z-10 px-4">
+                    {activeEvents.map((evento: any) => (
+                        <div key={evento.id} className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 flex items-center justify-between backdrop-blur-md shadow-[0_0_20px_rgba(234,179,8,0.15)]">
+                            <div className="flex items-center gap-4">
+                                <div className="bg-yellow-500/20 p-2 rounded-lg border border-yellow-500/30">
+                                    <Globe className="text-yellow-500 animate-spin-slow" size={24} />
+                                </div>
+                                <div>
+                                    <h4 className="text-yellow-500 font-black uppercase tracking-widest text-sm">{evento.nome}</h4>
+                                    <p className="text-neutral-300 text-xs mt-1">{evento.descricao}</p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] text-yellow-500/60 uppercase font-black tracking-widest">Multiplicador Ativo</span>
+                                <span className="text-xl font-black text-yellow-400 font-mono">x{evento.multiplicador}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 flex-1 relative z-10">
                 <div className="lg:col-span-8 flex flex-col gap-6">
