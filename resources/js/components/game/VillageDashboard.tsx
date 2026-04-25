@@ -314,7 +314,10 @@ export function VillageDashboard({
                     {gameMode === 'WORLD_MAP' ? (
                         <WorldMapView 
                             playerBase={base} 
-                            troops={units.length > 0 ? units.map((u: any) => ({ tipo: u.type?.name, quantidade: u.quantity })) : (base?.tropas ?? [])} 
+                            troops={units.length > 0 ? units.map((u: any) => {
+                                const unitType = u.type || unitTypes.find((ut: any) => ut.id === u.unit_type_id);
+                                return { tipo: unitType?.name || 'unidade', quantidade: u.quantity };
+                            }) : (base?.tropas ?? [])} 
                             gameConfig={gameConfig} 
                             unitTypes={unitTypes}
                             diplomaties={diplomaties}
@@ -356,7 +359,10 @@ export function VillageDashboard({
                     <UnitQueue queue={unitQueue || STABLE_EMPTY_ARRAY} />
                     <GarrisonPanel 
                         tropas={units.length > 0 
-                            ? units.map((u: any) => ({ tipo: u.type?.name, quantidade: u.quantity })) 
+                            ? units.map((u: any) => {
+                                const unitType = u.type || unitTypes.find((ut: any) => ut.id === u.unit_type_id);
+                                return { tipo: unitType?.name || 'unidade', quantidade: u.quantity };
+                            }) 
                             : (base?.tropas || []).map((t: any) => ({ tipo: t.unidade || t.tipo, quantidade: t.quantidade }))
                         } 
                         gameConfig={gameConfig} 
