@@ -7,6 +7,7 @@ use App\Models\Movement;
 use App\Models\MovementUnit;
 use App\Models\Unit;
 use App\Models\UnitType;
+use App\Models\Reinforcement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -161,6 +162,10 @@ class MovementService
             }
         }
 
+        if ($movement->type === 'reforco') {
+            $this->transferUnitsToReinforcements($movement, $base);
+        }
+
         if ($movement->type === 'attack') {
             $this->handleCombat($movement, $base);
         }
@@ -222,9 +227,10 @@ class MovementService
             'quantity' => $u->quantity
         ])->toArray();
 
-        // 2. Unidades Defensoras (via units table)
-        $defUnits = Unit::where('base_id', $targetBase->id)->with('type')->get()->map(function($u) {
+        // 2. Unidades Defensoras (Base + Reforços Aliados)
+        $defUnitsFromBase = Unit::where('base_id', $targetBase->id)->with('type')->get()->map(function($u) {
             return [
+                'origin' => 'base',
                 'id' => $u->unit_type_id,
                 'name' => $u->type->name,
                 'attack' => $u->type->attack,
@@ -233,17 +239,40 @@ class MovementService
             ];
         })->filter(fn($u) => $u['quantity'] > 0)->toArray();
 
+        $reinforcements = Reinforcement::where('target_base_id', $targetBase->id)->with('type')->get();
+        $defUnitsFromReinforcements = $reinforcements->map(function($r) {
+            return [
+                'origin' => 'reinforcement',
+                'reinforcement_id' => $r->id,
+                'id' => $r->unit_type_id,
+                'name' => $r->type->name,
+                'attack' => $r->type->attack,
+                'defense' => $r->type->defense,
+                'quantity' => $r->quantity
+            ];
+        })->filter(fn($u) => $u['quantity'] > 0)->toArray();
+
+        $allDefUnits = array_merge($defUnitsFromBase, $defUnitsFromReinforcements);
+
         // 3. EXECUTAR COMBATE (com bónus de pesquisa e muralha)
         $attackerPlayer = $originBase->jogador;
         $defenderPlayer = $targetBase->jogador;
-        $result = $this->combatService->resolveBattle($atkUnits, $defUnits, $attackerPlayer, $defenderPlayer, $targetBase);
+        $result = $this->combatService->resolveBattle($atkUnits, $allDefUnits, $attackerPlayer, $defenderPlayer, $targetBase);
 
-        // Atualizar tropas defensoras (via units table)
+        // Atualizar tropas defensoras (Base + Reforços)
         foreach ($result['defender_units'] as $unit) {
-            Unit::where('base_id', $targetBase->id)
-                ->where('unit_type_id', $unit['id'])
-                ->update(['quantity' => max(0, (int)$unit['quantity'])]);
+            if ($unit['origin'] === 'base') {
+                Unit::where('base_id', $targetBase->id)
+                    ->where('unit_type_id', $unit['id'])
+                    ->update(['quantity' => max(0, (int)$unit['quantity'])]);
+            } else {
+                Reinforcement::where('id', $unit['reinforcement_id'])
+                    ->update(['quantity' => max(0, (int)$unit['quantity'])]);
+            }
         }
+
+        // Limpar reforços que foram totalmente destruídos
+        Reinforcement::where('target_base_id', $targetBase->id)->where('quantity', '<=', 0)->delete();
 
         $loot = [];
         if ($result['attacker_won']) {
@@ -515,6 +544,21 @@ class MovementService
                 ['base_id' => $base->id, 'unit_type_id' => $mUnit->unit_type_id],
                 ['quantity' => DB::raw("quantity + {$mUnit->quantity}")]
             );
+        }
+    }
+
+    /**
+     * Transfere as unidades para a tabela de reforços (tropas estacionadas).
+     */
+    private function transferUnitsToReinforcements(Movement $movement, Base $base): void
+    {
+        foreach ($movement->units as $mUnit) {
+            Reinforcement::create([
+                'origin_base_id' => $movement->origin_id,
+                'target_base_id' => $base->id,
+                'unit_type_id' => $mUnit->unit_type_id,
+                'quantity' => $mUnit->quantity
+            ]);
         }
     }
 }

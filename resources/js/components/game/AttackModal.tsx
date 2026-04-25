@@ -203,6 +203,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                         { id: 'ataque', icon: <Sword size={14} />, label: 'SAQUE' },
                                         { id: 'espionagem', icon: <Search size={14} />, label: 'ESP' },
                                         { id: 'conquista', icon: <Flag size={14} />, label: 'CONQ' },
+                                        { id: 'reforco', icon: <Shield size={14} />, label: 'APOIO' },
                                     ].map(type => (
                                         <button
                                             key={type.id}
@@ -276,7 +277,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                 {isSending ? (
                                     <Loader2 size={16} className="animate-spin" />
                                 ) : (
-                                    <>AUTORIZAR INVASÃO <ChevronRight size={16} className="ml-2" /></>
+                                    <>{missionType === 'reforco' ? 'ENVIAR APOIO' : 'AUTORIZAR INVASÃO'} <ChevronRight size={16} className="ml-2" /></>
                                 )}
                             </Button>
                         </div>

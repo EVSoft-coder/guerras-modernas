@@ -29,9 +29,17 @@ export function VillageDashboard({
     unitQueue = STABLE_EMPTY_ARRAY, units = STABLE_EMPTY_ARRAY, unitTypes = STABLE_EMPTY_ARRAY,
     ataquesRecebidos = STABLE_EMPTY_ARRAY, ataquesEnviados = STABLE_EMPTY_ARRAY,
     diplomaties = STABLE_EMPTY_ARRAY, myAllianceId,
+    reinforcements = STABLE_EMPTY_ARRAY, stationedOutside = STABLE_EMPTY_ARRAY,
     research = null, researchBonuses = {}, researchConfig = null,
     activeEvents = []
-}: DashboardProps & { research?: any; researchBonuses?: any; researchConfig?: any; activeEvents?: any[] }) {
+}: DashboardProps & { 
+    research?: any; 
+    researchBonuses?: any; 
+    researchConfig?: any; 
+    activeEvents?: any[];
+    reinforcements?: any[];
+    stationedOutside?: any[];
+}) {
     // 0. ECS ENGINE INTEGRATION
     const { globalState } = useGameEntities();
 
@@ -369,6 +377,8 @@ export function VillageDashboard({
                                 };
                             })
                         } 
+                        reinforcements={reinforcements}
+                        stationedOutside={stationedOutside}
                         gameConfig={gameConfig} 
                     />
                     <ResearchPanel 

@@ -90,6 +90,8 @@ class GameStateService
             'researchBonuses' => $jogador ? $this->researchService->getResearchBonuses($jogador) : [],
             'gameConfig' => $config,
             'researchConfig' => config('research'),
+            'reinforcements' => \App\Models\Reinforcement::where('target_base_id', $base->id)->with(['type', 'originBase.jogador'])->get(),
+            'stationedOutside' => \App\Models\Reinforcement::where('origin_base_id', $base->id)->with(['type', 'targetBase.jogador'])->get(),
         ];
     }
 }

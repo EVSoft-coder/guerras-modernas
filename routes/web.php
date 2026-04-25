@@ -70,6 +70,11 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/pesquisar', [App\Http\Controllers\PesquisaController::class, 'pesquisar'])->name('pesquisar');
         });
 
+        Route::prefix('reinforcements')->name('reinforcements.')->group(function () {
+            Route::post('/recall/{id}', [App\Http\Controllers\ReinforcementController::class, 'recall'])->name('recall');
+            Route::post('/dismiss/{id}', [App\Http\Controllers\ReinforcementController::class, 'dismiss'])->name('dismiss');
+        });
+
         Route::prefix('alianca')->name('alianca.')->group(function () {
             Route::post('/store', [AliancaController::class, 'store'])->name('store');
             Route::post('/pedir', [AliancaController::class, 'pedir'])->name('pedir');
