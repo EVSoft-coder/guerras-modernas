@@ -69,7 +69,14 @@ export default function Dashboard(props: any) {
                  buildings={currentBuildings}
                  population={currentPopulation}
                  resources={resources}
+                 units={currentUnits}
+                 movements={currentMovements}
                  activeEvents={props.activeEvents || []}
+                 gameConfig={props.gameConfig}
+                 unitTypes={props.unitTypes}
+                 unitQueue={props.unitQueue}
+                 buildingQueue={props.buildingQueue}
+                 diplomaties={props.diplomaties}
             />
         </AppLayout>
     );

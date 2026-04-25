@@ -361,12 +361,13 @@ export function VillageDashboard({
                     />
                     <UnitQueue queue={unitQueue || STABLE_EMPTY_ARRAY} />
                     <GarrisonPanel 
-                        tropas={units.length > 0 
-                            ? units.map((u: any) => {
+                        tropas={(units.length > 0 ? units : (base?.tropas || [])).map((u: any) => {
                                 const unitType = u.type || unitTypes.find((ut: any) => ut.id === u.unit_type_id);
-                                return { tipo: unitType?.name || 'unidade', quantidade: u.quantity };
-                            }) 
-                            : (base?.tropas || []).map((t: any) => ({ tipo: t.unidade || t.tipo, quantidade: t.quantidade }))
+                                return { 
+                                    tipo: unitType?.name || u.unidade || u.tipo || 'unidade', 
+                                    quantidade: u.quantity || u.quantidade || 0 
+                                };
+                            })
                         } 
                         gameConfig={gameConfig} 
                     />
