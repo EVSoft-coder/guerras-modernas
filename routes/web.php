@@ -31,6 +31,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Rotas Protegidas - FASE HARDEN 3
+Route::get('/manual', [\App\Http\Controllers\ManualController::class, 'index'])->name('manual');
 Route::middleware(['auth'])->group(function () {
     
     // 1. LEITURA (Rate Limit Elevado - PASSO 5)

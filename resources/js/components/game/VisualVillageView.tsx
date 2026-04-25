@@ -15,14 +15,33 @@ interface VillageViewProps {
  * Renderização pura e performática da base militar V22.
  */
 export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
-    
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const [scale, setScale] = React.useState(1);
+
+    React.useEffect(() => {
+        const updateScale = () => {
+            if (containerRef.current) {
+                const parentWidth = containerRef.current.parentElement?.clientWidth || 0;
+                if (parentWidth < 800) {
+                    setScale(parentWidth / 800);
+                } else {
+                    setScale(1);
+                }
+            }
+        };
+
+        updateScale();
+        window.addEventListener('resize', updateScale);
+        return () => window.removeEventListener('resize', updateScale);
+    }, []);
+
     const getBuildingLevel = (type: string) => {
         const b = base.edificios?.find(e => (e.buildingType || e.tipo)?.toLowerCase() === type.toLowerCase());
         return b?.nivel || 0;
     };
 
     return (
-        <div className="w-full flex flex-col items-center py-12 bg-[#050608]">
+        <div ref={containerRef} className="w-full flex flex-col items-center py-6 lg:py-12 bg-[#050608] overflow-hidden">
             <div 
                 id="VillageCanvas"
                 className="village-root shadow-[0_0_80px_rgba(0,0,0,0.8)] border border-gray-900/50"
@@ -33,7 +52,10 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                     margin: '0 auto',
                     borderRadius: '12px',
                     backgroundColor: '#0a0c10',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    transform: `scale(${scale})`,
+                    transformOrigin: 'top center',
+                    marginBottom: `-${600 * (1 - scale)}px`
                 }}
             >
                 <style>{`

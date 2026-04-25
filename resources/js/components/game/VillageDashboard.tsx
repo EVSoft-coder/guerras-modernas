@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { type BreadcrumbItem, DashboardProps } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
 import { ResourceBar } from '@/components/game/ResourceBar';
 import { VisualVillageView } from '@/components/game/VisualVillageView';
 import { BuildingModal } from '@/components/game/BuildingModal';
@@ -8,7 +8,7 @@ import { GarrisonPanel } from '@/components/game/GarrisonPanel';
 import { ProductionQueue } from '@/components/game/ProductionQueue';
 import { useToasts } from '@/components/game/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Target, Zap, Shield, Globe } from 'lucide-react';
+import { Target, Zap, Shield, Globe, Book } from 'lucide-react';
 import { ArmyMovementPanel } from '@/components/game/ArmyMovementPanel';
 import { gameStateService } from '@src/services/GameStateService';
 import { eventBus, Events } from '@src/core/EventBus';
@@ -19,6 +19,7 @@ import { motion } from 'framer-motion';
 import { useGameEntities } from '@/hooks/use-game-entities';
 import { UnitQueue } from '@/components/game/UnitQueue';
 import { ResearchPanel } from '@/components/game/ResearchPanel';
+import { TutorialOverlay } from '@/components/game/TutorialOverlay';
 
 const STABLE_EMPTY_ARRAY: any[] = [];
 
@@ -279,8 +280,17 @@ export function VillageDashboard({
                                  )}
                             </div>
                          </div>
-                         <div className="text-[10px] text-neutral-700 font-mono bg-white/5 px-3 py-1 rounded-full border border-white/5">
-                            SIGINT_NODE_{base?.id ?? 'N/A'}
+                         <div className="flex items-center gap-3">
+                             <Link 
+                                href="/manual"
+                                className="text-[10px] text-neutral-500 hover:text-orange-400 font-black uppercase tracking-widest flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/5 transition-all"
+                             >
+                                <Book size={12} />
+                                Manual Operacional
+                             </Link>
+                             <div className="text-[10px] text-neutral-700 font-mono bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                                SIGINT_NODE_{base?.id ?? 'N/A'}
+                             </div>
                          </div>
                     </div>
                     
@@ -391,6 +401,7 @@ export function VillageDashboard({
                 population={population}
                 unitTypes={unitTypes}
             />
+            <TutorialOverlay />
         </div>
     );
 }

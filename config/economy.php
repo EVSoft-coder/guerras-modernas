@@ -9,8 +9,8 @@ return [
 
     'buildings' => [
         'cost_multiplier' => 1.6,         // Fator exponencial genérico
-        'time_multiplier' => 1.6,         // Fator exponencial para tempo (Mais lento em níveis altos)
-        'hq_reduction_per_level' => 0.04,  // 4% de redução de tempo por nível de QG
+        'time_multiplier' => 1.1,         // Fator exponencial para tempo (Muito mais rápido em níveis altos)
+        'hq_reduction_per_level' => 0.10,  // 10% de redução de tempo por nível de QG
         
         'upgrade_costs' => [
             'hq'               => ['base' => ['suprimentos' => 200, 'metal' => 150], 'factor' => 1.6],
@@ -48,6 +48,6 @@ return [
 
     'units' => [
         'cost_increase_per_level' => 0.05, // Aumento de custo de 5% por nível de Quartel/Aeródromo
-        'time_reduction_per_level' => 0.03, // 3% de redução de tempo de treino por nível de edifício produtor
+        'time_reduction_per_level' => 0.08, // 8% de redução de tempo de treino por nível de edifício produtor
     ],
 ];

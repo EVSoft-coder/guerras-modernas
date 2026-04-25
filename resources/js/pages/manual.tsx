@@ -1,91 +1,92 @@
 import React from 'react';
-import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
-import { type BreadcrumbItem } from '@/types';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Book, Shield, Zap, Target } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { Book, ChevronLeft, Shield, Zap, Target, Globe, Box } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-interface ManualProps {
-    units: any;
-    buildings: any;
+interface Section {
+    title: string;
+    content: string;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'InfopÃ©dia Militar', href: '/manual' },
-];
+interface Props {
+    sections: Section[];
+}
 
-export default function Manual({ units, buildings }: ManualProps) {
+export default function Manual({ sections }: Props) {
+    const icons = [<Globe size={24} />, <Box size={24} />, <Shield size={24} />, <Target size={24} />, <Zap size={24} />];
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="InfopÃ©dia Militar - Manual do Oficial" />
-            
-            <div className="flex flex-1 flex-col gap-8 p-6 bg-neutral-950 text-white min-h-screen">
-                <div className="flex flex-col gap-2">
-                    <h1 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
-                        <Book className="text-sky-500" size={32} />
-                        InfopÃ©dia Militar
-                    </h1>
-                    <p className="text-neutral-500 text-sm uppercase font-bold tracking-widest">DossiÃª de InteligÃªncia sobre Ativos e Estruturas</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* SECÃ‡ÃƒO DE UNIDADES */}
-                    <section className="flex flex-col gap-4">
-                        <h2 className="text-xl font-bold uppercase tracking-tight text-sky-400 flex items-center gap-2">
-                            <Target size={20} />
-                            DivisÃµes de Combate
-                        </h2>
-                        <div className="grid grid-cols-1 gap-4">
-                            {Object.entries(units).map(([key, unit]: [string, any]) => (
-                                <Card key={key} className="bg-white/5 border-white/10 backdrop-blur-md hover:bg-white/10 transition-all duration-300">
-                                    <CardHeader className="py-4">
-                                        <CardTitle className="text-lg uppercase font-black tracking-tighter flex justify-between items-center">
-                                            {unit.name}
-                                            <span className="text-[10px] bg-sky-500/20 text-sky-400 px-2 py-1 rounded">ATIVO</span>
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="text-sm text-neutral-400">
-                                        <p className="mb-4 text-xs italic">"Unidade especializada em operaÃ§Ãµes de {unit.name.toLowerCase()}."</p>
-                                        <div className="grid grid-cols-2 gap-2 text-[10px] uppercase font-bold">
-                                            <div className="flex items-center gap-2">
-                                                <Zap className="text-orange-500" size={12} />
-                                                Ataque: {unit.attack}
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Shield className="text-green-500" size={12} />
-                                                Defesa: {unit.defense_infantry}
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    </section>
-
-                    {/* SECÃ‡ÃƒO DE EDIFÃCIOS */}
-                    <section className="flex flex-col gap-4">
-                        <h2 className="text-xl font-bold uppercase tracking-tight text-orange-400 flex items-center gap-2">
-                            <Zap size={20} />
-                            Infraestrutura de Base
-                        </h2>
-                        <div className="grid grid-cols-1 gap-4">
-                            {Object.entries(buildings).map(([key, b]: [string, any]) => (
-                                <Card key={key} className="bg-white/5 border-white/10 backdrop-blur-md hover:bg-white/10 transition-all duration-300">
-                                    <CardHeader className="py-4">
-                                        <CardTitle className="text-lg uppercase font-black tracking-tighter">
-                                            {b.name}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="text-sm text-neutral-400">
-                                        <p className="text-xs">{b.description}</p>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    </section>
-                </div>
+        <div className="min-h-screen bg-[#020406] text-white p-8 font-sans relative overflow-hidden">
+            {/* ATMOSPHERE */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 right-0 w-[80%] h-[70%] bg-orange-500/5 blur-[180px] opacity-40" />
+                <div className="absolute inset-0 opacity-[0.02]" 
+                     style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
             </div>
-        </AppLayout>
+
+            <Head title="Manual Operacional" />
+
+            <div className="max-w-4xl mx-auto relative z-10">
+                <div className="flex justify-between items-center mb-12">
+                    <Link 
+                        href="/dashboard" 
+                        className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-neutral-500 hover:text-white transition-colors"
+                    >
+                        <ChevronLeft size={16} />
+                        Regressar ao Comando
+                    </Link>
+                    <div className="text-[10px] font-mono text-orange-500/50 bg-orange-500/5 px-4 py-1 rounded-full border border-orange-500/10">
+                        DOC_ID: FIELD_MANUAL_v1.0
+                    </div>
+                </div>
+
+                <header className="mb-16">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="bg-orange-500/10 p-3 rounded-2xl border border-orange-500/20 shadow-[0_0_30px_rgba(249,115,22,0.1)]">
+                            <Book className="text-orange-500" size={32} />
+                        </div>
+                        <h1 className="text-4xl font-black uppercase tracking-tighter">Manual <span className="text-orange-500">Operacional</span></h1>
+                    </div>
+                    <p className="text-neutral-400 text-sm leading-relaxed max-w-2xl">
+                        Este documento contém os protocolos de segurança e diretrizes estratégicas para todos os comandantes em campo. A leitura atenta é mandatória para garantir a sobrevivência e expansão no teatro de operações.
+                    </p>
+                </header>
+
+                <div className="grid gap-6">
+                    {sections.map((section, index) => (
+                        <motion.div 
+                            key={index}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="group bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] hover:bg-white/[0.04] transition-all duration-500 backdrop-blur-3xl relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                            
+                            <div className="flex gap-6 items-start relative z-10">
+                                <div className="text-orange-500/40 mt-1 bg-black/40 p-3 rounded-xl border border-white/5">
+                                    {icons[index % icons.length]}
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black uppercase tracking-tight text-white mb-3 flex items-center gap-3">
+                                        <span className="text-[10px] font-mono text-orange-500/30">0{index + 1}</span>
+                                        {section.title}
+                                    </h3>
+                                    <p className="text-neutral-400 text-sm leading-relaxed font-medium">
+                                        {section.content}
+                                    </p>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+
+                <footer className="mt-20 pt-8 border-t border-white/5 text-center">
+                    <p className="text-[10px] text-neutral-600 font-black uppercase tracking-[0.5em]">
+                        Guerras Modernas &copy; 2026 — Protocolo de Segurança Ativo
+                    </p>
+                </footer>
+            </div>
+        </div>
     );
 }

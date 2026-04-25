@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { BuildingLayout, BUILDING_OFFSETS } from '@/config/buildingLayout';
 
 interface BuildingNodeProps {
@@ -32,9 +33,10 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
     const assetPath = `/assets/buildings/${layout.assetName || type.toLowerCase() + '.png'}`;
 
     return (
-        <div 
+        <motion.div 
             className="building-node group"
             onClick={onClick}
+            whileHover={{ scale: 1.05, zIndex: 1000 }}
             style={{
                 position: 'absolute',
                 left: `${left}px`,
@@ -42,13 +44,20 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 width: `${w}px`,
                 height: `${h}px`,
                 zIndex: Math.floor(layout.y),
-                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 filter: isInvalid ? 'sepia(1) hue-rotate(-50deg) saturate(2)' : 'none',
                 opacity: isInvalid ? 0.6 : 1,
                 cursor: 'pointer',
                 transform: rotation ? `rotate(${rotation}deg)` : 'none'
             }}
         >
+            {isConstructing && (
+                <motion.div 
+                    animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="absolute inset-0 bg-yellow-500/20 rounded-full blur-xl"
+                />
+            )}
+            
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                 {!isInvalid ? (
                     <img 
@@ -76,8 +85,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 top: '-20px',
                 left: '50%',
                 transform: `translateX(-50%) rotate(${-rotation}deg)`,
-                background: 'rgba(0, 0, 0, 0.85)',
-                color: '#fff',
+                background: isConstructing ? 'rgba(234, 179, 8, 0.9)' : 'rgba(0, 0, 0, 0.85)',
+                color: isConstructing ? '#000' : '#fff',
                 padding: '2px 10px',
                 borderRadius: '4px',
                 fontSize: '10px',
@@ -89,10 +98,11 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                 textTransform: 'uppercase',
                 zIndex: 20
             }}>
-                <span className="opacity-60">{type.replace(/_/g, ' ')}</span>
-                <span className="ml-2 text-cyan-400">LVL {level}</span>
-                {isConstructing && <span className="ml-2 animate-pulse text-yellow-400">🔨</span>}
+                <span className={isConstructing ? 'opacity-80' : 'opacity-60'}>{type.replace(/_/g, ' ')}</span>
+                <span className={`ml-2 ${isConstructing ? 'font-black' : 'text-cyan-400'}`}>
+                    {isConstructing ? 'EM OBRA' : `LVL ${level}`}
+                </span>
             </div>
-        </div>
+        </motion.div>
     );
 };

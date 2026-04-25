@@ -24,10 +24,10 @@ export const calculateBuildingCost = (baseAmount: number, currentLevel: number):
 
 /**
  * Calcula o tempo de construção em segundos (Exponencial).
- * FÓRMULA: Base * (1.5 ^ LevelAtual)
+ * FÓRMULA: Base * (1.1 ^ LevelAtual)
  */
 export const calculateConstructionTime = (timeBase: number, currentLevel: number): number => {
-    const time = timeBase * Math.pow(1.5, currentLevel);
+    const time = timeBase * Math.pow(1.1, currentLevel);
     return Math.max(5, Math.floor(time));
 };
 
