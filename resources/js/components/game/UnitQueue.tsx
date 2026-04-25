@@ -89,6 +89,20 @@ const QueueEntry = ({ item, now }: { item: UnitQueueItem, now: number }) => {
 
     const unitName = item.unitType?.name || 'Unidade Desconhecida';
 
+    // AUTO-RELOAD TRIGGER (V2.1)
+    useEffect(() => {
+        if (item.position !== 1 || hasTriggeredReload) return;
+        if (isFinished) {
+            setHasTriggeredReload(true);
+            setTimeout(() => {
+                router.reload({ 
+                    only: ['state', 'base', 'resources', 'units', 'unitQueue'],
+                    onSuccess: () => setHasTriggeredReload(false)
+                });
+            }, 1500);
+        }
+    }, [isFinished, item.position, hasTriggeredReload]);
+
     return (
         <motion.div 
             layout

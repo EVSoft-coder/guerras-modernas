@@ -19,11 +19,12 @@ interface BuildingModalProps {
     isTraining: boolean;
     population: any;
     unitTypes?: any[];
+    resources: any;
 }
 
 export const BuildingModal: React.FC<BuildingModalProps> = ({ 
     isOpen, onClose, building, gameConfig, 
-    onUpgrade, onTrain, isUpgrading, isTraining, population, unitTypes
+    onUpgrade, onTrain, isUpgrading, isTraining, population, unitTypes, resources
 }) => {
     if (!building) return null;
 
@@ -55,7 +56,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     const renderCost = (resourceType: string, baseAmount: number) => {
         if (!baseAmount) return null;
         const totalCost = calculateBuildingCost(baseAmount, building.nivel || 0);
-        const playerAmount = parseResourceValue(building.base?.recursos?.[resourceType] || 0);
+        const playerAmount = parseResourceValue(resources?.[resourceType] || 0);
         const hasEnough = playerAmount >= totalCost;
         
         const resourceIcons: Record<string, string> = { 'suprimentos': '📦', 'combustivel': '⛽', 'municoes': '🚀', 'pessoal': '👤' };
@@ -79,7 +80,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
     const canAfford = config.cost ? Object.entries(config.cost).every(([type, amount]) => {
         const cost = calculateBuildingCost(type === 'pessoal' ? 0 : amount as number, building.nivel || 0);
-        return type === 'pessoal' ? (population?.available ?? 0) >= (amount as number) : parseResourceValue(building.base?.recursos?.[type] || 0) >= cost;
+        return type === 'pessoal' ? (population?.available ?? 0) >= (amount as number) : parseResourceValue(resources?.[type] || 0) >= cost;
     }) : true;
 
     const tipoLower = building.buildingType?.toLowerCase();

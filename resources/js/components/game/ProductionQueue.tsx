@@ -162,6 +162,26 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
 
     const { percent, timeStr } = calculateProgress();
 
+    // AUTO-RELOAD TRIGGER (V2.1)
+    useEffect(() => {
+        if (!isFirst || !item.ends_at || hasTriggeredReload) return;
+
+        const end = new Date(item.ends_at).getTime();
+        const now = currentTime;
+        const remaining = end - now;
+
+        if (remaining <= 0) {
+            setHasTriggeredReload(true);
+            // Pequeno delay para garantir que o backend processou
+            setTimeout(() => {
+                router.reload({ 
+                    only: ['state', 'base', 'resources', 'buildings', 'buildingQueue', 'unitQueue'],
+                    onSuccess: () => setHasTriggeredReload(false)
+                });
+            }, 1500);
+        }
+    }, [currentTime, isFirst, item.ends_at, hasTriggeredReload]);
+
     return (
         <motion.div 
             layout

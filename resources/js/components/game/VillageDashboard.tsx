@@ -435,6 +435,7 @@ export function VillageDashboard({
                 isTraining={isTraining}
                 population={population}
                 unitTypes={unitTypes}
+                resources={resources}
             />
             <TutorialOverlay />
         </div>

@@ -39,10 +39,12 @@ export class SyncSystem implements GameSystem {
             base_id: data.base_id,
             tipo: data.tipo
         }, {
-            preserveState: true,
+            preserveState: false, // Forçar atualização de props
             preserveScroll: true,
             onSuccess: () => {
                 eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'UPGRADE' } });
+                // Forçar reload extra para garantir SSOT (Single Source of Truth)
+                router.reload({ only: ['state', 'resources', 'buildingQueue', 'buildings'] });
             },
             onError: (err) => {
                 const msg = Object.values(err)[0] as string || 'Operação Negada';
@@ -55,35 +57,23 @@ export class SyncSystem implements GameSystem {
     }
 
     private async handleUnitTraining(data: any): Promise<void> {
-        try {
-            Logger.building('TRAINING_REQUEST', data);
-            const response = await fetch('/base/treinar', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || ''
-                },
-                body: JSON.stringify({ base_id: data.base_id, unidade: data.unidade, quantidade: data.quantidade })
-            });
-
-            const resData = await response.json();
-            Logger.backend('TRAINING_RESPONSE', { status: response.status, data: resData });
-
-            if (!response.ok) {
-                throw new Error(resData.message || 'Recruitment Failed');
+        Logger.building('TRAINING_REQUEST', data);
+        
+        router.post('/units/recruit', {
+            unit_type_id: data.unit_type_id,
+            quantity: data.quantity
+        }, {
+            preserveState: false,
+            preserveScroll: true,
+            onSuccess: () => {
+                eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'RECRUITMENT' } });
+                router.reload({ only: ['state', 'resources', 'unitQueue', 'units'] });
+            },
+            onError: (err) => {
+                const msg = Object.values(err)[0] as string || 'Mobilização Abortada';
+                eventBus.emit(Events.UI_ALERT, { data: { message: msg, type: 'error' } });
             }
-            
-            // Re-hidratar ECS com dados puros do backend (Source of Truth)
-            router.reload();
-            eventBus.emit(Events.ACTION_SUCCESS, { data: { type: 'RECRUITMENT' } });
-
-            Logger.info('[ACTION] Recruitment procedures online.');
-        } catch (err: any) {
-            Logger.error('[ACTION_FAILURE] Recruitment aborted', err);
-            eventBus.emit(Events.UI_ALERT, { data: { message: err.message, type: 'error' } });
-        }
+        });
     }
 
     private async handleAttackLaunch(data: any): Promise<void> {
