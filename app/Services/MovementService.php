@@ -34,7 +34,21 @@ class MovementService
             // Sincronizar recursos antes de qualquer validação tática
             app(ResourceService::class)->syncResources($origin);
 
-            // 1. Validar ownership base origem (Simplificado: assumimos que o caller validou Auth)
+            // 1. Validar protecção de novatos
+            if ($type === 'attack') {
+                if ($target->is_protected && $target->protection_until && $target->protection_until > now()) {
+                    throw new \Exception("DIPLOMACIA: Este alvo encontra-se sob Proteção Inicial.");
+                }
+                
+                // Se a origem estiver protegida e atacar, perde a proteção
+                if ($origin->is_protected) {
+                    $origin->update([
+                        'is_protected' => false,
+                        'protection_until' => null
+                    ]);
+                    \Illuminate\Support\Facades\Log::channel('game')->info("[PROTECTION_LOST] Base {$origin->id} perdeu proteção ao atacar.");
+                }
+            }
             
             // 2. Validar e Calcular Velocidade do Grupo
             $minSpeed = 999999;

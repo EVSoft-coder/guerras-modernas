@@ -8,7 +8,7 @@ import { GarrisonPanel } from '@/components/game/GarrisonPanel';
 import { ProductionQueue } from '@/components/game/ProductionQueue';
 import { useToasts } from '@/components/game/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Target, Zap } from 'lucide-react';
+import { Target, Zap, Shield } from 'lucide-react';
 import { ArmyMovementPanel } from '@/components/game/ArmyMovementPanel';
 import { gameStateService } from '@src/services/GameStateService';
 import { eventBus, Events } from '@src/core/EventBus';
@@ -246,6 +246,13 @@ export function VillageDashboard({
                                          </div>
                                          <span className="text-[11px] text-white font-black font-mono tracking-tighter">{base.loyalty}%</span>
                                       </div>
+                                 )}
+
+                                 {(base?.is_protected || base?.isProtected) && (
+                                     <div className="flex items-center gap-2 bg-sky-900/30 px-4 py-2 rounded-2xl border border-sky-500/30 shadow-[0_0_15px_rgba(14,165,233,0.2)] backdrop-blur-md">
+                                         <Shield className="text-sky-400 animate-pulse" size={14} />
+                                         <span className="text-[10px] text-sky-400 font-black uppercase tracking-[0.2em]">Escudo Operacional</span>
+                                     </div>
                                  )}
                             </div>
                          </div>

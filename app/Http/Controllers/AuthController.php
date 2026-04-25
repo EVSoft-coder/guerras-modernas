@@ -142,6 +142,8 @@ class AuthController extends Controller
                             'coordenada_x' => $coords['x'],
                             'coordenada_y' => $coords['y'],
                             'ultimo_update' => now(),
+                            'is_protected' => true,
+                            'protection_until' => now()->addDays(3),
                         ]);
 
                         // FASE CRÍTICA — BOOTSTRAP DO JOGO: Infraestrutura inicial normalizada
