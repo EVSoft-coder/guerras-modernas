@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PedidoAlianca extends Model
 {
-    protected $table = 'pedido_aliancas';
+    protected $table = 'pedidos_alianca';
     protected $appends = ['ownerId'];
 
     protected $fillable = [
