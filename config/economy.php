@@ -32,12 +32,12 @@ return [
 
     'production' => [
         'resource_buildings' => [
-            'mina_suprimentos' => ['base' => 60, 'factor' => 1.163],
-            'refinaria'        => ['base' => 50, 'factor' => 1.155],
-            'fabrica_municoes' => ['base' => 40, 'factor' => 1.14],
-            'mina_metal'       => ['base' => 50, 'factor' => 1.17],
-            'central_energia'  => ['base' => 70, 'factor' => 1.16],
-            'housing'          => ['base' => 30, 'factor' => 1.1], // Extra para pessoal
+            'mina_suprimentos' => ['base' => 240, 'factor' => 1.28], // ~4/m lvl 1, ~37/m lvl 10
+            'refinaria'        => ['base' => 200, 'factor' => 1.28], // ~3.3/m lvl 1, ~30/m lvl 10
+            'fabrica_municoes' => ['base' => 180, 'factor' => 1.28], // ~3/m lvl 1, ~27/m lvl 10
+            'mina_metal'       => ['base' => 220, 'factor' => 1.28], // ~3.6/m lvl 1, ~33/m lvl 10
+            'central_energia'  => ['base' => 300, 'factor' => 1.28], // ~5/m lvl 1, ~46/m lvl 10
+            'housing'          => ['base' => 50, 'factor' => 1.15],  // População
         ],
     ],
 
