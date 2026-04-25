@@ -17,11 +17,16 @@ class GameStateService
 {
     protected $resourceService;
     protected $researchService;
+    protected $gameService;
 
-    public function __construct(ResourceService $resourceService, ?ResearchService $researchService = null)
-    {
+    public function __construct(
+        ResourceService $resourceService, 
+        ?ResearchService $researchService = null,
+        ?GameService $gameService = null
+    ) {
         $this->resourceService = $resourceService;
         $this->researchService = $researchService ?? app(ResearchService::class);
+        $this->gameService = $gameService ?? app(GameService::class);
     }
 
     /**
@@ -77,6 +82,7 @@ class GameStateService
             'unitQueue' => $base->unitQueue,
             'resources' => $resources,
             'taxas' => $this->resourceService->getRates($base),
+            'population' => $this->gameService->obterEstatisticasPopulacao($base),
             'ataquesEnviados' => Movement::where('origin_id', $base->id)->where('status', 'moving')->get(),
             'ataquesRecebidos' => Movement::where('target_id', $base->id)->where('status', 'moving')->get(),
             'research' => $jogador ? $this->researchService->getResearchState($jogador, $base) : null,
