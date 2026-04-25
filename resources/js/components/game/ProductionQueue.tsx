@@ -82,16 +82,18 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
     };
 
     return (
-        <Card className="bg-black/40 border-white/5 backdrop-blur-3xl overflow-hidden shadow-2xl rounded-[1.5rem] relative group border-t-sky-500/30 border-t-2">
-            <CardHeader className="py-4 bg-white/[0.02] border-b border-white/5">
-                <CardTitle className="text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Activity className="text-sky-500 animate-pulse" size={16} />
-                        Centro de Logística de Fila
+        <Card className="tactical-glass overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.9)] rounded-[2.5rem] relative group border-t-sky-500/30">
+             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/30 to-transparent"></div>
+            
+            <CardHeader className="py-5 bg-white/[0.01] border-b border-white/5">
+                <CardTitle className="text-[10px] uppercase font-black tracking-[0.4em] text-neutral-500 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Activity className="text-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.3)]" size={18} />
+                        Diretoria_Logística
                     </div>
                 </CardTitle>
             </CardHeader>
-            <CardContent className="py-6 space-y-4">
+            <CardContent className="py-6 space-y-4 relative">
                 <AnimatePresence mode="popLayout">
                     {unifiedQueue.length > 0 ? (
                         unifiedQueue.map((item, index) => (
@@ -107,13 +109,13 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
                         ))
                     ) : (
                         <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-center py-10 border-2 border-dashed border-white/5 rounded-2xl bg-white/[0.01]"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="text-center py-16 border border-dashed border-white/5 rounded-[2rem] bg-white/[0.01]"
                         >
-                            <Hammer className="mx-auto text-neutral-800 mb-3 opacity-20" size={32} />
-                            <span className="text-[9px] uppercase font-black text-neutral-600 tracking-[0.2em] block">
-                                Sem Operações de Engenharia ou Mobilização
+                            <Hammer className="mx-auto text-neutral-800 mb-4 opacity-20" size={40} />
+                            <span className="text-[11px] uppercase font-black text-neutral-700 tracking-[0.4em] block">
+                                Inatividade_Operacional
                             </span>
                         </motion.div>
                     )}
@@ -138,7 +140,7 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
             const h = Math.floor(item.duration / 3600);
             const m = Math.floor((item.duration % 3600) / 60);
             const s = item.duration % 60;
-            return { percent: 0, timeStr: `Aguardando (${h > 0 ? h + 'h ' : ''}${m}m ${s}s)` };
+            return { percent: 0, timeStr: `Pendente (${h > 0 ? h + 'h ' : ''}${m}m ${s}s)` };
         }
 
         const start = new Date(item.started_at).getTime();
@@ -152,9 +154,7 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
         const m = Math.max(0, Math.floor((remaining % 3600000) / 60000));
         const s = Math.max(0, Math.floor((remaining % 60000) / 1000));
         
-        const timeStr = remaining <= 0 ? 'Concluindo...' : (h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`);
-        
-        // No caso de treino, o progresso é da UNIDADE ATUAL
+        const timeStr = remaining <= 0 ? 'Protocolo Final' : (h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`);
         const percent = Math.min(100, Math.max(0, ((total - remaining) / total) * 100));
 
         return { percent, timeStr };
@@ -172,7 +172,6 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
 
         if (remaining <= 0) {
             setHasTriggeredReload(true);
-            // Pequeno delay para garantir que o backend processou
             setTimeout(() => {
                 router.reload({ 
                     only: ['state', 'base', 'resources', 'buildings', 'buildingQueue', 'unitQueue'],
@@ -185,35 +184,36 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
     return (
         <motion.div 
             layout
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className={`group relative p-4 rounded-xl transition-all duration-300 ${
-                isFirst ? 'bg-white/[0.05] border border-white/10' : 'bg-black/20 border border-white/5 opacity-60 hover:opacity-100'
+            initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+            className={`group relative p-4 rounded-2xl transition-all duration-500 border overflow-hidden ${
+                isFirst ? 'bg-white/[0.04] border-white/10 shadow-xl' : 'bg-black/20 border-white/5 opacity-40 hover:opacity-100'
             }`}
         >
-            <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center gap-3">
-                    <div className={`size-8 rounded-lg flex items-center justify-center ${isFirst ? 'bg-sky-500/20 text-sky-400' : 'bg-neutral-800 text-neutral-500'}`}>
-                         <span className="text-[10px] font-black">{item.position}</span>
+            {isFirst && <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/20 to-transparent" />}
+            
+            <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-4">
+                    <div className={`size-9 rounded-xl flex items-center justify-center border font-mono ${isFirst ? 'bg-sky-500/20 border-sky-500/30 text-sky-400' : 'bg-black/40 border-white/5 text-neutral-600'}`}>
+                         <span className="text-[11px] font-black">{item.position}</span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-xs font-black uppercase text-white tracking-tighter flex items-center gap-2">
-                             {item.buildingType === 'construcao' ? <Hammer size={10} /> : <Shield size={10} className="text-emerald-400" />}
+                        <span className="text-[11px] font-black uppercase text-white tracking-widest flex items-center gap-3">
+                             {item.buildingType === 'construcao' ? <Hammer size={12} className="text-sky-400" /> : <Shield size={12} className="text-emerald-400" />}
                             {item.label}
-                            {isFirst && <div className="size-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>}
+                            {isFirst && <div className="size-1.5 bg-sky-500 rounded-full animate-ping"></div>}
                         </span>
-                        <span className="text-[8px] text-neutral-500 font-bold uppercase tracking-wider">{item.sublabel}</span>
+                        <span className="text-[8px] text-neutral-500 font-black uppercase tracking-[0.2em] mt-0.5">{item.sublabel}</span>
                     </div>
                 </div>
 
                 {/* CONTROLOS TÁCTICOS */}
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300">
                     {!isFirst && (
                         <button 
                             onClick={onMoveUp}
-                            className="p-1.5 hover:bg-white/10 rounded-md text-neutral-400 hover:text-white transition-colors"
-                            title="Subir Prioridade"
+                            className="p-1.5 bg-white/5 hover:bg-sky-500/20 rounded-lg text-neutral-500 hover:text-sky-400 transition-all border border-transparent hover:border-sky-500/20"
                         >
                             <ChevronUp size={14} />
                         </button>
@@ -221,41 +221,40 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
                     {!isLast && (
                         <button 
                             onClick={onMoveDown}
-                            className="p-1.5 hover:bg-white/10 rounded-md text-neutral-400 hover:text-white transition-colors"
-                            title="Descer Prioridade"
+                            className="p-1.5 bg-white/5 hover:bg-sky-500/20 rounded-lg text-neutral-500 hover:text-sky-400 transition-all border border-transparent hover:border-sky-500/20"
                         >
                             <ChevronDown size={14} />
                         </button>
                     )}
                     <button 
                         onClick={onCancel}
-                        className="p-1.5 hover:bg-red-500/20 rounded-md text-neutral-500 hover:text-red-500 transition-colors"
-                        title="Abortar Projeto"
+                        className="p-1.5 bg-white/5 hover:bg-red-500/20 rounded-lg text-neutral-500 hover:text-red-400 transition-all border border-transparent hover:border-red-500/20"
                     >
                         <X size={14} />
                     </button>
                 </div>
             </div>
 
-            <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-mono font-black text-white/40 uppercase tracking-widest">
-                        {item.buildingType === 'construcao' ? 'Engenharia' : 'Mobilização'}
+            <div className="space-y-3">
+                <div className="flex justify-between items-end">
+                    <span className="text-[9px] font-black text-neutral-600 uppercase tracking-[0.2em]">
+                        Status: <span className={isFirst ? 'text-sky-400/60' : ''}>{item.buildingType === 'construcao' ? 'Engenharia' : 'Logística'}</span>
                     </span>
-                    <span className={`text-[10px] font-mono font-black ${isFirst ? 'text-sky-400' : 'text-neutral-600'}`}>
+                    <span className={`text-xs font-black font-military-mono tracking-tighter ${isFirst ? 'text-sky-400' : 'text-neutral-700'}`}>
                         {timeStr}
                     </span>
                 </div>
                 
-                <div className="relative h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/5">
+                <div className="relative h-1.5 bg-black/60 rounded-full overflow-hidden border border-white/5 shadow-inner">
                     <motion.div 
                         className={`absolute inset-y-0 left-0 ${
-                            isFirst ? (item.buildingType === 'construcao' ? 'bg-sky-500 shadow-[0_0_10px_#0ea5e9]' : 'bg-emerald-500 shadow-[0_0_10px_#10b981]') : 'bg-neutral-800'
+                            isFirst ? (item.buildingType === 'construcao' ? 'bg-gradient-to-r from-sky-600 to-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.5)]' : 'bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.5)]') : 'bg-neutral-800'
                         }`}
                         initial={{ width: 0 }}
                         animate={{ width: `${percent}%` }}
                         transition={{ duration: 0.5 }}
                     />
+                    {isFirst && <div className="absolute inset-0 bg-white/[0.05] scanline-effect" />}
                 </div>
             </div>
         </motion.div>

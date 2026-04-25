@@ -99,46 +99,52 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({
     };
 
     return (
-        <Card className="bg-[#050709]/60 border-white/5 backdrop-blur-3xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.8)] rounded-[2rem] relative group border-t-emerald-500/20">
-            <CardHeader className="py-4 border-b border-white/5 bg-white/[0.02]">
-                <div className="flex flex-col gap-4">
+        <Card className="tactical-glass overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.9)] rounded-[2.5rem] relative group border-t-emerald-500/20">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
+            
+            <CardHeader className="py-5 border-b border-white/5 bg-white/[0.01]">
+                <div className="flex flex-col gap-5">
                     <div className="flex justify-between items-center">
-                        <CardTitle className="text-[10px] uppercase font-black tracking-[0.3em] text-neutral-400 flex items-center gap-3">
-                            <Users className="text-emerald-500" size={16} />
-                            Logística de Guarnição
+                        <CardTitle className="text-[10px] uppercase font-black tracking-[0.4em] text-neutral-500 flex items-center gap-3">
+                            <Users className="text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" size={18} />
+                            Logística_Guarnição
                         </CardTitle>
                     </div>
 
-                    <div className="flex gap-1 bg-black/40 p-1 rounded-xl border border-white/5">
+                    <div className="flex gap-1 bg-black/60 p-1.5 rounded-2xl border border-white/5 shadow-inner">
                         {[
                             { id: 'local', label: 'Local', count: tropas.length },
                             { id: 'received', label: 'Aliados', count: reinforcements.length },
-                            { id: 'sent', label: 'No Estrangeiro', count: stationedOutside.length }
+                            { id: 'sent', label: 'Exportadas', count: stationedOutside.length }
                         ].map(tab => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                className={`flex-1 py-2 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${
+                                className={`flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
                                     activeTab === tab.id 
-                                    ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' 
+                                    ? 'bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.4)] translate-y-[-1px]' 
                                     : 'text-neutral-500 hover:text-white hover:bg-white/5'
                                 }`}
                             >
-                                {tab.label} {tab.count > 0 && <span className="ml-1 opacity-50">[{tab.count}]</span>}
+                                {tab.label}
+                                {tab.count > 0 && <span className={`ml-2 opacity-60 text-[8px] px-1.5 py-0.5 rounded-md ${activeTab === tab.id ? 'bg-black/20' : 'bg-white/5'}`}>{tab.count}</span>}
                             </button>
                         ))}
                     </div>
                 </div>
             </CardHeader>
 
-            <CardContent className="py-6 min-h-[200px]">
+            <CardContent className="py-6 min-h-[220px] relative">
+                {/* HUD Decoration */}
+                <div className="absolute top-0 right-4 w-[1px] h-full bg-white/[0.02] hidden md:block" />
+                
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeTab}
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{ duration: 0.2 }}
+                        initial={{ opacity: 0, x: 20, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, x: -20, filter: 'blur(10px)' }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                     >
                         {activeTab === 'local' && renderUnitList(tropas, 'local')}
                         {activeTab === 'received' && renderUnitList(reinforcements, 'received')}
@@ -146,10 +152,13 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({
                     </motion.div>
                 </AnimatePresence>
 
-                <div className="mt-8 pt-4 border-t border-white/5 flex justify-between items-center opacity-40">
-                    <span className="text-[7px] font-mono text-neutral-500 tracking-[0.5em] uppercase">Tactical_Garrison_Interface_V.4.5</span>
-                    <div className="flex gap-1">
-                        {[1,2,3,4,5].map(i => <div key={i} className="w-1 h-1 bg-emerald-500/30 rounded-full" />)}
+                <div className="mt-8 pt-5 border-t border-white/5 flex justify-between items-center">
+                    <span className="text-[8px] font-black text-neutral-600 tracking-[0.6em] uppercase flex items-center gap-2">
+                        <Activity size={10} className="text-emerald-500/50" />
+                        GARRISON_PROTO_V11
+                    </span>
+                    <div className="flex gap-1.5">
+                        {[1,2,3,4].map(i => <div key={i} className={`w-1 h-1 rounded-full ${i <= 2 ? 'bg-emerald-500/50' : 'bg-white/5'}`} />)}
                     </div>
                 </div>
             </CardContent>

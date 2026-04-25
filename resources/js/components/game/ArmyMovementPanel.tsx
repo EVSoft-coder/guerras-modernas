@@ -31,77 +31,98 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
     if (!hasMovements) return null;
 
     return (
-        <Card className="bg-black/20 border-white/5 backdrop-blur-3xl overflow-hidden mb-8 rounded-[1.5rem] shadow-2xl relative group">
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-red-500/20 to-transparent"></div>
-            <CardHeader className="py-4 bg-red-500/[0.03] border-b border-white/5">
-                <CardTitle className="text-[10px] uppercase font-black tracking-[0.25em] text-red-500/80 flex items-center gap-2">
-                    <Zap className="animate-pulse" size={16} />
-                    Monitor de Espaço Aéreo e Fronteira
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="divide-y divide-white/5">
-                    {/* ATAQUES RECEBIDOS (AMEAÇAS) */}
-                    <AnimatePresence>
-                        {ataquesRecebidos?.map(movement => (
-                            <motion.div 
-                                key={movement.id} 
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                className="p-5 flex items-center justify-between bg-red-950/20 group/atk hover:bg-red-900/30 transition-all duration-500"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <PlaneLanding className="text-red-500 animate-bounce drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" size={24} />
-                                    <div>
-                                        <h4 className="text-[11px] font-black text-red-400 uppercase tracking-tight">Invasão Hostil Detetada</h4>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-[9px] text-neutral-500 uppercase font-mono tracking-tighter">Vetor de Ataque: <span className="text-white">{movement.origin?.jogador?.username || 'REBELDES'}</span></span>
-                                            <div className="w-1 h-1 bg-red-500 rounded-full animate-ping"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col items-end gap-1.5">
-                                    <div className="font-mono text-2xl font-black text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.6)]">
-                                        -{getTimeLeft(movement.arrival_time)}
-                                    </div>
-                                    <div className="text-[7px] text-neutral-600 font-black uppercase tracking-[0.2em] opacity-50">Tempo até Impacto</div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
-
-                    {/* MOVIMENTOS ENVIADOS */}
-                    <AnimatePresence>
-                        {ataquesEnviados?.map(movement => (
-                            <motion.div 
-                                key={movement.id} 
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="p-5 flex items-center justify-between group/of hover:bg-white/[0.02] transition-all duration-500"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <PlaneTakeoff className="text-sky-500 drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]" size={24} />
-                                    <div>
-                                        <h4 className="text-[11px] font-black text-white uppercase tracking-tight group-hover/of:text-sky-400 transition-colors">Ofensiva em Curso</h4>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-[9px] text-neutral-500 uppercase font-mono">Missão: {movement.type.toUpperCase()} / Alvo: {movement.target?.jogador?.username || movement.target?.nome || 'SETOR DESCONHECIDO'}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col items-end gap-1.5">
-                                    <div className="font-mono text-2xl font-black text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]">
-                                        {getTimeLeft(movement.arrival_time)}
-                                    </div>
-                                    <div className="flex items-center gap-1 opacity-50">
-                                        <span className="text-[7px] text-neutral-600 font-black uppercase tracking-[0.2em]">ETR_TIME</span>
-                                        <ChevronRight size={8} className="text-sky-500 animate-slide-right" />
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
+        <div className="tactical-glass border-white/5 backdrop-blur-3xl overflow-hidden mb-8 rounded-[2rem] shadow-[0_30px_60px_rgba(0,0,0,0.8)] relative group border">
+            <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent ${ataquesRecebidos?.length > 0 ? 'via-red-500' : 'via-cyan-500/50'} to-transparent shadow-[0_0_15px_rgba(239,68,68,0.5)]`}></div>
+            
+            <div className="px-6 py-4 bg-white/[0.01] border-b border-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-xl border ${ataquesRecebidos?.length > 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-cyan-500/10 border-cyan-500/20'}`}>
+                        <Activity className={ataquesRecebidos?.length > 0 ? 'text-red-500 animate-pulse' : 'text-cyan-500'} size={18} />
+                    </div>
+                    <h3 className="text-[10px] uppercase font-black tracking-[0.4em] text-neutral-500 font-military-mono">
+                        Telemetria_Espaço_Aéreo
+                    </h3>
                 </div>
-            </CardContent>
-        </Card>
+                {ataquesRecebidos?.length > 0 && (
+                    <div className="flex items-center gap-2 px-3 py-1 bg-red-500/20 border border-red-500/40 rounded-full animate-pulse">
+                        <ShieldAlert size={12} className="text-red-500" />
+                        <span className="text-[9px] font-black text-red-500 uppercase tracking-widest">Alerta_Invasão</span>
+                    </div>
+                )}
+            </div>
+
+            <div className="divide-y divide-white/[0.02]">
+                {/* ATAQUES RECEBIDOS (AMEAÇAS) */}
+                <AnimatePresence>
+                    {ataquesRecebidos?.map(movement => (
+                        <motion.div 
+                            key={movement.id} 
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="p-6 flex items-center justify-between bg-red-500/[0.03] group/atk hover:bg-red-500/[0.06] transition-all duration-700 relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 scanline-effect opacity-[0.05]" />
+                            <div className="flex items-center gap-5 relative z-10">
+                                <div className="size-12 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                                    <PlaneLanding className="text-red-500 animate-bounce" size={24} />
+                                </div>
+                                <div>
+                                    <h4 className="text-[12px] font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                        Vetor_Hostil <span className="text-red-500 font-military-mono">#{(movement.origin?.id || '???').toString().padStart(4, '0')}</span>
+                                    </h4>
+                                    <div className="flex items-center gap-3 mt-1.5">
+                                        <span className="text-[9px] text-neutral-500 uppercase font-black tracking-widest">Origem: <span className="text-white bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 ml-1">{movement.origin?.jogador?.username || 'INSURGENTES'}</span></span>
+                                        <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-1 relative z-10">
+                                <div className="font-military-mono text-3xl font-black text-red-500 tracking-tighter drop-shadow-[0_0_15px_rgba(239,68,68,0.4)]">
+                                    -{getTimeLeft(movement.arrival_time)}
+                                </div>
+                                <div className="text-[8px] text-red-500/40 font-black uppercase tracking-[0.3em]">Impact_Countdown</div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+
+                {/* MOVIMENTOS ENVIADOS */}
+                <AnimatePresence>
+                    {ataquesEnviados?.map(movement => (
+                        <motion.div 
+                            key={movement.id} 
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="p-6 flex items-center justify-between group/of hover:bg-white/[0.02] transition-all duration-700 relative overflow-hidden"
+                        >
+                            <div className="flex items-center gap-5 relative z-10">
+                                <div className="size-12 rounded-2xl bg-cyan-500/10 border border-white/5 flex items-center justify-center group-hover/of:border-cyan-500/30 transition-all duration-700">
+                                    <PlaneTakeoff className="text-cyan-500 drop-shadow-[0_0_10px_rgba(6,182,212,0.4)]" size={24} />
+                                </div>
+                                <div>
+                                    <h4 className="text-[12px] font-black text-white uppercase tracking-widest group-hover/of:text-cyan-400 transition-colors duration-500">
+                                        Ofensiva_Ativa <span className="text-neutral-600 font-military-mono ml-2">[{movement.type.toUpperCase()}]</span>
+                                    </h4>
+                                    <div className="flex items-center gap-3 mt-1.5">
+                                        <span className="text-[9px] text-neutral-500 uppercase font-black tracking-widest">
+                                            Alvo: <span className="text-cyan-400 font-military-mono ml-1">{movement.target?.jogador?.username || movement.target?.nome || 'SETOR_X'}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-1 relative z-10">
+                                <div className="font-military-mono text-3xl font-black text-white group-hover:text-cyan-400 transition-colors duration-500 tracking-tighter shadow-cyan-500/20">
+                                    {getTimeLeft(movement.arrival_time)}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[8px] text-neutral-600 font-black uppercase tracking-[0.3em]">Time_To_Target</span>
+                                    <ChevronRight size={10} className="text-cyan-500 animate-pulse" />
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </div>
+        </div>
     );
 };

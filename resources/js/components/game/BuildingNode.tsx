@@ -34,47 +34,66 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
         >
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                 {!isInvalid ? (
-                    <TransparentImage 
-                        src={assetPath}
-                        alt={type}
-                        targetColor={layout.transparency?.targetColor}
-                        tolerance={layout.transparency?.tolerance || 30}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'contain',
-                            pointerEvents: 'none',
-                            filter: isConstructing ? 'brightness(0.4) contrast(1.3)' : 'none',
-                            opacity: isConstructing ? 0.7 : 1
-                        }}
-                        onError={() => setIsInvalid(true)}
-                    />
+                    <div className="relative w-full h-full">
+                        <TransparentImage 
+                            src={assetPath}
+                            alt={type}
+                            targetColor={layout.transparency?.targetColor}
+                            tolerance={layout.transparency?.tolerance || 30}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'contain',
+                                pointerEvents: 'none',
+                                filter: isConstructing ? 'brightness(0.3) contrast(1.5) saturate(0)' : 'none',
+                                opacity: isConstructing ? 0.6 : 1,
+                                transition: 'all 0.5s ease-out'
+                            }}
+                            onError={() => setIsInvalid(true)}
+                        />
+                        {/* Persistent Tactical Aura */}
+                        <div className={`absolute inset-0 rounded-full blur-[30px] opacity-0 group-hover:opacity-20 transition-all duration-700 ${isConstructing ? 'bg-orange-500' : 'bg-cyan-500'}`} />
+                    </div>
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-red-900/20 border border-red-500/50 rounded-lg">
-                        <span className="text-[8px] text-red-500 font-black uppercase tracking-tighter">DATA_ERROR</span>
+                    <div className="w-full h-full flex items-center justify-center bg-red-900/10 border border-red-500/20 rounded-2xl backdrop-blur-sm">
+                        <span className="text-[7px] text-red-500 font-black uppercase tracking-[0.2em] font-military-mono">Signal_Lost</span>
                     </div>
                 )}
 
-                {/* HUD de Nível */}
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <div className="bg-black/80 backdrop-blur-md px-2 py-0.5 rounded border border-white/10 shadow-xl flex flex-col items-center">
-                        <span className="text-[8px] text-neutral-500 font-black uppercase tracking-widest leading-none mb-0.5">
-                            {type.replace('_', ' ')}
-                        </span>
-                        <span className="text-[10px] text-cyan-400 font-black font-mono leading-none">
-                            LVL {level}
+                {/* Tactical HUD Label */}
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none transition-all duration-500 group-hover:-bottom-8">
+                    <div className={`px-3 py-1 rounded-lg border backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col items-center min-w-[80px] transition-all duration-500 ${
+                        isConstructing 
+                            ? 'bg-orange-500/10 border-orange-500/20 group-hover:border-orange-500/40' 
+                            : 'bg-black/60 border-white/5 group-hover:border-cyan-500/30'
+                    }`}>
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                            <div className={`w-1 h-1 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500 shadow-[0_0_8px_#06b6d4]'}`} />
+                            <span className="text-[7px] text-neutral-500 font-black uppercase tracking-[0.3em] leading-none whitespace-nowrap">
+                                {type.replace('_', ' ')}
+                            </span>
+                        </div>
+                        <span className={`text-[11px] font-black font-military-mono leading-none tracking-tighter ${
+                            isConstructing ? 'text-orange-400' : 'text-white group-hover:text-cyan-400'
+                        }`}>
+                            {isConstructing ? 'UNDER_CONST' : `LVL_${level.toString().padStart(2, '0')}`}
                         </span>
                     </div>
-                    {/* Indicador de Seleção */}
-                    <div className="w-1 h-1 rounded-full bg-cyan-500 mt-1 animate-pulse shadow-[0_0_10px_rgba(6,182,212,1)]"></div>
+                    
+                    {/* Perspective Line */}
+                    <div className={`w-[1px] h-4 bg-gradient-to-b from-white/10 to-transparent transition-all duration-500 group-hover:h-6 ${
+                        isConstructing ? 'from-orange-500/20' : 'group-hover:from-cyan-500/40'
+                    }`} />
                 </div>
 
-                {/* Efeito de Obra */}
+                {/* Efeito de Obra Hi-Tech */}
                 {isConstructing && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                         <div className="w-full h-full border border-orange-500/30 rounded-lg animate-pulse overflow-hidden bg-orange-500/5">
-                            <div className="absolute inset-0 opacity-20" 
-                                 style={{ backgroundImage: 'repeating-linear-gradient(45deg, #f97316, #f97316 10px, transparent 10px, transparent 20px)' }}></div>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-2">
+                         <div className="w-full h-full border border-orange-500/20 rounded-2xl animate-pulse overflow-hidden bg-orange-500/[0.03] backdrop-blur-[2px]">
+                            <div className="absolute inset-0 opacity-[0.05]" 
+                                 style={{ backgroundImage: 'repeating-linear-gradient(45deg, #f97316, #f97316 2px, transparent 2px, transparent 10px)' }}></div>
+                            <div className="absolute inset-0 scanline-effect opacity-10" />
+                            <div className="absolute top-2 left-2 right-2 h-[1px] bg-gradient-to-r from-transparent via-orange-500/40 to-transparent" />
                          </div>
                     </div>
                 )}

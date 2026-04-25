@@ -222,17 +222,13 @@ export function VillageDashboard({
     };
 
     return (
-        <div className="flex h-full flex-1 flex-col gap-10 p-8 bg-[#020406] text-white min-h-screen relative overflow-hidden font-sans">
+        <div className="flex h-full flex-1 flex-col gap-8 p-6 bg-[#020406] text-white min-h-screen relative overflow-hidden font-sans">
             {/* TACTICAL ATMOSPHERE ENGINE */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[80%] h-[70%] bg-sky-500/10 blur-[180px] opacity-40 animate-pulse" />
+                <div className="absolute top-0 right-0 w-[80%] h-[70%] bg-sky-500/5 blur-[180px] opacity-40 animate-pulse" />
                 <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-orange-500/5 blur-[150px] opacity-30" />
-                <div className="absolute inset-0 opacity-[0.03]" 
-                     style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+                <div className="absolute inset-0 military-grid opacity-[0.05]" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
-                {/* SCANLINES */}
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none" 
-                     style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px)', backgroundSize: '100% 4px' }} />
             </div>
 
             <Head title="Centro de Comando Tático" />
@@ -260,28 +256,32 @@ export function VillageDashboard({
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 flex-1 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 relative z-10">
                 <div className="lg:col-span-8 flex flex-col gap-6">
-                    <div className="flex justify-between items-center px-4">
+                    <div className="flex justify-between items-end px-4">
                          <div className="flex flex-col">
-                            <h2 className="text-3xl font-black uppercase tracking-tighter text-white flex items-center gap-4">
-                                <div className="bg-orange-500/10 p-2 rounded-xl border border-orange-500/20 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
-                                    <Target className="text-orange-500 animate-pulse" size={32} />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] text-orange-500/60 font-black tracking-[0.4em] mb-0.5">ESTAÇÃO_OPERACIONAL</span>
-                                    {base?.nome ?? 'Desconhecido'}
-                                </div>
+                            <div className="flex items-center gap-6">
+                                <h2 className="text-4xl font-black uppercase tracking-tighter text-white flex items-center gap-4">
+                                    <div className="bg-orange-500/10 p-2.5 rounded-2xl border border-orange-500/20 shadow-[0_0_30px_rgba(249,115,22,0.15)] group">
+                                        <Target className="text-orange-500 group-hover:rotate-90 transition-transform duration-500" size={32} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-orange-500/60 font-black tracking-[0.5em] mb-1">SETOR_OPERACIONAL</span>
+                                        {base?.nome ?? 'Setor Desconhecido'}
+                                    </div>
+                                </h2>
                                 
                                 {displayBases.length > 1 && (
-                                    <div className="flex gap-1.5 ml-6 self-center bg-white/5 p-1 rounded-xl border border-white/5 backdrop-blur-sm">
+                                    <div className="flex gap-1 ml-4 bg-white/5 p-1 rounded-2xl border border-white/5 backdrop-blur-xl">
                                         {displayBases.map(b => (
                                             <button 
                                                 key={b.id}
                                                 onClick={() => b.id !== base.id && router.get(`/base/switch/${b.id}`)}
                                                 className={`
-                                                    px-5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-[0.15em] border transition-all duration-300
-                                                    ${b.id === base.id ? 'bg-orange-500 border-orange-400 text-black shadow-[0_0_20px_rgba(249,115,22,0.3)]' : 'bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5'}
+                                                    px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all duration-500
+                                                    ${b.id === base.id 
+                                                        ? 'bg-orange-500 text-black shadow-[0_0_20px_rgba(249,115,22,0.4)]' 
+                                                        : 'text-neutral-500 hover:text-white hover:bg-white/5'}
                                                 `}
                                             >
                                                 {b.nome}
@@ -289,31 +289,32 @@ export function VillageDashboard({
                                         ))}
                                     </div>
                                 )}
-                            </h2>
-                            <div className="flex items-center gap-4 mt-2">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">Sistemas On-line</span>
+                            </div>
+
+                            <div className="flex items-center gap-6 mt-4">
+                                <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/5 rounded-full border border-emerald-500/20">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></div>
+                                    <span className="text-[9px] text-emerald-500/80 font-black uppercase tracking-widest">Sistemas Ativos</span>
                                 </div>
                                 
                                  {base?.loyalty !== undefined && (
-                                      <div className="flex items-center gap-3 bg-black/40 px-4 py-2 rounded-2xl border border-white/5 shadow-xl backdrop-blur-md">
-                                         <div className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">Civil_Control:</div>
-                                         <div className="w-32 h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5">
+                                      <div className="flex items-center gap-3">
+                                         <div className="text-[9px] text-neutral-500 font-black uppercase tracking-[0.2em]">Civil_Net:</div>
+                                         <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                                              <motion.div 
                                                  initial={{ width: 0 }}
                                                  animate={{ width: `${base.loyalty}%` }}
-                                                 className="h-full bg-gradient-to-r from-orange-600 to-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.5)]" 
+                                                 className="h-full bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.4)]" 
                                              />
                                          </div>
-                                         <span className="text-[11px] text-white font-black font-mono tracking-tighter">{base.loyalty}%</span>
+                                         <span className="text-xs font-black text-military-mono tracking-tighter">{base.loyalty}%</span>
                                       </div>
                                  )}
-
+ 
                                  {(base?.is_protected || base?.isProtected) && (
-                                     <div className="flex items-center gap-2 bg-sky-900/30 px-4 py-2 rounded-2xl border border-sky-500/30 shadow-[0_0_15px_rgba(14,165,233,0.2)] backdrop-blur-md">
-                                         <Shield className="text-sky-400 animate-pulse" size={14} />
-                                         <span className="text-[10px] text-sky-400 font-black uppercase tracking-[0.2em]">Escudo Operacional</span>
+                                     <div className="flex items-center gap-2 bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/30 shadow-[0_0_15px_rgba(14,165,233,0.15)]">
+                                         <Shield className="text-sky-400 animate-pulse" size={12} />
+                                         <span className="text-[9px] text-sky-400 font-black uppercase tracking-widest">Defesa Ativa</span>
                                      </div>
                                  )}
                             </div>
@@ -321,14 +322,11 @@ export function VillageDashboard({
                          <div className="flex items-center gap-3">
                              <Link 
                                 href="/manual"
-                                className="text-[10px] text-neutral-500 hover:text-orange-400 font-black uppercase tracking-widest flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/5 transition-all"
+                                className="text-[9px] text-neutral-400 hover:text-white font-black uppercase tracking-[0.2em] flex items-center gap-2 bg-white/5 px-5 py-2.5 rounded-2xl border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all shadow-xl backdrop-blur-xl"
                              >
-                                <Book size={12} />
-                                Manual Operacional
+                                <Book size={14} className="text-sky-400" />
+                                Protocolos
                              </Link>
-                             <div className="text-[10px] text-neutral-700 font-mono bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                                SIGINT_NODE_{base?.id ?? 'N/A'}
-                             </div>
                          </div>
                     </div>
                     

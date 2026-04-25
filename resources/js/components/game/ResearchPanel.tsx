@@ -119,20 +119,22 @@ export function ResearchPanel({ research, researchBonuses, baseId, resources }: 
     };
 
     return (
-        <div className="bg-black/30 border border-white/5 rounded-[1.5rem] overflow-hidden backdrop-blur-xl shadow-2xl">
+        <div className="tactical-glass border-white/5 rounded-[2.5rem] overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.9)] relative">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent"></div>
+            
             {/* Header */}
-            <div className="px-5 py-4 bg-white/[0.02] border-b border-white/5 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="bg-cyan-500/10 p-2 rounded-xl border border-cyan-500/20">
-                        <FlaskConical className="text-cyan-400" size={18} />
+            <div className="px-6 py-5 bg-white/[0.01] border-b border-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="bg-cyan-500/10 p-2.5 rounded-2xl border border-cyan-500/20 shadow-[0_0_20px_rgba(6,182,212,0.1)]">
+                        <FlaskConical className="text-cyan-400" size={20} />
                     </div>
                     <div>
-                        <h3 className="text-[10px] uppercase font-black tracking-[0.25em] text-neutral-400">
-                            Centro de Pesquisa & I&D
+                        <h3 className="text-[10px] uppercase font-black tracking-[0.4em] text-neutral-500">
+                            Pesquisa_Desenvolvimento
                         </h3>
                         {activeResearch && (
-                            <div className="text-[9px] text-cyan-400/60 font-mono mt-0.5">
-                                Pesquisa ativa: {technologies[activeResearch.tipo]?.name ?? activeResearch.tipo}
+                            <div className="text-[9px] text-cyan-400/50 font-military-mono mt-0.5 tracking-widest uppercase">
+                                Ativo: {technologies[activeResearch.tipo]?.name ?? activeResearch.tipo}
                             </div>
                         )}
                     </div>
@@ -146,20 +148,23 @@ export function ResearchPanel({ research, researchBonuses, baseId, resources }: 
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="border-b border-cyan-500/10 bg-cyan-500/5"
+                        className="border-b border-cyan-500/10 bg-cyan-500/[0.02] relative overflow-hidden"
                     >
-                        <div className="px-5 py-4 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <Loader2 className="text-cyan-400 animate-spin" size={16} />
+                        <div className="absolute inset-0 scanline-effect opacity-[0.1]" />
+                        <div className="px-6 py-4 flex items-center justify-between relative z-10">
+                            <div className="flex items-center gap-4">
+                                <div className="size-8 rounded-full border-2 border-cyan-500/20 flex items-center justify-center">
+                                    <Loader2 className="text-cyan-400 animate-spin" size={14} />
+                                </div>
                                 <div>
-                                    <div className="text-xs text-white font-bold">
-                                        {technologies[activeResearch.tipo]?.name} → L{activeResearch.nivel}
+                                    <div className="text-[11px] text-white font-black uppercase tracking-widest">
+                                        {technologies[activeResearch.tipo]?.name} → <span className="text-cyan-400">L{activeResearch.nivel}</span>
                                     </div>
-                                    <div className="text-[10px] text-neutral-500">Em progresso...</div>
+                                    <div className="text-[9px] text-neutral-600 font-black uppercase tracking-widest mt-0.5">Sincronizando Dados...</div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Clock size={12} className="text-neutral-500" />
+                            <div className="flex items-center gap-3 bg-black/40 px-3 py-1.5 rounded-xl border border-white/5">
+                                <Clock size={12} className="text-neutral-600" />
                                 <CountdownTimer targetDate={activeResearch.completado_em} />
                             </div>
                         </div>
@@ -168,7 +173,7 @@ export function ResearchPanel({ research, researchBonuses, baseId, resources }: 
             </AnimatePresence>
 
             {/* Technology List */}
-            <div className="divide-y divide-white/[0.03]">
+            <div className="divide-y divide-white/[0.02]">
                 {techList.map((tech) => {
                     const IconComponent = ICON_MAP[tech.icon] || FlaskConical;
                     const isMaxed = tech.currentLevel >= tech.maxLevel;
@@ -177,56 +182,57 @@ export function ResearchPanel({ research, researchBonuses, baseId, resources }: 
                     const isExpanded = expandedTech === tech.key;
 
                     return (
-                        <div key={tech.key} className="group">
+                        <div key={tech.key} className="group relative">
                             <button
                                 onClick={() => setExpandedTech(isExpanded ? null : tech.key)}
-                                className="w-full px-5 py-3.5 flex items-center gap-4 hover:bg-white/[0.02] transition-all duration-200"
+                                className={`w-full px-6 py-4 flex items-center gap-5 transition-all duration-500 relative overflow-hidden ${
+                                    isExpanded ? 'bg-white/[0.03]' : 'hover:bg-white/[0.01]'
+                                }`}
                             >
+                                {isActive && <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-cyan-500 shadow-[0_0_10px_#06b6d4]" />}
+                                
                                 {/* Icon */}
-                                <div className={`p-2 rounded-xl border transition-all duration-300 ${
+                                <div className={`p-2.5 rounded-2xl border transition-all duration-500 ${
                                     isMaxed 
-                                        ? 'bg-emerald-500/10 border-emerald-500/20' 
+                                        ? 'bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
                                         : isActive 
-                                            ? 'bg-cyan-500/10 border-cyan-500/20 animate-pulse' 
-                                            : 'bg-white/5 border-white/10 group-hover:border-white/20'
+                                            ? 'bg-cyan-500/20 border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.2)] animate-pulse' 
+                                            : 'bg-black/40 border-white/5 group-hover:border-white/10'
                                 }`}>
-                                    <IconComponent size={16} className={
-                                        isMaxed ? 'text-emerald-400' : isActive ? 'text-cyan-400' : 'text-neutral-400 group-hover:text-white'
+                                    <IconComponent size={18} className={
+                                        isMaxed ? 'text-emerald-400' : isActive ? 'text-cyan-400' : 'text-neutral-500 group-hover:text-white'
                                     } />
                                 </div>
 
                                 {/* Info */}
                                 <div className="flex-1 text-left">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs font-bold text-white">{tech.name}</span>
-                                        {isMaxed && <CheckCircle2 size={12} className="text-emerald-400" />}
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-[11px] font-black text-white uppercase tracking-widest">{tech.name}</span>
+                                        {isMaxed && <CheckCircle2 size={12} className="text-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.3)]" />}
                                     </div>
-                                    <div className="text-[10px] text-neutral-500">
-                                        L{tech.currentLevel}/{tech.maxLevel}
-                                        {tech.bonusPerLevel > 0 && !isMaxed && (
-                                            <span className="text-cyan-400/60 ml-2">
-                                                (+{(tech.bonusPerLevel * 100).toFixed(0)}% por nível)
-                                            </span>
-                                        )}
+                                    <div className="flex items-center gap-3">
+                                        <div className="text-[9px] text-neutral-600 font-black font-military-mono">
+                                            LVL_{tech.currentLevel.toString().padStart(2, '0')}/<span className="opacity-40">{tech.maxLevel.toString().padStart(2, '0')}</span>
+                                        </div>
                                         {tech.bonusPerLevel > 0 && tech.currentLevel > 0 && (
-                                            <span className="text-emerald-400 ml-2">
-                                                Total: +{(tech.bonusPerLevel * tech.currentLevel * 100).toFixed(0)}%
-                                            </span>
+                                            <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-md text-[8px] font-black text-emerald-400 uppercase tracking-widest">
+                                                +{ (tech.bonusPerLevel * tech.currentLevel * 100).toFixed(0) }% EFF
+                                            </div>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* Level Bar */}
-                                <div className="w-16 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+                                <div className="w-20 h-1.5 bg-black/60 rounded-full overflow-hidden border border-white/5 shadow-inner">
                                     <div 
-                                        className={`h-full rounded-full transition-all duration-500 ${
-                                            isMaxed ? 'bg-emerald-500' : 'bg-cyan-500'
+                                        className={`h-full rounded-full transition-all duration-1000 ease-out ${
+                                            isMaxed ? 'bg-gradient-to-r from-emerald-600 to-emerald-400' : 'bg-gradient-to-r from-cyan-600 to-cyan-400'
                                         }`}
                                         style={{ width: `${(tech.currentLevel / tech.maxLevel) * 100}%` }}
                                     />
                                 </div>
 
-                                <ChevronRight size={14} className={`text-neutral-600 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
+                                <ChevronRight size={14} className={`text-neutral-700 transition-transform duration-500 ${isExpanded ? 'rotate-90 text-cyan-500' : ''}`} />
                             </button>
 
                             {/* Expanded Details */}
@@ -236,58 +242,69 @@ export function ResearchPanel({ research, researchBonuses, baseId, resources }: 
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: 'auto', opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="overflow-hidden"
+                                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                        className="overflow-hidden bg-black/20"
                                     >
-                                        <div className="px-5 pb-4 pt-1 ml-12">
-                                            <p className="text-[10px] text-neutral-500 mb-3">{tech.description}</p>
+                                        <div className="px-6 pb-6 pt-2 ml-16 relative">
+                                            <div className="absolute left-0 top-0 bottom-6 w-[1px] bg-white/5" />
+                                            <p className="text-[10px] text-neutral-500 leading-relaxed max-w-md mb-5 font-medium">{tech.description}</p>
                                             
                                             {/* Costs */}
-                                            <div className="flex flex-wrap gap-2 mb-3">
+                                            <div className="flex flex-wrap gap-2 mb-6">
                                                 {Object.entries(tech.nextCost).map(([res, amount]) => {
                                                     const enough = (resources[res] ?? 0) >= amount;
                                                     return (
-                                                        <div key={res} className={`text-[9px] font-mono px-2 py-1 rounded-lg border ${
+                                                        <div key={res} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all duration-300 ${
                                                             enough 
-                                                                ? 'bg-white/5 border-white/10' 
-                                                                : 'bg-red-500/10 border-red-500/20'
+                                                                ? 'bg-white/[0.02] border-white/5' 
+                                                                : 'bg-red-500/5 border-red-500/10'
                                                         }`}>
-                                                            <span className={RESOURCE_COLORS[res] || 'text-white'}>{RESOURCE_LABELS[res] || res}</span>
-                                                            <span className={enough ? 'text-white ml-1' : 'text-red-400 ml-1'}>{amount.toLocaleString()}</span>
+                                                            <span className={`text-[8px] font-black uppercase tracking-widest ${RESOURCE_COLORS[res] || 'text-white'}`}>{RESOURCE_LABELS[res] || res}</span>
+                                                            <span className={`text-[11px] font-black font-military-mono ${enough ? 'text-white' : 'text-red-500/80'}`}>{amount.toLocaleString()}</span>
                                                         </div>
                                                     );
                                                 })}
-                                                <div className="text-[9px] font-mono px-2 py-1 rounded-lg bg-white/5 border border-white/10">
-                                                    <Clock size={10} className="inline text-neutral-500 mr-1" />
-                                                    <span className="text-neutral-300">{formatTime(tech.nextTime)}</span>
+                                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.02] border border-white/5">
+                                                    <Clock size={12} className="text-neutral-600" />
+                                                    <span className="text-[11px] font-black font-military-mono text-neutral-400">{formatTime(tech.nextTime)}</span>
                                                 </div>
                                             </div>
 
-                                            {/* Reason / Button */}
-                                            {tech.reason && !isActive ? (
-                                                <div className="flex items-center gap-2 text-[10px] text-neutral-600">
-                                                    <Lock size={12} />
-                                                    <span>{tech.reason}</span>
-                                                </div>
-                                            ) : !isActive ? (
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleResearch(tech.key);
-                                                    }}
-                                                    disabled={!tech.canResearch || !affordable || isResearching}
-                                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
-                                                        tech.canResearch && affordable
-                                                            ? 'bg-cyan-500 hover:bg-cyan-400 text-black shadow-[0_0_20px_rgba(6,182,212,0.2)] hover:scale-105 active:scale-95'
-                                                            : 'bg-white/5 text-neutral-600 cursor-not-allowed'
-                                                    }`}
-                                                >
-                                                    {isResearching ? (
-                                                        <Loader2 className="animate-spin inline mr-2" size={12} />
-                                                    ) : null}
-                                                    Investigar L{tech.currentLevel + 1}
-                                                </button>
-                                            ) : null}
+                                            {/* Action Area */}
+                                            <div className="flex items-center gap-4">
+                                                {tech.reason && !isActive ? (
+                                                    <div className="flex items-center gap-3 bg-red-500/5 px-4 py-2.5 rounded-2xl border border-red-500/10 text-[10px] font-black text-red-500/60 uppercase tracking-widest">
+                                                        <Lock size={14} className="animate-pulse" />
+                                                        <span>{tech.reason}</span>
+                                                    </div>
+                                                ) : !isActive ? (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleResearch(tech.key);
+                                                        }}
+                                                        disabled={!tech.canResearch || !affordable || isResearching}
+                                                        className={`group/btn relative px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 overflow-hidden ${
+                                                            tech.canResearch && affordable
+                                                                ? 'bg-cyan-500 text-black shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:shadow-[0_0_50px_rgba(6,182,212,0.5)] hover:scale-105 active:scale-95'
+                                                                : 'bg-white/5 text-neutral-600 cursor-not-allowed'
+                                                        }`}
+                                                    >
+                                                        <span className="relative z-10 flex items-center gap-3">
+                                                            {isResearching ? (
+                                                                <Loader2 className="animate-spin" size={14} />
+                                                            ) : <Zap size={14} />}
+                                                            Efetuar_Pesquisa_L{tech.currentLevel + 1}
+                                                        </span>
+                                                        <div className="absolute inset-0 bg-white opacity-0 group-hover/btn:opacity-20 transition-opacity" />
+                                                    </button>
+                                                ) : (
+                                                    <div className="flex items-center gap-3 bg-cyan-500/10 px-5 py-3 rounded-2xl border border-cyan-500/20 text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em]">
+                                                        <Activity size={14} className="animate-pulse" />
+                                                        Operação em Curso
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </motion.div>
                                 )}
