@@ -131,20 +131,22 @@ Route::middleware(['auth', 'can:admin-only'])->group(function () {
     Route::get('/mw-npc-generate', function() {
         $npcService = app(\App\Services\NpcService::class);
         $existing = $npcService->countNpcVillages();
+        $force = request('force', false);
         
-        if ($existing >= 200) {
+        if ($existing >= 500 && !$force) {
             return "
                 <div style='background:#0a0c10; color:#ff0; padding:40px; font-family:monospace; border:2px solid #ff0;'>
                     <h1>[NPC ALERTA]</h1>
                     <p>Já existem {$existing} aldeias NPC no mapa.</p>
                     <p>Geração bloqueada para evitar excesso.</p>
-                    <a href='/mw-npc-generate?force=1' style='color:#0f0;'>Forçar geração de +100</a> |
+                    <a href='/mw-npc-generate?force=1&count=300' style='color:#0f0;'>Forçar geração de +300</a> |
+                    <a href='/mw-npc-generate?force=1&count=700' style='color:#0f0;'>Forçar geração de +700</a> |
                     <a href='/dashboard' style='color:#fff;'>VOLTAR</a>
                 </div>
             ";
         }
         
-        $count = request('count', 300);
+        $count = request('count', 700);
         $generated = $npcService->generateNpcVillages((int)$count);
         return "
             <div style='background:#0a0c10; color:#0f0; padding:40px; font-family:monospace; border:2px solid #0f0;'>

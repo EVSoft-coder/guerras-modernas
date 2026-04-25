@@ -38,12 +38,18 @@ class NpcService
         $unitTypes = UnitType::all()->keyBy('name');
         $infantariaId = $unitTypes->get('infantaria')?->id;
 
-        DB::transaction(function () use ($count, $mapWidth, $existingCoords, $npcNames, $infantariaId, &$generated) {
+        // Centro do mapa + desvio para distribuição gaussiana
+        $centerX = (int)($mapWidth / 2);
+        $centerY = (int)($mapWidth / 2);
+        $spread = (int)($mapWidth * 0.20); // 20% do mapa como desvio padrão
+
+        DB::transaction(function () use ($count, $mapWidth, $existingCoords, $npcNames, $infantariaId, &$generated, $centerX, $centerY, $spread) {
             for ($i = 0; $i < $count; $i++) {
                 $attempts = 0;
                 do {
-                    $x = rand(10, $mapWidth - 10);
-                    $y = rand(10, $mapWidth - 10);
+                    // Distribuição gaussiana centrada no mapa
+                    $x = (int) max(10, min($mapWidth - 10, $this->gaussianRand($centerX, $spread)));
+                    $y = (int) max(10, min($mapWidth - 10, $this->gaussianRand($centerY, $spread)));
                     $key = "{$x},{$y}";
                     $attempts++;
                 } while (in_array($key, $existingCoords) && $attempts < 20);
@@ -154,5 +160,16 @@ class NpcService
         }
 
         return $grown;
+    }
+
+    /**
+     * Gera um número aleatório com distribuição gaussiana (Box-Muller).
+     */
+    private function gaussianRand(float $mean, float $stdDev): float
+    {
+        $u1 = mt_rand() / mt_getrandmax();
+        $u2 = mt_rand() / mt_getrandmax();
+        $z = sqrt(-2 * log(max($u1, 0.0001))) * cos(2 * M_PI * $u2);
+        return $mean + $z * $stdDev;
     }
 }
