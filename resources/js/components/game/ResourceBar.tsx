@@ -98,9 +98,16 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ icon, label, value, rate, c
 
     useEffect(() => {
         if (isStatic || rate === 0) return;
+        
+        // FASE SMOOTH TICK: Atualização a cada 100ms para fluidez total
+        const tickRate = rate / 10;
         const interval = setInterval(() => {
-            setSimulatedValue(prev => Math.min(cap, prev + rate));
-        }, 1000);
+            setSimulatedValue(prev => {
+                const nextValue = prev + tickRate;
+                return nextValue >= cap ? cap : nextValue;
+            });
+        }, 100);
+        
         return () => clearInterval(interval);
     }, [rate, cap, isStatic]);
 

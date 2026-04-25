@@ -24,7 +24,7 @@ import { TutorialOverlay } from '@/components/game/TutorialOverlay';
 const STABLE_EMPTY_ARRAY: any[] = [];
 
 export function VillageDashboard({ 
-    jogador, base: initialBase, bases: backendBases = STABLE_EMPTY_ARRAY, taxasPerSecond, gameConfig, 
+    jogador, base: initialBase, bases: backendBases = STABLE_EMPTY_ARRAY, taxasPerSecond, taxas, gameConfig, 
     relatoriosGlobal, buildings = STABLE_EMPTY_ARRAY, population, resources, buildingQueue = STABLE_EMPTY_ARRAY,
     unitQueue = STABLE_EMPTY_ARRAY, units = STABLE_EMPTY_ARRAY, unitTypes = STABLE_EMPTY_ARRAY,
     ataquesRecebidos = STABLE_EMPTY_ARRAY, ataquesEnviados = STABLE_EMPTY_ARRAY,
@@ -51,6 +51,21 @@ export function VillageDashboard({
         buildingQueue: buildingQueue,
         unitQueue: unitQueue
     }), [initialBase, buildings, resources, buildingQueue, unitQueue]);
+
+    // 1.1 CALCULAR TAXAS REAIS (SSOT Visual)
+    // O backend envia taxas por HORA. O frontend precisa por SEGUNDO para o tick suave.
+    const effectiveTaxasPerSecond = React.useMemo(() => {
+        const sourceTaxas = taxasPerSecond || taxas || {};
+        const isAlreadyPerSecond = !!taxasPerSecond;
+
+        return Object.entries(sourceTaxas).reduce((acc, [key, val]) => {
+            const numVal = Number(val) || 0;
+            // Se veio do props.taxas (Backend SSOT), é por hora -> dividir por 3600
+            // Se veio como taxasPerSecond, já está processado
+            acc[key] = isAlreadyPerSecond ? numVal : numVal / 3600;
+            return acc;
+        }, {} as Record<string, number>);
+    }, [taxasPerSecond, taxas]);
 
     // Use logic villages from ECS instead of backend props for switcher
     const displayBases = (globalState.worldMapBases.length > 0 
@@ -221,7 +236,7 @@ export function VillageDashboard({
             </div>
 
             <Head title="Centro de Comando Tático" />
-            <ResourceBar recursos={resources} taxasPerSecond={taxasPerSecond ?? {}} populacao={population} />
+            <ResourceBar recursos={resources} taxasPerSecond={effectiveTaxasPerSecond} populacao={population} />
 
             {activeEvents && activeEvents.length > 0 && (
                 <div className="flex flex-col gap-2 relative z-10 px-4">
