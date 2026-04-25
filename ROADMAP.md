@@ -70,17 +70,27 @@ Este documento traça o comando estratégico e o desenvolvimento técnico do sim
 
 ---
 
+## ✅ FASE 11: Correio Militar & Relatórios Táticos (CONCLUÍDO)
+- [x] **Caixa de Entrada (Inbox)**: Mensagens privadas entre jogadores. 📨
+- [x] **Relatórios Automáticos**: Resultados de batalhas, saques e baixas diretamente na Inbox. ⚔️
+- [x] **Filtros de Comunicação**: Separação de mensagens do Sistema, Ofensiva, Defensiva e Privadas. 🗂️
+- [x] **Badge de Notificações**: Alertas de mensagens não lidas no painel de comando. 🔔
+
+---
+
 ## 🚀 PRÓXIMAS MISSÕES (EM CURSO)
 
-### 🛰️ FASE 11: Espionagem & Guerra de Informação
-- [ ] **Missões de Reconhecimento**: Espionagem de tropas inimigas. 🕵️‍♂️
-- [ ] **Radar de Longo Alcance**: Detecção antecipada de ataques distantes. 📡
-- [ ] **Gráficos de Combate**: Relatórios com breakdown de danos por unidade. 📊
-- [ ] **Quadro de Honra**: Log global de vitórias heróicas e conquistas. 🏆
+### 🛰️ FASE 12: Espionagem & Informação Avançada
+- [ ] **Unidade de Espionagem**: Recrutar espiões para missões de reconhecimento. 🕵️‍♂️
+- [ ] **Relatórios de Espionagem**: Nível de edifícios e tropas estacionadas no inimigo. 📋
+- [ ] **Radar Anti-Ataque**: Detecção de ataques em curso com aviso sonoro no Dashboard. 📡
+- [ ] **Quadro de Honra Mundial**: Log global de conquistas de bases e destruições massivas. 🏆
+- [ ] **Migrar Páginas de Aliança para React**: Atualizar views Blade antigas de alianças para a nova stack. ⚛️
 
 ---
 
 ## 🛠️ Notas de Engenharia
-- **Stack**: Laravel 12, Bootstrap 5, MariaDB.
-- **Modo**: Full Bundle Deployment (via Plesk/OVH/GitHub).
-- **Estado**: **ESTÁVEL & OPERACIONAL** 🎖️
+- **Stack Backend**: Laravel 11.x / 12, MySQL/MariaDB.
+- **Stack Frontend**: React 18, TypeScript, Inertia.js, Tailwind CSS v4.
+- **Workflow**: Git Push origin master -> Servidor executa `/mw-deploy-refresh`.
+- **Estado**: **ESTÁVEL & OPERACIONAL EM PRODUÇÃO** 🎖️
