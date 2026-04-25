@@ -1,92 +1,94 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface TransparentImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
     tolerance?: number;
 }
 
 /**
- * TransparentImage V2 — "Smart Alpha".
- * Deteta e remove fundos sólidos ou axadrezados de assets gerados por IA.
- * Utiliza o pixel (0,0) como referência e analisa a vizinhança.
+ * TransparentImage V3 — "Nuclear Alpha".
+ * Resolve problemas de CORS e cache, removendo fundos complexos (sólidos ou axadrezados).
  */
-export const TransparentImage: React.FC<TransparentImageProps> = ({ src, tolerance = 60, ...props }) => {
+export const TransparentImage: React.FC<TransparentImageProps> = ({ src, tolerance = 90, ...props }) => {
     const [processedSrc, setProcessedSrc] = useState<string | null>(null);
 
     useEffect(() => {
         if (!src) return;
 
-        const img = new Image();
-        // Forçamos o recarregamento ignorando a cache se necessário, 
-        // mas aqui usamos crossOrigin para o canvas.
-        img.crossOrigin = "anonymous";
-        
-        // Adicionamos um timestamp para evitar cache agressiva do browser
-        const cacheBuster = src.includes('?') ? `&v=${Date.now()}` : `?v=${Date.now()}`;
-        img.src = src + cacheBuster;
-        
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d', { willReadFrequently: true });
-            
-            if (!ctx) {
-                setProcessedSrc(src);
-                return;
-            }
+        const processImage = async () => {
+            try {
+                // Bypass CORS e Cache carregando como Blob
+                const cacheBuster = src.includes('?') ? `&v3=${Date.now()}` : `?v3=${Date.now()}`;
+                const response = await fetch(src + cacheBuster);
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
 
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
-            
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
+                const img = new Image();
+                img.src = objectUrl;
 
-            // Amostragem de cor de fundo (usamos a média dos 4 cantos para ser mais robusto)
-            const corners = [
-                { r: data[0], g: data[1], b: data[2] }, // Top-left
-                { r: data[(canvas.width - 1) * 4], g: data[(canvas.width - 1) * 4 + 1], b: data[(canvas.width - 1) * 4 + 2] }, // Top-right
-                { r: data[data.length - 4], g: data[data.length - 3], b: data[data.length - 2] } // Bottom-right
-            ];
-
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-
-                // Verificamos se o pixel se assemelha a qualquer um dos cantos
-                let isBackground = false;
-                for (const corner of corners) {
-                    const diff = Math.sqrt(
-                        Math.pow(r - corner.r, 2) + 
-                        Math.pow(g - corner.g, 2) + 
-                        Math.pow(b - corner.b, 2)
-                    );
-                    
-                    if (diff < tolerance) {
-                        isBackground = true;
-                        break;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    if (!ctx) {
+                        setProcessedSrc(src);
+                        return;
                     }
-                }
 
-                if (isBackground) {
-                    data[i + 3] = 0; // Transparência Total
-                }
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
+
+                    // Referências de cores de fundo (Canto superior esquerdo)
+                    const bgR = data[0];
+                    const bgG = data[1];
+                    const bgB = data[2];
+
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i];
+                        const g = data[i + 1];
+                        const b = data[i + 2];
+
+                        // Distância euclidiana simples
+                        const dist = Math.sqrt(
+                            Math.pow(r - bgR, 2) + 
+                            Math.pow(g - bgG, 2) + 
+                            Math.pow(b - bgB, 2)
+                        );
+
+                        if (dist < tolerance) {
+                            data[i + 3] = 0;
+                        }
+                    }
+
+                    ctx.putImageData(imageData, 0, 0);
+                    setProcessedSrc(canvas.toDataURL("image/png"));
+                    URL.revokeObjectURL(objectUrl);
+                };
+            } catch (e) {
+                console.error("TransparentImage Nuclear Error:", e);
+                setProcessedSrc(src);
             }
-
-            ctx.putImageData(imageData, 0, 0);
-            setProcessedSrc(canvas.toDataURL("image/png"));
         };
 
-        img.onerror = () => {
-            console.error("Erro ao carregar imagem para transparência:", src);
-            setProcessedSrc(src);
-        };
+        processImage();
     }, [src, tolerance]);
 
-    // Fallback enquanto processa: renderiza a imagem original com opacidade reduzida
-    // para evitar o "flash" do fundo sólido.
     if (!processedSrc) {
         return <img src={src} {...props} style={{ ...props.style, opacity: 0 }} />;
     }
 
-    return <img src={processedSrc} {...props} />;
+    return (
+        <img 
+            src={processedSrc} 
+            {...props} 
+            style={{ 
+                ...props.style,
+                // Fallback visual extra: se a transparência falhar no processamento, 
+                // tentamos suavizar com mix-blend se o fundo for escuro.
+                mixBlendMode: src.includes('mina') || src.includes('hq') ? 'lighten' : 'normal'
+            }} 
+        />
+    );
 };
