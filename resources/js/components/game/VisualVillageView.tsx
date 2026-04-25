@@ -2,6 +2,7 @@ import React from 'react';
 import { Base } from '@/types';
 import { BuildingNode } from './BuildingNode';
 import { BUILDING_LAYOUT } from '@/config/buildingLayout';
+import { LayoutCalibrator } from './LayoutCalibrator';
 
 interface VillageViewProps {
     base: Base;
@@ -17,6 +18,7 @@ interface VillageViewProps {
 export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick, gameConfig, buildingQueue }) => {
     const containerRef = React.useRef<HTMLDivElement>(null);
     const [scale, setScale] = React.useState(1);
+    const [showCalibrator, setShowCalibrator] = React.useState(false);
 
     React.useEffect(() => {
         const updateScale = () => {
@@ -87,9 +89,9 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
                 {/* CAMADA 1: TERRENO MILITAR V22 */}
                 <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
                     <img 
-                        src="/images/village/terrain_v22.png" 
+                        src="/images/village/terrain_v30.png" 
                         style={{ width: '800px', height: '600px', objectFit: 'fill' }}
-                        alt="Tactical Terrain V22"
+                        alt="Tactical Terrain V30"
                     />
                 </div>
 
@@ -141,9 +143,17 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ base, onBuilding
             <div className="mt-6 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
                 <span className="text-[10px] text-gray-500 font-mono uppercase tracking-[0.2em]">
-                    Sincronização Tática V22 - Operacional
+                    Sincronização Tática V30 - Operacional
                 </span>
+                <button 
+                    onClick={() => setShowCalibrator(true)}
+                    className="ml-4 px-2 py-0.5 border border-gray-800 hover:border-cyan-500/50 hover:text-cyan-400 text-[9px] text-gray-600 font-mono transition-all rounded uppercase"
+                >
+                    [ Calibrar Layout ]
+                </button>
             </div>
+
+            {showCalibrator && <LayoutCalibrator onClose={() => setShowCalibrator(false)} />}
         </div>
     );
 };
