@@ -1,63 +1,36 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BuildingLayout, BUILDING_OFFSETS } from '@/config/buildingLayout';
+import { BuildingLayout } from '@/config/buildingLayout';
+import { TransparentImage } from '@/components/ui/TransparentImage';
 
 interface BuildingNodeProps {
     type: string;
     level: number;
     layout: BuildingLayout;
-    onClick: () => void;
     isConstructing?: boolean;
+    onClick?: () => void;
 }
 
-/**
- * BuildingNode V97 — PRODUÇÃO CONSOLIDADA
- * Motor de renderização puro com suporte a offsets e rotação estática.
- */
-export const BuildingNode: React.FC<BuildingNodeProps> = ({ 
-    type, level, layout, onClick, isConstructing
-}) => {
+export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout, isConstructing, onClick }) => {
     const [isInvalid, setIsInvalid] = useState(false);
-
-    // Métricas
-    const w = layout.w;
-    const h = layout.h;
-    
-    // Recuperamos o offset do banco de dados de design (Retrocompatibilidade)
-    const currentOffset = (BUILDING_OFFSETS[layout.id] as any) || { x: 0, y: 0, rotation: 0 };
-    const rotation = layout.rotation !== undefined ? layout.rotation : (currentOffset.rotation || 0);
-    
-    const left = layout.x - (w / 2) + (currentOffset.x || 0);
-    const top = layout.y - (h / 2) + (currentOffset.y || 0); 
-
-    const assetPath = `/assets/buildings/${layout.assetName || type.toLowerCase() + '.png'}`;
+    const assetPath = `/assets/buildings/${layout.assetName}`;
 
     return (
-        <motion.div 
-            className="building-node group"
-            onClick={onClick}
-            whileHover={{ scale: 1.05, zIndex: 1000 }}
+        <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="absolute cursor-pointer group building-node"
             style={{
-                position: 'absolute',
-                left: `${left}px`,
-                top: `${top}px`,
-                width: `${w}px`,
-                height: `${h}px`,
+                left: `${(layout.x / 800) * 100}%`,
+                top: `${(layout.y / 600) * 100}%`,
+                width: `${(layout.w / 800) * 100}%`,
+                height: `${(layout.h / 600) * 100}%`,
+                transform: `translate(-50%, -50%) rotate(${layout.rotation || 0}deg)`,
                 zIndex: Math.floor(layout.y),
-                filter: isInvalid ? 'sepia(1) hue-rotate(-50deg) saturate(2)' : 'none',
-                opacity: isInvalid ? 0.6 : 1,
-                cursor: 'pointer',
-                transform: rotation ? `rotate(${rotation}deg)` : 'none'
+                pointerEvents: 'auto'
             }}
+            onClick={onClick}
         >
-            {isConstructing && (
-                <motion.div 
-                    animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                    className="absolute inset-0 bg-yellow-500/20 rounded-full blur-xl"
-                />
-            )}
-            
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                 {!isInvalid ? (
                     <TransparentImage 
@@ -76,35 +49,34 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                         onError={() => setIsInvalid(true)}
                     />
                 ) : (
-                    <div className="flex items-center justify-center w-full h-full bg-red-900/10 border border-red-500/50 text-[10px] text-red-500">
-                        ERR_ASSET
+                    <div className="w-full h-full flex items-center justify-center bg-red-900/20 border border-red-500/50 rounded-lg">
+                        <span className="text-[8px] text-red-500 font-black uppercase tracking-tighter">DATA_ERROR</span>
                     </div>
                 )}
-            </div>
 
-            {/* Badge de Nível (Compensa a rotação estática) */}
-            <div style={{
-                position: 'absolute',
-                top: '-20px',
-                left: '50%',
-                transform: `translateX(-50%) rotate(${-rotation}deg)`,
-                background: isConstructing ? 'rgba(234, 179, 8, 0.9)' : 'rgba(0, 0, 0, 0.85)',
-                color: isConstructing ? '#000' : '#fff',
-                padding: '2px 10px',
-                borderRadius: '4px',
-                fontSize: '10px',
-                fontWeight: 'bold',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                whiteSpace: 'nowrap',
-                pointerEvents: 'none',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
-                textTransform: 'uppercase',
-                zIndex: 20
-            }}>
-                <span className={isConstructing ? 'opacity-80' : 'opacity-60'}>{type.replace(/_/g, ' ')}</span>
-                <span className={`ml-2 ${isConstructing ? 'font-black' : 'text-cyan-400'}`}>
-                    {isConstructing ? 'EM OBRA' : `LVL ${level}`}
-                </span>
+                {/* HUD de Nível */}
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="bg-black/80 backdrop-blur-md px-2 py-0.5 rounded border border-white/10 shadow-xl flex flex-col items-center">
+                        <span className="text-[8px] text-neutral-500 font-black uppercase tracking-widest leading-none mb-0.5">
+                            {type.replace('_', ' ')}
+                        </span>
+                        <span className="text-[10px] text-cyan-400 font-black font-mono leading-none">
+                            LVL {level}
+                        </span>
+                    </div>
+                    {/* Indicador de Seleção */}
+                    <div className="w-1 h-1 rounded-full bg-cyan-500 mt-1 animate-pulse shadow-[0_0_10px_rgba(6,182,212,1)]"></div>
+                </div>
+
+                {/* Efeito de Obra */}
+                {isConstructing && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                         <div className="w-full h-full border border-orange-500/30 rounded-lg animate-pulse overflow-hidden bg-orange-500/5">
+                            <div className="absolute inset-0 opacity-20" 
+                                 style={{ backgroundImage: 'repeating-linear-gradient(45deg, #f97316, #f97316 10px, transparent 10px, transparent 20px)' }}></div>
+                         </div>
+                    </div>
+                )}
             </div>
         </motion.div>
     );
