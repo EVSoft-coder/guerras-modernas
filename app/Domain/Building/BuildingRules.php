@@ -9,7 +9,7 @@ class BuildingRules
      */
     public static function calculateCost(string $type, int $currentLevel): array
     {
-        return app(\App\Services\EconomyService::class)->getBuildingUpgradeCost($type, $currentLevel + 1);
+        return app(\App\Services\EconomyService::class)->getBuildingUpgradeCost($type, $currentLevel);
     }
  
     /**
@@ -21,7 +21,7 @@ class BuildingRules
             // Fallback se a base não for passada (tentar obter da sessão se necessário, mas idealmente passamos)
             $base = \App\Models\Base::find(session('selected_base_id')) ?? new \App\Models\Base();
         }
-        return app(\App\Services\EconomyService::class)->getBuildingUpgradeTime($base, $type, $currentLevel + 1);
+        return app(\App\Services\EconomyService::class)->getBuildingUpgradeTime($base, $type, $currentLevel);
     }
  
     /**

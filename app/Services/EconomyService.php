@@ -11,7 +11,7 @@ class EconomyService
      * Calcula o custo de upgrade exponencial para um edifício.
      * FASE ECONOMIA: custo = base * (factor ^ nível)
      */
-    public function getBuildingUpgradeCost(string $type, int $nextLevel): array
+    public function getBuildingUpgradeCost(string $type, int $level): array
     {
         $specialConfig = config("economy.buildings.upgrade_costs.{$type}");
         
@@ -21,7 +21,7 @@ class EconomyService
             
             $costs = [];
             foreach ($baseCosts as $res => $baseValue) {
-                $costs[$res] = (int) ($baseValue * pow($factor, $nextLevel));
+                $costs[$res] = (int) ($baseValue * pow($factor, $level));
             }
             return $costs;
         }
@@ -35,7 +35,7 @@ class EconomyService
         $costs = [];
 
         foreach ($baseCosts as $res => $baseValue) {
-            $costs[$res] = (int) ($baseValue * pow($factor, $nextLevel));
+            $costs[$res] = (int) ($baseValue * pow($factor, $level));
         }
 
         return $costs;
@@ -45,23 +45,23 @@ class EconomyService
      * Calcula o tempo de upgrade exponencial para um edifício.
      * FASE TEMPO: tempo = base_time * (factor ^ nível)
      */
-    public function getBuildingUpgradeTime(Base $base, string $type, int $nextLevel): int
+    public function getBuildingUpgradeTime(Base $base, string $type, int $level): int
     {
         $config = config("game.buildings.{$type}");
         if (!$config) return 60;
 
-        $factor = config('economy.buildings.time_multiplier', 1.5);
+        $factor = config('economy.buildings.time_multiplier', 1.1);
         $baseTime = $config['time_base'] ?? 60;
 
         // Fórmua exponencial FASE TEMPO
-        $rawTime = $baseTime * pow($factor, $nextLevel);
+        $rawTime = $baseTime * pow($factor, $level);
 
         // Aplica redução por nível de QG (Modificador TribalWars)
         $hqLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HQ) ?: 1;
-        $reductionPerLevel = config('economy.buildings.hq_reduction_per_level', 0.04);
+        $reductionPerLevel = config('economy.buildings.hq_reduction_per_level', 0.10);
         
-        // Fator de redução: ex: level 10 -> 1 - (9 * 0.04) = 0.64 (36% de redução)
-        $reductionFactor = max(0.2, 1 - (($hqLevel - 1) * $reductionPerLevel));
+        // Fator de redução: ex: level 10 -> 1 - (9 * 0.10) = 0.1 (90% de redução)
+        $reductionFactor = max(0.1, 1 - (($hqLevel - 1) * $reductionPerLevel));
 
         return (int) max(5, $rawTime * $reductionFactor);
     }
