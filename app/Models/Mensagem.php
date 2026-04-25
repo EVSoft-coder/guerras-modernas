@@ -15,10 +15,12 @@ class Mensagem extends Model
         'corpo',
         'tipo',
         'lida',
+        'metadata',
     ];
 
     protected $casts = [
         'lida' => 'boolean',
+        'metadata' => 'array',
         'created_at' => 'datetime',
     ];
 

@@ -165,6 +165,20 @@ class MovementService
             $this->handleCombat($movement, $base);
         }
 
+        if ($movement->type === 'espionagem') {
+            app(SpyService::class)->resolveSpyMission($movement, $base);
+            
+            // Após a espionagem, as unidades sobreviventes regressam
+            $survivors = $movement->units->map(fn($u) => [
+                'id' => $u->unit_type_id,
+                'quantity' => $u->quantity
+            ])->filter(fn($u) => $u['quantity'] > 0);
+
+            if ($survivors->isNotEmpty()) {
+                $this->createReturnMovement($movement, $base, $movement->origin, $survivors);
+            }
+        }
+
         // Marcar como processado (ATÓMICO)
         $movement->status = 'arrived';
         $movement->processed_at = now();

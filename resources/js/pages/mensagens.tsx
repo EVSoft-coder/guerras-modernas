@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Mail, MailOpen, Trash2, Send, Filter, CheckCheck } from 'lucide-react';
+import { Mail, MailOpen, Trash2, Send, Filter, CheckCheck, Shield, Search } from 'lucide-react';
 import { useToasts } from '@/components/game/ToastProvider';
+import { SpyReport } from '@/components/game/SpyReport';
 
 interface MensagensProps {
     mensagens: {
@@ -81,6 +82,7 @@ export default function Mensagens({ mensagens, naoLidas, filtroAtivo }: Mensagen
         if (!lida) return <Mail className="text-sky-400 fill-sky-400/20 animate-pulse" size={18} />;
         if (tipo === 'relatorio_ataque') return <MailOpen className="text-red-400" size={18} />;
         if (tipo === 'relatorio_defesa') return <MailOpen className="text-emerald-400" size={18} />;
+        if (tipo === 'espionagem') return <Search className="text-sky-400" size={18} />;
         if (tipo === 'sistema') return <MailOpen className="text-amber-400" size={18} />;
         return <MailOpen className="text-neutral-500" size={18} />;
     };
@@ -114,6 +116,7 @@ export default function Mensagens({ mensagens, naoLidas, filtroAtivo }: Mensagen
                                 <option value="privada">Mensagens Privadas</option>
                                 <option value="relatorio_ataque">Relatórios de Ofensiva</option>
                                 <option value="relatorio_defesa">Relatórios de Defesa</option>
+                                <option value="espionagem">Relatórios de Espionagem</option>
                                 <option value="sistema">Comunicações do Sistema</option>
                             </select>
                             
@@ -241,7 +244,11 @@ export default function Mensagens({ mensagens, naoLidas, filtroAtivo }: Mensagen
                                 <button onClick={() => setViewingMsg(null)} className="text-neutral-500 hover:text-white">✕</button>
                             </div>
                             <div className="p-6 overflow-y-auto flex-1 font-mono text-sm text-neutral-300 whitespace-pre-wrap leading-relaxed">
-                                {viewingMsg.corpo}
+                                {viewingMsg.tipo === 'espionagem' && viewingMsg.metadata ? (
+                                    <SpyReport report={viewingMsg.metadata} />
+                                ) : (
+                                    viewingMsg.corpo
+                                )}
                             </div>
                             {viewingMsg.remetente && (
                                 <div className="p-4 bg-black/20 border-t border-white/5">

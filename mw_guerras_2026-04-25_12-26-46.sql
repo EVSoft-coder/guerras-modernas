@@ -116,7 +116,7 @@ CREATE TABLE `bases` (
 LOCK TABLES `bases` WRITE;
 /*!40000 ALTER TABLE `bases` DISABLE KEYS */;
 INSERT INTO `bases` VALUES
-(1,1,'Base Principal',111,608,'2026-04-23 19:45:04','2026-04-07 20:55:47','2026-04-23 19:45:04',0,NULL,100,'2026-04-14 21:28:00',94,944,'2026-04-18 11:27:08'),
+(1,1,'Base Principal',111,608,'2026-04-25 09:52:15','2026-04-07 20:55:47','2026-04-25 09:52:15',0,NULL,100,'2026-04-14 21:28:00',94,944,'2026-04-18 11:27:08'),
 (2,2,'Base Principal',193,662,'2026-04-11 08:49:37','2026-04-11 07:49:37','2026-04-17 19:14:04',0,NULL,100,'2026-04-11 08:49:37',442,375,'2026-04-18 11:27:08'),
 (3,3,'Base Principal',743,246,'2026-04-11 08:51:28','2026-04-11 07:51:28','2026-04-17 19:14:04',0,NULL,100,'2026-04-11 08:51:28',551,629,'2026-04-18 11:27:08'),
 (4,4,'Base Principal',593,694,'2026-04-11 08:59:45','2026-04-11 07:59:45','2026-04-17 19:14:04',0,NULL,100,'2026-04-11 08:59:45',492,572,'2026-04-18 11:27:08'),
@@ -1158,7 +1158,7 @@ CREATE TABLE `building_queue` (
   UNIQUE KEY `unique_base_position` (`base_id`,`position`),
   KEY `idx_queue_pos` (`base_id`,`position`),
   CONSTRAINT `building_queue_base_id_foreign` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1293,7 +1293,7 @@ CREATE TABLE `edificios` (
 LOCK TABLES `edificios` WRITE;
 /*!40000 ALTER TABLE `edificios` DISABLE KEYS */;
 INSERT INTO `edificios` VALUES
-(1,1,1,'hq',1,'2026-04-07 20:55:47','2026-04-22 20:47:26',1,0),
+(1,1,1,'hq',2,'2026-04-07 20:55:47','2026-04-25 09:23:43',1,0),
 (2,1,8,'quartel',7,'2026-04-07 20:55:47','2026-04-22 20:47:26',2,0),
 (3,1,9,'muralha',1,'2026-04-07 20:55:47','2026-04-22 20:47:26',3,0),
 (4,1,2,'mina_suprimentos',10,'2026-04-07 21:00:08','2026-04-18 08:38:23',0,1),
@@ -4154,7 +4154,7 @@ CREATE TABLE `eventos_mundo` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4163,6 +4163,8 @@ CREATE TABLE `eventos_mundo` (
 
 LOCK TABLES `eventos_mundo` WRITE;
 /*!40000 ALTER TABLE `eventos_mundo` DISABLE KEYS */;
+INSERT INTO `eventos_mundo` VALUES
+(1,'Boom Económico Global','A economia global está em alta. Todas as minas e refinarias produzem 50% mais recursos!','producao','{\"multiplicador\": 1.50}','2026-04-27 09:54:28','2026-04-25 09:54:28','2026-04-25 09:54:28');
 /*!40000 ALTER TABLE `eventos_mundo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4346,8 +4348,9 @@ CREATE TABLE `mensagens` (
   `destinatario_id` bigint(20) unsigned NOT NULL,
   `assunto` varchar(255) NOT NULL DEFAULT 'Sem Assunto',
   `corpo` text NOT NULL,
-  `tipo` enum('privada','relatorio_ataque','relatorio_defesa','sistema') NOT NULL DEFAULT 'privada',
+  `tipo` enum('privada','relatorio_ataque','relatorio_defesa','sistema','espionagem') NOT NULL DEFAULT 'privada',
   `lida` tinyint(1) NOT NULL DEFAULT 0,
+  `metadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`metadata`)),
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
@@ -4355,6 +4358,7 @@ CREATE TABLE `mensagens` (
   KEY `idx_remetente` (`remetente_id`),
   KEY `idx_tipo` (`tipo`),
   KEY `idx_lida` (`lida`),
+  KEY `idx_tipo_espionagem` (`tipo`),
   CONSTRAINT `mensagens_ibfk_1` FOREIGN KEY (`remetente_id`) REFERENCES `jogadores` (`id`) ON DELETE SET NULL,
   CONSTRAINT `mensagens_ibfk_2` FOREIGN KEY (`destinatario_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -4367,12 +4371,12 @@ CREATE TABLE `mensagens` (
 LOCK TABLES `mensagens` WRITE;
 /*!40000 ALTER TABLE `mensagens` DISABLE KEYS */;
 INSERT INTO `mensagens` VALUES
-(1,NULL,1,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
-(2,NULL,2,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
-(3,NULL,3,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
-(4,NULL,4,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
-(5,NULL,5,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
-(6,NULL,6,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,'2026-04-25 09:22:51','2026-04-25 09:22:51');
+(1,NULL,1,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,NULL,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
+(2,NULL,2,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,NULL,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
+(3,NULL,3,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,NULL,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
+(4,NULL,4,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,NULL,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
+(5,NULL,5,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,NULL,'2026-04-25 09:22:51','2026-04-25 09:22:51'),
+(6,NULL,6,'Bem-vindo, Comandante!','As suas tropas aguardam ordens. Construa a sua base, treine unidades e conquiste o território inimigo.\n\nDica: Ataque aldeias NPC (bárbaras) para saquear recursos iniciais.\n\n— Comando Central','sistema',0,NULL,'2026-04-25 09:22:51','2026-04-25 09:22:51');
 /*!40000 ALTER TABLE `mensagens` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4605,7 +4609,7 @@ CREATE TABLE `recursos` (
 LOCK TABLES `recursos` WRITE;
 /*!40000 ALTER TABLE `recursos` DISABLE KEYS */;
 INSERT INTO `recursos` VALUES
-(1,1,1000,1000,1000,1000,1000,1000,'2026-04-07 20:55:47','2026-04-23 19:45:04','2026-04-15 20:58:21',1000),
+(1,1,780.26996834684,1042.3374242556,1027.469248042,1046.6893762946,421.45934090272,1060.8286948593,'2026-04-07 20:55:47','2026-04-25 09:52:15','2026-04-15 20:58:21',1250),
 (3,2,2801,1416,1112,1120,0,0,'2026-04-11 07:49:37','2026-04-11 08:52:04','2026-04-15 20:58:21',10000),
 (4,3,2796,1415,1111,1118,0,0,'2026-04-11 07:51:28','2026-04-11 08:53:41','2026-04-15 20:58:21',10000),
 (5,4,1500,1000,800,600,0,0,'2026-04-11 07:59:45','2026-04-11 07:59:45','2026-04-15 20:58:21',10000),
@@ -5678,12 +5682,26 @@ CREATE TABLE `sessions` (
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
 INSERT INTO `sessions` VALUES
-('AfOhcU6WyCwGkeO2Ua0nYAovOMv1ChlE2x0WThKs',1,'213.22.106.248','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo2OntzOjY6Il90b2tlbiI7czo0MDoidFBiNTZjNkNyN0Zyclp0NDhCMmw5Wm9YczdrSlNXWVhyOTdEUmtjcyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czo5OiJkYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTY6InNlbGVjdGVkX2Jhc2VfaWQiO2k6MTt9',1777109971),
+('1DIvA7iENDBtcOe6shATOYxIP8TnlhOHK7K0fzYv',NULL,'3.254.64.83','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiM2hBd05YT0FFUXhXR1QwSEVpeTJXajlPSFJ1MzZzMHIzRjFXN1lJMSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777114312),
+('2fGXgNEwBHLUgDNHdD8fuyWjXjk8yJavH082ErbT',NULL,'54.155.255.229','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiMFBnRDd6ZjRsR1g4N01UVDI2TWVxOXhxZmNHSFZKc0Y1VjZQVjduaiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777113953),
+('7Q9F9p0qa824fg6g6O1LJ3XYO2aNKRcqC6rD23UV',NULL,'46.51.150.148','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiVUF4U0Y0TjhHMXRzTE9ub1BsOHNiS0VqdDZvVERlU3RRdnYzcEtPUCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777111922),
+('92kKAkF2bl7FflDE20yklPm21UupFer4JnXJTFUE',NULL,'108.130.174.158','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiOVdHd09nNTc2UU9uTndmRUNYMWU1NTdlc0ZrQnJmTllJNWhOYzlnSyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777113446),
+('AfOhcU6WyCwGkeO2Ua0nYAovOMv1ChlE2x0WThKs',1,'213.22.106.248','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo2OntzOjY6Il90b2tlbiI7czo0MDoidFBiNTZjNkNyN0Zyclp0NDhCMmw5Wm9YczdrSlNXWVhyOTdEUmtjcyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czo5OiJkYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTY6InNlbGVjdGVkX2Jhc2VfaWQiO2k6MTt9',1777114336),
+('b4Ia9eBsoRw95tVLiCXi5McYpnBmdKZBcSsl6ayV',NULL,'54.194.130.218','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoib3NyQjJoMnlVbThpbm1sTmRRdG5vbUVJQkdLaVNZaWdEdWpMVHk1SiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777110304),
+('gHsnL3b6XusAZgAWKfpZFmPQRqPjJnHpZmbIeIAc',NULL,'34.242.107.148','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiczF0MDFpbnNkelVVMmMzMHdtQU9hTTVCcGRIeTg0TVcydTJucWEzeSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777111213),
+('hIsqSxVjaEKsgT5iDyR1FG6UAN3VRjBfVlSDJzm0',NULL,'34.249.16.247','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoieG5iYXhjM21aeDVrOGhYbmE1cFNsU0NLRDRLN0plWFhYZlQ2eWJBbiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777111752),
 ('hoEAmNhzfb8AmIED3gnbdOv0FUzJqCP4VNSPLhvW',NULL,'34.249.16.247','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiblJ4QndLV1h6V2ZtVXUxNWRkdENDSHZkbGRPVUN1Y3dYUnl0cExGWSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777109920),
 ('J11tO7dWM31BJixg9HQg0E67FgL5spwJmlS9Ez3V',NULL,'54.194.130.218','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWjNwTUVzR1UxdjdOMUhQMktVYUY4TDJQdGZnSE1Cd2wzYTZwZ3JsTCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777108540),
 ('jJbnDFJ8bmeDwUYDdhhIWGC45pQPIIBvWCjtyYjY',NULL,'18.201.59.251','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoic25BRjJWT1JoWVY0enlYZnFtS08yS090NEYzeE51Nklva2J5R1VPbSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777108341),
 ('KKq02M7cSxoTxA5eywSE6DAsDnOnrtb3fukqRtUb',NULL,'52.48.29.103','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTVNGT0trNDcyNmJtRzkzT2Z4ajVCSkhRUGdYWjZBbm1DNlliMjBGViI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777109734),
+('MdquoOVL2LbG81LQCkRiU0kgPMMtpdwbGMButQSK',NULL,'3.254.64.83','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiV1ZuME9NNXJ2THY0Skk4QXVhNEphQW4zeThMamRzSmFQVGhLUERyQiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777112796),
+('r3vuwwSjHCxxrM52PPywN1xkhDlM5KYsIdDPRSGy',NULL,'18.201.59.251','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiaXhVVlBNUW81YVM5bnhmV3AwMm1JblVYQ3pvYTVNVloyT0FMRlVxeSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777113356),
+('rtaLkxVn3zbBDJTqOaTm1hGRZ52Z0fjdlBXIhU0z',NULL,'52.48.29.103','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiM21aN1Y5T0Z3VkJldkVzNjZCdXhRM2QxV0pHUGw3ZHpOYnV6ZW8wYyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777112304),
+('Rv5zOlNsH9pccrd72cziKKzaC2C2tvlCQvYO1j35',NULL,'34.249.171.167','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiR0lIQ2NnWGpjMjJMSDVqbllnM3VZUkxOREU2SkNxeGxycWFlZUhpWCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777116354),
+('T0soc85ns20EsEYl3PKu5FGIcXM3eqWr7CLxJJMt',NULL,'63.35.178.161','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoid2dnNmp6R1RuejFNRHVMS1Q4WWlHZmFsV25SaUNVMk4wSHhWMXNHWCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777113076),
 ('tpk2ghgb7AEQVJvRu8VP4VNndCy0mJKJHHMjwoMa',NULL,'54.155.255.229','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiU05XZXdxUldZYU5oSDNWRlpzMlJCTVROaUk0bldSZGkzVlpISHI5NyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777108037),
+('xASLLKJCeSjR9YurZwXa9ySU0oSnqX5wCvBQV3e2',NULL,'34.242.107.148','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNFgyNFJGZllHeFRISmE1ejZVSTcxMHpQeDBaTkFQd2xUY3NsVWZOcSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777112551),
+('xLX1sXPAl4HIXh5FQB6DaKCTNKeDqOh1xrXnTClO',NULL,'34.249.16.247','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiR04wbGxITllUSUo1bWs1Zkc1TUlrV1RRcktCSXB0QjY0b3o0c01lTyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777111556),
 ('xpXmZdxAwoSI6aoWBbbESWNjKTZ2bL9cmvAiOOMz',NULL,'34.249.171.167','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNE5SUGh5R1BtdzUxTnZEQUtJS053NGdac2E4SkFKd2hxaDdhTWVYMiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777109000),
 ('ZQ7zZcTOeJNMQxvgZsR0HcsFB8IymPFGHazBXZa7',NULL,'34.242.107.148','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUWhHSDZnMTNFalkwN3BJajhMa0l1NjNjUGpEekZoNWJoeXlqVE9RQiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777107615),
 ('zYPjbnlU8Nd6UtnI203BlL5X60yKe4xlwn58MrYm',NULL,'63.35.178.161','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWGRQR01iYnZnU05ZNm5nbllQdFhJQ0E3cXVjRXM0UXA2UHd5Y1dJNyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777107916);
@@ -5723,7 +5741,7 @@ CREATE TABLE `unit_queue` (
   KEY `idx_unit_queue_pos` (`base_id`,`position`),
   CONSTRAINT `unit_queue_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE,
   CONSTRAINT `unit_queue_ibfk_2` FOREIGN KEY (`unit_type_id`) REFERENCES `unit_types` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5732,6 +5750,8 @@ CREATE TABLE `unit_queue` (
 
 LOCK TABLES `unit_queue` WRITE;
 /*!40000 ALTER TABLE `unit_queue` DISABLE KEYS */;
+INSERT INTO `unit_queue` VALUES
+(18,1,1,3,1,0,1,'active','2026-04-25 09:52:16','2026-04-25 09:52:48',NULL,'2026-04-25 09:52:15','2026-04-25 09:52:16',32,0,0,0,0);
 /*!40000 ALTER TABLE `unit_queue` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5767,22 +5787,22 @@ CREATE TABLE `unit_types` (
 LOCK TABLES `unit_types` WRITE;
 /*!40000 ALTER TABLE `unit_types` DISABLE KEYS */;
 INSERT INTO `unit_types` VALUES
-(1,'infantaria',10,15,10,20,100,20,0,30,'2026-04-16 22:51:20','2026-04-22 20:47:26','quartel'),
-(2,'veiculo_leve_apc',20,40,25,100,300,50,100,120,'2026-04-16 22:51:20','2026-04-22 20:47:26','fabrica_municoes'),
-(3,'tanque_combate_mbt',150,100,20,50,800,200,300,600,'2026-04-16 22:51:20','2026-04-22 20:47:26','fabrica_municoes'),
-(4,'politico',5,5,1,0,10000,2000,5000,3600,NULL,'2026-04-22 20:47:26','parlamento'),
-(5,'agente_espiao',0,2,30,0,500,100,200,180,'2026-04-24 20:09:26','2026-04-24 20:09:26','radar_estrategico'),
-(6,'helicoptero_ataque',80,30,40,30,600,300,400,480,'2026-04-24 20:09:26','2026-04-24 20:09:26','aerodromo'),
-(7,'drone_reconhecimento',0,0,50,0,200,0,150,120,'2026-04-24 20:09:26','2026-04-24 20:09:26','radar_estrategico'),
-(8,'artilharia_pesada',200,20,5,0,1000,500,200,900,'2026-04-24 20:09:26','2026-04-24 20:09:26','fabrica_municoes'),
-(9,'engenheiro',5,10,8,50,300,50,100,90,'2026-04-24 20:09:26','2026-04-24 20:09:26','posto_recrutamento'),
-(10,'sniper',50,5,12,5,400,150,50,150,'2026-04-24 20:09:26','2026-04-24 20:09:26','quartel'),
-(11,'agente_espiao',0,2,30,0,500,100,200,180,NULL,NULL,'radar_estrategico'),
-(12,'helicoptero_ataque',80,30,40,30,600,300,400,480,NULL,NULL,'aerodromo'),
-(13,'drone_reconhecimento',0,0,50,0,200,0,150,120,NULL,NULL,'radar_estrategico'),
-(14,'artilharia_pesada',200,20,5,0,1000,500,200,900,NULL,NULL,'fabrica_municoes'),
-(15,'engenheiro',5,10,8,50,300,50,100,90,NULL,NULL,'posto_recrutamento'),
-(16,'sniper',50,5,12,5,400,150,50,150,NULL,NULL,'quartel');
+(1,'infantaria',10,15,10,20,100,20,0,10,'2026-04-16 22:51:20','2026-04-22 20:47:26','quartel'),
+(2,'veiculo_leve_apc',20,40,25,100,300,50,100,20,'2026-04-16 22:51:20','2026-04-22 20:47:26','fabrica_municoes'),
+(3,'tanque_combate_mbt',150,100,20,50,800,200,300,45,'2026-04-16 22:51:20','2026-04-22 20:47:26','fabrica_municoes'),
+(4,'politico',5,5,1,0,10000,2000,5000,300,NULL,'2026-04-22 20:47:26','parlamento'),
+(5,'agente_espiao',0,2,30,0,500,100,200,60,'2026-04-24 20:09:26','2026-04-24 20:09:26','radar_estrategico'),
+(6,'helicoptero_ataque',80,30,40,30,600,300,400,90,'2026-04-24 20:09:26','2026-04-24 20:09:26','aerodromo'),
+(7,'drone_reconhecimento',0,0,50,0,200,0,150,30,'2026-04-24 20:09:26','2026-04-24 20:09:26','radar_estrategico'),
+(8,'artilharia_pesada',200,20,5,0,1000,500,200,120,'2026-04-24 20:09:26','2026-04-24 20:09:26','fabrica_municoes'),
+(9,'engenheiro',5,10,8,50,300,50,100,15,'2026-04-24 20:09:26','2026-04-24 20:09:26','posto_recrutamento'),
+(10,'sniper',50,5,12,5,400,150,50,25,'2026-04-24 20:09:26','2026-04-24 20:09:26','quartel'),
+(11,'agente_espiao',0,2,30,0,500,100,200,60,NULL,NULL,'radar_estrategico'),
+(12,'helicoptero_ataque',80,30,40,30,600,300,400,90,NULL,NULL,'aerodromo'),
+(13,'drone_reconhecimento',0,0,50,0,200,0,150,30,NULL,NULL,'radar_estrategico'),
+(14,'artilharia_pesada',200,20,5,0,1000,500,200,120,NULL,NULL,'fabrica_municoes'),
+(15,'engenheiro',5,10,8,50,300,50,100,15,NULL,NULL,'posto_recrutamento'),
+(16,'sniper',50,5,12,5,400,150,50,25,NULL,NULL,'quartel');
 /*!40000 ALTER TABLE `unit_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5815,7 +5835,7 @@ CREATE TABLE `units` (
 LOCK TABLES `units` WRITE;
 /*!40000 ALTER TABLE `units` DISABLE KEYS */;
 INSERT INTO `units` VALUES
-(1,1,1,21,'2026-04-17 19:51:20','2026-04-22 11:32:50'),
+(1,1,1,22,'2026-04-17 19:51:20','2026-04-25 09:46:02'),
 (2,1,3,14,'2026-04-17 21:39:55','2026-04-22 19:22:51'),
 (3,1,2,20,'2026-04-24 20:08:59','2026-04-24 20:08:59'),
 (4,1,6,43,'2026-04-24 20:09:26','2026-04-24 20:09:26'),
@@ -6836,4 +6856,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-04-25 10:41:39
+-- Dump completed on 2026-04-25 12:26:54

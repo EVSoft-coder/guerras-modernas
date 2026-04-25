@@ -14,24 +14,29 @@ class ProcessarCron extends Command
 
     public function handle()
     {
-        $this->info("Iniciando Ciclo de Operação em " . now());
+        $startTime = microtime(true);
+        $this->info("🚀 [CRONOS] Iniciando Ciclo de Operação Determinístico em " . now());
 
-        $gameService = new GameService();
-        $bases = \App\Models\Base::all();
+        $npcService = new \App\Services\NpcService();
+        $npcGrown = $npcService->growNpcVillages();
+        $this->info("🛡️ [NPC] $npcGrown aldeias bárbaras evoluídas.");
 
-        foreach ($bases as $base) {
-            try {
-                // Orquestração Global Determinística (Fase Crítica - Passo 2)
-                \App\Services\GameEngine::process($base);
-
-                $this->info("Operação concluída na Base [ID: {$base->id}].");
-            } catch (\Exception $e) {
-                Log::error("FALHA CRÍTICA NO CRON (Base {$base->id}): " . $e->getMessage());
-                $this->error("Interrupção técnica na Base {$base->id}");
+        // Processar todas as bases em chunks para evitar estouro de memória
+        \App\Models\Base::chunk(100, function ($bases) {
+            foreach ($bases as $base) {
+                try {
+                    // Motor Soberano: Processa Recursos, Construções, Treinos e Movimentos
+                    \App\Services\GameEngine::process($base);
+                } catch (\Exception $e) {
+                    Log::error("❌ [CRONOS_FAIL] Base {$base->id}: " . $e->getMessage());
+                    $this->error("Falha na Base {$base->id}");
+                }
             }
-        }
+        });
 
-        $this->info("Ciclo de Operação concluído com sucesso.");
+        $endTime = microtime(true);
+        $duration = round($endTime - $startTime, 2);
+        $this->info("✅ [CRONOS] Ciclo concluído em {$duration}s.");
     }
 
 }
