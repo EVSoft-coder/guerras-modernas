@@ -7,6 +7,7 @@ import { WorldMapView } from '@/components/game/WorldMapView';
 import { useGameMode } from '@/hooks/use-game-mode';
 import { useGameEntities } from '@/hooks/use-game-entities';
 import { resourceSystem } from '@src/game/systems/ResourceSystem';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
