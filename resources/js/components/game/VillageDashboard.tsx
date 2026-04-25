@@ -353,7 +353,10 @@ export function VillageDashboard({
                 <div className="lg:col-span-4 flex flex-col gap-8">
                     <ProductionQueue 
                         construcoes={buildingQueue} 
-                        treinos={unitQueue} 
+                        treinos={(unitQueue || []).map((t: any) => {
+                            const unitType = t.unitType || unitTypes.find((ut: any) => ut.id === t.unit_type_id);
+                            return { ...t, unitType: unitType };
+                        })} 
                         gameConfig={gameConfig} 
                     />
                     <UnitQueue queue={unitQueue || STABLE_EMPTY_ARRAY} />
