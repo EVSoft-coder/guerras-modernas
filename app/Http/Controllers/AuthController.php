@@ -176,7 +176,6 @@ class AuthController extends Controller
                     'pessoal' => 300,
                     'metal' => 400,
                     'energia' => 400,
-                    'cap' => 1000,
                     'storage_capacity' => 1000,
                 ]);
  

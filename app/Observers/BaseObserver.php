@@ -38,8 +38,7 @@ class BaseObserver
                 'pessoal' => 500,
                 'metal' => 0,
                 'energia' => 0,
-                'cap' => 10000,
-                'last_update' => app(\App\Services\TimeService::class)->now()
+                'storage_capacity' => 10000,
             ]);
         }
     }
