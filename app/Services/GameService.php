@@ -73,7 +73,7 @@ class GameService
             // PROCESSAMENTO SOBERANO (Garante integridade total antes da ação)
             GameEngine::process($lockedBase);
 
-            $nivelAtual = $this->obterNivelEdificio($lockedBase, $tipo);
+            $nivelAtual = $this->obterNivelEdificio($lockedBase, $tipo, $posX, $posY);
             $custos = BuildingRules::calculateCost($tipo, $nivelAtual);
 
             $stats = $this->obterEstatisticasPopulacao($lockedBase);
@@ -97,7 +97,11 @@ class GameService
 
             $buildingId = null;
             if (!in_array($tipo, [BuildingType::HQ, BuildingType::MURALHA])) {
-                $buildingId = $lockedBase->edificios()->where('tipo', $tipo)->first()?->id;
+                $query = $lockedBase->edificios()->where('tipo', $tipo);
+                if ($posX !== 0 || $posY !== 0) {
+                    $query->where('pos_x', $posX)->where('pos_y', $posY);
+                }
+                $buildingId = $query->first()?->id;
             }
 
             return $this->buildingQueueService->startConstruction($lockedBase, $tipo, $posX, $posY, $buildingId);
@@ -139,9 +143,22 @@ class GameService
         }, 5);
     }
 
-    public function obterNivelEdificio(Base $base, ?string $tipo): int
+    public function obterNivelEdificio(Base $base, ?string $tipo, int $posX = 0, int $posY = 0): int
     {
         if (is_null($tipo)) return 0;
+        
+        // FASE ISO: Se a posição for fornecida (diferente de 0), procurar o edifício específico naquela coordenada
+        if ($posX !== 0 || $posY !== 0) {
+            $building = $base->edificios()
+                ->where('tipo', $tipo)
+                ->where('pos_x', $posX)
+                ->where('pos_y', $posY)
+                ->first();
+            
+            if ($building) return (int)$building->nivel;
+        }
+
+        // Fallback para edifícios únicos (como HQ/Muralha) ou quando a posição não é exata
         return (int) ($base->edificios()->where('tipo', $tipo)->first()?->nivel ?? 0);
     }
 
