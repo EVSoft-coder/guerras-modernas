@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BUILDING_LAYOUT as INITIAL_LAYOUT, REFERENCE_WIDTH, REFERENCE_HEIGHT } from '@/config/buildingLayout';
 import { Button } from '@/components/ui/button';
@@ -13,31 +13,24 @@ interface LayoutCalibratorProps {
  * Permite o reposicionamento visual dos edifícios no terreno.
  */
 export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) => {
+    const canvasRef = useRef<HTMLDivElement>(null);
     const [layout, setLayout] = useState<any>(INITIAL_LAYOUT);
     const [copied, setCopied] = useState(false);
     const [selected, setSelected] = useState<string | null>(null);
 
     const handleDragEnd = (buildingType: string, event: any, info: any) => {
-        const newLayout = { ...layout };
-        const canvas = document.getElementById('CalibrationCanvas');
-        if (canvas) {
-            const rect = canvas.getBoundingClientRect();
-            // info.point é a posição do rato no ecrã. 
-            // Precisamos da posição relativa ao canvas, mas compensando o transform (se houver).
-            // No calibrador não usamos escala para simplificar.
-            const x = Math.round(info.point.x - rect.left);
-            const y = Math.round(info.point.y - rect.top);
-            
-            // Reajustar: o ponto de drop é o centro do building node
-            const b = newLayout[buildingType];
-            newLayout[buildingType] = {
-                ...b,
-                x: x,
-                y: y
-            };
-            setLayout(newLayout);
-            setSelected(null);
-        }
+        const b = layout[buildingType];
+        if (!b) return;
+
+        // info.offset contém o deslocamento total desde o início do drag
+        const newX = Math.round(b.x + info.offset.x);
+        const newY = Math.round(b.y + info.offset.y);
+        
+        setLayout({
+            ...layout,
+            [buildingType]: { ...b, x: newX, y: newY }
+        });
+        setSelected(null);
     };
 
     const copyToClipboard = () => {
@@ -88,6 +81,7 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                 <div className="relative bg-[#050608] flex-1 flex items-center justify-center p-20 overflow-hidden bg-[radial-gradient(#111_1px,transparent_1px)] [background-size:20px_20px]">
                     <div 
                         id="CalibrationCanvas"
+                        ref={canvasRef}
                         className="relative shadow-[0_0_60px_rgba(0,0,0,0.5)] border-2 border-gray-800/50 rounded-sm"
                         style={{ 
                             width: `${REFERENCE_WIDTH}px`, 
@@ -107,12 +101,15 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                 key={type}
                                 drag
                                 dragMomentum={false}
+                                dragConstraints={canvasRef}
+                                dragElastic={0}
+                                animate={{ x: 0, y: 0 }}
                                 onDragStart={() => setSelected(type)}
                                 onDragEnd={(e, info) => handleDragEnd(type, e, info)}
                                 className="absolute cursor-grab active:cursor-grabbing"
                                 style={{
                                     left: b.x - (b.w / 2),
-                                    top: b.y - (b.h / 2), // Usamos centro no calibrador para alinhar com o rato
+                                    top: b.y - (b.h / 2), 
                                     width: b.w,
                                     height: b.h,
                                     zIndex: selected === type ? 1000 : Math.floor(b.y)
