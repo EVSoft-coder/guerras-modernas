@@ -1,3 +1,7 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BUILDING_LAYOUT as INITIAL_LAYOUT, REFERENCE_WIDTH, REFERENCE_HEIGHT, BuildingLayout } from '@/config/buildingLayout';
+import { Button } from '@/components/ui/button';
 import { Save, Move, Copy, Check, RotateCcw, X, Maximize2, RotateCw, Pipette, Sliders, Image as ImageIcon, LayoutGrid } from 'lucide-react';
 import { TransparentImage } from '@/components/ui/TransparentImage';
 
