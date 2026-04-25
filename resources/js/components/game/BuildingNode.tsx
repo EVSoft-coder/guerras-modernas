@@ -64,7 +64,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({
                     <TransparentImage 
                         src={assetPath}
                         alt={type}
-                        removeColor={{ r: 10, g: 12, b: 16, tolerance: 40 }} // Tentar remover tons escuros do fundo
+                        tolerance={70} // Tolerância maior para lidar com sombras e gradientes
                         style={{
                             width: '100%',
                             height: '100%',

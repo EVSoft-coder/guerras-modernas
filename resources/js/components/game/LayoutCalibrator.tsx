@@ -223,7 +223,7 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onClose }) =
                                     <div className={`relative w-full h-full transition-transform duration-300 ${selected === type ? 'scale-110' : 'hover:scale-105'}`}>
                                     <TransparentImage 
                                         src={`/assets/buildings/${b.assetName}`} 
-                                        removeColor={{ r: 10, g: 12, b: 16, tolerance: 50 }}
+                                        tolerance={70}
                                         className={`w-full h-full object-contain pointer-events-none transition-all ${
                                             selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl grayscale-[0.2]'
                                         }`}
