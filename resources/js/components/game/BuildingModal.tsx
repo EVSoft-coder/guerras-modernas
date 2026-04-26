@@ -100,6 +100,36 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         if (isMilitary && availableUnits.length > 0 && !selectedUnit) setSelectedUnit(availableUnits[0].name);
     }, [building.buildingType, isMilitary, availableUnits]);
 
+    const getImpactValue = (type: string, level: number) => {
+        if (level <= 0) return 'Inativo';
+        const typeLower = type.toLowerCase();
+        
+        // Produção de Recursos
+        const prodConfig = gameConfig?.production?.[typeLower];
+        if (prodConfig) {
+            const val = calculateResourceProduction(prodConfig.base, level, prodConfig.factor);
+            return `+${val.toLocaleString()}/h`;
+        }
+
+        // Casos Específicos
+        switch (typeLower) {
+            case 'hq':
+                return `-${(level * 3)}% Tempo Const.`;
+            case 'muralha':
+                return `+${(level * 5)}% Bónus Def.`;
+            case 'posto_recrutamento':
+                return `-${(level * 2)}% Tempo Treino`;
+            case 'centro_pesquisa':
+                return `-${(level * 4)}% Tempo Pesq.`;
+            case 'mercado':
+                return `+${level} Comerciantes`;
+            case 'parlamento':
+                return `+${(level * 10)}% Influência`;
+            default:
+                return `Nível Operacional ${level}`;
+        }
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-4xl bg-[#020406]/90 border-white/5 text-white overflow-hidden backdrop-blur-3xl p-0 rounded-[3rem] shadow-[0_0_120px_rgba(0,0,0,1)] flex flex-col md:flex-row h-[90vh] md:h-auto border">
@@ -130,7 +160,8 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                     <div className="mt-16 w-full space-y-6 z-10 text-center">
                         <div className="flex flex-col items-center">
                             <span className="text-[8px] font-black text-neutral-600 uppercase tracking-[0.6em] mb-2">Auth_Level_Signature</span>
-                            <div className="text-8xl font-black text-white italic tracking-tighter leading-none font-military-mono">
+                            <div className="text-8xl font-black text-white italic tracking-tighter leading-none font-military-mono relative">
+                                <span className="absolute -inset-4 bg-white/5 blur-2xl rounded-full opacity-50" />
                                 {(building.nivel || 0).toString().padStart(2, '0')}
                             </div>
                         </div>
@@ -140,9 +171,9 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                     </div>
                 </div>
 
-                {/* RIGHT BLOCK: DATA & CONTROLS */}
                 <div className="flex-1 p-10 md:p-14 flex flex-col justify-between bg-gradient-to-br from-black/20 via-transparent to-transparent relative">
-                    <button onClick={onClose} className="absolute top-10 right-10 text-neutral-600 hover:text-white transition-all p-2.5 hover:bg-white/5 rounded-2xl active:scale-90"><X size={20} /></button>
+                    {/* Radix UI Dialog close button is hidden via CSS in this modal to use only one unified close button if preferred,
+                        but here we rely on the one in DialogContent but styled. We removed the manual one from here. */}
                     
                     <div className="space-y-12 overflow-y-auto pr-6 custom-scrollbar max-h-[60vh]">
                         <header className="space-y-4">
@@ -151,7 +182,29 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                 <span className="text-[9px] font-black text-sky-500/40 uppercase tracking-[0.5em] font-military-mono">Protocolo_{tipoLower}_v3.9</span>
                             </div>
                             <DialogTitle className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-white leading-none">{config.name}</DialogTitle>
-                            <DialogDescription className="text-[11px] text-neutral-500 font-medium leading-relaxed max-w-lg">
+                            
+                            <div className="grid grid-cols-2 gap-6 py-4">
+                                <div className="space-y-1">
+                                    <span className="text-[8px] font-black text-neutral-600 uppercase tracking-[0.4em]">Efeito_Atual</span>
+                                    <div className="flex items-center gap-2">
+                                        <TrendingUp size={14} className="text-sky-500" />
+                                        <span className="text-sm font-black text-sky-400 font-military-mono">
+                                            {getImpactValue(building.buildingType, building.nivel)}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-[8px] font-black text-neutral-600 uppercase tracking-[0.4em]">Próximo_Nível</span>
+                                    <div className="flex items-center gap-2">
+                                        <Activity size={14} className="text-neutral-500" />
+                                        <span className="text-sm font-black text-neutral-400 font-military-mono">
+                                            {getImpactValue(building.buildingType, nextLevel)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <DialogDescription className="text-[11px] text-neutral-500 font-medium leading-relaxed max-w-lg border-l-2 border-white/5 pl-4 py-1">
                                 {config.description}
                             </DialogDescription>
                         </header>

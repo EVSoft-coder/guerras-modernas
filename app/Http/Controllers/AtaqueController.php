@@ -40,6 +40,7 @@ class AtaqueController extends Controller
             'metal' => 'nullable|numeric',
             'energia' => 'nullable|numeric',
             'pessoal' => 'nullable|numeric',
+            'general_id' => 'nullable|exists:generais,id',
         ]);
 
         try {

@@ -75,6 +75,19 @@ class AuthController extends Controller
 
             // Filtragem de Soberania
             $base->setRelation('edificios', $base->edificios->filter(fn($e) => $e->nivel > 0));
+
+            // FASE 16: Garantir existência do General
+            if (!$jogador->general) {
+                $jogador->general()->create([
+                    'nome' => 'General ' . $jogador->username,
+                    'nivel' => 1,
+                    'experiencia' => 0,
+                    'pontos_skill' => 0,
+                    'base_id' => $base->id,
+                    'estatisticas' => ['ataque' => 10, 'defesa' => 10, 'saude' => 100],
+                ]);
+                $jogador->load('general');
+            }
         }
 
         // 🚨 AUDITORIA DE RECURSOS FORÇADA
@@ -91,6 +104,7 @@ class AuthController extends Controller
             'taxas' => $this->gameService->obterTaxasProducao($base),
             'taxasPerSecond' => collect($this->gameService->obterTaxasProducao($base))->map(fn($v) => (float)$v / 60)->toArray(),
             'populacao' => $populacao ?? null,
+            'general' => $jogador->general()->with('skills')->first(),
             'relatorios' => \App\Models\Relatorio::where('atacante_id', $jogador->id)
                 ->orWhere('defensor_id', $jogador->id)
                 ->latest()->take(10)->get() ?? [],
@@ -179,6 +193,16 @@ class AuthController extends Controller
                     'metal' => 400,
                     'energia' => 400,
                     'storage_capacity' => 1000,
+                ]);
+
+                // FASE 16: Criar General Inicial
+                $jogador->general()->create([
+                    'nome' => 'General ' . $jogador->username,
+                    'nivel' => 1,
+                    'experiencia' => 0,
+                    'pontos_skill' => 0,
+                    'base_id' => $base->id,
+                    'estatisticas' => ['ataque' => 10, 'defesa' => 10, 'saude' => 100],
                 ]);
  
                 Auth::login($jogador);

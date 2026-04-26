@@ -21,7 +21,9 @@ class CombatService
         array $defenderUnits, 
         ?Jogador $attacker = null, 
         ?Jogador $defender = null,
-        ?Base $defenderBase = null
+        ?Base $defenderBase = null,
+        $attackerGeneral = null,
+        $defenderGeneral = null
     ): array {
         $totalAttack = 0;
         $totalDefense = 0;
@@ -47,11 +49,27 @@ class CombatService
             $totalAttack *= (1 + $atkBonus);
         }
 
+        // FASE 16: Bónus do General Atacante
+        if ($attackerGeneral) {
+            $generalService = app(GeneralService::class);
+            $skills = $attackerGeneral->skills;
+            $ofensivaLevel = $skills->where('skill_slug', 'ofensiva')->first()?->nivel ?? 0;
+            $totalAttack *= (1 + ($ofensivaLevel * 0.03));
+        }
+
         if ($defender) {
             $researchService = app(ResearchService::class);
             $defBonuses = $researchService->getResearchBonuses($defender);
             $defBonus = $defBonuses['defense_bonus'] ?? 0;
             $totalDefense *= (1 + $defBonus);
+        }
+
+        // FASE 16: Bónus do General Defensor
+        if ($defenderGeneral) {
+            $generalService = app(GeneralService::class);
+            $skills = $defenderGeneral->skills;
+            $defensivaLevel = $skills->where('skill_slug', 'defensiva')->first()?->nivel ?? 0;
+            $totalDefense *= (1 + ($defensivaLevel * 0.04));
         }
 
         // FASE 4: Aplicar Bónus Defensivo da Muralha (+5% DEF por nível)

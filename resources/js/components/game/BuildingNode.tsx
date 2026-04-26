@@ -73,11 +73,11 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                                 {type.replace('_', ' ')}
                             </span>
                         </div>
-                        <span className={`text-[11px] font-black font-military-mono leading-none tracking-tighter ${
-                            isConstructing ? 'text-orange-400' : 'text-white group-hover:text-cyan-400'
-                        }`}>
-                            {isConstructing ? 'UNDER_CONST' : `LVL_${level.toString().padStart(2, '0')}`}
-                        </span>
+                        {isConstructing && (
+                            <span className="text-[11px] font-black font-military-mono leading-none tracking-tighter text-orange-400">
+                                UNDER_CONST
+                            </span>
+                        )}
                     </div>
                     
                     {/* Perspective Line */}

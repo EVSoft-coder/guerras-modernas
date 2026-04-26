@@ -21,7 +21,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Mapa TÃ¡tico', href: '/mapa' },
 ];
 
-export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos }: any) {
+const MapLegend = ({ color, label }: { color: string, label: string }) => (
+    <div className="flex items-center gap-1.5">
+        <div className={`w-2 h-2 rounded-full ${color}`} />
+        <span className="text-[8px] font-black text-neutral-500 uppercase tracking-tighter">{label}</span>
+    </div>
+);
+
+export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos, diplomacia, userAliancaId, auth, general }: any) {
     const { addToast } = useToasts();
     const [selectedTarget, setSelectedTarget] = React.useState<any>(null);
     const [isSending, setIsSending] = React.useState(false);
@@ -36,12 +43,12 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
 
         // Feedback de Combate em Tempo Real
         const unsubArrived = eventBus.subscribe(Events.ATTACK_ARRIVED, (ev) => {
-            const res = ev.data.result === 'VICTORY' ? 'VITÃ“RIA' : 'MISSÃƒO CONCLUÃDA';
+            const res = ev.data.result === 'VICTORY' ? 'VITÃ“RIA' : 'MISSÃƒO CONCLUÃ DA';
             addToast(`OFENSIVA: ${res} em [${ev.data.targetId || 'Sector'}]. Saque iniciado.`, 'success');
         });
 
         const unsubReturned = eventBus.subscribe(Events.ATTACK_RETURNED, (ev) => {
-            addToast(`LOGÃSTICA: Tropas regressaram com recursos capturados.`, 'info');
+            addToast(`LOGÃ STICA: Tropas regressaram com recursos capturados.`, 'info');
             router.reload({ only: ['origemBase'] });
         });
 
@@ -74,9 +81,17 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
         grid.push(row);
     }
 
+    const getDiplomacyStatus = (targetAliancaId: number | null) => {
+        if (!targetAliancaId || !userAliancaId) return null;
+        if (targetAliancaId === userAliancaId) return 'OWN_ALLY';
+        
+        const relation = diplomacia.find((d: any) => d.alvo_alianca_id === targetAliancaId);
+        return relation?.tipo || null;
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Setor [${x}:${y}] - Mapa TÃ¡tico`} />
+            <Head title={`Setor [${x}:${y}] - Mapa Tático`} />
             
             <div className="flex flex-1 flex-col gap-6 p-6 bg-neutral-900 text-white min-h-screen">
                 <div className="flex justify-between items-center">
@@ -85,7 +100,15 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                             <MapIcon className="text-sky-500" size={24} />
                             Setor Operacional [{x}:{y}]
                         </h1>
-                        <p className="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">VigilÃ¢ncia de SatÃ©lite em Tempo Real</p>
+                        <div className="flex items-center gap-4">
+                            <p className="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">Vigilância de Satélite em Tempo Real</p>
+                            <div className="flex gap-3">
+                                <MapLegend color="bg-emerald-500" label="Próprio" />
+                                <MapLegend color="bg-sky-500" label="Aliado" />
+                                <MapLegend color="bg-teal-400" label="PNA" />
+                                <MapLegend color="bg-red-500" label="Inimigo" />
+                            </div>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -125,16 +148,33 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                         {grid.map((row, rowIndex) => (
                             <div key={rowIndex} className="flex gap-[2px]">
                                 {row.map((cell, cellIndex) => {
-                                    const isOwn = cell.base && cell.base.ownerId === origemBase?.ownerId;
+                                    const isOwn = cell.base && cell.base.jogador_id === auth.user.jogador.id;
                                     const isNpc = cell.base?.is_npc;
                                     const isCenter = cell.x === x && cell.y === y;
                                     const isSelected = selectedTarget?.coordenada_x === cell.x && selectedTarget?.coordenada_y === cell.y;
                                     
+                                    const diploStatus = cell.base?.jogador?.alianca_id ? getDiplomacyStatus(cell.base.jogador.alianca_id) : null;
+
                                     let cellClass = 'bg-white/[0.03] border-white/[0.04] hover:border-white/20';
                                     if (cell.base) {
                                         if (isOwn) cellClass = 'bg-emerald-500/20 border-emerald-500/40 hover:bg-emerald-500/40';
-                                        else if (isNpc) cellClass = 'bg-amber-500/15 border-amber-500/30 hover:bg-amber-500/30 hover:shadow-[0_0_10px_rgba(245,158,11,0.15)]';
-                                        else cellClass = 'bg-red-500/10 border-red-500/40 hover:bg-red-500/30 hover:shadow-[0_0_10px_rgba(239,68,68,0.15)]';
+                                        else if (isNpc) cellClass = 'bg-amber-500/15 border-amber-500/30 hover:bg-amber-500/30';
+                                        else {
+                                            switch(diploStatus) {
+                                                case 'OWN_ALLY':
+                                                case 'aliado':
+                                                    cellClass = 'bg-sky-500/20 border-sky-500/40 hover:bg-sky-500/40';
+                                                    break;
+                                                case 'pna':
+                                                    cellClass = 'bg-teal-400/20 border-teal-400/40 hover:bg-teal-400/40';
+                                                    break;
+                                                case 'inimigo':
+                                                    cellClass = 'bg-red-600/30 border-red-500/50 hover:bg-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]';
+                                                    break;
+                                                default:
+                                                    cellClass = 'bg-red-500/10 border-red-500/40 hover:bg-red-500/30 hover:shadow-[0_0_10px_rgba(239,68,68,0.15)]';
+                                            }
+                                        }
                                     }
 
                                     return (
@@ -159,7 +199,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                                                     ) : isOwn ? (
                                                         <Radio size={12} className="text-emerald-400" />
                                                     ) : (
-                                                        <Radio size={12} className="text-red-500" />
+                                                        <Radio size={12} className={diploStatus === 'aliado' || diploStatus === 'OWN_ALLY' ? 'text-sky-400' : diploStatus === 'pna' ? 'text-teal-400' : 'text-red-500'} />
                                                     )}
                                                 </div>
                                             ) : null}
@@ -171,7 +211,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                     </div>
                 </div>
 
-                {/* MONITOR TÃCTICO ECS */}
+                {/* MONITOR TÃ CTICO ECS */}
                 <div className="mt-auto bg-black/60 p-4 border-t border-sky-500/30 font-mono text-xs">
                     <h3 className="text-sky-500 font-black mb-2 uppercase tracking-widest flex items-center gap-2">
                         <Target size={12} /> Telemetria de Unidades ECS
@@ -223,6 +263,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                 destinoBase={selectedTarget}
                 tropasDisponiveis={origemBase?.tropas || []}
                 isSending={isSending}
+                general={general}
                 onEnviar={(params) => {
                     setIsSending(true);
                     const payload = {

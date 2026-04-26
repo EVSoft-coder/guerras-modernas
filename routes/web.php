@@ -13,6 +13,7 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\ManualController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UnitRecruitmentController;
+use App\Http\Controllers\ForumController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,8 +55,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
         Route::get('/manual', [ManualController::class, 'index'])->name('manual');
         Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
-        Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index');
-        Route::get('/relatorios/{id}', [RelatorioController::class, 'show'])->name('relatorio.show');
+        Route::prefix('relatorios')->name('relatorio.')->group(function() {
+            Route::get('/', [RelatorioController::class, 'index'])->name('index');
+            Route::get('/{id}', [RelatorioController::class, 'show'])->name('show');
+            Route::post('/{id}/partilhar', [RelatorioController::class, 'partilhar'])->name('partilhar');
+        });
         Route::get('/mensagens', [ChatController::class, 'pessoais'])->name('mensagens.index');
     });
 
@@ -87,14 +91,33 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::prefix('alianca')->name('alianca.')->group(function () {
+            Route::get('/', [AliancaController::class, 'index'])->name('index');
             Route::post('/store', [AliancaController::class, 'store'])->name('store');
             Route::post('/pedir', [AliancaController::class, 'pedir'])->name('pedir');
-            Route::post('/sair', [AliancaController::class, 'sair'])->name('sair');
             Route::post('/decidir/{id}/{decisao}', [AliancaController::class, 'decidir'])->name('decidir');
-            Route::post('/chat/enviar', [ChatController::class, 'enviar'])->name('chat.enviar');
+            Route::post('/sair', [AliancaController::class, 'sair'])->name('sair');
+            Route::post('/chat/enviar', [AliancaController::class, 'enviarMensagem'])->name('chat.enviar');
             Route::post('/convidar', [AliancaController::class, 'convidar'])->name('convidar');
             Route::post('/convites/{id}/{decisao}', [AliancaController::class, 'decidirConvite'])->name('convite.decidir');
+            Route::post('/diplomacia', [AliancaController::class, 'diplomaciaStore'])->name('diplomacia.store');
+            Route::delete('/diplomacia/{id}', [AliancaController::class, 'diplomaciaDelete'])->name('diplomacia.delete');
+
+            // Fórum da Aliança
+            Route::prefix('forum')->name('forum.')->group(function () {
+                Route::get('/', [ForumController::class, 'index'])->name('index');
+                Route::post('/topico', [ForumController::class, 'storeTopico'])->name('topico.store');
+                Route::get('/topico/{id}', [ForumController::class, 'show'])->name('show');
+                Route::post('/topico/{id}/post', [ForumController::class, 'storePost'])->name('post.store');
+            });
         });
+
+        // 🎖️ FASE 16: O General
+        Route::prefix('general')->name('general.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\GeneralController::class, 'index'])->name('index');
+            Route::post('/upgrade', [\App\Http\Controllers\GeneralController::class, 'upgradeSkill'])->name('upgrade');
+            Route::post('/rename', [\App\Http\Controllers\GeneralController::class, 'rename'])->name('rename');
+        });
+    });
     });
 
     // Outros

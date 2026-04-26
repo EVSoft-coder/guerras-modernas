@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 import { 
     Sword, Shield, Zap, Skull, Calendar, ChevronLeft, 
     Target, TrendingUp, TrendingDown, Info, BarChart3,
-    Trophy, XCircle
+    Trophy, XCircle, Share2
 } from 'lucide-react';
-import { usePage } from '@inertiajs/react';
+import { usePage, router } from '@inertiajs/react';
 
 interface Relatorio {
     id: number;
@@ -43,7 +43,12 @@ export default function Show({ relatorio }: { relatorio: Relatorio }) {
     const { auth }: any = usePage().props;
     const isAtacante = relatorio.atacante_id === auth.user.jogador.id;
     const isVitoria = relatorio.vencedor_id === auth.user.jogador.id;
+    const canShare = isAtacante || relatorio.defensor_id === auth.user.jogador.id;
     const det = relatorio.detalhes;
+
+    const handleShare = () => {
+        router.post(`/relatorios/${relatorio.id}/partilhar`);
+    };
 
     return (
         <AppLayout breadcrumbs={[
@@ -53,13 +58,23 @@ export default function Show({ relatorio }: { relatorio: Relatorio }) {
             <Head title={`Relatório de Batalha #${relatorio.id}`} />
             
             <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6">
-                {/* Botão Voltar */}
-                <Link 
-                    href="/relatorios" 
-                    className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest"
-                >
-                    <ChevronLeft size={16} /> Arquivos Centrais
-                </Link>
+                <div className="flex justify-between items-center">
+                    <Link 
+                        href="/relatorios" 
+                        className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest"
+                    >
+                        <ChevronLeft size={16} /> Arquivos Centrais
+                    </Link>
+
+                    {canShare && (
+                        <button 
+                            onClick={handleShare}
+                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${relatorio.partilhado_alianca ? 'bg-sky-600 text-white' : 'bg-white/5 text-neutral-500 hover:text-white border border-white/5'}`}
+                        >
+                            <Share2 size={14} /> {relatorio.partilhado_alianca ? 'Partilhado com a Coligação' : 'Partilhar com a Coligação'}
+                        </button>
+                    )}
+                </div>
 
                 {/* Título e Status */}
                 <div className="bg-neutral-900/60 border border-white/5 rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl">

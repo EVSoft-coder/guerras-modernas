@@ -32,6 +32,9 @@ class AliancaController extends Controller
         }
 
         $mensagens = $jogador->alianca->mensagens()->with('jogador')->latest()->take(50)->get()->reverse()->values();
+        $diplomacia = \App\Models\AliancaDiplomacia::with('alvoAlianca')
+            ->where('alianca_id', $jogador->alianca_id)
+            ->get();
 
         return Inertia::render('alianca', [
             'temAlianca' => true,
@@ -41,7 +44,9 @@ class AliancaController extends Controller
             'convitesEnviados' => \App\Models\ConviteAlianca::with('jogador')
                 ->where('alianca_id', $jogador->alianca_id)
                 ->where('status', 'pendente')
-                ->get()
+                ->get(),
+            'diplomacia' => $diplomacia,
+            'todasAliancas' => Alianca::where('id', '!=', $jogador->alianca_id)->get()
         ]);
     }
 
@@ -154,5 +159,38 @@ class AliancaController extends Controller
         }
 
         return back()->with('success', 'Diplomacia processada.');
+    }
+
+    public function diplomaciaStore(Request $request)
+    {
+        $jogador = Jogador::find(Auth::id());
+        $alianca = Alianca::find($jogador->alianca_id);
+        if ($alianca->fundador_id !== $jogador->id) abort(403);
+
+        $request->validate([
+            'alvo_alianca_id' => 'required|exists:aliancas,id',
+            'tipo' => 'required|in:aliado,pna,inimigo'
+        ]);
+
+        \App\Models\AliancaDiplomacia::updateOrCreate(
+            ['alianca_id' => $alianca->id, 'alvo_alianca_id' => $request->alvo_alianca_id],
+            ['tipo' => $request->tipo]
+        );
+
+        return back()->with('success', 'Relação diplomática atualizada.');
+    }
+
+    public function diplomaciaDelete($id)
+    {
+        $jogador = Jogador::find(Auth::id());
+        $relacao = \App\Models\AliancaDiplomacia::findOrFail($id);
+        if ($relacao->alianca_id !== $jogador->alianca_id) abort(403);
+        
+        $alianca = Alianca::find($jogador->alianca_id);
+        if ($alianca->fundador_id !== $jogador->id) abort(403);
+
+        $relacao->delete();
+
+        return back()->with('success', 'Relação diplomática dissolvida.');
     }
 }

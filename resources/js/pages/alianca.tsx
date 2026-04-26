@@ -14,6 +14,8 @@ interface AliancaProps {
     mensagens?: any[];
     convites?: any[];
     convitesEnviados?: any[];
+    diplomacia?: any[];
+    todasAliancas?: any[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -21,12 +23,16 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Quartel-General da Aliança', href: '/alianca' },
 ];
 
-export default function Alianca({ temAlianca, jogador, alianca, aliancas, pedidoPendente, mensagens, convites, convitesEnviados }: AliancaProps) {
+export default function Alianca({ temAlianca, jogador, alianca, aliancas, pedidoPendente, mensagens, convites, convitesEnviados, diplomacia, todasAliancas }: AliancaProps) {
     const { addToast } = useToasts();
     const [nomeCriar, setNomeCriar] = useState('');
     const [tagCriar, setTagCriar] = useState('');
     const [jogadorConvidar, setJogadorConvidar] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Diplomacy state
+    const [alvoDiplomacia, setAlvoDiplomacia] = useState('');
+    const [tipoDiplomacia, setTipoDiplomacia] = useState<'aliado' | 'pna' | 'inimigo'>('aliado');
     
     // Chat state
     const [chatMsg, setChatMsg] = useState('');
@@ -94,6 +100,26 @@ export default function Alianca({ temAlianca, jogador, alianca, aliancas, pedido
         router.post(`/alianca/convites/${id}/${decisao}`, {}, {
             onSuccess: () => addToast('Convite processado.', 'success')
         });
+    };
+
+    const handleDiplomacia = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!alvoDiplomacia) return;
+        router.post('/alianca/diplomacia', { alvo_alianca_id: alvoDiplomacia, tipo: tipoDiplomacia }, {
+            onSuccess: () => {
+                setAlvoDiplomacia('');
+                addToast('Relação diplomática atualizada!', 'success');
+            },
+            onError: (err) => addToast(Object.values(err)[0] as string || 'Erro na diplomacia.', 'error')
+        });
+    };
+
+    const handleDeleteDiplomacia = (id: number) => {
+        if (confirm('Tens a certeza que queres dissolver este pacto? Isso pode ser visto como uma declaração de guerra.')) {
+            router.delete(`/alianca/diplomacia/${id}`, {
+                onSuccess: () => addToast('Pacto dissolvido.', 'info')
+            });
+        }
     };
 
     if (!temAlianca) {
@@ -315,6 +341,93 @@ export default function Alianca({ temAlianca, jogador, alianca, aliancas, pedido
                                             ))
                                         ) : (
                                             <p className="text-neutral-600 text-[9px] italic uppercase tracking-widest text-center py-2">Sem convites ativos.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Gestão de Diplomacia (Apenas Fundador) */}
+                    {isFundador && (
+                        <div className="bg-black/40 border border-white/10 rounded-xl overflow-hidden flex flex-col">
+                            <div className="bg-neutral-800/40 p-4 border-b border-white/10 flex items-center gap-2">
+                                <MapIcon className="text-sky-400" size={18} />
+                                <h3 className="font-black text-sm uppercase tracking-widest text-white">Conselho Diplomático</h3>
+                            </div>
+                            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <h4 className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Formalizar Novo Pacto / Declaração</h4>
+                                    <form onSubmit={handleDiplomacia} className="flex flex-col gap-4">
+                                        <div>
+                                            <label className="block text-[8px] font-black uppercase text-neutral-500 mb-1">Coligação Alvo</label>
+                                            <select 
+                                                value={alvoDiplomacia}
+                                                onChange={e => setAlvoDiplomacia(e.target.value)}
+                                                className="w-full bg-black/60 border border-white/10 rounded p-2 text-xs text-white"
+                                            >
+                                                <option value="">Selecionar Aliança...</option>
+                                                {todasAliancas?.map((al: any) => (
+                                                    <option key={al.id} value={al.id}>[{al.tag}] {al.nome}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[8px] font-black uppercase text-neutral-500 mb-1">Tipo de Relação</label>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setTipoDiplomacia('aliado')}
+                                                    className={`py-2 px-1 text-[10px] font-black uppercase rounded border transition ${tipoDiplomacia === 'aliado' ? 'bg-sky-600 border-sky-500 text-white' : 'bg-white/5 border-white/10 text-neutral-500 hover:bg-white/10'}`}
+                                                >
+                                                    Aliado
+                                                </button>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setTipoDiplomacia('pna')}
+                                                    className={`py-2 px-1 text-[10px] font-black uppercase rounded border transition ${tipoDiplomacia === 'pna' ? 'bg-teal-600 border-teal-500 text-white' : 'bg-white/5 border-white/10 text-neutral-500 hover:bg-white/10'}`}
+                                                >
+                                                    PNA
+                                                </button>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setTipoDiplomacia('inimigo')}
+                                                    className={`py-2 px-1 text-[10px] font-black uppercase rounded border transition ${tipoDiplomacia === 'inimigo' ? 'bg-red-600 border-red-500 text-white' : 'bg-white/5 border-white/10 text-neutral-500 hover:bg-white/10'}`}
+                                                >
+                                                    Inimigo
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button className="w-full py-2 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded hover:bg-sky-400 transition">
+                                            Transmitir Protocolo
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h4 className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Relações Ativas</h4>
+                                    <div className="space-y-2 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {diplomacia && diplomacia.length > 0 ? (
+                                            diplomacia.map((rel: any) => (
+                                                <div key={rel.id} className="flex items-center justify-between p-3 bg-black/40 border border-white/5 rounded-lg group">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] font-bold text-white">[{rel.alvo_alianca?.tag}] {rel.alvo_alianca?.nome}</span>
+                                                        <span className={`text-[8px] font-black uppercase tracking-tighter ${rel.tipo === 'aliado' ? 'text-sky-400' : rel.tipo === 'pna' ? 'text-teal-400' : 'text-red-500'}`}>
+                                                            {rel.tipo}
+                                                        </span>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => handleDeleteDiplomacia(rel.id)}
+                                                        className="p-1.5 opacity-0 group-hover:opacity-100 text-red-500 hover:bg-red-500/10 rounded transition-all"
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="text-center py-8 border border-dashed border-white/10 rounded-lg text-neutral-600 text-[10px] font-black uppercase tracking-widest">
+                                                Isolamento Diplomático Total
+                                            </div>
                                         )}
                                     </div>
                                 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
  
 use App\Models\Base;
 use App\Models\Movement;
+use App\Models\AliancaDiplomacia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -37,6 +38,12 @@ class MapaController extends Controller
         $origemBase = Base::with('units.type')->find($selectedBaseId) 
             ?? Base::where('jogador_id', $jogadorId)->with('units.type')->first();
  
+        $jogador = Auth::user()->jogador;
+        $diplomacia = [];
+        if ($jogador->alianca_id) {
+            $diplomacia = AliancaDiplomacia::where('alianca_id', $jogador->alianca_id)->get();
+        }
+
         return Inertia::render('mapa', [
             'bases' => $bases,
             'x' => $x,
@@ -45,7 +52,10 @@ class MapaController extends Controller
             'origemBase' => $origemBase,
             'ataquesEnviados' => Movement::where('origin_id', $origemBase?->id)->where('status', 'moving')->get(),
             'ataquesRecebidos' => Movement::where('target_id', $origemBase?->id)->where('status', 'moving')->get(),
-            'gameConfig' => config('game')
+            'gameConfig' => config('game'),
+            'diplomacia' => $diplomacia,
+            'userAliancaId' => $jogador->alianca_id,
+            'general' => $jogador->general()->with('skills')->first()
         ]);
     }
 

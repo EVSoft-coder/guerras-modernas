@@ -29,9 +29,9 @@ class MovementService
     /**
      * Inicia um movimento militar ou logístico entre bases (Passo 3).
      */
-    public function sendTroops(Base $origin, Base $target, array $units, string $type = 'attack', array $cargo = []): Movement
+    public function sendTroops(Base $origin, Base $target, array $units, string $type = 'attack', array $cargo = [], ?int $generalId = null): Movement
     {
-        return DB::transaction(function() use ($origin, $target, $units, $type, $cargo) {
+        return DB::transaction(function() use ($origin, $target, $units, $type, $cargo, $generalId) {
             // Sincronizar recursos antes de qualquer validação tática
             app(ResourceService::class)->syncResources($origin);
 
@@ -80,6 +80,15 @@ class MovementService
             $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('movimento');
             $minSpeed *= $eventoMultiplicador;
 
+            // FASE 16: Aplicar Bónus de Logística do General (+5% VEL por nível)
+            if ($generalId) {
+                $general = \App\Models\General::with('skills')->find($generalId);
+                if ($general) {
+                    $logisticaLevel = $general->skills->where('skill_slug', 'logistica')->first()?->nivel ?? 0;
+                    $minSpeed *= (1 + ($logisticaLevel * 0.05));
+                }
+            }
+
             // 3. Calcular Tempo de Viagem (Passo 4 - MapService)
             $travelTimeSeconds = $this->mapService->calculateTravelTime($origin, $target, $minSpeed);
             
@@ -93,7 +102,8 @@ class MovementService
                 'departure_time' => $departure,
                 'arrival_time' => $arrival,
                 'status' => 'moving',
-                'type' => $type
+                'type' => $type,
+                'general_id' => $generalId
             ];
 
             // 4.1 Adicionar Carga (Transporte)
@@ -288,10 +298,32 @@ class MovementService
 
         $allDefUnits = array_merge($defUnitsFromBase, $defUnitsFromReinforcements);
 
-        // 3. EXECUTAR COMBATE (com bónus de pesquisa e muralha)
         $attackerPlayer = $originBase->jogador;
         $defenderPlayer = $targetBase->jogador;
-        $result = $this->combatService->resolveBattle($atkUnits, $allDefUnits, $attackerPlayer, $defenderPlayer, $targetBase);
+
+        // FASE 16: Identificar Generais presentes
+        $attackerGeneral = null;
+        if ($movement->general_id) {
+            $attackerGeneral = \App\Models\General::with('skills')->find($movement->general_id);
+        }
+
+        $defenderGeneral = $defenderPlayer->general()->with('skills')->where('base_id', $targetBase->id)->first();
+
+        $result = $this->combatService->resolveBattle($atkUnits, $allDefUnits, $attackerPlayer, $defenderPlayer, $targetBase, $attackerGeneral, $defenderGeneral);
+
+        // FASE 16: Atribuir XP ao General Atacante (se presente)
+        if ($attackerGeneral) {
+            $totalKills = collect($result['defender_units'])->sum('losses');
+            $xpGain = max(10, (int)($totalKills * 0.5)); // 0.5 XP por unidade morta, min 10
+            app(GeneralService::class)->addExperience($attackerGeneral, $xpGain);
+        }
+
+        // FASE 16: Atribuir XP ao General Defensor (se presente na base)
+        if ($defenderGeneral) {
+            $totalKills = collect($result['attacker_units'])->sum('losses');
+            $xpGain = max(10, (int)($totalKills * 0.5));
+            app(GeneralService::class)->addExperience($defenderGeneral, $xpGain);
+        }
 
         // Atualizar tropas defensoras (Base + Reforços)
         foreach ($result['defender_units'] as $unit) {
@@ -389,7 +421,8 @@ class MovementService
                 'arrival_time' => $returnArrival,
                 'loot_suprimentos' => $movement->loot_suprimentos,
                 'loot_combustivel' => $movement->loot_combustivel,
-                'loot_municoes'    => $movement->loot_municoes
+                'loot_municoes'    => $movement->loot_municoes,
+                'general_id'       => $movement->general_id
             ]);
 
             foreach ($movement->units as $mUnit) {
@@ -480,6 +513,15 @@ class MovementService
             $totalCapacity += ($unit['carry_capacity'] ?? 10) * $unit['quantity'];
         }
 
+        // FASE 16: Bónus de Saque do General (+10% por nível)
+        if ($movement->general_id) {
+            $general = \App\Models\General::with('skills')->find($movement->general_id);
+            if ($general) {
+                $saqueLevel = $general->skills->where('skill_slug', 'saque')->first()?->nivel ?? 0;
+                $totalCapacity *= (1 + ($saqueLevel * 0.10));
+            }
+        }
+
         $resources = $targetBase->recursos;
         if (!$resources || $totalCapacity <= 0) return [];
 
@@ -528,7 +570,8 @@ class MovementService
             'departure_time' => now(),
             'arrival_time' => $arrival,
             'status' => 'moving',
-            'type' => 'return'
+            'type' => 'return',
+            'general_id' => $originalMovement->general_id
         ], $loot);
 
         $returnMovement = Movement::create($data);

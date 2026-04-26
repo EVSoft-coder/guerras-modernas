@@ -11,17 +11,19 @@ interface AttackModalProps {
     origemBase: any;
     destinoBase: any;
     tropasDisponiveis: any[];
-    onEnviar: (params: { destino_id: number | null; destino_x?: number; destino_y?: number; tropas: Record<string, number>; tipo: string }) => void;
+    onEnviar: (params: { destino_id: number | null; destino_x?: number; destino_y?: number; tropas: Record<string, number>; tipo: string; general_id?: number | null }) => void;
     isSending: boolean;
     gameConfig: any;
     unitTypes?: any[];
+    general?: any;
 }
 
 export const AttackModal: React.FC<AttackModalProps> = ({ 
-    isOpen, onClose, origemBase, destinoBase, tropasDisponiveis, onEnviar, isSending, gameConfig, unitTypes 
+    isOpen, onClose, origemBase, destinoBase, tropasDisponiveis, onEnviar, isSending, gameConfig, unitTypes, general 
 }) => {
     const [selectedTropas, setSelectedTropas] = useState<Record<string, number>>({});
     const [missionType, setMissionType] = useState<string>('ataque');
+    const [mobilizarGeneral, setMobilizarGeneral] = useState<boolean>(false);
     const [cargo, setCargo] = useState<Record<string, number>>({
         suprimentos: 0,
         combustivel: 0,
@@ -41,6 +43,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
             setSelectedTropas(initial);
             setCargo({ suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0 });
             setMissionType('ataque');
+            setMobilizarGeneral(false);
         }
     }, [isOpen, tropasDisponiveis, unitTypes]);
 
@@ -209,6 +212,57 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                     {/* SUMÁRIO TÁCTICO E TIPO DE MISSÃO */}
                     <div className="p-6 bg-black/40 flex flex-col justify-between">
                         <div className="space-y-6">
+                            {/* GENERAL SELECTION */}
+                            {general && (
+                                <div 
+                                    onClick={() => setMobilizarGeneral(!mobilizarGeneral)}
+                                    className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                                        mobilizarGeneral 
+                                        ? 'bg-sky-500/20 border-sky-500/50' 
+                                        : 'bg-white/5 border-white/10 opacity-60 hover:opacity-100'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-lg ${mobilizarGeneral ? 'bg-sky-500 text-white' : 'bg-white/10 text-neutral-400'}`}>
+                                                <Award size={16} />
+                                            </div>
+                                            <div>
+                                                <div className="text-[10px] font-black uppercase text-white">{general.nome}</div>
+                                                <div className="text-[8px] font-bold text-sky-400 uppercase">Nível {general.nivel} - Alto Comando</div>
+                                            </div>
+                                        </div>
+                                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                                            mobilizarGeneral ? 'border-sky-500 bg-sky-500' : 'border-white/20'
+                                        }`}>
+                                            {mobilizarGeneral && <Zap size={10} className="text-white" />}
+                                        </div>
+                                    </div>
+                                    {mobilizarGeneral && (
+                                        <div className="mt-2 pt-2 border-t border-white/10">
+                                            <div className="text-[7px] text-sky-300 font-bold uppercase tracking-widest">Bónus Activos:</div>
+                                            <div className="grid grid-cols-2 gap-1 mt-1">
+                                                {general.skills.map((s: any) => {
+                                                    if (s.nivel <= 0) return null;
+                                                    const labels: any = {
+                                                        ofensiva: 'ATK',
+                                                        defensiva: 'DEF',
+                                                        logistica: 'VEL',
+                                                        saque: 'CARGA'
+                                                    };
+                                                    if (!labels[s.skill_slug]) return null;
+                                                    return (
+                                                        <div key={s.id} className="text-[7px] text-neutral-400">
+                                                            • {labels[s.skill_slug]}: +{s.nivel * (s.skill_slug === 'ofensiva' ? 3 : s.skill_slug === 'defensiva' ? 4 : s.skill_slug === 'logistica' ? 5 : 10)}%
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             <div>
                                 <h4 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-3">Protocolo de Operação</h4>
                                 <div className="grid grid-cols-3 gap-2">
@@ -313,6 +367,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                     destino_y: destinoBase?.coordenada_y, 
                                     tropas: selectedTropas, 
                                     tipo: missionType,
+                                    general_id: mobilizarGeneral ? general?.id : null,
                                     ...cargo
                                 })}
                             >

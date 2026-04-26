@@ -16,14 +16,31 @@ class RelatorioController extends Controller
     {
         $jogadorId = Auth::user()->jogador->id;
 
-        $relatorios = Relatorio::where('atacante_id', $jogadorId)
-            ->orWhere('defensor_id', $jogadorId)
+        $relatorios = Relatorio::where(function($q) use ($jogadorId) {
+                $q->where('atacante_id', $jogadorId)
+                  ->orWhere('defensor_id', $jogadorId);
+            })
             ->with(['atacante', 'defensor'])
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $aliancaId = Auth::user()->jogador->alianca_id;
+        $relatoriosAlianca = [];
+        if ($aliancaId) {
+            $relatoriosAlianca = Relatorio::where('partilhado_alianca', true)
+                ->whereHas('atacante', function($q) use ($aliancaId) {
+                    $q->where('alianca_id', $aliancaId);
+                })
+                ->where('atacante_id', '!=', $jogadorId)
+                ->where('defensor_id', '!=', $jogadorId)
+                ->with(['atacante', 'defensor'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+
         return Inertia::render('Relatorios/Index', [
-            'relatorios' => $relatorios
+            'relatorios' => $relatorios,
+            'relatoriosAlianca' => $relatoriosAlianca
         ]);
     }
 
@@ -54,9 +71,33 @@ class RelatorioController extends Controller
     public function show($id)
     {
         $relatorio = Relatorio::with(['atacante', 'defensor'])->findOrFail($id);
+        $jogador = Auth::user()->jogador;
+
+        // Verificar permissão: Dono, Alvo ou Aliança (se partilhado)
+        $podeVer = $relatorio->atacante_id === $jogador->id || 
+                   $relatorio->defensor_id === $jogador->id || 
+                   ($relatorio->partilhado_alianca && $relatorio->atacante->alianca_id === $jogador->alianca_id);
+
+        if (!$podeVer) abort(403);
         
         return Inertia::render('Relatorios/Show', [
             'relatorio' => $relatorio
         ]);
+    }
+
+    public function partilhar($id)
+    {
+        $relatorio = Relatorio::findOrFail($id);
+        $jogadorId = Auth::user()->jogador->id;
+
+        if ($relatorio->atacante_id !== $jogadorId && $relatorio->defensor_id !== $jogadorId) {
+            abort(403);
+        }
+
+        $relatorio->update([
+            'partilhado_alianca' => !$relatorio->partilhado_alianca
+        ]);
+
+        return back()->with('success', $relatorio->partilhado_alianca ? 'Relatório partilhado com a coligação.' : 'Partilha removida.');
     }
 }

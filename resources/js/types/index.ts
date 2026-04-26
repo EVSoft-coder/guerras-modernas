@@ -42,6 +42,24 @@ export interface User {
     [key: string]: unknown;
 }
 
+export interface GeneralSkill {
+    id: number;
+    general_id: number;
+    skill_slug: string;
+    nivel: number;
+}
+
+export interface General {
+    id: number;
+    jogador_id: number;
+    nome: string;
+    nivel: number;
+    xp: number;
+    pontos_skill: number;
+    avatar?: string;
+    skills: GeneralSkill[];
+}
+
 export interface Recurso {
     id: number;
     base_id: number;
@@ -133,4 +151,5 @@ export interface DashboardProps {
     };
     diplomaties: any[];
     myAllianceId?: number | null;
+    general?: General;
 }

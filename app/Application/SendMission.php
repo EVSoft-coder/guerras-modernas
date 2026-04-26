@@ -70,7 +70,7 @@ class SendMission
                     }
                 }
 
-                $this->movementService->sendTroops($baseOrigem, $baseDestino, $data['tropas'], $data['tipo'], $cargo);
+                $this->movementService->sendTroops($baseOrigem, $baseDestino, $data['tropas'], $data['tipo'], $cargo, $data['general_id'] ?? null);
             } else {
                 throw new \Exception("COORDENADAS: O comando militar exige identificação de estrutura alvo para mobilização.");
             }

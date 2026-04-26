@@ -85,23 +85,27 @@ Este documento traça o comando estratégico e o desenvolvimento técnico do sim
 - [x] **Comboios de Mantimentos**: Unidades para transporte de recursos. 🚛
 - [x] **Troca Interna**: Sistema de conversão rápida de recursos. 🔄
 
-### ⚔️ FASE 14: Profundidade do Motor de Batalha (EM CURSO)
-- [ ] **Sistema de Moral**: Penalização baseada na diferença de pontos. 📉
-- [ ] **Fator Sorte**: Variável aleatória de +/- 25% no combate. 🎲
-- [ ] **Bónus Noturno**: Dobro da defesa em horários de repouso. 🌙
-- [ ] **Especialização de Tropas**: Divisão Ofensiva/Defensiva clara. 🛡️🏹
+### ✅ FASE 14: Profundidade do Motor de Batalha (CONCLUÍDO)
+- [x] **Sistema de Moral**: Penalização baseada na diferença de pontos. 📉
+- [x] **Fator Sorte**: Variável aleatória de +/- 25% no combate. 🎲
+- [x] **Bónus Noturno**: Dobro da defesa em horários de repouso. 🌙
+- [x] **Especialização de Tropas**: Divisão Ofensiva/Defensiva clara. 🛡️🏹
 
-### 🛡️ FASE 15: Estrutura Governamental de Alianças
-- [ ] **Diplomacia Visual no Mapa**: Cores para Aliados/PNA/Inimigos. 🗺️
-- [ ] **Fórum Interno**: Sistema de discussão estruturado. 🗣️
-- [ ] **Shared Reports**: Publicação de relatórios para a coligação. 📑
+### ✅ FASE 15: Estrutura Governamental de Alianças (CONCLUÍDO)
+- [x] **Protocolos de Convite**: Sistema de recrutamento ativo pela liderança. 📨
+- [x] **Diplomacia Visual no Mapa**: Cores para Aliados/PNA/Inimigos. 🗺️
+- [x] **Fórum Interno**: Sistema de discussão estruturado. 🗣️
+- [x] **Shared Reports**: Publicação de relatórios para a coligação. 📑
 
-### 🎖️ FASE 16: Sistema de Herói (O General)
-- [ ] **O General**: Unidade única que sobe de nível e lidera exércitos. 👤
-- [ ] **Árvore de Skills**: Bónus passivos baseados na experiência. 🌳
-- [ ] **Arsenal**: Equipamentos táticos para o General. ⚔️
+### 🎖️ FASE 16: O General (Sistema de Herói) [CONCLUÍDO]
+- [x] Criação automática do General ao entrar no Dashboard.
+- [x] Sistema de Experiência (XP) e Níveis (Curva Exponencial).
+- [x] Árvore de Skills (Logística, Ofensiva, Defensiva, Saque, Recrutamento).
+- [x] Integração no Motor de Batalha (Bónus Reais em combate).
+- [x] Mobilização em Missões (O General viaja com as tropas).
+- [x] Interface de Gestão (Alto Comando) com visual premium.
 
-### 📊 FASE 17: Micro-Gestão de Império (QoL)
+### ⚔️ FASE 17: Arsenal do General (Equipamentos) [PRÓXIMA]
 - [ ] **Recrutamento em Massa**: Interface para todas as bases. 👥👥
 - [ ] **Templates de Construção**: Automatização de filas de espera. 🏗️
 - [ ] **Grupos de Bases**: Organização funcional de aldeias. 🗂️

@@ -60,92 +60,107 @@ return [
         'hq' => [
             'name' => 'Centro de Comando (HQ)',
             'cost' => ['suprimentos' => 500, 'combustivel' => 200, 'pessoal' => 20],
-            'time_base' => 15, // Reduzido (de 30)
-            'scaling' => 1.5
+            'time_base' => 15,
+            'scaling' => 1.5,
+            'description' => 'Centro nevrálgico de comando e controlo. Coordena todas as operações de engenharia e logística da base. Níveis superiores otimizam as equipas de construção, reduzindo drasticamente o tempo de conclusão de outros edifícios.'
         ],
         'muralha' => [
             'name' => 'Perímetro Defensivo (Muralha)',
             'cost' => ['suprimentos' => 400, 'municoes' => 200, 'pessoal' => 5],
-            'time_base' => 20, // Reduzido (de 45)
-            'scaling' => 1.3
+            'time_base' => 20,
+            'scaling' => 1.3,
+            'description' => 'Sistema de barreiras físicas e eletrónicas de última geração. Além da proteção física, fornece bónus táticos de visibilidade e cobertura, aumentando exponencialmente a eficácia defensiva da guarnição estacionada.'
         ],
         'mina_suprimentos' => [
-            'name' => 'Mina de Suprimentos',
+            'name' => 'Complexo de Logística (Mina)',
             'cost' => ['suprimentos' => 200, 'combustivel' => 50, 'pessoal' => 10],
-            'time_base' => 7, // Reduzido (de 15)
-            'scaling' => 1.2
+            'time_base' => 7,
+            'scaling' => 1.2,
+            'description' => 'Instalação dedicada à extração e processamento de mantimentos vitais. O coração da sustentabilidade da base, garantindo que o fluxo de suprimentos nunca pare.'
         ],
         'refinaria' => [
             'name' => 'Refinaria de Combustível',
             'cost' => ['suprimentos' => 300, 'municoes' => 100, 'pessoal' => 15],
-            'time_base' => 10, // Reduzido (de 20)
-            'scaling' => 1.2
+            'time_base' => 10,
+            'scaling' => 1.2,
+            'description' => 'Processa crude e gases químicos para alimentar a frota mecanizada e os geradores da base. Essencial para qualquer operação ofensiva de larga escala.'
         ],
         'fabrica_municoes' => [
-            'name' => 'Fábrica de Munições',
+            'name' => 'Complexo Industrial de Armas',
             'cost' => ['suprimentos' => 250, 'combustivel' => 100, 'pessoal' => 12],
-            'time_base' => 12, // Reduzido (de 25)
-            'scaling' => 1.2
+            'time_base' => 12,
+            'scaling' => 1.2,
+            'description' => 'Linha de produção automatizada de munições e explosivos. Níveis elevados permitem o abastecimento constante de unidades de artilharia e defesa antiaérea.'
         ],
         'mina_metal' => [
-            'name' => 'Mina de Metal',
+            'name' => 'Centro de Extração de Metais',
             'cost' => ['suprimentos' => 300, 'combustivel' => 100, 'pessoal' => 10],
-            'time_base' => 12, // Reduzido (de 25)
-            'scaling' => 1.3
+            'time_base' => 12,
+            'scaling' => 1.3,
+            'description' => 'Extrai minérios de alta densidade necessários para a blindagem de veículos e reforço de estruturas táticas.'
         ],
         'central_energia' => [
-            'name' => 'Central de Energia Solar',
+            'name' => 'Rede Elétrica e Fusão Solar',
             'cost' => ['suprimentos' => 200, 'pessoal' => 5],
-            'time_base' => 10, // Reduzido (de 20)
-            'scaling' => 1.1
+            'time_base' => 10,
+            'scaling' => 1.1,
+            'description' => 'Garante a estabilidade energética de toda a base. Sem energia, as produções automatizadas e os sistemas de radar sofrem penalizações severas.'
         ],
         'housing' => [
-            'name' => 'Complexo Residencial',
+            'name' => 'Complexo Habitacional',
             'cost' => ['suprimentos' => 150, 'pessoal' => 0],
-            'time_base' => 7, // Reduzido (de 15)
-            'scaling' => 1.1
+            'time_base' => 7,
+            'scaling' => 1.1,
+            'description' => 'Setores residenciais para o pessoal militar e civil. Determina o limite máximo de população que a base pode sustentar.'
         ],
         'posto_recrutamento' => [
-            'name' => 'Posto de Recrutamento',
+            'name' => 'Centro de Mobilização Civil',
             'cost' => ['suprimentos' => 400, 'combustivel' => 50, 'municoes' => 50, 'pessoal' => 5],
-            'time_base' => 20, // Reduzido (de 40)
-            'scaling' => 1.4
+            'time_base' => 20,
+            'scaling' => 1.4,
+            'description' => 'Coordena o recrutamento e treino básico de novos recrutas. Níveis superiores aumentam o fluxo de pessoal disponível para treinamento militar.'
         ],
         'quartel' => [
-            'name' => 'Quartel Regional',
+            'name' => 'Comando de Operações Terrestres',
             'cost' => ['suprimentos' => 600, 'combustivel' => 200, 'municoes' => 200, 'pessoal' => 20],
-            'time_base' => 30, // Reduzido (de 60)
-            'scaling' => 1.6
+            'time_base' => 30,
+            'scaling' => 1.6,
+            'description' => 'O núcleo da força militar terrestre. Permite o treino de infantaria especializada, veículos APC e os poderosos tanques de combate MBT.'
         ],
         'aerodromo' => [
-            'name' => 'Aeródromo Militar',
+            'name' => 'Base Aérea Tática',
             'cost' => ['suprimentos' => 1000, 'combustivel' => 800, 'municoes' => 500, 'pessoal' => 30],
-            'time_base' => 60, // Reduzido (de 120)
-            'scaling' => 1.8
+            'time_base' => 60,
+            'scaling' => 1.8,
+            'description' => 'Hangar e pista de descolagem para helicópteros de ataque e unidades de suporte aéreo. Fundamental para garantir a supremacia do espaço aéreo regional.'
         ],
         'radar_estrategico' => [
-            'name' => 'Radar de Longo Alcance',
+            'name' => 'Centro de Inteligência e Radar',
             'cost' => ['suprimentos' => 1500, 'combustivel' => 1200, 'municoes' => 300, 'pessoal' => 15],
-            'time_base' => 90, // Reduzido (de 180)
-            'scaling' => 1.7
+            'time_base' => 90,
+            'scaling' => 1.7,
+            'description' => 'Ouve as transmissões inimigas e varre o horizonte em busca de ameaças. Essencial para operações de espionagem e deteção antecipada de exércitos em movimento.'
         ],
         'centro_pesquisa' => [
-            'name' => 'Centro de Pesquisa & I&D',
+            'name' => 'Laboratórios de I&D Militar',
             'cost' => ['suprimentos' => 2000, 'combustivel' => 1000, 'municoes' => 1000, 'pessoal' => 40],
-            'time_base' => 120, // Reduzido (de 240)
-            'scaling' => 1.9
+            'time_base' => 120,
+            'scaling' => 1.9,
+            'description' => 'Onde o futuro da guerra é desenhado. Desbloqueia novas tecnologias, unidades avançadas e bónus de produção através de investigação científica.'
         ],
         'parlamento' => [
-            'name' => 'Parlamento & Diplomacia',
+            'name' => 'Chancelaria e Diplomacia',
             'cost' => ['suprimentos' => 3000, 'metal' => 2000, 'pessoal' => 10, 'energia' => 500],
-            'time_base' => 150, // Reduzido (de 300)
-            'scaling' => 2.5
+            'time_base' => 150,
+            'scaling' => 2.5,
+            'description' => 'Representa o poder político do jogador. Essencial para o treino de Líderes Políticos e para a gestão de pactos internacionais com outras alianças.'
         ],
         'mercado' => [
-            'name' => 'Hub de Comércio & Logística',
+            'name' => 'Hub de Comércio e Logística',
             'cost' => ['suprimentos' => 1000, 'combustivel' => 500, 'metal' => 200, 'pessoal' => 5],
             'time_base' => 45,
-            'scaling' => 1.5
+            'scaling' => 1.5,
+            'description' => 'Facilita a troca de recursos entre bases aliadas e permite o acesso ao mercado global para conversão de excedentes.'
         ],
     ],
 

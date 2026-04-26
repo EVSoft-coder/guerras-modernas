@@ -4,27 +4,33 @@ Este ficheiro regista a implementação detalhada de cada funcionalidade, servin
 
 ---
 
-## [V3.9.5] - 2026-04-26
-### 🛡️ Auditoria & Balanceamento Crítico
-- **Economia**: Triplicada a produção base de todos os recursos para aumentar a relevância estratégica dos edifícios.
-- **Sincronização**: Alinhamento das fórmulas matemáticas entre Backend e Frontend (SSOT).
-- **Performance**: Otimização do `ResourceBar` (Smooth Tick @ 250ms) para eliminar *forced reflows*.
-- **Fixes**: Correção de asset 404 no Posto de Recrutamento (`recrutamento_v1.png`).
-- **Docs**: Criação do [AUDIT_REPORT.md](./AUDIT_REPORT.md).
+## [V4.5.0] - 2026-04-26
+### 🎖️ Fase 16: O General (Sistema de Herói)
+- **O General**: Unidade única que sobe de nível e lidera exércitos.
+- **Sistema de Progressão**: Ganhos de XP via combate e árvore de skills táticas (Logística, Ofensiva, Defensiva, Saque).
+- **Integração em Missões**: O herói agora viaja fisicamente com as tropas, concedendo bónus reais de velocidade e força.
+- **Alto Comando**: Interface premium para gestão de atributos e renomeação do herói.
 
 ---
 
-## [V3.9.0] - Histórico Recente
-- Implementação da Inbox (Mensagens Privadas).
-- Sistema de Relatórios de Combate integrados.
-- Switcher de múltiplas bases no Dashboard.
-- Chat de Aliança em tempo real.
-- Mapa Tático 2.0 com detecção de cores.
+## [V4.4.0] - 2026-04-26
+### 🛡️ Fase 15: Estrutura Governamental de Alianças
+- **Diplomacia**: Radar Geopolítico no Mapa Tático (Cores dinâmicas para Aliados/PNA/Inimigos).
+- **Fórum Interno**: Central de Assembleia da Coligação com tópicos estruturados e threads persistentes.
+- **Shared Reports**: Sistema de partilha de inteligência militar (Relatórios de Combate visíveis p/ toda a aliança).
+- **Gestão Tática**: Interface de liderança para formalizar pactos e declarações de hostilidade.
 
 ---
 
-## 🛠️ Em Desenvolvimento: [V4.0.0] - FASE 12
-### 🛰️ Missão: Espionagem & Reconhecimento
-- [ ] Criação da Unidade: **Drone de Reconhecimento**.
-- [ ] Lógica de Missão: **Espionagem Tática**.
-- [ ] Relatórios de Inteligência (Revelação de edifícios/tropas).
+## [V4.0.0] - Concluído
+- Missões de Espionagem & Reconhecimento.
+- Centro Logístico (Mercado) & Troca de Recursos.
+- Motor de Combate Avançado (Moral, Sorte, Bónus Noturno).
+
+---
+
+## 🛠️ Próxima Missão: [V4.6.0] - FASE 17
+### ⚔️ Arsenal do General
+- [ ] Implementação de Equipamentos Táticos.
+- [ ] Sistema de Drops de Batalha.
+- [ ] Crafting de Peças Militares.

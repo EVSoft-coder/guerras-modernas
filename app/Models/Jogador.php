@@ -59,6 +59,11 @@ class Jogador extends Authenticatable
         return $this->hasMany(PedidoAlianca::class, 'jogador_id');
     }
 
+    public function general()
+    {
+        return $this->hasOne(General::class, 'jogador_id');
+    }
+
     /**
      * Verifica se o jogador ainda está sob proteção de novato.
      */
