@@ -32,11 +32,11 @@ return [
 
     'production' => [
         'resource_buildings' => [
-            'mina_suprimentos' => ['base' => 480, 'factor' => 1.32], // ~10/m lvl 1, ~130/m lvl 10
-            'refinaria'        => ['base' => 400, 'factor' => 1.32], // ~8/m lvl 1, ~110/m lvl 10
-            'fabrica_municoes' => ['base' => 360, 'factor' => 1.32], // ~7/m lvl 1, ~100/m lvl 10
-            'mina_metal'       => ['base' => 440, 'factor' => 1.32], // ~9/m lvl 1, ~120/m lvl 10
-            'central_energia'  => ['base' => 600, 'factor' => 1.32], // ~13/m lvl 1, ~160/m lvl 10
+            'mina_suprimentos' => ['base' => 600, 'factor' => 1.4], // ~14/m lvl 1, ~289/m lvl 10
+            'refinaria'        => ['base' => 480, 'factor' => 1.4], // ~11/m lvl 1, ~231/m lvl 10
+            'fabrica_municoes' => ['base' => 420, 'factor' => 1.4], // ~10/m lvl 1, ~202/m lvl 10
+            'mina_metal'       => ['base' => 540, 'factor' => 1.4], // ~13/m lvl 1, ~260/m lvl 10
+            'central_energia'  => ['base' => 720, 'factor' => 1.4], // ~17/m lvl 1, ~347/m lvl 10
             'housing'          => ['base' => 100, 'factor' => 1.2],  // População: ~160 lvl 1, ~600 lvl 10
         ],
     ],

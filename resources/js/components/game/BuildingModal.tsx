@@ -84,11 +84,12 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     }) : true;
 
     const tipoLower = building.buildingType?.toLowerCase();
-    const isMilitary = ['quartel', 'aerodromo'].includes(tipoLower);
+    const isMilitary = ['quartel', 'aerodromo', 'radar_estrategico'].includes(tipoLower);
     const availableUnits = isMilitary ? (unitTypes || []).filter(ut => {
         const k = ut.name.toLowerCase();
-        if (tipoLower === 'quartel') return ['infantaria', 'blindado', 'tanque', 'agente', 'politico'].some(s => k.includes(s));
-        if (tipoLower === 'aerodromo') return ['helicoptero', 'drone'].some(s => k.includes(s));
+        if (tipoLower === 'quartel') return ['infantaria', 'blindado', 'tanque', 'politico', 'sniper', 'engenheiro'].some(s => k.includes(s));
+        if (tipoLower === 'aerodromo') return ['helicoptero'].some(s => k.includes(s));
+        if (tipoLower === 'radar_estrategico') return ['agente', 'espiao', 'drone'].some(s => k.includes(s));
         return false;
     }) : [];
 

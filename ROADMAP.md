@@ -52,23 +52,17 @@ Este documento traça o comando estratégico e o desenvolvimento técnico do sim
 - [x] Sincronização instantânea de recursos após ordens. 💰
 - [x] Interface de Batalha Industrial com tabelas detalhadas. 📊
 
----
-
 ## ✅ FASE 9: Expansão Territorial & Conquistas (CONCLUÍDO)
 - [x] **Sistema de Conquista**: Capturar as bases dos outros jogadores. 🏁
 - [x] Colonização de slots vazios no mapa. 📍
 - [x] Múltiplas bases por jogador (Switch de Bases no Dashboard). 🏰🏰🏰
 - [x] Visual Overhaul: Village View & High Contrast. 🏛️✨
 
----
-
 ## ✅ FASE 10: Comunicação & Inteligência em Tempo Real (CONCLUÍDO)
 - [x] **Chat da Aliança**: Canal seguro com polling e alertas sonoros. 💬🔊
 - [x] **Feed de Notícias de Guerra**: Atividades globais visíveis no Dashboard. 🌍
 - [x] **HUD Industrial**: Visualização de produção p/min (+X p/min). 💰
 - [x] **Mapa Tático 2.0**: Diferenciação de cores para aliados/inimigos. 🗺️🛰️
-
----
 
 ## ✅ FASE 11: Correio Militar & Relatórios Táticos (CONCLUÍDO)
 - [x] **Caixa de Entrada (Inbox)**: Mensagens privadas entre jogadores. 📨
@@ -78,19 +72,47 @@ Este documento traça o comando estratégico e o desenvolvimento técnico do sim
 
 ---
 
-## 🚀 PRÓXIMAS MISSÕES (EM CURSO)
+## 🚀 PRÓXIMAS MISSÕES (DOMÍNIO TOTAL)
 
-### 🛰️ FASE 12: Espionagem & Informação Avançada
-- [ ] **Unidade de Espionagem**: Recrutar espiões para missões de reconhecimento. 🕵️‍♂️
-- [ ] **Relatórios de Espionagem**: Nível de edifícios e tropas estacionadas no inimigo. 📋
-- [ ] **Radar Anti-Ataque**: Detecção de ataques em curso com aviso sonoro no Dashboard. 📡
-- [ ] **Quadro de Honra Mundial**: Log global de conquistas de bases e destruições massivas. 🏆
-- [ ] **Migrar Páginas de Aliança para React**: Atualizar views Blade antigas de alianças para a nova stack. ⚛️
+### 🛰️ FASE 12: Espionagem & Informação Avançada (EM CURSO)
+- [x] Missões de Espionagem: Implementar o tipo de missão "Espionagem" no AttackModal. 🕵️
+- [x] Relatórios de Espionagem: Revelar nível de edifícios e tropas estacionadas. 📋
+- [ ] **Radar Anti-Ataque**: Detecção de ataques em curso com aviso sonoro. 📡
+- [ ] **Quadro de Honra Mundial**: Log global de conquistas massivas. 🏆
+
+### 📦 FASE 13: Logística Avançada & Comércio
+- [ ] **Centro Logístico (Mercado)**: Edifício para troca de recursos entre jogadores. 💹
+- [ ] **Comboios de Mantimentos**: Unidades para transporte de recursos. 🚛
+- [ ] **Troca Interna**: Sistema de conversão rápida de recursos. 🔄
+
+### ⚔️ FASE 14: Profundidade do Motor de Batalha
+- [ ] **Sistema de Moral**: Penalização baseada na diferença de pontos. 📉
+- [ ] **Fator Sorte**: Variável aleatória de +/- 25% no combate. 🎲
+- [ ] **Bónus Noturno**: Dobro da defesa em horários de repouso. 🌙
+- [ ] **Especialização de Tropas**: Divisão Ofensiva/Defensiva clara. 🛡️🏹
+
+### 🛡️ FASE 15: Estrutura Governamental de Alianças
+- [ ] **Diplomacia Visual no Mapa**: Cores para Aliados/PNA/Inimigos. 🗺️
+- [ ] **Fórum Interno**: Sistema de discussão estruturado. 🗣️
+- [ ] **Shared Reports**: Publicação de relatórios para a coligação. 📑
+
+### 🎖️ FASE 16: Sistema de Herói (O General)
+- [ ] **O General**: Unidade única que sobe de nível e lidera exércitos. 👤
+- [ ] **Árvore de Skills**: Bónus passivos baseados na experiência. 🌳
+- [ ] **Arsenal**: Equipamentos táticos para o General. ⚔️
+
+### 📊 FASE 17: Micro-Gestão de Império (QoL)
+- [ ] **Recrutamento em Massa**: Interface para todas as bases. 👥👥
+- [ ] **Templates de Construção**: Automatização de filas de espera. 🏗️
+- [ ] **Grupos de Bases**: Organização funcional de aldeias. 🗂️
+
+### 📱 FASE 18: Modernização & Mobile First
+- [ ] **PWA & Push Notifications**: Alertas nativos no telemóvel. 📲
+- [ ] **Estatísticas Dinâmicas**: Gráficos de evolução histórica. 📈
+- [ ] **World Map 3.0**: Renderização massiva via WebGL. 🗺️⚡
 
 ---
 
 ## 🛠️ Notas de Engenharia
-- **Stack Backend**: Laravel 11.x / 12, MySQL/MariaDB.
-- **Stack Frontend**: React 18, TypeScript, Inertia.js, Tailwind CSS v4.
-- **Workflow**: Git Push origin master -> Servidor executa `/mw-deploy-refresh`.
-- **Estado**: **ESTÁVEL & OPERACIONAL EM PRODUÇÃO** 🎖️
+- **Stack**: Laravel 12 + React 18 + TypeScript + Inertia.js.
+- **Estado**: **OPERACIONAL & EXPANDINDO** 🎖️
