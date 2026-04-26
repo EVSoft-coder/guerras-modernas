@@ -185,7 +185,14 @@ class UnitQueueService
             ->get();
 
         $now = GameClock::now();
-        $currentTime = $startTime ? Carbon::parse($startTime) : $now;
+        
+        // Garantir que currentTime é um objeto Carbon
+        if ($startTime) {
+            $currentTime = ($startTime instanceof Carbon) ? $startTime->copy() : Carbon::parse($startTime);
+        } else {
+            $currentTime = $now->copy();
+        }
+        
         $pos = 1;
 
         foreach ($items as $item) {
