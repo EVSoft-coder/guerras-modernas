@@ -60,41 +60,53 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                     </div>
                 )}
 
-                {/* Tactical HUD Label */}
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:-bottom-12">
-                    {/* Header Pill: Building Name */}
-                    <div className={`px-4 py-1 rounded-t-xl border-x border-t backdrop-blur-md transition-colors duration-500 ${
-                        isConstructing ? 'bg-orange-500/10 border-orange-500/30' : 'bg-black/90 border-white/10 group-hover:border-cyan-500/30'
-                    }`}>
-                        <span className="text-[8px] text-neutral-500 font-black uppercase tracking-[0.4em] leading-none whitespace-nowrap">
-                            {type.replace('_', ' ')}
-                        </span>
-                    </div>
-
-                    {/* Main Container: Level & Status */}
-                    <div className={`px-6 py-3 rounded-b-2xl border-x border-b backdrop-blur-2xl shadow-[0_30px_70px_rgba(0,0,0,1)] flex flex-col items-center min-w-[130px] transition-all duration-500 ${
+                {/* Tactical HUD Context Modal (Hover) */}
+                <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:-bottom-16 z-50">
+                    <div className={`relative px-8 py-5 rounded-2xl border-2 backdrop-blur-3xl shadow-[0_50px_120px_rgba(0,0,0,1)] flex flex-col items-center min-w-[220px] transition-all duration-500 ${
                         isConstructing 
-                            ? 'bg-orange-500/20 border-orange-500/40' 
-                            : 'bg-black/95 border-white/10 group-hover:border-cyan-500/50'
+                            ? 'bg-orange-500/30 border-orange-500/50' 
+                            : 'bg-[#020406]/95 border-cyan-500/30 group-hover:border-cyan-500/60'
                     }`}>
-                        <div className="relative">
-                            <span className="text-[20px] font-black font-military-mono leading-none tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                                LVL_{level.toString().padStart(2, '0')}
+                        {/* Corner Accents (Military Style) */}
+                        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white/20 rounded-tl-lg" />
+                        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white/20 rounded-tr-lg" />
+                        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white/20 rounded-bl-lg" />
+                        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white/20 rounded-br-lg" />
+
+                        {/* System Identifier */}
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className={`w-2 h-2 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500 shadow-[0_0_10px_#06b6d4]'}`} />
+                            <span className="text-[9px] text-neutral-500 font-black uppercase tracking-[0.5em] leading-none">
+                                SEC_ID: {type.substring(0, 3).toUpperCase()}
                             </span>
-                            <div className={`absolute -right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500 shadow-[0_0_10px_#06b6d4]'}`} />
+                        </div>
+
+                        {/* Building Name (Large & Legible) */}
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-1 filter drop-shadow-lg">
+                            {type.replace('_', ' ')}
+                        </h3>
+
+                        <div className="w-full h-[1px] bg-white/10 my-2" />
+
+                        {/* Level (Extra Large) */}
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mb-1">NÍVEL</span>
+                            <span className="text-[32px] font-black font-military-mono leading-none tracking-tighter text-cyan-400 drop-shadow-[0_0_20px_rgba(6,182,212,0.6)]">
+                                {level.toString().padStart(2, '0')}
+                            </span>
                         </div>
 
                         {isConstructing && (
-                            <div className="mt-2 flex items-center gap-1.5 py-1 px-2 bg-orange-500/10 rounded border border-orange-500/20">
-                                <span className="text-[7px] font-black font-military-mono leading-none tracking-[0.2em] text-orange-400">
-                                    OPER_CONSTRUCTION
+                            <div className="mt-4 py-2 px-5 bg-orange-500/20 rounded-xl border border-orange-500/40 animate-pulse">
+                                <span className="text-[10px] font-black font-military-mono leading-none tracking-[0.2em] text-orange-400">
+                                    UPGRADING_SYSTEM...
                                 </span>
                             </div>
                         )}
                     </div>
                     
                     {/* Tactical Connector */}
-                    <div className={`w-[1px] h-6 bg-gradient-to-b from-white/20 to-transparent transition-all duration-500 group-hover:h-8 ${
+                    <div className={`w-[1px] h-8 bg-gradient-to-b from-white/20 to-transparent transition-all duration-500 group-hover:h-12 ${
                         isConstructing ? 'from-orange-500/40' : 'group-hover:from-cyan-500/60'
                     }`} />
                 </div>
