@@ -22,14 +22,14 @@ const ResourceItem = ({ label, value, icon, max, color, ratePerSecond, customVal
     useEffect(() => {
         if (!ratePerSecond || ratePerSecond === 0) return;
         
-        // Tick Suave de 100ms
-        const tickIncrement = ratePerSecond / 10;
+        // Tick Suave de 250ms (Otimizado para performance)
+        const tickIncrement = ratePerSecond / 4;
         const interval = setInterval(() => {
             setSimulatedValue((prevValue: number) => {
                 const nextValue = prevValue + tickIncrement;
                 return nextValue >= max ? max : nextValue;
             });
-        }, 100);
+        }, 250);
 
         return () => clearInterval(interval);
     }, [ratePerSecond, max]);
@@ -73,7 +73,7 @@ const ResourceItem = ({ label, value, icon, max, color, ratePerSecond, customVal
                         </div>
                         
                         {ratePerSecond !== 0 && (
-                            <div className={`text-[8px] font-military-mono font-black px-1.5 py-1 rounded bg-black/60 border shadow-[0_0_15px_rgba(0,0,0,0.5)] ${ratePerSecond > 0 ? 'text-emerald-500 border-emerald-500/20' : 'text-red-500 border-red-500/20'}`}>
+                            <div className={`text-[10px] font-military-mono font-black px-2 py-1.5 rounded-xl bg-black/60 border shadow-[0_0_20px_rgba(0,0,0,0.8)] ${ratePerSecond > 0 ? 'text-emerald-400 border-emerald-500/30' : 'text-red-400 border-red-500/30'}`}>
                                 {ratePerSecond > 0 ? '+' : ''}{Math.floor(Math.abs(ratePerSecond * 60)).toLocaleString()}/m
                             </div>
                         )}

@@ -24,33 +24,33 @@ return [
     'production' => [
         'mina_suprimentos' => [
             'resource' => 'suprimentos',
-            'base' => 240, 
-            'factor' => 1.28,
+            'base' => 480, 
+            'factor' => 1.32,
         ],
         'refinaria' => [
             'resource' => 'combustivel',
-            'base' => 200, 
-            'factor' => 1.28,
+            'base' => 400, 
+            'factor' => 1.32,
         ],
         'fabrica_municoes' => [
             'resource' => 'municoes',
-            'base' => 180, 
-            'factor' => 1.28,
+            'base' => 360, 
+            'factor' => 1.32,
         ],
         'mina_metal' => [
             'resource' => 'metal',
-            'base' => 220, 
-            'factor' => 1.28,
+            'base' => 440, 
+            'factor' => 1.32,
         ],
         'central_energia' => [
             'resource' => 'energia',
-            'base' => 300, 
-            'factor' => 1.28,
+            'base' => 600, 
+            'factor' => 1.32,
         ],
         'housing' => [
             'resource' => 'pessoal',
-            'base' => 50, 
-            'factor' => 1.15,
+            'base' => 100, 
+            'factor' => 1.2,
         ],
     ],
     /**

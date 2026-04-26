@@ -16,10 +16,10 @@ export const getEvolutionLevelAsset = (lvl: number): number => {
 
 /**
  * Calcula o custo de um edifício para o próximo nível (Exponencial).
- * FÓRMULA: Base * (1.6 ^ LevelAtual)
+ * FÓRMULA: Base * (Factor ^ LevelAtual)
  */
-export const calculateBuildingCost = (baseAmount: number, currentLevel: number): number => {
-    return Math.floor(baseAmount * Math.pow(1.6, currentLevel));
+export const calculateBuildingCost = (baseAmount: number, currentLevel: number, factor: number = 1.4): number => {
+    return Math.floor(baseAmount * Math.pow(factor, currentLevel));
 };
 
 /**
@@ -33,11 +33,11 @@ export const calculateConstructionTime = (timeBase: number, currentLevel: number
 
 /**
  * Calcula a produção por hora de um edifício de recursos (Exponencial).
- * FÓRMULA: base * (level ^ 1.2)
+ * FÓRMULA CENTRALIZADA: base * (factor ^ level)
  */
-export const calculateResourceProduction = (baseProd: number, level: number): number => {
+export const calculateResourceProduction = (baseProd: number, level: number, factor: number = 1.32): number => {
     if (level <= 0) return 0;
-    return Math.floor(baseProd * Math.pow(level, 1.2));
+    return Math.floor(baseProd * Math.pow(factor, level));
 };
 
 /**

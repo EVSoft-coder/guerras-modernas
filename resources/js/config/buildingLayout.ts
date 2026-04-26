@@ -147,7 +147,7 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout & { id: string }> = 
         "w": 80,
         "h": 80,
         "anchor": "center",
-        "assetName": "quartel_v1.png"
+        "assetName": "recrutamento_v1.png"
     }
 };
 
