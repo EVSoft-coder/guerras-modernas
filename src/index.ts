@@ -31,6 +31,7 @@ gameLoop.start();
 uiManager.initialize();
 
  
+/* 
 // 3. MOBILIZAÃ‡ÃƒO JOGADOR (UNIDADE ALFA + VILA)
 const playerUnit = entityManager.createEntity();
 entityManager.addComponent(playerUnit, new PlayerComponent());
@@ -154,6 +155,7 @@ rebelCoords.forEach((coord, index) => {
     
     Logger.info(`[BOOT] Rebel Cell ${index + 1} (${coord.name}) deployed at ${coord.x}:${coord.y}.`);
 });
+*/
 
 stateManager.setState(GameState.PLAYING);
 

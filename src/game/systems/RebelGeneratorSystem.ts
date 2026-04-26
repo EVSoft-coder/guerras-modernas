@@ -18,16 +18,18 @@ export class RebelGeneratorSystem implements GameSystem {
     private mapSize: number = 100; // Escala unificada 100x100
 
     public init(): void {
-        Logger.info('[SYSTEM] RebelGeneratorSystem - Evolution Protocols ACTIVE.');
+        Logger.info('[SYSTEM] RebelGeneratorSystem - Evolution Protocols STANDBY (Manual DB Sync Only).');
         this.lastSpawnTime = Date.now();
         this.lastProgressionTime = Date.now();
         this.lastRegenTime = Date.now();
 
-        // ECS_MANDATE: Inicialização garantida de células insurrectas.
+        // ECS_MANDATE: Inicialização de células insurrectas DESATIVADA (usar DB do Laravel).
+        /*
         for (let i = 0; i < 10; i++) {
             this.spawnRebel();
         }
-        Logger.info(`[SYSTEM] RebelGeneratorSystem - ${entityManager.getEntitiesWith(['Village']).length} total sectors identified in geology.`);
+        */
+        Logger.info(`[SYSTEM] RebelGeneratorSystem - Standby mode. Listening for tactical uplink.`);
     }
 
     private spawnManualRebel(x: number, y: number): void {
