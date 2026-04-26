@@ -94,6 +94,12 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
                     .building-node:hover {
                         filter: brightness(1.2) drop-shadow(0 0 10px rgba(0, 255, 255, 0.2)) !important;
                     }
+                    /* REMOVER NÍVEIS DA VISÃO DA BASE (NUKE) */
+                    .building-node div[class*="LVL"], 
+                    .building-node span[class*="LVL"],
+                    .building-node .level-badge {
+                        display: none !important;
+                    }
                 `}</style>
 
                 <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>

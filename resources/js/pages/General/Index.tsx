@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import AppLayout from '@/Layouts/AppLayout';
+import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
 import { Shield, Sword, Truck, Target, Zap, Trophy, Edit2, Check, Star, Award } from 'lucide-react';
-import { useToasts } from '@/components/ui/Toast';
+import { useToasts } from '@/components/game/ToastProvider';
 
 interface GeneralProps {
     general: any;
