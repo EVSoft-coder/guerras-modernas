@@ -64,6 +64,11 @@ class Base extends Model
         return $this->hasMany(Edificio::class);
     }
 
+    public function groups()
+    {
+        return $this->belongsToMany(BaseGroup::class, 'base_group_assignments');
+    }
+
     public function buildingQueue()
     {
         return $this->hasMany(BuildingQueue::class)->orderBy('position');

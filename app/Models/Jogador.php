@@ -64,6 +64,16 @@ class Jogador extends Authenticatable
         return $this->hasOne(General::class, 'jogador_id');
     }
 
+    public function baseGroups()
+    {
+        return $this->hasMany(BaseGroup::class, 'jogador_id');
+    }
+
+    public function constructionTemplates()
+    {
+        return $this->hasMany(ConstructionTemplate::class, 'jogador_id');
+    }
+
     /**
      * Verifica se o jogador ainda está sob proteção de novato.
      */

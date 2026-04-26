@@ -25,6 +25,11 @@ const mainNavItems: NavItem[] = [
         icon: Shield,
     },
     {
+        title: 'ALTO COMANDO',
+        url: '/command-center',
+        icon: LayoutGrid,
+    },
+    {
         title: 'MENSAGENS',
         url: '/mensagens',
         icon: Mail,

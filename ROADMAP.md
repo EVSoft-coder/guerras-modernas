@@ -105,10 +105,10 @@ Este documento traça o comando estratégico e o desenvolvimento técnico do sim
 - [x] Mobilização em Missões (O General viaja com as tropas).
 - [x] Interface de Gestão (Alto Comando) com visual premium.
 
-### ⚔️ FASE 17: Arsenal do General (Equipamentos) [PRÓXIMA]
-- [ ] **Recrutamento em Massa**: Interface para todas as bases. 👥👥
-- [ ] **Templates de Construção**: Automatização de filas de espera. 🏗️
-- [ ] **Grupos de Bases**: Organização funcional de aldeias. 🗂️
+### ✅ FASE 17: Arsenal do General (Equipamentos) [CONCLUÍDO]
+- [x] **Recrutamento em Massa**: Interface para todas as bases. 👥👥
+- [x] **Templates de Construção**: Automatização de filas de espera. 🏗️
+- [x] **Grupos de Bases**: Organização funcional de aldeias. 🗂️
 
 ### 📱 FASE 18: Modernização & Mobile First
 - [ ] **PWA & Push Notifications**: Alertas nativos no telemóvel. 📲

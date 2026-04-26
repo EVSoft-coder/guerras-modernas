@@ -140,6 +140,28 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/accept/{id}', [App\Http\Controllers\MarketController::class, 'accept'])->name('accept');
         Route::post('/cancel/{id}', [App\Http\Controllers\MarketController::class, 'cancel'])->name('cancel');
     });
+
+    // 🎖️ FASE 17: Alto Comando (Gestão de Massa)
+    Route::prefix('command-center')->name('command.')->group(function () {
+        Route::get('/', [App\Http\Controllers\MassCommandController::class, 'index'])->name('index');
+        Route::post('/recruit', [App\Http\Controllers\MassCommandController::class, 'recruitMass'])->name('recruit');
+        Route::post('/templates/apply', [App\Http\Controllers\MassCommandController::class, 'applyTemplate'])->name('templates.apply');
+        
+        // Gestão de Grupos
+        Route::prefix('groups')->name('groups.')->group(function () {
+            Route::post('/', [App\Http\Controllers\BaseGroupController::class, 'store'])->name('store');
+            Route::put('/{id}', [App\Http\Controllers\BaseGroupController::class, 'update'])->name('update');
+            Route::delete('/{id}', [App\Http\Controllers\BaseGroupController::class, 'destroy'])->name('destroy');
+            Route::post('/assign', [App\Http\Controllers\BaseGroupController::class, 'assign'])->name('assign');
+        });
+
+        // Gestão de Templates
+        Route::prefix('templates')->name('templates.')->group(function () {
+            Route::post('/', [App\Http\Controllers\TemplateController::class, 'store'])->name('store');
+            Route::put('/{id}', [App\Http\Controllers\TemplateController::class, 'update'])->name('update');
+            Route::delete('/{id}', [App\Http\Controllers\TemplateController::class, 'destroy'])->name('destroy');
+        });
+    });
 });
 
 // Admin

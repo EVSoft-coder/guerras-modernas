@@ -151,7 +151,7 @@ export default function Index({ topicos, alianca }: { topicos: Topico[], alianca
                     </div>
                 </div>
             </div>
-        </motion.div>
+        </AppLayout>
     );
 }
 
