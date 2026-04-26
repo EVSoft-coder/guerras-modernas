@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Shield, ShieldPlus, Users, Search, Target, MessageSquare, Send, Check, X, LogOut } from 'lucide-react';
+import { Shield, ShieldPlus, Users, Search, Target, MessageSquare, Send, Check, X, LogOut, Map as MapIcon } from 'lucide-react';
 import { useToasts } from '@/components/game/ToastProvider';
 
 interface AliancaProps {
