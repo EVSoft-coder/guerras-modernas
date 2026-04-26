@@ -24,7 +24,7 @@ class GeneralController extends Controller
         return Inertia::render('General/Index', [
             'general' => $general,
             'skillsDisponiveis' => $this->generalService->getAvailableSkills(),
-            'xpNextLevel' => $this->generalService->getXpForNextLevel($general->nivel),
+            'xpNextLevel' => $general ? $this->generalService->getXpForNextLevel($general->nivel) : 0,
         ]);
     }
 

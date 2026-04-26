@@ -60,32 +60,43 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                     </div>
                 )}
 
-                {/* Tactical HUD Label (High Contrast & No Overlap) */}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-y-4 z-50">
-                    <div className="bg-black border border-white/20 rounded shadow-[0_20px_50px_rgba(0,0,0,1)] min-w-[150px]">
-                        {/* Area 1: Nome */}
-                        <div className="px-4 py-2 border-b border-white/10 text-center">
-                            <span className="text-[13px] font-black text-white uppercase tracking-wider block">
+                {/* Tactical HUD Label (Premium Design) */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-y-4 z-[100]">
+                    <div className="relative bg-[#050608]/95 border border-white/10 rounded-lg shadow-[0_30px_70px_rgba(0,0,0,1)] backdrop-blur-2xl flex items-stretch overflow-hidden min-w-[240px]">
+                        {/* Status Accent Line */}
+                        <div className={`absolute top-0 left-0 w-full h-[1px] ${isConstructing ? 'bg-orange-500/50' : 'bg-cyan-500/30'}`} />
+                        
+                        {/* Left Side: Type Info */}
+                        <div className="flex-1 px-6 py-4 flex flex-col justify-center border-r border-white/5 bg-white/[0.02]">
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <div className={`w-1.5 h-1.5 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500'}`} />
+                                <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.4em] leading-none">ESTRUTURA</span>
+                            </div>
+                            <span className="text-xl font-black text-white uppercase tracking-tighter leading-none">
                                 {type.replace('_', ' ')}
                             </span>
                         </div>
                         
-                        {/* Area 2: Nível */}
-                        <div className="px-4 py-2 flex items-center justify-center gap-3 bg-white/[0.03]">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">NÍVEL</span>
-                            <span className="text-2xl font-black font-military-mono text-zinc-300">
-                                {level.toString().padStart(2, '0')}
-                            </span>
+                        {/* Right Side: Operational Level */}
+                        <div className="bg-white/[0.05] px-8 py-4 flex flex-col items-center justify-center min-w-[110px]">
+                            <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.3em] mb-2 leading-none text-center w-full">STATUS</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-[10px] font-black text-neutral-600 uppercase">LV</span>
+                                <span className="text-3xl font-black font-military-mono text-zinc-200 leading-none tracking-tighter">
+                                    {level.toString().padStart(2, '0')}
+                                </span>
+                            </div>
                         </div>
 
+                        {/* Progress Bar (Construction Mode) */}
                         {isConstructing && (
-                            <div className="bg-orange-500/10 py-1 border-t border-orange-500/20 text-center">
-                                <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest animate-pulse">
-                                    CONSTRUINDO
-                                </span>
+                            <div className="absolute bottom-0 left-0 w-full h-[2px] bg-orange-950">
+                                <div className="h-full bg-orange-500 animate-pulse w-[40%]" />
                             </div>
                         )}
                     </div>
+                    {/* Tactical Perspective Connector */}
+                    <div className={`w-[1px] h-8 bg-gradient-to-b from-white/20 to-transparent ${isConstructing ? 'from-orange-500/40' : 'from-cyan-500/30'}`} />
                 </div>
 
                 {/* Efeito de Obra Hi-Tech */}
