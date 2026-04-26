@@ -60,8 +60,8 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                     </div>
                 )}
 
-                {/* Tactical HUD Label (Premium Design) */}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-y-4 z-[100]">
+                {/* Tactical HUD Label (Premium Design - Repositioned Above) */}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:-translate-y-6 z-[100]">
                     <div className="relative bg-[#050608]/95 border border-white/10 rounded-lg shadow-[0_30px_70px_rgba(0,0,0,1)] backdrop-blur-2xl flex items-stretch overflow-hidden min-w-[240px]">
                         {/* Status Accent Line */}
                         <div className={`absolute top-0 left-0 w-full h-[1px] ${isConstructing ? 'bg-orange-500/50' : 'bg-cyan-500/30'}`} />

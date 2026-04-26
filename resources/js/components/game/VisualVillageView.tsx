@@ -52,7 +52,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
     };
 
     return (
-        <div ref={containerRef} className="w-full flex flex-col items-center py-6 lg:py-12 bg-[#050608] overflow-hidden">
+        <div ref={containerRef} className="w-full flex flex-col items-center py-6 lg:py-12 bg-[#050608]">
             <div 
                 id="VillageCanvas"
                 className="village-root shadow-[0_0_80px_rgba(0,0,0,0.8)] border border-gray-900/50"
