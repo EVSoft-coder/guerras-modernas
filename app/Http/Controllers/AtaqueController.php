@@ -56,6 +56,11 @@ class AtaqueController extends Controller
                 return response()->json(['status' => 'success', 'message' => "ORDEM DE MARCHA: Operação tática iniciada com sucesso."]);
             }
             return redirect()->back()->with('success', "ORDEM DE MARCHA: Operação tática iniciada com sucesso.");
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+             if ($request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => "ESTRUTURA INEXISTENTE: A base de destino (ID: ".$data['destino_id'].") não foi encontrada no mapa tático."], 422);
+            }
+            return redirect()->back()->withErrors(['error' => "Base não encontrada."]);
         } catch (\Exception $e) {
             if ($request->wantsJson()) {
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
