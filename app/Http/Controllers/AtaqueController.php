@@ -29,7 +29,7 @@ class AtaqueController extends Controller
     {
         $data = $request->validate([
             'origem_id' => 'required|exists:bases,id',
-            'destino_id' => 'nullable|exists:bases,id',
+            'destino_id' => 'nullable', // Validação manual abaixo para maior flexibilidade
             'destino_x' => 'nullable|integer',
             'destino_y' => 'nullable|integer',
             'tropas' => 'required|array',
@@ -42,6 +42,13 @@ class AtaqueController extends Controller
             'pessoal' => 'nullable|numeric',
             'general_id' => 'nullable|exists:generais,id',
         ]);
+
+        // Normalizar destino_id (evitar "0" ou strings vazias)
+        if (empty($data['destino_id']) || $data['destino_id'] == 0) {
+            $data['destino_id'] = null;
+        }
+
+        \Illuminate\Support\Facades\Log::info('[ATAQUE_DEBUG] Dados Recebidos:', $data);
 
         try {
             $this->sendMission->execute(Auth::user(), $data);
