@@ -63,7 +63,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
                     margin: '0 auto',
                     borderRadius: '12px',
                     backgroundColor: '#0a0c10',
-                    overflow: 'hidden',
+                    overflow: 'visible',
                     transform: `scale(${scale})`,
                     transformOrigin: 'top center',
                     marginBottom: `-${600 * (1 - scale)}px`
@@ -79,7 +79,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
                         height: 600px;
                         margin: 0 auto;
                         box-sizing: border-box;
-                        overflow: hidden;
+                        overflow: visible;
                     }
                     .village-root * {
                         box-sizing: border-box;
