@@ -61,33 +61,40 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                 )}
 
                 {/* Tactical HUD Label */}
-                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:-bottom-8">
-                    <div className={`px-4 py-2 rounded-lg border backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col items-center min-w-[110px] transition-all duration-500 ${
+                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:-bottom-12">
+                    {/* Header Pill: Building Name */}
+                    <div className={`px-4 py-1 rounded-t-xl border-x border-t backdrop-blur-md transition-colors duration-500 ${
+                        isConstructing ? 'bg-orange-500/10 border-orange-500/30' : 'bg-black/90 border-white/10 group-hover:border-cyan-500/30'
+                    }`}>
+                        <span className="text-[8px] text-neutral-500 font-black uppercase tracking-[0.4em] leading-none whitespace-nowrap">
+                            {type.replace('_', ' ')}
+                        </span>
+                    </div>
+
+                    {/* Main Container: Level & Status */}
+                    <div className={`px-6 py-3 rounded-b-2xl border-x border-b backdrop-blur-2xl shadow-[0_30px_70px_rgba(0,0,0,1)] flex flex-col items-center min-w-[130px] transition-all duration-500 ${
                         isConstructing 
                             ? 'bg-orange-500/20 border-orange-500/40' 
-                            : 'bg-black/80 border-white/10 group-hover:border-cyan-500/40'
+                            : 'bg-black/95 border-white/10 group-hover:border-cyan-500/50'
                     }`}>
-                        <div className="flex items-center gap-2 mb-1.5">
-                            <div className={`w-1.5 h-1.5 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500 shadow-[0_0_10px_#06b6d4]'}`} />
-                            <span className="text-[8px] text-neutral-400 font-black uppercase tracking-[0.3em] leading-none whitespace-nowrap">
-                                {type.replace('_', ' ')}
-                            </span>
-                        </div>
-                        
-                        <div className="flex items-center gap-3">
-                             <span className="text-[13px] font-black font-military-mono leading-none tracking-tighter text-white">
+                        <div className="relative">
+                            <span className="text-[20px] font-black font-military-mono leading-none tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                                 LVL_{level.toString().padStart(2, '0')}
                             </span>
-                            {isConstructing && (
-                                <span className="text-[8px] font-black font-military-mono leading-none tracking-tighter text-orange-400 animate-pulse">
-                                    CONSTR_MODE
-                                </span>
-                            )}
+                            <div className={`absolute -right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500 shadow-[0_0_10px_#06b6d4]'}`} />
                         </div>
+
+                        {isConstructing && (
+                            <div className="mt-2 flex items-center gap-1.5 py-1 px-2 bg-orange-500/10 rounded border border-orange-500/20">
+                                <span className="text-[7px] font-black font-military-mono leading-none tracking-[0.2em] text-orange-400">
+                                    OPER_CONSTRUCTION
+                                </span>
+                            </div>
+                        )}
                     </div>
                     
-                    {/* Perspective Line */}
-                    <div className={`w-[1px] h-4 bg-gradient-to-b from-white/20 to-transparent transition-all duration-500 group-hover:h-6 ${
+                    {/* Tactical Connector */}
+                    <div className={`w-[1px] h-6 bg-gradient-to-b from-white/20 to-transparent transition-all duration-500 group-hover:h-8 ${
                         isConstructing ? 'from-orange-500/40' : 'group-hover:from-cyan-500/60'
                     }`} />
                 </div>
