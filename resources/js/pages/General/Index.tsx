@@ -17,6 +17,27 @@ const breadcrumbs = [
 
 export default function Index({ general, skillsDisponiveis, xpNextLevel }: GeneralProps) {
     const { addToast } = useToasts();
+    
+    if (!general) {
+        return (
+            <AppLayout breadcrumbs={breadcrumbs}>
+                <Head title="Alto Comando - O General" />
+                <div className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-6 animate-in fade-in zoom-in duration-500">
+                    <div className="p-8 bg-zinc-900 border border-white/10 rounded-full shadow-2xl">
+                        <Award className="text-white/10" size={80} />
+                    </div>
+                    <div className="space-y-2">
+                        <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Nenhum General Ativo</h1>
+                        <p className="text-neutral-500 max-w-md mx-auto leading-relaxed">
+                            O Alto Comando ainda não designou um oficial superior para liderar as tuas tropas. 
+                            Continua a expandir a tua influência para recrutar o teu primeiro líder.
+                        </p>
+                    </div>
+                </div>
+            </AppLayout>
+        );
+    }
+
     const [isEditingName, setIsEditingName] = useState(false);
     const [newName, setNewName] = useState(general.nome);
 
