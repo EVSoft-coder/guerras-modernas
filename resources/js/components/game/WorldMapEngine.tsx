@@ -5,6 +5,7 @@ interface WorldMapEngineProps {
     center: { x: number, y: number };
     zoom: number;
     bases: any[];
+    gameEntities: any[];
     playerBase?: Base;
     onSectorClick: (x: number, y: number, base?: any) => void;
     myAllianceId?: number | null;
@@ -17,6 +18,7 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
     center, 
     zoom, 
     bases, 
+    gameEntities = [],
     playerBase, 
     onSectorClick,
     myAllianceId,
@@ -95,13 +97,50 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
         }
 
         // 2. Renderizar Linhas de Marcha (Troop Movements)
-        bases.forEach(base => {
-            // Se a base tem tropas em movimento (simulação via entities do globalState)
-            // Por agora, vamos usar as entidades que vêm do GameState
-        });
+        gameEntities.forEach(e => {
+            const sx = e.originX * TILE_SIZE + TILE_SIZE / 2;
+            const sy = e.originY * TILE_SIZE + TILE_SIZE / 2;
+            const tx = e.targetX * TILE_SIZE + TILE_SIZE / 2;
+            const ty = e.targetY * TILE_SIZE + TILE_SIZE / 2;
+            const cx = e.x * TILE_SIZE + TILE_SIZE / 2;
+            const cy = e.y * TILE_SIZE + TILE_SIZE / 2;
 
-        // NOTA: Para um visual 3.0 real, vamos desenhar vetores de ataque
-        // Se houver ataques ativos no sistema, desenhamos linhas pulsantes
+            // Linha Trajetória (Sutil)
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgba(251, 146, 60, 0.2)';
+            ctx.moveTo(sx, sy);
+            ctx.lineTo(tx, ty);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Vetor de Movimento (Ativo)
+            ctx.beginPath();
+            ctx.strokeStyle = '#fb923c';
+            ctx.lineWidth = 2 / zoom;
+            ctx.moveTo(sx, sy);
+            ctx.lineTo(cx, cy);
+            ctx.stroke();
+
+            // Ícone da Unidade (Triângulo Tático)
+            ctx.save();
+            ctx.translate(cx, cy);
+            const angle = Math.atan2(ty - sy, tx - sx);
+            ctx.rotate(angle);
+            
+            ctx.fillStyle = '#fb923c';
+            ctx.beginPath();
+            ctx.moveTo(10 / zoom, 0);
+            ctx.lineTo(-6 / zoom, -6 / zoom);
+            ctx.lineTo(-6 / zoom, 6 / zoom);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Glow do vetor
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#fb923c';
+            ctx.restore();
+        });
         
         // 3. Renderizar Bases
         bases.forEach(base => {
@@ -163,7 +202,7 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
         ctx.fillStyle = grd;
         ctx.fillRect(0, 0, width, height);
 
-    }, [center, zoom, offset, bases, playerBase, myAllianceId, diplomaties]);
+    }, [center, zoom, offset, bases, gameEntities, playerBase, myAllianceId, diplomaties]);
 
     useEffect(() => {
         const frame = requestAnimationFrame(draw);

@@ -10,6 +10,7 @@ import { StrategyHUD } from './StrategyHUD';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { eventBus, Events } from '@src/core/EventBus';
 import { WorldMapEngine } from './WorldMapEngine';
+import { WorldMiniMap } from './WorldMiniMap';
 import { Base } from '@/types';
 
 interface WorldMapViewProps {
@@ -120,6 +121,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, d
                     center={center}
                     zoom={zoom}
                     bases={allBases}
+                    gameEntities={gameEntities}
                     playerBase={playerBase}
                     myAllianceId={myAllianceId}
                     diplomaties={diplomaties}
@@ -186,6 +188,13 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, d
                     {isSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
                 </button>
             </div>
+
+            {/* MINI-MAPA (GLOBAL VIEW) */}
+            <WorldMiniMap 
+                center={center}
+                bases={allBases}
+                onJump={(x, y) => jumpTo(x, y)}
+            />
 
             {/* SECTOR INFOBAR (BOTTOM HUD) */}
             <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full px-20 max-w-5xl pointer-events-none">
