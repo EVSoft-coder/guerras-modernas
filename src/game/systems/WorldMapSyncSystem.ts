@@ -76,12 +76,12 @@ export class WorldMapSyncSystem implements GameSystem {
                 if (!entityManager.hasComponent(entityId, 'Village')) {
                     entityManager.createEntity(entityId);
                     entityManager.addComponent(entityId, new VillageComponent(
-                        b.ownerId,
+                        b.jogador_id,
                         b.id, // dbId
                         b.nivel || 1,
                         undefined, // Resources will be updated via specific sync if needed
                         b.nome,
-                        !b.ownerId,
+                        !b.jogador_id,
                         b.loyalty || 100,
                         b.is_protected,
                         b.protection_until ? new Date(b.protection_until).getTime() : 0,
@@ -92,7 +92,7 @@ export class WorldMapSyncSystem implements GameSystem {
                     // Update existing village components
                     const village = entityManager.getComponent<VillageComponent>(entityId, 'Village');
                     if (village) {
-                        village.ownerId = b.ownerId;
+                        village.ownerId = b.jogador_id;
                         village.loyalty = b.loyalty || 100;
                         village.isProtected = b.is_protected;
                         village.protectionUntil = b.protection_until ? new Date(b.protection_until).getTime() : 0;

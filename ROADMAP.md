@@ -110,9 +110,9 @@ Este documento traça o comando estratégico e o desenvolvimento técnico do sim
 - [x] **Templates de Construção**: Automatização de filas de espera. 🏗️
 - [x] **Grupos de Bases**: Organização funcional de aldeias. 🗂️
 
-### 🚀 FASE 18: Modernização & World Map 3.0 (EM PROGRESSO)
-- [ ] **World Map 3.0**: Renderização massiva via WebGL/Canvas com zoom tático. 🗺️⚡
-- [ ] **Estatísticas Dinâmicas**: Gráficos de evolução histórica e dashboards analíticos. 📈
+### ✅ FASE 18: Modernização & World Map 3.0 (CONCLUÍDO)
+- [x] **World Map 3.0**: Renderização massiva via WebGL/Canvas com zoom tático. 🗺️⚡
+- [x] **Estatísticas Dinâmicas**: Gráficos de evolução histórica e dashboards analíticos. 📈
 - [ ] **PWA & Push Notifications**: Alertas nativos no telemóvel (fase final). 📲
 
 ---

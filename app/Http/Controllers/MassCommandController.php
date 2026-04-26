@@ -54,11 +54,26 @@ class MassCommandController extends Controller
             ];
         });
 
+        $playerHistory = \App\Models\PlayerStat::where('jogador_id', $jogador->id)
+            ->orderBy('recorded_at', 'asc')
+            ->take(14)
+            ->get();
+
+        $allianceHistory = [];
+        if ($jogador->alianca_id) {
+            $allianceHistory = \App\Models\AllianceStat::where('alianca_id', $jogador->alianca_id)
+                ->orderBy('recorded_at', 'asc')
+                ->take(14)
+                ->get();
+        }
+
         return Inertia::render('CommandCenter/Index', [
             'bases' => $basesData,
             'unitTypes' => UnitType::all(),
             'groups' => BaseGroup::where('jogador_id', $jogador->id)->get(),
-            'templates' => ConstructionTemplate::where('jogador_id', $jogador->id)->with('steps')->get()
+            'templates' => ConstructionTemplate::where('jogador_id', $jogador->id)->with('steps')->get(),
+            'playerHistory' => $playerHistory,
+            'allianceHistory' => $allianceHistory
         ]);
     }
 

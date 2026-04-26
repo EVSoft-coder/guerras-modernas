@@ -13,6 +13,7 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\ManualController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UnitRecruitmentController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ForumController;
 
 /*
@@ -61,6 +62,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/{id}/partilhar', [RelatorioController::class, 'partilhar'])->name('partilhar');
         });
         Route::get('/mensagens', [ChatController::class, 'pessoais'])->name('mensagens.index');
+        Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     });
 
     // 2. AÇÕES CRÍTICAS (Rate Limit Elevado para Jogabilidade - PASSO 5)

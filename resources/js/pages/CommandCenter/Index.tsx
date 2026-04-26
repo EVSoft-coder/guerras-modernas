@@ -13,8 +13,15 @@ import {
     Save, 
     Play, 
     ChevronRight,
-    Search
+    Search,
+    TrendingUp,
+    Activity,
+    Target as TargetIcon
 } from 'lucide-react';
+import { 
+    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, 
+    AreaChart, Area, BarChart, Bar, Legend 
+} from 'recharts';
 import { toast } from 'sonner';
 
 interface BaseData {
@@ -54,8 +61,10 @@ export default function CommandCenter(props: {
     unitTypes: UnitType[];
     groups: Group[];
     templates: Template[];
+    playerHistory: any[];
+    allianceHistory: any[];
 }) {
-    const [activeTab, setActiveTab] = useState<'overview' | 'recruit' | 'templates' | 'groups'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'recruit' | 'templates' | 'groups' | 'intel'>('overview');
     const [filterGroup, setFilterGroup] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -181,6 +190,12 @@ export default function CommandCenter(props: {
                             icon={<Tags className="w-4 h-4" />}
                             label="Grupos"
                         />
+                        <TabButton 
+                            active={activeTab === 'intel' as any} 
+                            onClick={() => setActiveTab('intel' as any)}
+                            icon={<Search className="w-4 h-4" />}
+                            label="Intel"
+                        />
                     </div>
                 </div>
 
@@ -256,6 +271,13 @@ export default function CommandCenter(props: {
                             <GroupsPanel 
                                 bases={props.bases}
                                 groups={props.groups}
+                            />
+                        )}
+
+                        {activeTab === 'intel' && (
+                            <IntelPanel 
+                                playerHistory={props.playerHistory}
+                                allianceHistory={props.allianceHistory}
                             />
                         )}
                     </motion.div>
@@ -519,6 +541,81 @@ function GroupsPanel({ bases, groups }: { bases: BaseData[]; groups: Group[] }) 
                             </div>
                         </div>
                     ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function IntelPanel({ playerHistory, allianceHistory }: { playerHistory: any[], allianceHistory: any[] }) {
+    const hasData = playerHistory.length > 0;
+    
+    const chartData = hasData ? playerHistory.map(d => ({
+        ...d,
+        date: new Date(d.recorded_at).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })
+    })) : [
+        { date: '20 Abr', pontos: 1200, total_units: 500, attack_power: 300, defense_power: 400 },
+        { date: '21 Abr', pontos: 1500, total_units: 600, attack_power: 450, defense_power: 550 },
+        { date: '22 Abr', pontos: 1800, total_units: 750, attack_power: 600, defense_power: 700 },
+        { date: '23 Abr', pontos: 2200, total_units: 900, attack_power: 850, defense_power: 950 },
+        { date: '24 Abr', pontos: 2800, total_units: 1100, attack_power: 1200, defense_power: 1300 },
+        { date: '25 Abr', pontos: 3500, total_units: 1400, attack_power: 1600, defense_power: 1700 },
+        { date: '26 Abr', pontos: 4200, total_units: 1800, attack_power: 2100, defense_power: 2200 },
+    ];
+
+    return (
+        <div className="p-6 space-y-8">
+            <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Activity className="w-6 h-6 text-cyan-400" />
+                    INTELIGÊNCIA ESTRATÉGICA
+                </h3>
+                {!hasData && (
+                    <span className="text-[10px] bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full border border-amber-500/20 font-bold uppercase tracking-widest">
+                        Modo Simulação: Aguardando Primeiro Snapshot
+                    </span>
+                )}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
+                    <h4 className="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-cyan-500" />
+                        Evolução de Pontos
+                    </h4>
+                    <div className="h-[250px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={chartData}>
+                                <defs>
+                                    <linearGradient id="colorPoints" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
+                                <ChartTooltip contentStyle={{ backgroundColor: '#000', border: '1px solid #333' }} />
+                                <Area type="monotone" dataKey="pontos" stroke="#06b6d4" fillOpacity={1} fill="url(#colorPoints)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
+                    <h4 className="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest flex items-center gap-2">
+                        <TargetIcon className="w-4 h-4 text-rose-500" />
+                        Efetivos Mobilizados
+                    </h4>
+                    <div className="h-[250px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={chartData}>
+                                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
+                                <ChartTooltip contentStyle={{ backgroundColor: '#000', border: '1px solid #333' }} />
+                                <Bar dataKey="total_units" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
             </div>
         </div>
