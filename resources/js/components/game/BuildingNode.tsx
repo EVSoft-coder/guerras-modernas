@@ -20,7 +20,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
             initial={{ opacity: 0, scale: 0.8, x: '-50%', y: '-50%' }}
             animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
             whileHover={{ scale: 1.05 }}
-            className="absolute cursor-pointer group building-node"
+            className="absolute cursor-pointer group building-node overflow-visible"
             style={{
                 left: `${layout.x}px`,
                 top: `${layout.y}px`,
@@ -32,7 +32,7 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
             }}
             onClick={onClick}
         >
-            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'visible' }}>
                 {!isInvalid ? (
                     <div className="relative w-full h-full">
                         <TransparentImage 
@@ -59,9 +59,9 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                         <span className="text-[7px] text-red-500 font-black uppercase tracking-[0.2em] font-military-mono">Signal_Lost</span>
                     </div>
                 )}
-
+ 
                 {/* Tactical HUD Label (Premium Design - Repositioned Above) */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:-translate-y-6 z-[100]">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:-translate-y-6 z-[999]">
                     <div className="relative bg-[#050608]/95 border border-white/10 rounded-lg shadow-[0_30px_70px_rgba(0,0,0,1)] backdrop-blur-2xl flex items-stretch overflow-hidden min-w-[240px]">
                         {/* Status Accent Line */}
                         <div className={`absolute top-0 left-0 w-full h-[1px] ${isConstructing ? 'bg-orange-500/50' : 'bg-cyan-500/30'}`} />

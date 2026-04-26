@@ -72,7 +72,6 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
                 {/* ... estilos e terreno ... */}
                 <style>{`
                     .village-root {
-                        all: initial;
                         position: relative;
                         display: block;
                         width: 800px;
@@ -80,13 +79,6 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
                         margin: 0 auto;
                         box-sizing: border-box;
                         overflow: visible;
-                    }
-                    .village-root * {
-                        box-sizing: border-box;
-                        background: transparent !important;
-                    }
-                    .village-root div {
-                        position: absolute;
                     }
                     .village-root .building-node {
                         pointer-events: auto;
