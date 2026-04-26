@@ -139,17 +139,21 @@ export const GarrisonPanel: React.FC<GarrisonPanelProps> = ({
                 <div className="absolute top-0 right-4 w-[1px] h-full bg-white/[0.02] hidden md:block" />
                 
                 <AnimatePresence mode="wait">
-                    <motion.div
-                        key={activeTab}
-                        initial={{ opacity: 0, x: 20, filter: 'blur(10px)' }}
-                        animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, x: -20, filter: 'blur(10px)' }}
-                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                        {activeTab === 'local' && renderUnitList(tropas, 'local')}
-                        {activeTab === 'received' && renderUnitList(reinforcements, 'received')}
-                        {activeTab === 'sent' && renderUnitList(stationedOutside, 'sent')}
-                    </motion.div>
+                    {activeTab === 'local' && (
+                        <motion.div key="local" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+                            {renderUnitList(tropas, 'local')}
+                        </motion.div>
+                    )}
+                    {activeTab === 'received' && (
+                        <motion.div key="received" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+                            {renderUnitList(reinforcements, 'received')}
+                        </motion.div>
+                    )}
+                    {activeTab === 'sent' && (
+                        <motion.div key="sent" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+                            {renderUnitList(stationedOutside, 'sent')}
+                        </motion.div>
+                    )}
                 </AnimatePresence>
 
                 <div className="mt-8 pt-5 border-t border-white/5 flex justify-between items-center">

@@ -64,12 +64,12 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         const resourceColors: Record<string, string> = { 'suprimentos': 'text-sky-400', 'combustivel': 'text-orange-400', 'municoes': 'text-red-400', 'pessoal': 'text-emerald-400' };
 
         return (
-            <div key={resourceType} className={`flex items-center justify-between bg-black/40 p-3.5 rounded-2xl border ${hasEnough ? 'border-white/5' : 'border-red-500/30'} group transition-all hover:bg-white/[0.02]`}>
+            <div key={resourceType} className={`flex items-center justify-between bg-black/40 p-4 rounded-3xl border ${hasEnough ? 'border-white/5' : 'border-red-500/30'} group transition-all hover:bg-white/[0.02]`}>
                 <div className="flex items-center gap-3">
                     <span className="text-sm grayscale group-hover:grayscale-0 transition-all">{resourceIcons[resourceType] || '💎'}</span>
-                    <span className="text-[10px] uppercase text-neutral-500 font-black tracking-widest">{resourceType}</span>
+                    <span className="text-[9px] uppercase text-neutral-500 font-black tracking-[0.2em]">{resourceType}</span>
                 </div>
-                <div className={`text-sm font-mono font-black ${hasEnough ? resourceColors[resourceType] : 'text-red-500'}`}>
+                <div className={`text-xs font-military-mono font-black ${hasEnough ? resourceColors[resourceType] : 'text-red-500'}`}>
                     {totalCost.toLocaleString()}
                 </div>
             </div>
@@ -132,186 +132,215 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent showClose={false} className="max-w-4xl bg-[#020406]/90 border-white/5 text-white overflow-hidden backdrop-blur-3xl p-0 rounded-[3rem] shadow-[0_0_120px_rgba(0,0,0,1)] flex flex-col md:flex-row h-[90vh] md:h-auto border">
-                {/* BOTÃO FECHAR CUSTOMIZADO (PREMIUM) */}
-                <button 
-                    onClick={onClose}
-                    className="absolute top-8 right-8 z-50 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/50 rounded-full transition-all group active:scale-90"
-                >
-                    <X size={20} className="text-neutral-500 group-hover:text-white transition-colors" />
-                </button>
-
-                {/* LEFT BLOCK: VISUAL INTERFACE */}
-                <div className="w-full md:w-[45%] bg-black/40 relative flex flex-col items-center justify-center p-12 border-b md:border-b-0 md:border-r border-white/5 overflow-hidden">
-                    <div className="absolute inset-0 scanline-effect opacity-[0.05]" />
-                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-                    
-                    {/* STATUS RING */}
-                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full border border-dashed transition-all duration-1000 ${isBuilt ? 'border-sky-500/10 animate-[spin_30s_linear_infinite]' : 'border-orange-500/10 animate-pulse'}`} />
-                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[22rem] h-[22rem] rounded-full border border-white/5`} />
-                    
-                    <Badge className={`absolute top-10 left-10 ${isBuilt ? 'bg-sky-500/10 text-sky-400 border-sky-500/20 shadow-[0_0_15px_rgba(14,165,233,0.1)]' : 'bg-orange-500/10 text-orange-400 border-orange-500/20'} font-black px-6 py-3 rounded-2xl text-[9px] tracking-[0.3em] uppercase flex items-center gap-3 backdrop-blur-2xl`}>
-                        <div className={`w-2 h-2 rounded-full animate-pulse ${isBuilt ? 'bg-sky-500 shadow-[0_0_10px_#0ea5e9]' : 'bg-orange-500 shadow-[0_0_10px_#f97316]'}`} />
-                        {isBuilt ? 'STATUS_OPERACIONAL' : 'ASSINATURA_PENDENTE'}
-                    </Badge>
-
-                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8, ease: "circOut" }} className="relative z-10 group cursor-crosshair">
-                        <div className={`absolute inset-0 blur-[100px] opacity-10 group-hover:opacity-30 transition-all duration-1000 ${isBuilt ? 'bg-sky-500' : 'bg-orange-500'}`} />
-                        <img 
-                            src={currentImage} 
-                            className="w-72 h-72 md:w-96 md:h-96 object-contain relative z-10 drop-shadow-[0_0_50px_rgba(0,0,0,0.5)] group-hover:scale-105 transition-transform duration-1000 ease-out" 
-                            alt={config.name}
-                            onError={() => setUsePlaceholder(true)}
-                        />
-                    </motion.div>
-
-                    <div className="mt-16 w-full space-y-6 z-10 text-center">
-                        <div className="flex flex-col items-center">
-                            <span className="text-[8px] font-black text-neutral-600 uppercase tracking-[0.6em] mb-2">Auth_Level_Signature</span>
-                            <div className="text-8xl font-black text-white italic tracking-tighter leading-none font-military-mono relative">
-                                <span className="absolute -inset-4 bg-white/5 blur-2xl rounded-full opacity-50" />
-                                {(building.nivel || 0).toString().padStart(2, '0')}
+            <DialogContent className="max-w-7xl h-[90vh] p-0 bg-transparent border-none overflow-hidden flex flex-col pointer-events-auto shadow-none">
+                {/* Global Backdrop */}
+                <div className="absolute inset-0 bg-[#050608]/95 backdrop-blur-3xl z-0 rounded-[3rem] border border-white/10" />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent z-0 pointer-events-none rounded-[3rem]" />
+                
+                {/* Premium Header */}
+                <div className="relative z-10 px-10 py-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+                    <div className="flex items-center gap-8">
+                        <div className={`p-5 rounded-[2rem] border-2 backdrop-blur-xl ${isBuilt ? 'bg-sky-500/10 border-sky-500/30 text-sky-400' : 'bg-orange-500/10 border-orange-500/30 text-orange-400'}`}>
+                            {isBuilt ? <Shield size={32} /> : <Activity size={32} />}
+                        </div>
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-4 mb-2">
+                                <h2 className="text-4xl font-black uppercase text-white tracking-tighter leading-none">
+                                    {config.name}
+                                </h2>
+                                <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
+                                    NÍVEL_{building.nivel?.toString().padStart(2, '0')}
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-600 flex items-center gap-2">
+                                    <div className={`w-1.5 h-1.5 rounded-full ${isBuilt ? 'bg-sky-500' : 'bg-orange-500'}`} />
+                                    {isBuilt ? 'Setor Operacional Ativo' : 'Pendente de Mobilização'}
+                                </span>
+                                <div className="w-1 h-1 bg-white/10 rounded-full" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-600">Protocolo_{tipoLower}_v3.9</span>
                             </div>
                         </div>
-                        <div className="flex gap-1.5 justify-center">
-                            {[1,2,3,4,5,6,7,8,9,10,11,12].map(i => <div key={i} className={`h-1 rounded-full transition-all duration-700 ${i <= (building.nivel % 12 || 0) ? 'w-5 bg-sky-500 shadow-[0_0_8px_#0ea5e9]' : 'w-1.5 bg-white/5'}`} />)}
-                        </div>
                     </div>
+                    
+                    <button onClick={onClose} className="p-4 hover:bg-white/5 rounded-3xl transition-all border border-transparent hover:border-white/10 group">
+                        <X className="text-neutral-500 group-hover:text-white" size={32} />
+                    </button>
                 </div>
 
-                <div className="flex-1 p-10 md:p-14 flex flex-col justify-between bg-gradient-to-br from-black/20 via-transparent to-transparent relative">
-                    <div className="space-y-12 overflow-y-auto pr-6 custom-scrollbar max-h-[60vh]">
-                        <header className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="p-2.5 bg-sky-500/10 rounded-2xl border border-sky-500/20 shadow-[0_0_20px_rgba(14,165,233,0.1)]"><Cpu size={18} className="text-sky-500" /></div>
-                                <span className="text-[9px] font-black text-sky-500/40 uppercase tracking-[0.5em] font-military-mono">Protocolo_{tipoLower}_v3.9</span>
-                            </div>
-                            <DialogTitle className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-white leading-none">{config.name}</DialogTitle>
+                <div className="relative z-10 flex-1 overflow-hidden flex">
+                    {/* Left Column: Visual & Intel */}
+                    <div className="w-[450px] border-r border-white/5 p-12 space-y-12 overflow-y-auto custom-scrollbar bg-black/20">
+                        <div className="relative aspect-square rounded-[3.5rem] overflow-hidden border border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.9)] group/img">
+                            <img 
+                                src={currentImage} 
+                                className={`w-full h-full object-cover transition-all duration-1000 group-hover/img:scale-110 ${isBuilt ? '' : 'grayscale contrast-125 opacity-40'}`}
+                                onError={() => setUsePlaceholder(true)}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
                             
-                            <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 space-y-6">
-                                <div className="grid grid-cols-2 gap-8 relative">
-                                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1px] h-10 bg-white/10 hidden md:block" />
-                                    
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-sky-500" />
-                                            <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.3em]">Status_Atual</span>
-                                        </div>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-2xl font-black text-white font-military-mono">LVL</span>
-                                            <span className="text-3xl font-black text-sky-400 font-military-mono">{(building.nivel || 0).toString().padStart(2, '0')}</span>
-                                        </div>
-                                        <div className="text-[11px] font-black text-sky-500/60 uppercase tracking-widest bg-sky-500/5 px-3 py-1 rounded-lg border border-sky-500/10 inline-block">
-                                            {getImpactValue(building.buildingType, building.nivel)}
-                                        </div>
-                                    </div>
+                            {/* Visual Level indicator */}
+                            <div className="absolute bottom-8 right-8 flex flex-col items-end">
+                                <span className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.4em] mb-1">AUTH_LEVEL</span>
+                                <span className="text-7xl font-black text-white font-military-mono italic tracking-tighter leading-none opacity-80">
+                                    {(building.nivel || 0).toString().padStart(2, '0')}
+                                </span>
+                            </div>
+                        </div>
 
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
-                                            <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.3em]">Projeção_v{(building.nivel || 0) + 1}</span>
-                                        </div>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-2xl font-black text-neutral-500 font-military-mono">LVL</span>
-                                            <span className="text-3xl font-black text-neutral-400 font-military-mono">{(nextLevel).toString().padStart(2, '0')}</span>
-                                        </div>
-                                        <div className="text-[11px] font-black text-neutral-500 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-lg border border-white/5 inline-block">
-                                            {getImpactValue(building.buildingType, nextLevel)}
-                                        </div>
-                                    </div>
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-3">
+                                <Info size={16} className="text-sky-500" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500">Relatório de Operações</h3>
+                            </div>
+                            <div className="p-8 bg-white/[0.02] rounded-[2.5rem] border border-white/5 shadow-inner">
+                                <p className="text-neutral-400 text-sm leading-relaxed font-medium">
+                                    {config.description}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-3">
+                                <TrendingUp size={16} className="text-sky-500" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500">Impacto no Setor</h3>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-6 bg-black/40 rounded-3xl border border-white/5">
+                                    <span className="text-[9px] font-black text-neutral-600 uppercase tracking-widest block mb-1">ATUAL</span>
+                                    <span className="text-sm font-black text-white">{getImpactValue(building.buildingType, building.nivel)}</span>
+                                </div>
+                                <div className="p-6 bg-sky-500/5 rounded-3xl border border-sky-500/10">
+                                    <span className="text-[9px] font-black text-sky-500/60 uppercase tracking-widest block mb-1">PROX_NÍVEL</span>
+                                    <span className="text-sm font-black text-sky-400">{getImpactValue(building.buildingType, nextLevel)}</span>
                                 </div>
                             </div>
-
-                            <DialogDescription className="text-[11px] text-neutral-500 font-medium leading-relaxed max-w-lg border-l-2 border-white/5 pl-4 py-1">
-                                {config.description}
-                            </DialogDescription>
-                        </header>
-
-                        {isMarket ? (
-                            <MarketPanel baseId={building.base_id} resources={resources} />
-                        ) : isMilitary ? (
-                            <div className="space-y-8">
-                                <h4 className="text-[9px] font-black uppercase text-neutral-400 tracking-[0.4em] flex items-center gap-4">
-                                    <div className="w-8 h-[1px] bg-emerald-500/30" />
-                                    Mobilização_Direta
-                                    <div className="flex-1 h-[1px] bg-white/[0.03]" />
-                                </h4>
-                                <div className="grid grid-cols-2 gap-5">
-                                    {availableUnits.map(unit => (
-                                        <button 
-                                            key={unit.id}
-                                            onClick={() => setSelectedUnit(unit.name)}
-                                            className={`p-5 rounded-[2rem] border transition-all duration-500 flex items-center gap-5 relative overflow-hidden group ${selectedUnit === unit.name ? 'bg-emerald-500/10 border-emerald-500/30 shadow-[0_20px_40px_rgba(16,185,129,0.1)] scale-[1.02]' : 'bg-black/40 border-white/5 hover:border-white/20 hover:bg-white/[0.02]'}`}
-                                        >
-                                            <div className="relative">
-                                                <div className={`absolute inset-0 blur-xl opacity-0 group-hover:opacity-20 transition-opacity ${selectedUnit === unit.name ? 'opacity-30 bg-emerald-500' : 'bg-white'}`} />
-                                                <img src={getUnitAsset(unit.name)} className="w-12 h-12 object-contain relative z-10 transition-transform duration-500 group-hover:scale-110" alt={unit.name} />
-                                            </div>
-                                            <div className="flex flex-col items-start">
-                                                <span className="text-[11px] font-black uppercase text-white tracking-widest">{unit.name}</span>
-                                                <span className="text-[9px] font-black font-military-mono text-neutral-600 mt-1 uppercase tracking-widest">T_{unit.build_time}S</span>
-                                            </div>
-                                            <div className={`absolute top-3 right-5 text-[10px] font-black font-military-mono transition-colors ${selectedUnit === unit.name ? 'text-emerald-500' : 'text-neutral-800'}`}>0x{unit.id}</div>
-                                        </button>
-                                    ))}
-                                </div>
-                                {selectedUnit && (
-                                    <div className="bg-black/60 p-8 rounded-[2.5rem] border border-white/5 space-y-6 relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[60px]" />
-                                        <div className="flex justify-between items-center px-2">
-                                            <div className="flex flex-col">
-                                                <span className="text-[9px] uppercase font-black text-neutral-600 tracking-[0.4em] mb-1">Quota_Mobilização</span>
-                                                <span className="text-[8px] text-emerald-500/40 uppercase font-black tracking-widest">Aguardando_Input...</span>
-                                            </div>
-                                            <input type="number" value={trainQty} onChange={e => setTrainQty(Math.max(1, parseInt(e.target.value)))} className="bg-transparent border-none text-right font-military-mono text-emerald-400 font-black text-4xl w-32 focus:ring-0" />
-                                        </div>
-                                        <Button onClick={() => onTrain(selectedUnit, trainQty)} disabled={isTraining} className="w-full h-20 bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-[0.3em] rounded-2xl shadow-[0_0_40px_rgba(16,185,129,0.3)] active:scale-95 transition-all group/btn relative overflow-hidden">
-                                            <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
-                                            <span className="relative z-10 flex items-center justify-center gap-4">
-                                                {isTraining ? <Loader2 size={18} className="animate-spin" /> : <Sword size={18} />}
-                                                Confirmar_Diretiva
-                                            </span>
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="space-y-8">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="text-[9px] font-black uppercase text-neutral-400 tracking-[0.4em] flex items-center gap-4">
-                                        <div className="w-8 h-[1px] bg-orange-500/30" />
-                                        Custos_Operacionais
-                                        <div className="flex-1 h-[1px] bg-white/[0.03]" />
-                                    </h4>
-                                    <div className="flex items-center gap-3 bg-orange-500/10 px-4 py-1.5 rounded-full border border-orange-500/20 text-[10px] font-black text-orange-400 font-military-mono uppercase tracking-widest">
-                                        <Clock size={12} /> {timeFormatted}
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {config.cost && Object.entries(config.cost).map(([type, amount]: any) => renderCost(type, amount))}
-                                </div>
-                            </div>
-                        )}
+                        </div>
                     </div>
 
-                    {!isMilitary && (
-                        <DialogFooter className="mt-12">
-                            <Button 
-                                onClick={() => onUpgrade(building.buildingType)}
-                                disabled={isUpgrading || !canAfford}
-                                className={`w-full h-24 md:h-28 font-black uppercase tracking-[0.4em] rounded-[2rem] shadow-2xl relative overflow-hidden transition-all active:scale-[0.98] group/upgrade ${canAfford ? 'bg-sky-500 hover:bg-sky-400 text-black shadow-[0_0_50px_rgba(14,165,233,0.3)]' : 'bg-neutral-900 text-neutral-700 cursor-not-allowed border border-white/5 opacity-50'}`}
-                            >
-                                <div className="flex flex-col items-center gap-2 z-10 transition-transform group-hover/upgrade:scale-105">
-                                    <span className="text-2xl md:text-3xl font-black italic tracking-tighter">
-                                        {isUpgrading ? ' TRANSMITINDO...' : (canAfford ? (building.nivel === 0 ? 'CONSTRUIR_BASE' : 'UPGRADE_SISTEMA') : 'INSOLVÊNCIA')}
-                                    </span>
-                                    {canAfford && <span className="text-[9px] opacity-40 tracking-[0.6em] font-black">Autorizar_Execução_Nível_{(building.nivel || 0) + 1}</span>}
+                    {/* Right Column: Operations & Actions */}
+                    <div className="flex-1 overflow-y-auto p-12 custom-scrollbar space-y-12">
+                        {isMarket ? (
+                            <MarketPanel resources={resources} building={building} gameConfig={gameConfig} />
+                        ) : (
+                            <>
+                                {/* Upgrade Section */}
+                                <div className="tactical-panel p-10 space-y-10">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-1.5 h-8 bg-sky-500 rounded-full" />
+                                            <h3 className="text-2xl font-black uppercase text-white tracking-tighter">Engenharia e Expansão</h3>
+                                        </div>
+                                        <div className="flex items-center gap-4 px-6 py-3 bg-black/40 rounded-full border border-white/10 shadow-inner">
+                                            <Clock size={16} className="text-sky-400" />
+                                            <span className="text-sm font-black font-military-mono text-neutral-300">{timeFormatted}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-6">
+                                        {Object.entries(config.cost || {}).map(([type, amount]) => renderCost(type, amount as number))}
+                                    </div>
+
+                                    <Button 
+                                        className={`w-full h-20 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[10px] transition-all duration-500 relative overflow-hidden group/btn ${canAfford && !isUpgrading ? 'bg-sky-600 hover:bg-sky-500 text-white shadow-[0_20px_60px_-10px_rgba(14,165,233,0.4)]' : 'bg-white/5 text-neutral-700 border border-white/5 cursor-not-allowed opacity-50'}`}
+                                        disabled={!canAfford || isUpgrading}
+                                        onClick={() => onUpgrade(building.buildingType)}
+                                    >
+                                        <div className="relative z-10 flex items-center justify-center gap-4">
+                                            {isUpgrading ? (
+                                                <>
+                                                    <Loader2 className="animate-spin" size={20} />
+                                                    Sincronizando Protocolos...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {canAfford ? 'Autorizar Mobilização Nível_' + nextLevel : 'Logística Crítica: Recursos Insuficientes'}
+                                                    <ChevronRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
+                                                </>
+                                            )}
+                                        </div>
+                                        {canAfford && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />}
+                                    </Button>
                                 </div>
-                                {canAfford && <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-1000" />}
-                                {canAfford && <div className="absolute top-0 left-0 w-full h-[1px] bg-white/40" />}
-                            </Button>
-                        </DialogFooter>
-                    )}
+
+                                {/* Military Section */}
+                                {isMilitary && (
+                                    <div className="tactical-panel p-10 space-y-10 bg-emerald-500/[0.02] border-emerald-500/10">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-1.5 h-8 bg-emerald-500 rounded-full" />
+                                            <h3 className="text-2xl font-black uppercase text-white tracking-tighter">Centro de Mobilização Militar</h3>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-6">
+                                            {availableUnits.map(unit => (
+                                                <button 
+                                                    key={unit.id}
+                                                    onClick={() => setSelectedUnit(unit.name)}
+                                                    className={`p-6 rounded-[2.5rem] border transition-all duration-500 flex items-center gap-6 relative overflow-hidden group ${selectedUnit === unit.name ? 'bg-emerald-500/10 border-emerald-500/30 shadow-[0_25px_50px_rgba(16,185,129,0.15)] scale-[1.02]' : 'bg-black/40 border-white/5 hover:border-white/20 hover:bg-white/[0.02]'}`}
+                                                >
+                                                    <div className="relative">
+                                                        <div className={`absolute inset-0 blur-2xl opacity-0 group-hover:opacity-30 transition-opacity ${selectedUnit === unit.name ? 'opacity-40 bg-emerald-500' : 'bg-white'}`} />
+                                                        <img src={getUnitAsset(unit.name)} className="w-16 h-16 object-contain relative z-10 transition-transform duration-500 group-hover:scale-110" alt={unit.name} />
+                                                    </div>
+                                                    <div className="flex flex-col items-start gap-1">
+                                                        <span className="text-xs font-black uppercase text-white tracking-widest">{unit.name}</span>
+                                                        <span className="text-[10px] font-black font-military-mono text-neutral-600 uppercase tracking-widest flex items-center gap-2">
+                                                            <Clock size={10} /> {unit.build_time}S
+                                                        </span>
+                                                    </div>
+                                                    {selectedUnit === unit.name && (
+                                                        <div className="absolute top-6 right-8 w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <AnimatePresence>
+                                            {selectedUnit && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: 20 }}
+                                                    className="bg-black/60 p-10 rounded-[3rem] border border-white/5 space-y-8 relative overflow-hidden shadow-inner"
+                                                >
+                                                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] pointer-events-none" />
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[10px] uppercase font-black text-neutral-600 tracking-[0.5em] mb-2">QUOTA_DE_MOBILIZAÇÃO</span>
+                                                            <div className="flex items-center gap-4">
+                                                                <Sword size={24} className="text-emerald-500/40" />
+                                                                <span className="text-[10px] text-emerald-500/60 uppercase font-black tracking-widest">SISTEMA_AGUARDANDO_QUANTIDADE</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex flex-col items-end">
+                                                            <input 
+                                                                type="number" 
+                                                                value={trainQty} 
+                                                                onChange={e => setTrainQty(Math.max(1, parseInt(e.target.value)))} 
+                                                                className="bg-transparent border-none text-right font-military-mono text-emerald-400 font-black text-6xl w-48 focus:ring-0" 
+                                                            />
+                                                            <div className="h-1 w-full bg-emerald-500/20 rounded-full mt-2" />
+                                                        </div>
+                                                    </div>
+                                                    <Button 
+                                                        onClick={() => onTrain(selectedUnit, trainQty)} 
+                                                        disabled={isTraining} 
+                                                        className="w-full h-24 bg-emerald-600 hover:bg-emerald-500 text-black font-black uppercase tracking-[0.4em] text-[10px] rounded-[2rem] shadow-[0_25px_60px_rgba(16,185,129,0.3)] active:scale-95 transition-all group/btn relative overflow-hidden"
+                                                    >
+                                                        <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
+                                                        <span className="relative z-10 flex items-center justify-center gap-6">
+                                                            {isTraining ? <Loader2 size={24} className="animate-spin" /> : <Sword size={24} />}
+                                                            CONFIRMAR_ORDEM_OPERACIONAL
+                                                        </span>
+                                                    </Button>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

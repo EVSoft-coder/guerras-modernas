@@ -184,6 +184,140 @@
     .military-text-glitch {
         text-shadow: 0 0 5px rgba(14, 165, 233, 0.5);
     }
+
+    .tactical-glass {
+        @apply bg-[#050608]/85 backdrop-blur-3xl border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.9)] relative overflow-hidden;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tactical-border-glow {
+        border: 1px solid rgba(14, 165, 233, 0.4);
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.15);
+    }
+
+    .cyber-button {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .cyber-button:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(14, 165, 233, 0.4);
+        transform: translateY(-1px);
+    }
+
+    .cyber-button:active {
+        transform: scale(0.96);
+    }
+
+    .military-grid {
+        background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+
+    .text-military-mono {
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        letter-spacing: -0.02em;
+    }
+
+    /* TACTICAL UI ENHANCEMENTS — FASE 17 PREMIUM */
+    .tactical-panel {
+        @apply bg-[#030406]/85 backdrop-blur-3xl border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.9)] relative overflow-hidden;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tactical-panel::before {
+        content: "";
+        @apply absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none;
+    }
+
+    .tactical-corner {
+        position: relative;
+    }
+
+    .tactical-corner::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(225deg, rgba(14, 165, 233, 0.4) 0%, transparent 50%);
+        clip-path: polygon(100% 0, 100% 100%, 0 0);
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    .tactical-corner::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 20px;
+        height: 20px;
+        border-left: 2px solid rgba(14, 165, 233, 0.3);
+        border-bottom: 2px solid rgba(14, 165, 233, 0.3);
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    .animate-shimmer {
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.03) 50%,
+            transparent 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite linear;
+    }
+
+    .animate-scanline {
+        animation: scanline 8s linear infinite;
+    }
+
+    .tactical-crt-overlay {
+        @apply fixed inset-0 pointer-events-none z-[9999] opacity-[0.02] overflow-hidden;
+        background: linear-gradient(
+            rgba(18, 16, 16, 0) 50%, 
+            rgba(0, 0, 0, 0.25) 50%
+        ), linear-gradient(
+            90deg, 
+            rgba(255, 0, 0, 0.06), 
+            rgba(0, 255, 0, 0.02), 
+            rgba(0, 0, 255, 0.06)
+        );
+        background-size: 100% 2px, 3px 100%;
+    }
+
+    .tactical-vignette {
+        @apply fixed inset-0 pointer-events-none z-[9998] shadow-[inset_0_0_150px_rgba(0,0,0,0.5)];
+        background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.3) 100%);
+    }
+}
+
+/* CUSTOM SCROLLBAR PREMIUM */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(14, 165, 233, 0.4);
 }
 
 /* HIGH-END MILITARY EFFECTS V3 */
@@ -206,80 +340,16 @@
     50% { opacity: 0.4; box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
 }
 
-.animate-scanline {
-    animation: scanline 8s linear infinite;
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
 }
 
-.tactical-crt-overlay {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-    background-size: 100% 3px, 3px 100%;
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.4;
-    mix-blend-mode: overlay;
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
 }
 
-.tactical-glass {
-    background: rgba(8, 10, 15, 0.85);
-    backdrop-filter: blur(25px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 
-        0 10px 40px -10px rgba(0, 0, 0, 0.5),
-        inset 0 1px 1px rgba(255, 255, 255, 0.05);
-}
-
-.tactical-border-glow {
-    border: 1px solid rgba(14, 165, 233, 0.4);
-    box-shadow: 0 0 20px rgba(14, 165, 233, 0.15);
-}
-
-.cyber-button {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.cyber-button:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(14, 165, 233, 0.4);
-    transform: translateY(-1px);
-}
-
-.cyber-button:active {
-    transform: scale(0.96);
-}
-
-.military-grid {
-    background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-}
-
-/* CUSTOM SCROLLBAR PREMIUM */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(14, 165, 233, 0.4);
-}
-
-.text-military-mono {
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    letter-spacing: -0.02em;
+.animate-float {
+    animation: float 4s ease-in-out infinite;
 }

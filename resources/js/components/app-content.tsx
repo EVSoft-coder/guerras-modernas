@@ -7,7 +7,17 @@ interface AppContentProps extends React.ComponentProps<'div'> {
 
 export function AppContent({ variant = 'header', children, ...props }: AppContentProps) {
     if (variant === 'sidebar') {
-        return <SidebarInset {...props}>{children}</SidebarInset>;
+        return (
+            <SidebarInset className="bg-[#020408] relative overflow-hidden flex flex-col" {...props}>
+                {/* Global Tactical Background */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(14,165,233,0.08)_0%,transparent_50%)] pointer-events-none z-0" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] pointer-events-none mix-blend-overlay z-0" />
+                
+                <div className="relative z-10 flex flex-col flex-1">
+                    {children}
+                </div>
+            </SidebarInset>
+        );
     }
 
     return (
