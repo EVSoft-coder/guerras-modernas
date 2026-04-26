@@ -132,7 +132,15 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-4xl bg-[#020406]/90 border-white/5 text-white overflow-hidden backdrop-blur-3xl p-0 rounded-[3rem] shadow-[0_0_120px_rgba(0,0,0,1)] flex flex-col md:flex-row h-[90vh] md:h-auto border">
+            <DialogContent showClose={false} className="max-w-4xl bg-[#020406]/90 border-white/5 text-white overflow-hidden backdrop-blur-3xl p-0 rounded-[3rem] shadow-[0_0_120px_rgba(0,0,0,1)] flex flex-col md:flex-row h-[90vh] md:h-auto border">
+                {/* BOTÃO FECHAR CUSTOMIZADO (PREMIUM) */}
+                <button 
+                    onClick={onClose}
+                    className="absolute top-8 right-8 z-50 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/50 rounded-full transition-all group active:scale-90"
+                >
+                    <X size={20} className="text-neutral-500 group-hover:text-white transition-colors" />
+                </button>
+
                 {/* LEFT BLOCK: VISUAL INTERFACE */}
                 <div className="w-full md:w-[45%] bg-black/40 relative flex flex-col items-center justify-center p-12 border-b md:border-b-0 md:border-r border-white/5 overflow-hidden">
                     <div className="absolute inset-0 scanline-effect opacity-[0.05]" />
@@ -172,34 +180,44 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                 </div>
 
                 <div className="flex-1 p-10 md:p-14 flex flex-col justify-between bg-gradient-to-br from-black/20 via-transparent to-transparent relative">
-                    {/* Radix UI Dialog close button is hidden via CSS in this modal to use only one unified close button if preferred,
-                        but here we rely on the one in DialogContent but styled. We removed the manual one from here. */}
-                    
                     <div className="space-y-12 overflow-y-auto pr-6 custom-scrollbar max-h-[60vh]">
-                        <header className="space-y-4">
+                        <header className="space-y-6">
                             <div className="flex items-center gap-4">
                                 <div className="p-2.5 bg-sky-500/10 rounded-2xl border border-sky-500/20 shadow-[0_0_20px_rgba(14,165,233,0.1)]"><Cpu size={18} className="text-sky-500" /></div>
                                 <span className="text-[9px] font-black text-sky-500/40 uppercase tracking-[0.5em] font-military-mono">Protocolo_{tipoLower}_v3.9</span>
                             </div>
                             <DialogTitle className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-white leading-none">{config.name}</DialogTitle>
                             
-                            <div className="grid grid-cols-2 gap-6 py-4">
-                                <div className="space-y-1">
-                                    <span className="text-[8px] font-black text-neutral-600 uppercase tracking-[0.4em]">Efeito_Atual</span>
-                                    <div className="flex items-center gap-2">
-                                        <TrendingUp size={14} className="text-sky-500" />
-                                        <span className="text-sm font-black text-sky-400 font-military-mono">
+                            <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 space-y-6">
+                                <div className="grid grid-cols-2 gap-8 relative">
+                                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1px] h-10 bg-white/10 hidden md:block" />
+                                    
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                                            <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.3em]">Status_Atual</span>
+                                        </div>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-2xl font-black text-white font-military-mono">LVL</span>
+                                            <span className="text-3xl font-black text-sky-400 font-military-mono">{(building.nivel || 0).toString().padStart(2, '0')}</span>
+                                        </div>
+                                        <div className="text-[11px] font-black text-sky-500/60 uppercase tracking-widest bg-sky-500/5 px-3 py-1 rounded-lg border border-sky-500/10 inline-block">
                                             {getImpactValue(building.buildingType, building.nivel)}
-                                        </span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <span className="text-[8px] font-black text-neutral-600 uppercase tracking-[0.4em]">Próximo_Nível</span>
-                                    <div className="flex items-center gap-2">
-                                        <Activity size={14} className="text-neutral-500" />
-                                        <span className="text-sm font-black text-neutral-400 font-military-mono">
+
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
+                                            <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.3em]">Projeção_v{(building.nivel || 0) + 1}</span>
+                                        </div>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-2xl font-black text-neutral-500 font-military-mono">LVL</span>
+                                            <span className="text-3xl font-black text-neutral-400 font-military-mono">{(nextLevel).toString().padStart(2, '0')}</span>
+                                        </div>
+                                        <div className="text-[11px] font-black text-neutral-500 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-lg border border-white/5 inline-block">
                                             {getImpactValue(building.buildingType, nextLevel)}
-                                        </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

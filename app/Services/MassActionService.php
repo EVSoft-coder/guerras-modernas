@@ -27,7 +27,8 @@ class MassActionService
     }
 
     /**
-     * Recrutamento em Massa - Opção A: Base-a-base até acabar recursos.
+     * Recrutamento em Massa - Ordem Alfabética de Bases.
+     * Recruta o máximo possível até os recursos acabarem.
      */
     public function recruitMass(Jogador $jogador, array $orders)
     {
@@ -42,9 +43,29 @@ class MassActionService
                 if ($quantity <= 0) continue;
 
                 try {
-                    // Tenta recrutar o máximo possível para esta unidade nesta base
-                    $this->unitQueueService->startRecruitment($base, (int)$unitTypeId, (int)$quantity);
-                    $results[$base->id][$unitTypeId] = 'success';
+                    // CALCULAR MÁXIMO POSSÍVEL (DADO RECURSOS DA BASE)
+                    $unitType = UnitType::findOrFail($unitTypeId);
+                    $economy = app(EconomyService::class);
+                    $gameService = new GameService(app(TimeService::class));
+                    $buildingLevel = $gameService->obterNivelEdificio($base, $unitType->building_type);
+                    $costsPerUnit = $economy->getUnitCost($unitType->name, $buildingLevel);
+                    
+                    $maxPossible = (int)$quantity;
+                    $rec = $base->recursos;
+
+                    foreach ($costsPerUnit as $res => $cost) {
+                        if ($cost > 0) {
+                            $possible = floor($rec->{$res} / $cost);
+                            $maxPossible = min($maxPossible, $possible);
+                        }
+                    }
+
+                    if ($maxPossible > 0) {
+                        $this->unitQueueService->startRecruitment($base, (int)$unitTypeId, (int)$maxPossible);
+                        $results[$base->id][$unitTypeId] = "success: {$maxPossible} recrutados";
+                    } else {
+                        $results[$base->id][$unitTypeId] = "skipped: recursos insuficientes";
+                    }
                 } catch (\Exception $e) {
                     $results[$base->id][$unitTypeId] = 'error: ' . $e->getMessage();
                 }
@@ -55,11 +76,11 @@ class MassActionService
     }
 
     /**
-     * Aplicar Template - Opção A: Salta se nível já atingido.
+     * Aplicar Template - Salta passo se recursos insuficientes ou erro.
      */
     public function applyTemplate(Jogador $jogador, ConstructionTemplate $template, array $baseIds)
     {
-        $bases = $jogador->bases()->whereIn('id', $baseIds)->get();
+        $bases = $jogador->bases()->whereIn('id', $baseIds)->orderBy('nome')->get();
         $results = [];
 
         foreach ($bases as $base) {
@@ -68,7 +89,7 @@ class MassActionService
                 $currentQueueCount = BuildingQueue::where('base_id', $base->id)->whereNull('cancelled_at')->count();
                 if ($currentQueueCount >= 5) {
                     $results[$base->id][] = "Limite de fila atingido (5).";
-                    break; // Para este template nesta base
+                    break; // Pára de processar este template para esta base
                 }
 
                 $edificio = $base->edificios()->where('tipo', $step->building_type)->first();
@@ -82,12 +103,10 @@ class MassActionService
                 
                 $effectiveLevel = max($currentLevel, $maxTargetInQueue ?? 0);
 
-                // Salta se já atingiu (ou planeou atingir) o nível alvo
                 if ($effectiveLevel >= $step->target_level) continue;
 
-                // Tenta adicionar à fila (um nível de cada vez até o alvo ou erro/limite)
+                // Tenta adicionar à fila (um nível de cada vez até o alvo)
                 for ($lvl = $effectiveLevel + 1; $lvl <= $step->target_level; $lvl++) {
-                    // Re-verificar limite dentro do loop
                     if (BuildingQueue::where('base_id', $base->id)->whereNull('cancelled_at')->count() >= 5) {
                         break;
                     }
@@ -95,8 +114,9 @@ class MassActionService
                     try {
                         $this->buildingQueueService->startConstruction($base, $step->building_type);
                     } catch (\Exception $e) {
-                        $results[$base->id][] = "Parou no nível {$lvl} de {$step->building_type}: " . $e->getMessage();
-                        break; // Para este edifício nesta base
+                        // REGRA: Se falhar (recursos ou outros), SALTA para o próximo edifício do template
+                        $results[$base->id][] = "Saltou {$step->building_type} no nível {$lvl}: " . $e->getMessage();
+                        continue 2; // Continua para o próximo step (edifício) no loop externo
                     }
                 }
             }
