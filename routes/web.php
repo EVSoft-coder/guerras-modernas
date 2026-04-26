@@ -118,7 +118,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/rename', [\App\Http\Controllers\GeneralController::class, 'rename'])->name('rename');
         });
     });
-    });
 
     // Outros
     Route::get('/alianca', [AliancaController::class, 'index'])->name('alianca.index');
