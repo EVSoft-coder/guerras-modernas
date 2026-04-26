@@ -20,6 +20,7 @@ interface WorldMapViewProps {
     unitTypes?: any[];
     diplomaties?: any[];
     myAllianceId?: number | null;
+    general?: any;
 }
 
 const TILE_SIZE = 80;
@@ -40,7 +41,7 @@ const getTerrain = (tx: number, ty: number) => {
     return 'grass';
 };
 
-export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, diplomaties = [], myAllianceId }: WorldMapViewProps) {
+export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, diplomaties = [], myAllianceId, general }: WorldMapViewProps) {
     const [center, setCenter] = useState({ x: playerBase?.coordenada_x || 50, y: playerBase?.coordenada_y || 50 });
     const [selectedSector, setSelectedSector] = useState<{ x: number, y: number, base?: any } | null>(null);
     const [searchCoords, setSearchCoords] = useState({ x: '', y: '' });
@@ -293,6 +294,7 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, d
                 unitTypes={unitTypes}
                 onEnviar={handleSendAttack}
                 isSending={false}
+                general={general}
             />
         </div>
     );

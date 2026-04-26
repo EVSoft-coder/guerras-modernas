@@ -69,6 +69,10 @@ export default function Dashboard(props: any) {
                             playerBase={currentBase} 
                             troops={state.units ? state.units.map((u: any) => ({ unidade: u.name, quantidade: u.quantity })) : []} 
                             gameConfig={state.gameConfig || props.gameConfig} 
+                            unitTypes={state.unitTypes || props.unitTypes}
+                            diplomaties={state.diplomaties || props.diplomaties}
+                            myAllianceId={state.myAllianceId || props.myAllianceId}
+                            general={state.general || props.general}
                         />
                     ) : (
                         <VillageDashboard 
