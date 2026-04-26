@@ -17,7 +17,6 @@ import { marchSystem } from './MarchSystem';
 import { visionSystem } from './VisionSystem';
 import { ResearchSystem } from './ResearchSystem';
 import { renderSystem } from './RenderSystem';
-import { RebelGeneratorSystem } from './RebelGeneratorSystem';
 import { syncSystem } from './SyncSystem';
 import { IntelSystem } from './IntelSystem';
 import { worldMapSyncSystem } from './WorldMapSyncSystem';
@@ -45,7 +44,6 @@ export const systemsRegistry: ReadonlyArray<GameSystem> = [
     combatSystem,
     marchSystem,
     attackSystem,
-    new RebelGeneratorSystem(),
     visionSystem,
     new ResearchSystem(),
     renderSystem,

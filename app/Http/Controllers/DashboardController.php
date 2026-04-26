@@ -33,6 +33,10 @@ class DashboardController extends Controller
             if (\DB::table('unit_types')->count() < 5) {
                 \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'UnitTypeSeeder', '--force' => true]);
             }
+            // FASE 11: Inserir NPCs (Células Rebeldes) se não existirem
+            if (\App\Models\Jogador::where('username', 'REBELS')->count() === 0) {
+                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'NPCSeeder', '--force' => true]);
+            }
         } catch (\Exception $e) {}
 
         // 1. Identificar Base Ativa
