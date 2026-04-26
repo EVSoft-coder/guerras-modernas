@@ -12,6 +12,8 @@ interface AliancaProps {
     aliancas?: any[];
     pedidoPendente?: any;
     mensagens?: any[];
+    convites?: any[];
+    convitesEnviados?: any[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -19,10 +21,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Quartel-General da Aliança', href: '/alianca' },
 ];
 
-export default function Alianca({ temAlianca, jogador, alianca, aliancas, pedidoPendente, mensagens }: AliancaProps) {
+export default function Alianca({ temAlianca, jogador, alianca, aliancas, pedidoPendente, mensagens, convites, convitesEnviados }: AliancaProps) {
     const { addToast } = useToasts();
     const [nomeCriar, setNomeCriar] = useState('');
     const [tagCriar, setTagCriar] = useState('');
+    const [jogadorConvidar, setJogadorConvidar] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     
     // Chat state
@@ -72,6 +75,24 @@ export default function Alianca({ temAlianca, jogador, alianca, aliancas, pedido
         router.post('/alianca/chat/enviar', { mensagem: chatMsg }, {
             preserveScroll: true,
             onSuccess: () => setChatMsg(''),
+        });
+    };
+
+    const handleInvite = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!jogadorConvidar.trim()) return;
+        router.post('/alianca/convidar', { jogador_nome: jogadorConvidar }, {
+            onSuccess: () => {
+                setJogadorConvidar('');
+                addToast('Convite enviado!', 'success');
+            },
+            onError: (err) => addToast(Object.values(err)[0] as string || 'Erro ao convidar.', 'error')
+        });
+    };
+
+    const handleDecisionConvite = (id: number, decisao: 'aceitar' | 'rejeitar') => {
+        router.post(`/alianca/convites/${id}/${decisao}`, {}, {
+            onSuccess: () => addToast('Convite processado.', 'success')
         });
     };
 
@@ -135,8 +156,38 @@ export default function Alianca({ temAlianca, jogador, alianca, aliancas, pedido
                         )}
 
                         <div className="p-6 overflow-y-auto flex-1">
+                            {/* Convites Recebidos */}
+                            {convites && convites.length > 0 && (
+                                <div className="mb-6 space-y-3">
+                                    <h3 className="text-[10px] font-black uppercase text-sky-400 tracking-widest mb-2">Protocolos de Convite Recebidos</h3>
+                                    {convites.map((c) => (
+                                        <div key={c.id} className="bg-sky-500/10 border border-sky-500/20 p-4 rounded-xl flex items-center justify-between">
+                                            <div>
+                                                <p className="text-white font-bold">[{c.alianca.tag}] {c.alianca.nome}</p>
+                                                <p className="text-[10px] text-neutral-400 uppercase">Enviado por: {c.convidado_por?.username}</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button 
+                                                    onClick={() => handleDecisionConvite(c.id, 'aceitar')}
+                                                    className="p-2 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded transition"
+                                                >
+                                                    <Check size={16} />
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDecisionConvite(c.id, 'rejeitar')}
+                                                    className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded transition"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                             {aliancas && aliancas.length > 0 ? (
                                 <div className="flex flex-col gap-3">
+                                    <h3 className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-2">Coligações Ativas no Globo</h3>
                                     {aliancas.map((al) => (
                                         <div key={al.id} className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded hover:bg-white/10 transition">
                                             <div>
@@ -200,34 +251,73 @@ export default function Alianca({ temAlianca, jogador, alianca, aliancas, pedido
                         </div>
                     </div>
 
-                    {/* Gestão de Candidaturas (Apenas Fundador) */}
-                    {isFundador && alianca.pedidos && alianca.pedidos.filter((p: any) => p.status === 'pendente').length > 0 && (
-                        <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl overflow-hidden">
-                            <div className="bg-amber-500/10 p-3 border-b border-amber-500/20 text-amber-400 font-bold uppercase text-xs tracking-widest">
-                                Protocolos de Adesão Pendentes
+                    {/* Gestão de Candidaturas & Convites (Apenas Fundador) */}
+                    {isFundador && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl overflow-hidden">
+                                <div className="bg-amber-500/10 p-3 border-b border-amber-500/20 text-amber-400 font-bold uppercase text-xs tracking-widest">
+                                    Candidaturas Externas
+                                </div>
+                                <div className="p-4 flex flex-col gap-2">
+                                    {alianca.pedidos && alianca.pedidos.filter((p: any) => p.status === 'pendente').length > 0 ? (
+                                        alianca.pedidos.filter((p: any) => p.status === 'pendente').map((pedido: any) => (
+                                            <div key={pedido.id} className="flex items-center justify-between bg-black/40 p-3 border border-white/5 rounded">
+                                                <div className="font-bold text-white text-sm">{pedido.jogador?.username}</div>
+                                                <div className="flex gap-2">
+                                                    <button 
+                                                        onClick={() => handleDecision(pedido.id, 'aprovar')}
+                                                        className="p-1.5 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded transition"
+                                                        title="Aprovar"
+                                                    >
+                                                        <Check size={16} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDecision(pedido.id, 'rejeitar')}
+                                                        className="p-1.5 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded transition"
+                                                        title="Rejeitar"
+                                                    >
+                                                        <X size={16} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-neutral-500 text-xs italic text-center py-4">Sem candidaturas pendentes.</p>
+                                    )}
+                                </div>
                             </div>
-                            <div className="p-4 flex flex-col gap-2">
-                                {alianca.pedidos.filter((p: any) => p.status === 'pendente').map((pedido: any) => (
-                                    <div key={pedido.id} className="flex items-center justify-between bg-black/40 p-3 border border-white/5 rounded">
-                                        <div className="font-bold text-white text-sm">{pedido.jogador?.username}</div>
-                                        <div className="flex gap-2">
-                                            <button 
-                                                onClick={() => handleDecision(pedido.id, 'aprovar')}
-                                                className="p-1.5 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded transition"
-                                                title="Aprovar"
-                                            >
-                                                <Check size={16} />
-                                            </button>
-                                            <button 
-                                                onClick={() => handleDecision(pedido.id, 'rejeitar')}
-                                                className="p-1.5 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded transition"
-                                                title="Rejeitar"
-                                            >
-                                                <X size={16} />
-                                            </button>
-                                        </div>
+
+                            <div className="bg-sky-900/20 border border-sky-500/30 rounded-xl overflow-hidden">
+                                <div className="bg-sky-500/10 p-3 border-b border-sky-500/20 text-sky-400 font-bold uppercase text-xs tracking-widest">
+                                    Recrutamento Estratégico
+                                </div>
+                                <div className="p-4 space-y-4">
+                                    <form onSubmit={handleInvite} className="flex gap-2">
+                                        <input 
+                                            type="text"
+                                            value={jogadorConvidar}
+                                            onChange={e => setJogadorConvidar(e.target.value)}
+                                            placeholder="Nome do Comandante..."
+                                            className="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-xs text-white"
+                                        />
+                                        <button className="bg-sky-600 hover:bg-sky-500 text-white px-3 py-2 rounded text-xs font-bold uppercase transition">
+                                            Convidar
+                                        </button>
+                                    </form>
+                                    <div className="space-y-2">
+                                        <h4 className="text-[8px] font-black text-neutral-500 uppercase tracking-widest">Convites Enviados</h4>
+                                        {convitesEnviados && convitesEnviados.length > 0 ? (
+                                            convitesEnviados.map((c) => (
+                                                <div key={c.id} className="flex items-center justify-between bg-black/40 p-2 border border-white/5 rounded">
+                                                    <span className="text-[10px] text-white font-bold">{c.jogador?.username}</span>
+                                                    <span className="text-[9px] text-sky-400 font-mono uppercase px-2 py-0.5 bg-sky-500/10 rounded">Pendente</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-neutral-600 text-[9px] italic uppercase tracking-widest text-center py-2">Sem convites ativos.</p>
+                                        )}
                                     </div>
-                                ))}
+                                </div>
                             </div>
                         </div>
                     )}

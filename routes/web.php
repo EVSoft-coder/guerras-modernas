@@ -92,6 +92,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/sair', [AliancaController::class, 'sair'])->name('sair');
             Route::post('/decidir/{id}/{decisao}', [AliancaController::class, 'decidir'])->name('decidir');
             Route::post('/chat/enviar', [ChatController::class, 'enviar'])->name('chat.enviar');
+            Route::post('/convidar', [AliancaController::class, 'convidar'])->name('convidar');
+            Route::post('/convites/{id}/{decisao}', [AliancaController::class, 'decidirConvite'])->name('convite.decidir');
         });
     });
 

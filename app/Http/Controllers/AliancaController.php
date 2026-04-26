@@ -18,10 +18,16 @@ class AliancaController extends Controller
         if (!$jogador->alianca) {
             $aliancas = Alianca::withCount('membros')->get();
             $pedidoPendente = PedidoAlianca::where('jogador_id', Auth::id())->where('status', 'pendente')->first();
+            $convites = \App\Models\ConviteAlianca::with('alianca', 'convidadoPor')
+                ->where('jogador_id', Auth::id())
+                ->where('status', 'pendente')
+                ->get();
+
             return Inertia::render('alianca', [
                 'temAlianca' => false,
                 'aliancas' => $aliancas,
                 'pedidoPendente' => $pedidoPendente,
+                'convites' => $convites,
             ]);
         }
 
@@ -31,7 +37,11 @@ class AliancaController extends Controller
             'temAlianca' => true,
             'alianca' => $jogador->alianca,
             'jogador' => $jogador,
-            'mensagens' => $mensagens
+            'mensagens' => $mensagens,
+            'convitesEnviados' => \App\Models\ConviteAlianca::with('jogador')
+                ->where('alianca_id', $jogador->alianca_id)
+                ->where('status', 'pendente')
+                ->get()
         ]);
     }
 
@@ -102,5 +112,47 @@ class AliancaController extends Controller
         $jogador->save();
 
         return redirect()->route('alianca.index')->with('success', 'Saíste da aliança.');
+    }
+
+    public function convidar(Request $request)
+    {
+        $request->validate([
+            'jogador_nome' => 'required|string|exists:jogadores,username',
+        ]);
+
+        $jogadorAlvo = Jogador::where('username', $request->jogador_nome)->first();
+        $me = Jogador::find(Auth::id());
+
+        if (!$me->alianca_id) abort(403);
+        if ($jogadorAlvo->alianca_id) return back()->withErrors(['error' => 'Este comandante já pertence a uma coligação.']);
+
+        \App\Models\ConviteAlianca::updateOrCreate([
+            'alianca_id' => $me->alianca_id,
+            'jogador_id' => $jogadorAlvo->id,
+            'convidado_por_id' => $me->id,
+            'status' => 'pendente'
+        ]);
+
+        return back()->with('success', "Protocolo de convite enviado para {$jogadorAlvo->username}.");
+    }
+
+    public function decidirConvite($id, $decisao)
+    {
+        $convite = \App\Models\ConviteAlianca::findOrFail($id);
+        if ($convite->jogador_id !== Auth::id()) abort(403);
+
+        if ($decisao === 'aceitar') {
+            $jogador = Jogador::find(Auth::id());
+            $jogador->update(['alianca_id' => $convite->alianca_id]);
+            $convite->update(['status' => 'aceite']);
+            
+            // Limpar outros convites e pedidos
+            \App\Models\ConviteAlianca::where('jogador_id', $jogador->id)->where('status', 'pendente')->delete();
+            PedidoAlianca::where('jogador_id', $jogador->id)->where('status', 'pendente')->delete();
+        } else {
+            $convite->update(['status' => 'rejeitado']);
+        }
+
+        return back()->with('success', 'Diplomacia processada.');
     }
 }
