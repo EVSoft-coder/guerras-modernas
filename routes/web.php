@@ -23,8 +23,7 @@ use App\Http\Controllers\UnitRecruitmentController;
 ini_set('default_charset', 'UTF-8');
 mb_internal_encoding('UTF-8');
 
-Route::get('/', function () { return redirect()->route('dashboard'); })->name('home');
-
+Route::get('/ping', function() { return 'pong'; });
 Route::get('/admin/migrate', function() {
     try {
         Artisan::call('migrate', ['--force' => true]);
@@ -33,6 +32,8 @@ Route::get('/admin/migrate', function() {
         return "ERRO: " . $e->getMessage();
     }
 });
+
+Route::get('/', function () { return redirect()->route('dashboard'); })->name('home');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->withoutMiddleware(['auth']);
 Route::post('/login', [AuthController::class, 'login']);
