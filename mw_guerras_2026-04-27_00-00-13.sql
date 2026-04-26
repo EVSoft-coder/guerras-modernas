@@ -142,6 +142,37 @@ INSERT INTO `aliancas` VALUES
 UNLOCK TABLES;
 
 --
+-- Table structure for table `alliance_stats`
+--
+
+DROP TABLE IF EXISTS `alliance_stats`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `alliance_stats` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `alianca_id` bigint(20) unsigned NOT NULL,
+  `total_pontos` int(11) NOT NULL DEFAULT 0,
+  `total_membros` int(11) NOT NULL DEFAULT 0,
+  `total_bases` int(11) NOT NULL DEFAULT 0,
+  `recorded_at` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `alliance_stats_alianca_id_recorded_at_index` (`alianca_id`,`recorded_at`),
+  CONSTRAINT `alliance_stats_alianca_id_foreign` FOREIGN KEY (`alianca_id`) REFERENCES `aliancas` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `alliance_stats`
+--
+
+LOCK TABLES `alliance_stats` WRITE;
+/*!40000 ALTER TABLE `alliance_stats` DISABLE KEYS */;
+/*!40000 ALTER TABLE `alliance_stats` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `base_group_assignments`
 --
 
@@ -4894,6 +4925,39 @@ LOCK TABLES `pesquisas` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `player_stats`
+--
+
+DROP TABLE IF EXISTS `player_stats`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `player_stats` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `jogador_id` bigint(20) unsigned NOT NULL,
+  `pontos` int(11) NOT NULL DEFAULT 0,
+  `total_units` int(11) NOT NULL DEFAULT 0,
+  `attack_power` int(11) NOT NULL DEFAULT 0,
+  `defense_power` int(11) NOT NULL DEFAULT 0,
+  `total_bases` int(11) NOT NULL DEFAULT 0,
+  `recorded_at` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `player_stats_jogador_id_recorded_at_index` (`jogador_id`,`recorded_at`),
+  CONSTRAINT `player_stats_jogador_id_foreign` FOREIGN KEY (`jogador_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `player_stats`
+--
+
+LOCK TABLES `player_stats` WRITE;
+/*!40000 ALTER TABLE `player_stats` DISABLE KEYS */;
+/*!40000 ALTER TABLE `player_stats` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `recursos`
 --
 
@@ -6061,6 +6125,7 @@ INSERT INTO `sessions` VALUES
 ('vdhXoaQORcZOd0h3PtiJKMNseKbbaZo1YsnbTlCj',NULL,'3.254.111.214','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQmNyRjR5bTN5eUtYUjRWNkJpb2k4Uk0xVXhLY3pqY1ZneXVaYVFTRyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777231391),
 ('w2j9wmabjlDEZZr13C5vFpU579Mdfn5uh1LNae4q',NULL,'3.249.167.69','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQ3VEMVpLekdpdXVTejl0TlhDMU9WaEZBUGN1UkRjMlpGMHY2bG8zTyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777230442),
 ('wrKHkCWn3rQwgfrOStkkVxXjwSzWxAs0I4ogFYSV',NULL,'52.213.92.61','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiRFh4dGRHbFBwVXMxUmNpTHJ1OVozUndJS3B6TDg0Mng2UmRFVnBDZyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777232243),
+('xz1NobjdDBXE4mJHqNv4T9OsEYQKRnAYqcqulTii',NULL,'108.130.96.67','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoieEFQelVYYThpTHNLT3lCWTQySUZRM2hxSWlUbHVoRkJ1WldWUTE4diI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777243649),
 ('yatidKCjmGt7hJmkDr9Zhf9MOYlEhIAWsDO5Drax',NULL,'54.155.132.202','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoidXR6TjQ0UFN0dXMzdjlBZld4RTNLT01XTFpneE5QOXFRRXhHTU50SiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777232285),
 ('YcFskzLO2z5oSIZte2cWShIePlrDPUdA4ZSZhvIA',NULL,'3.254.111.214','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiSFd3ZlRNMkVvenF5RzFoT3FjNzFGYzlxNXAzWk1HMmhkb25BNk80TSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777232467),
 ('YWxigdmMHVNaY4PwlxcxYxLUNMI8kjIaPks2i9nQ',NULL,'34.243.67.231','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoia2s3a1ZFd3oyVDNSN1JkN3pqeWV3b3VWdXNKak9nalNablBHQ0t4RSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777230267);
@@ -7220,4 +7285,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-04-26 23:46:57
+-- Dump completed on 2026-04-27  0:00:17
