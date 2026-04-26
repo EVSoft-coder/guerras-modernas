@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Carbon;
+
 use App\Models\Base;
 use App\Models\UnitType;
 use App\Models\UnitQueue;
 use App\Models\Unit;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -184,7 +185,7 @@ class UnitQueueService
             ->get();
 
         $now = GameClock::now();
-        $currentTime = $startTime ?? $now;
+        $currentTime = $startTime ? Carbon::parse($startTime) : $now;
         $pos = 1;
 
         foreach ($items as $item) {

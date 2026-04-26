@@ -6,6 +6,7 @@ use App\Models\Base;
 use App\Domain\Building\BuildingType;
 use App\Models\BuildingQueue;
 use App\Domain\Building\BuildingRules;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -185,7 +186,7 @@ class BuildingQueueService
             ->orderBy('position', 'asc')
             ->get();
 
-        $currentTime = $startTime ?? GameClock::now();
+        $currentTime = $startTime ? Carbon::parse($startTime) : GameClock::now();
         $pos = 1;
 
         foreach ($items as $item) {
