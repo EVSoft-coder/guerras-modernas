@@ -60,34 +60,34 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                     </div>
                 )}
 
-                {/* Tactical HUD Label (Compact & Professional) */}
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:-bottom-12 z-50">
-                    <div className="bg-[#020406]/95 border border-white/10 px-4 py-2.5 rounded-md flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(0,0,0,1)] backdrop-blur-xl min-w-[140px]">
-                        {/* Building Name */}
-                        <div className="w-full text-center border-b border-white/10 pb-1.5">
-                            <span className="text-[11px] font-black text-white uppercase tracking-[0.1em] leading-none">
+                {/* Tactical HUD Label (Strict Row Separation) */}
+                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:-bottom-14 z-50">
+                    <div className="bg-[#05070a]/98 border border-white/20 rounded-md overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,1)] min-w-[160px]">
+                        {/* Row 1: Building Name */}
+                        <div className="px-4 py-3 border-b border-white/10 bg-white/5 text-center">
+                            <span className="text-[13px] font-black text-white uppercase tracking-[0.1em] block">
                                 {type.replace('_', ' ')}
                             </span>
                         </div>
                         
-                        {/* Level Section */}
-                        <div className="flex items-center gap-3">
-                            <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em]">NÍVEL</span>
-                            <span className="text-2xl font-black font-military-mono text-cyan-400 leading-none">
+                        {/* Row 2: Level Display */}
+                        <div className="px-4 py-3 text-center flex items-center justify-center gap-3">
+                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">NÍVEL</span>
+                            <span className="text-2xl font-black font-military-mono text-zinc-300">
                                 {level.toString().padStart(2, '0')}
                             </span>
                         </div>
 
                         {isConstructing && (
-                            <div className="mt-0.5 py-1 px-2 bg-orange-500/10 rounded border border-orange-500/20">
-                                <span className="text-[7px] font-black text-orange-400 uppercase tracking-widest animate-pulse">
+                            <div className="bg-orange-500/10 py-1.5 border-t border-orange-500/20 text-center">
+                                <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest animate-pulse">
                                     [ EM CONSTRUÇÃO ]
                                 </span>
                             </div>
                         )}
                     </div>
-                    {/* Visual Connector Line */}
-                    <div className="w-[1px] h-4 bg-cyan-500/40" />
+                    {/* Visual Connector */}
+                    <div className="w-[1px] h-6 bg-zinc-700/50" />
                 </div>
 
                 {/* Efeito de Obra Hi-Tech */}
