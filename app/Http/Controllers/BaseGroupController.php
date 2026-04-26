@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\BaseGroup;
-use Illuminate\Http\Request;
 
 class BaseGroupController extends Controller
 {
