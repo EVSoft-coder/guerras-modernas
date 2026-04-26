@@ -61,28 +61,34 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                 )}
 
                 {/* Tactical HUD Label */}
-                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none transition-all duration-500 group-hover:-bottom-8">
-                    <div className={`px-3 py-1 rounded-lg border backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col items-center min-w-[80px] transition-all duration-500 ${
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:-bottom-8">
+                    <div className={`px-4 py-2 rounded-lg border backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col items-center min-w-[110px] transition-all duration-500 ${
                         isConstructing 
-                            ? 'bg-orange-500/10 border-orange-500/20 group-hover:border-orange-500/40' 
-                            : 'bg-black/60 border-white/5 group-hover:border-cyan-500/30'
+                            ? 'bg-orange-500/20 border-orange-500/40' 
+                            : 'bg-black/80 border-white/10 group-hover:border-cyan-500/40'
                     }`}>
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                            <div className={`w-1 h-1 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500 shadow-[0_0_8px_#06b6d4]'}`} />
-                            <span className="text-[7px] text-neutral-500 font-black uppercase tracking-[0.3em] leading-none whitespace-nowrap">
+                        <div className="flex items-center gap-2 mb-1.5">
+                            <div className={`w-1.5 h-1.5 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500 shadow-[0_0_10px_#06b6d4]'}`} />
+                            <span className="text-[8px] text-neutral-400 font-black uppercase tracking-[0.3em] leading-none whitespace-nowrap">
                                 {type.replace('_', ' ')}
                             </span>
                         </div>
-                        {isConstructing && (
-                            <span className="text-[11px] font-black font-military-mono leading-none tracking-tighter text-orange-400">
-                                UNDER_CONST
+                        
+                        <div className="flex items-center gap-3">
+                             <span className="text-[13px] font-black font-military-mono leading-none tracking-tighter text-white">
+                                LVL_{level.toString().padStart(2, '0')}
                             </span>
-                        )}
+                            {isConstructing && (
+                                <span className="text-[8px] font-black font-military-mono leading-none tracking-tighter text-orange-400 animate-pulse">
+                                    CONSTR_MODE
+                                </span>
+                            )}
+                        </div>
                     </div>
                     
                     {/* Perspective Line */}
-                    <div className={`w-[1px] h-4 bg-gradient-to-b from-white/10 to-transparent transition-all duration-500 group-hover:h-6 ${
-                        isConstructing ? 'from-orange-500/20' : 'group-hover:from-cyan-500/40'
+                    <div className={`w-[1px] h-4 bg-gradient-to-b from-white/20 to-transparent transition-all duration-500 group-hover:h-6 ${
+                        isConstructing ? 'from-orange-500/40' : 'group-hover:from-cyan-500/60'
                     }`} />
                 </div>
 
