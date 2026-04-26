@@ -9,6 +9,7 @@ import { useGameEntities } from '@/hooks/use-game-entities';
 import { StrategyHUD } from './StrategyHUD';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { eventBus, Events } from '@src/core/EventBus';
+import { WorldMapEngine } from './WorldMapEngine';
 import { Base } from '@/types';
 
 interface WorldMapViewProps {
@@ -109,115 +110,21 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, d
     return (
         <div className="relative flex h-[800px] w-full gap-0 overflow-hidden rounded-[3rem] border border-white/10 bg-[#05080f] shadow-2xl">
             
-            {/* MAP ENGINE (FULL BACKGROUND) */}
+            {/* MAP ENGINE (NEW CANVAS MOTOR V3.0) */}
             <div 
                 ref={mapRef}
-                className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing overflow-hidden"
+                className="absolute inset-0 z-0 overflow-hidden"
                 onWheel={handleWheel}
             >
-                <motion.div 
-                    drag
-                    dragMomentum={false}
-                    style={{ 
-                        width: '100%', 
-                        height: '100%',
-                        transform: `scale(${zoom})`,
-                        transformOrigin: 'center center'
-                    }}
-                    className="relative"
-                >
-                    <TooltipProvider>
-                        {tilesToRender.map(({ x, y }) => {
-                            const baseAt = allBases.find(b => b.coordenada_x === x && b.coordenada_y === y);
-                            const isSelected = selectedSector?.x === x && selectedSector?.y === y;
-                            const terrain = getTerrain(x, y);
-                            const isPlayer = baseAt?.ownerId === playerBase?.ownerId;
-                            
-                            // DIPLOMACY ENGINE (Tribal)
-                            const baseAllianceId = baseAt?.aliancaId;
-                            const dip = diplomaties.find(d => d.target_alianca_id === baseAllianceId && d.status === 'ACCEPTED');
-                            
-                            const isAlly = baseAllianceId && (baseAllianceId === myAllianceId || dip?.tipo === 'ALLY');
-                            const isNAP  = dip?.tipo === 'NAP';
-                            const isEnemy = dip?.tipo === 'ENEMY' || (baseAt?.ownerId && !isAlly && !isNAP && !isPlayer);
-                            const isRebel = baseAt && !baseAt.ownerId;
-
-                            // Calcular posição visual relativa ao centro
-                            const left = (x - center.x + VIEWPORT_RANGE) * TILE_SIZE;
-                            const top = (y - center.y + VIEWPORT_RANGE) * TILE_SIZE;
-
-                            return (
-                                <div 
-                                    key={`${x}:${y}`}
-                                    onClick={() => jumpTo(x, y, baseAt)}
-                                    className={`absolute transition-all duration-300 group
-                                        ${isSelected ? 'z-20 ring-4 ring-sky-500 ring-offset-4 ring-offset-black/50' : 'hover:brightness-125'}
-                                    `}
-                                    style={{ 
-                                        left, top, 
-                                        width: TILE_SIZE, 
-                                        height: TILE_SIZE,
-                                        backgroundImage: `url(/assets/terrains/${terrain}.png)`,
-                                        backgroundSize: 'cover'
-                                    }}
-                                >
-                                    {/* Overlay de coordenadas sutil */}
-                                    <div className="absolute inset-0 bg-black/5" />
-                                    <span className="absolute top-1 left-1 font-mono text-[7px] text-white/20 select-none">
-                                        {x}:{y}
-                                    </span>
-
-                                    {/* Entidades no Mapa */}
-                                    {baseAt && (
-                                        <div className="flex items-center justify-center w-full h-full">
-                                            <motion.div 
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                className={`p-1 rounded-xl border-2 backdrop-blur-md relative shadow-2xl transition-all duration-500
-                                                    ${isPlayer ? 'bg-sky-500/30 border-sky-400/50 shadow-sky-500/20' : ''}
-                                                    ${isAlly && !isPlayer ? 'bg-cyan-500/30 border-cyan-400/50 shadow-cyan-500/20' : ''}
-                                                    ${isNAP ? 'bg-purple-500/30 border-purple-400/50 shadow-purple-500/20' : ''}
-                                                    ${isEnemy ? 'bg-red-500/30 border-red-400/50 shadow-red-500/20' : ''}
-                                                    ${isRebel ? 'bg-amber-600/30 border-amber-400/50 shadow-amber-600/20' : ''}
-                                                `}
-                                            >
-                                                <img 
-                                                    src="/assets/structures/base.png" 
-                                                    className="w-12 h-12 object-contain"
-                                                    style={{ 
-                                                        filter: isPlayer ? 'drop-shadow(0 0 10px #0ea5e9)' : (isAlly ? 'drop-shadow(0 0 10px #06b6d4)' : (isNAP ? 'drop-shadow(0 0 10px #a855f7)' : (isEnemy ? 'drop-shadow(0 0 10px #ef4444)' : 'drop-shadow(0 0 10px #f59e0b)')))
-                                                    }}
-                                                />
-                                                <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white/40 shadow-lg animate-pulse 
-                                                    ${isPlayer ? 'bg-sky-500' : (isAlly ? 'bg-cyan-500' : (isNAP ? 'bg-purple-500' : (isEnemy ? 'bg-red-500' : 'bg-amber-500')))}`} />
-                                            </motion.div>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </TooltipProvider>
-
-                    {/* Exércitos em Marcha */}
-                    <div className="absolute inset-0 pointer-events-none z-30">
-                        {gameEntities.map(e => {
-                            const left = (e.x - center.x + VIEWPORT_RANGE) * TILE_SIZE;
-                            const top = (e.y - center.y + VIEWPORT_RANGE) * TILE_SIZE;
-                            return (
-                                <motion.div 
-                                    key={e.id}
-                                    animate={{ left, top }}
-                                    className="absolute flex items-center justify-center"
-                                    style={{ width: TILE_SIZE, height: TILE_SIZE }}
-                                >
-                                    <div className="relative w-8 h-8 rounded-lg bg-black/80 border border-orange-500 flex items-center justify-center rotate-45 shadow-orange-500/20 shadow-xl">
-                                        <Navigation size={14} className="-rotate-45 text-orange-400" />
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                </motion.div>
+                <WorldMapEngine 
+                    center={center}
+                    zoom={zoom}
+                    bases={allBases}
+                    playerBase={playerBase}
+                    myAllianceId={myAllianceId}
+                    diplomaties={diplomaties}
+                    onSectorClick={jumpTo}
+                />
             </div>
 
             {/* FLOATING INTERFACE: SIDEBAR ESQUERDA (ALVOS) */}
