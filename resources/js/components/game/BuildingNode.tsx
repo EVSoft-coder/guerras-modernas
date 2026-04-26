@@ -61,28 +61,28 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
                 )}
  
                 {/* Tactical HUD Label (Premium Design - Repositioned Above) */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:-translate-y-6 z-[999]">
-                    <div className="relative bg-[#050608]/95 border border-white/10 rounded-lg shadow-[0_30px_70px_rgba(0,0,0,1)] backdrop-blur-2xl flex items-stretch overflow-hidden min-w-[240px]">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:-translate-y-4 z-[999]">
+                    <div className="relative bg-[#050608]/95 border border-white/10 rounded-lg shadow-[0_30px_70px_rgba(0,0,0,1)] backdrop-blur-2xl flex items-stretch overflow-hidden min-w-[200px]">
                         {/* Status Accent Line */}
                         <div className={`absolute top-0 left-0 w-full h-[1px] ${isConstructing ? 'bg-orange-500/50' : 'bg-cyan-500/30'}`} />
                         
                         {/* Left Side: Type Info */}
-                        <div className="flex-1 px-6 py-4 flex flex-col justify-center border-r border-white/5 bg-white/[0.02]">
+                        <div className="flex-1 px-5 py-3 flex flex-col justify-center border-r border-white/5 bg-white/[0.02]">
                             <div className="flex items-center gap-2 mb-1.5">
-                                <div className={`w-1.5 h-1.5 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500'}`} />
-                                <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.4em] leading-none">ESTRUTURA</span>
+                                <div className={`w-1 h-1 rounded-full ${isConstructing ? 'bg-orange-500 animate-pulse' : 'bg-cyan-500'}`} />
+                                <span className="text-[8px] font-black text-neutral-500 uppercase tracking-[0.3em] leading-none">ESTRUTURA</span>
                             </div>
-                            <span className="text-xl font-black text-white uppercase tracking-tighter leading-none">
+                            <span className="text-lg font-black text-white uppercase tracking-tighter leading-none">
                                 {type.replace('_', ' ')}
                             </span>
                         </div>
                         
                         {/* Right Side: Operational Level */}
-                        <div className="bg-white/[0.05] px-8 py-4 flex flex-col items-center justify-center min-w-[110px]">
-                            <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.3em] mb-2 leading-none text-center w-full">STATUS</span>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-[10px] font-black text-neutral-600 uppercase">LV</span>
-                                <span className="text-3xl font-black font-military-mono text-zinc-200 leading-none tracking-tighter">
+                        <div className="bg-white/[0.05] px-6 py-3 flex flex-col items-center justify-center min-w-[90px]">
+                            <span className="text-[8px] font-black text-neutral-500 uppercase tracking-[0.2em] mb-1.5 leading-none text-center w-full">STATUS</span>
+                            <div className="flex items-baseline gap-0.5">
+                                <span className="text-[9px] font-black text-neutral-600 uppercase">LV</span>
+                                <span className="text-2xl font-black font-military-mono text-zinc-200 leading-none tracking-tighter">
                                     {level.toString().padStart(2, '0')}
                                 </span>
                             </div>
