@@ -32,9 +32,10 @@ export const AttackModal: React.FC<AttackModalProps> = ({
         energia: 0
     });
 
-    // Inicializar tropas selecionadas se vazio
-    useMemo(() => {
-        if (isOpen) {
+    const [hasInitialized, setHasInitialized] = useState(false);
+
+    useEffect(() => {
+        if (isOpen && !hasInitialized) {
             const initial: Record<string, number> = {};
             tropasDisponiveis.forEach(t => {
                 const ut = unitTypes?.find(u => u.name === t.tipo || u.name === t.unidade);
@@ -44,8 +45,11 @@ export const AttackModal: React.FC<AttackModalProps> = ({
             setCargo({ suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0 });
             setMissionType('ataque');
             setMobilizarGeneral(false);
+            setHasInitialized(true);
+        } else if (!isOpen) {
+            setHasInitialized(false);
         }
-    }, [isOpen, tropasDisponiveis, unitTypes]);
+    }, [isOpen, tropasDisponiveis, unitTypes, hasInitialized]);
 
     const handleTropaChange = (unitId: string, value: number) => {
         setSelectedTropas(prev => ({ ...prev, [unitId]: value }));
