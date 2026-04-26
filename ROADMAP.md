@@ -74,18 +74,18 @@ Este documento traça o comando estratégico e o desenvolvimento técnico do sim
 
 ## 🚀 PRÓXIMAS MISSÕES (DOMÍNIO TOTAL)
 
-### 🛰️ FASE 12: Espionagem & Informação Avançada (EM CURSO)
+## ✅ FASE 12: Espionagem & Informação Avançada (CONCLUÍDO)
 - [x] Missões de Espionagem: Implementar o tipo de missão "Espionagem" no AttackModal. 🕵️
 - [x] Relatórios de Espionagem: Revelar nível de edifícios e tropas estacionadas. 📋
-- [ ] **Radar Anti-Ataque**: Detecção de ataques em curso com aviso sonoro. 📡
-- [ ] **Quadro de Honra Mundial**: Log global de conquistas massivas. 🏆
+- [x] **Radar Anti-Ataque**: Detecção de ataques em curso com aviso sonoro. 📡
+- [x] **Quadro de Honra Mundial**: Log global de conquistas massivas. 🏆
 
-### 📦 FASE 13: Logística Avançada & Comércio
-- [ ] **Centro Logístico (Mercado)**: Edifício para troca de recursos entre jogadores. 💹
-- [ ] **Comboios de Mantimentos**: Unidades para transporte de recursos. 🚛
-- [ ] **Troca Interna**: Sistema de conversão rápida de recursos. 🔄
+## ✅ FASE 13: Logística Avançada & Comércio (CONCLUÍDO)
+- [x] **Centro Logístico (Mercado)**: Edifício para troca de recursos entre jogadores. 💹
+- [x] **Comboios de Mantimentos**: Unidades para transporte de recursos. 🚛
+- [x] **Troca Interna**: Sistema de conversão rápida de recursos. 🔄
 
-### ⚔️ FASE 14: Profundidade do Motor de Batalha
+### ⚔️ FASE 14: Profundidade do Motor de Batalha (EM CURSO)
 - [ ] **Sistema de Moral**: Penalização baseada na diferença de pontos. 📉
 - [ ] **Fator Sorte**: Variável aleatória de +/- 25% no combate. 🎲
 - [ ] **Bónus Noturno**: Dobro da defesa em horários de repouso. 🌙

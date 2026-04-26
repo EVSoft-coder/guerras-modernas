@@ -141,6 +141,12 @@ return [
             'time_base' => 150, // Reduzido (de 300)
             'scaling' => 2.5
         ],
+        'mercado' => [
+            'name' => 'Hub de Comércio & Logística',
+            'cost' => ['suprimentos' => 1000, 'combustivel' => 500, 'metal' => 200, 'pessoal' => 5],
+            'time_base' => 45,
+            'scaling' => 1.5
+        ],
     ],
 
     /**

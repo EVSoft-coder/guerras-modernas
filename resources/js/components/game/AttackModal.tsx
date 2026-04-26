@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Target, Clock, Zap, Shield, Sword, Search, Flag, Loader2, ChevronRight } from 'lucide-react';
+import { Target, Clock, Zap, Shield, Sword, Search, Flag, Loader2, ChevronRight, ShoppingCart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface AttackModalProps {
@@ -22,6 +22,13 @@ export const AttackModal: React.FC<AttackModalProps> = ({
 }) => {
     const [selectedTropas, setSelectedTropas] = useState<Record<string, number>>({});
     const [missionType, setMissionType] = useState<string>('ataque');
+    const [cargo, setCargo] = useState<Record<string, number>>({
+        suprimentos: 0,
+        combustivel: 0,
+        municoes: 0,
+        metal: 0,
+        energia: 0
+    });
 
     // Inicializar tropas selecionadas se vazio
     useMemo(() => {
@@ -32,6 +39,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                 if (ut) initial[ut.id] = 0;
             });
             setSelectedTropas(initial);
+            setCargo({ suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0 });
             setMissionType('ataque');
         }
     }, [isOpen, tropasDisponiveis, unitTypes]);
@@ -40,6 +48,11 @@ export const AttackModal: React.FC<AttackModalProps> = ({
         setSelectedTropas(prev => ({ ...prev, [unitId]: value }));
     };
 
+    const handleCargoChange = (res: string, value: number) => {
+        setCargo(prev => ({ ...prev, [res]: value }));
+    };
+
+    const totalCargo = Object.values(cargo).reduce((a, b) => a + b, 0);
     const hasTropasSelected = Object.values(selectedTropas).some(v => v > 0);
 
     // Cálculos Tácticos
@@ -204,6 +217,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                         { id: 'espionagem', icon: <Search size={14} />, label: 'ESP' },
                                         { id: 'conquista', icon: <Flag size={14} />, label: 'CONQ' },
                                         { id: 'reforco', icon: <Shield size={14} />, label: 'APOIO' },
+                                        { id: 'transporte', icon: <ShoppingCart size={14} />, label: 'TRANS' },
                                     ].map(type => (
                                         <button
                                             key={type.id}
@@ -256,6 +270,33 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                     </div>
                                 </div>
                             </div>
+
+                            {missionType === 'transporte' && (
+                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4">
+                                    <h4 className="text-[10px] font-black text-sky-400 uppercase tracking-widest flex items-center gap-2">
+                                        <ShoppingCart size={12} className="text-sky-500" /> Carregamento de Recursos
+                                    </h4>
+                                    <div className="bg-black/60 p-4 rounded-xl border border-sky-500/10 space-y-3">
+                                        {['suprimentos', 'combustivel', 'municoes', 'metal', 'energia'].map(res => (
+                                            <div key={res} className="flex items-center justify-between gap-4">
+                                                <span className="text-[8px] font-black text-neutral-500 uppercase tracking-widest w-20">{res}</span>
+                                                <input 
+                                                    type="number" 
+                                                    value={cargo[res]} 
+                                                    onChange={e => handleCargoChange(res, parseInt(e.target.value))} 
+                                                    className="bg-transparent border-b border-white/5 text-right font-military-mono text-[10px] text-white w-20 outline-none focus:border-sky-500/50"
+                                                />
+                                            </div>
+                                        ))}
+                                        <div className="pt-2 border-t border-white/5 flex justify-between items-center">
+                                            <span className="text-[8px] font-black text-neutral-400 uppercase">Carga Total</span>
+                                            <span className={`text-[10px] font-black font-military-mono ${totalCargo > (stats?.capacidade || 0) ? 'text-red-500' : 'text-sky-500'}`}>
+                                                {totalCargo.toLocaleString()} / {stats?.capacidade.toLocaleString()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
                         </div>
 
                         <div className="pt-6">
@@ -265,19 +306,20 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                     ? 'bg-red-600 hover:bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.3)]' 
                                     : 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
                                 }`}
-                                disabled={!hasTropasSelected || isSending}
+                                disabled={!hasTropasSelected || isSending || (missionType === 'transporte' && totalCargo > (stats?.capacidade || 0))}
                                 onClick={() => onEnviar({ 
                                     destino_id: destinoBase?.id || null, 
                                     destino_x: destinoBase?.coordenada_x, 
                                     destino_y: destinoBase?.coordenada_y, 
                                     tropas: selectedTropas, 
-                                    tipo: missionType 
+                                    tipo: missionType,
+                                    ...cargo
                                 })}
                             >
                                 {isSending ? (
                                     <Loader2 size={16} className="animate-spin" />
                                 ) : (
-                                    <>{missionType === 'reforco' ? 'ENVIAR APOIO' : 'AUTORIZAR INVASÃO'} <ChevronRight size={16} className="ml-2" /></>
+                                    <>{missionType === 'reforco' ? 'ENVIAR APOIO' : missionType === 'transporte' ? 'INICIAR COMBOIO' : 'AUTORIZAR INVASÃO'} <ChevronRight size={16} className="ml-2" /></>
                                 )}
                             </Button>
                         </div>

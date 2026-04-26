@@ -21,6 +21,7 @@ class BuildingType
     const MINA_METAL = 'mina_metal'; 
     const CENTRAL_ENERGIA = 'central_energia';
     const HOUSING = 'housing';
+    const MERCADO = 'mercado';
  
     /**
      * Aliases para compatibilidade com nomes legados ou front-end.
@@ -33,6 +34,9 @@ class BuildingType
         
         // 2. Mapeamento de Aliases Tácticos
         $map = [
+            'mercado' => self::MERCADO,
+            'hub de comércio' => self::MERCADO,
+            'logistica' => self::MERCADO,
             'qg' => self::HQ,
             'hq' => self::HQ,
             'quartelgeneral' => self::HQ,

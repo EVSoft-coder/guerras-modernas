@@ -9,15 +9,30 @@ interface ArmyMovementPanelProps {
     gameConfig: any;
 }
 
-export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({ 
-    ataquesEnviados, ataquesRecebidos, gameConfig 
+export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps & { radarLevel?: number }> = ({ 
+    ataquesEnviados, ataquesRecebidos, gameConfig, radarLevel = 0
 }) => {
     const [now, setNow] = useState(Date.now());
+    const [lastKnownAttackIds, setLastKnownAttackIds] = useState<number[]>([]);
 
     useEffect(() => {
         const interval = setInterval(() => setNow(Date.now()), 1000);
         return () => clearInterval(interval);
     }, []);
+
+    // ALERTA SONORO DE RADAR (FASE 12)
+    useEffect(() => {
+        const currentIds = (ataquesRecebidos || []).map(a => a.id);
+        const hasNewAttack = currentIds.some(id => !lastKnownAttackIds.includes(id));
+
+        if (hasNewAttack && lastKnownAttackIds.length > 0) {
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('SISTEMA: Áudio bloqueado pelo browser até interação.', e));
+        }
+
+        setLastKnownAttackIds(currentIds);
+    }, [ataquesRecebidos]);
 
     const getTimeLeft = (targetTime: string) => {
         const diff = Math.max(0, new Date(targetTime).getTime() - now);
@@ -26,24 +41,32 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const hasMovements = (ataquesEnviados?.length ?? 0) > 0 || (ataquesRecebidos?.length ?? 0) > 0;
+    // FILTRAGEM POR RADAR (FASE 12)
+    // Sem radar: Só detecta ataques a < 5 minutos
+    const visibleAttacks = (ataquesRecebidos || []).filter(atk => {
+        if (radarLevel >= 1) return true;
+        const diff = new Date(atk.arrival_time).getTime() - now;
+        return diff < 300000; // 5 minutos
+    });
+
+    const hasMovements = (ataquesEnviados?.length ?? 0) > 0 || (visibleAttacks?.length ?? 0) > 0;
 
     if (!hasMovements) return null;
 
     return (
         <div className="tactical-glass border-white/5 backdrop-blur-3xl overflow-hidden mb-8 rounded-[2rem] shadow-[0_30px_60px_rgba(0,0,0,0.8)] relative group border">
-            <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent ${ataquesRecebidos?.length > 0 ? 'via-red-500' : 'via-cyan-500/50'} to-transparent shadow-[0_0_15px_rgba(239,68,68,0.5)]`}></div>
+            <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent ${visibleAttacks?.length > 0 ? 'via-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'via-cyan-500/50'} to-transparent`}></div>
             
             <div className="px-6 py-4 bg-white/[0.01] border-b border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-xl border ${ataquesRecebidos?.length > 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-cyan-500/10 border-cyan-500/20'}`}>
-                        <Activity className={ataquesRecebidos?.length > 0 ? 'text-red-500 animate-pulse' : 'text-cyan-500'} size={18} />
+                    <div className={`p-2 rounded-xl border ${visibleAttacks?.length > 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-cyan-500/10 border-cyan-500/20'}`}>
+                        <Sword className={visibleAttacks?.length > 0 ? 'text-red-500 animate-pulse' : 'text-cyan-500'} size={18} />
                     </div>
                     <h3 className="text-[10px] uppercase font-black tracking-[0.4em] text-neutral-500 font-military-mono">
                         Telemetria_Espaço_Aéreo
                     </h3>
                 </div>
-                {ataquesRecebidos?.length > 0 && (
+                {visibleAttacks?.length > 0 && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-red-500/20 border border-red-500/40 rounded-full animate-pulse">
                         <ShieldAlert size={12} className="text-red-500" />
                         <span className="text-[9px] font-black text-red-500 uppercase tracking-widest">Alerta_Invasão</span>
@@ -54,7 +77,7 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps> = ({
             <div className="divide-y divide-white/[0.02]">
                 {/* ATAQUES RECEBIDOS (AMEAÇAS) */}
                 <AnimatePresence>
-                    {ataquesRecebidos?.map(movement => (
+                    {visibleAttacks?.map(movement => (
                         <motion.div 
                             key={movement.id} 
                             initial={{ opacity: 0, x: -20 }}

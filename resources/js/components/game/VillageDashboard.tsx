@@ -31,7 +31,7 @@ export function VillageDashboard({
     diplomaties = STABLE_EMPTY_ARRAY, myAllianceId,
     reinforcements = STABLE_EMPTY_ARRAY, stationedOutside = STABLE_EMPTY_ARRAY,
     research = null, researchBonuses = {}, researchConfig = null,
-    activeEvents = []
+    activeEvents = [], radarLevel = 0
 }: DashboardProps & { 
     research?: any; 
     researchBonuses?: any; 
@@ -39,6 +39,7 @@ export function VillageDashboard({
     activeEvents?: any[];
     reinforcements?: any[];
     stationedOutside?: any[];
+    radarLevel?: number;
 }) {
     // 0. ECS ENGINE INTEGRATION
     const { globalState } = useGameEntities();
@@ -330,7 +331,12 @@ export function VillageDashboard({
                          </div>
                     </div>
                     
-                    <ArmyMovementPanel ataquesEnviados={ataquesEnviados ?? []} ataquesRecebidos={ataquesRecebidos ?? []} gameConfig={gameConfig} />
+                    <ArmyMovementPanel 
+                        ataquesEnviados={ataquesEnviados ?? []} 
+                        ataquesRecebidos={ataquesRecebidos ?? []} 
+                        gameConfig={gameConfig} 
+                        radarLevel={radarLevel}
+                    />
                     
                     {gameMode === 'WORLD_MAP' ? (
                         <WorldMapView 
@@ -411,17 +417,26 @@ export function VillageDashboard({
                         </CardHeader>
                         <CardContent className="py-6 min-h-[100px]">
                             <div className="space-y-4">
-                                {(relatoriosGlobal ?? []).length > 0 ? (relatoriosGlobal ?? []).map((r: { id: number, created_at: string, atacante?: { username: string }, defensor?: { username: string } }) => (
-                                    <div key={r.id} className="group/item relative pl-4 transition-all duration-300">
-                                        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-orange-500/20 group-hover/item:bg-orange-500 transition-colors"></div>
-                                        <div className="text-[8px] text-neutral-600 font-black uppercase tracking-widest mb-1 group-hover/item:text-neutral-400 transition-colors">
-                                            {new Date(r.created_at).toLocaleTimeString()}
+                                {(relatoriosGlobal ?? []).length > 0 ? (relatoriosGlobal ?? []).map((r: { id: number, created_at: string, atacante?: { username: string }, defensor?: { username: string }, detalhes?: any }) => {
+                                    const isConquest = r.detalhes?.conquest_achieved;
+                                    return (
+                                        <div key={r.id} className="group/item relative pl-4 transition-all duration-300">
+                                            <div className={`absolute left-0 top-0 bottom-0 w-[2px] ${isConquest ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-orange-500/20'} group-hover/item:bg-orange-500 transition-colors`}></div>
+                                            <div className="text-[8px] text-neutral-600 font-black uppercase tracking-widest mb-1 group-hover/item:text-neutral-400 transition-colors">
+                                                {r.created_at ? new Date(r.created_at).toLocaleTimeString() : 'RECENT_INTEL'}
+                                            </div>
+                                            <div className="text-[10px] text-neutral-400 group-hover/item:text-white transition-colors">
+                                                {isConquest ? (
+                                                    <span className="text-emerald-400 font-black uppercase tracking-tighter">
+                                                        [CONQUISTA] {r.atacante?.username} CAPTUROU O SETOR DE {r.defensor?.username}
+                                                    </span>
+                                                ) : (
+                                                    <>Operação de <span className="text-orange-400 font-black">{r.atacante?.username}</span> contra <span className="text-white font-bold">{r.defensor?.username}</span></>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="text-[10px] text-neutral-400 group-hover/item:text-white transition-colors">
-                                            Operação de <span className="text-orange-400 font-black">{r.atacante?.username}</span> interceptada em contra-partida com <span className="text-white font-bold">{r.defensor?.username}</span>
-                                        </div>
-                                    </div>
-                                )) : (
+                                    );
+                                }) : (
                                     <div className="text-center py-4 text-neutral-700 text-[10px] font-black uppercase tracking-widest opacity-30">
                                         Sem Atividade de Inteligência
                                     </div>

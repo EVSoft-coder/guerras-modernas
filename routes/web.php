@@ -24,6 +24,16 @@ ini_set('default_charset', 'UTF-8');
 mb_internal_encoding('UTF-8');
 
 Route::get('/', function () { return redirect()->route('dashboard'); })->name('home');
+
+Route::get('/admin/migrate', function() {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return "MIGRAÇÃO CONCLUÍDA: " . Artisan::output();
+    } catch (\Exception $e) {
+        return "ERRO: " . $e->getMessage();
+    }
+});
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->withoutMiddleware(['auth']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');
@@ -96,6 +106,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/enviar', [App\Http\Controllers\MensagemController::class, 'enviar'])->name('enviar');
         Route::delete('/{id}', [App\Http\Controllers\MensagemController::class, 'apagar'])->name('apagar');
         Route::post('/marcar-lidas', [App\Http\Controllers\MensagemController::class, 'marcarTodasLidas'])->name('marcar.lidas');
+    });
+
+    // MERCADO (FASE 13)
+    Route::prefix('market')->name('market.')->group(function () {
+        Route::get('/', [App\Http\Controllers\MarketController::class, 'index'])->name('index');
+        Route::post('/offer', [App\Http\Controllers\MarketController::class, 'store'])->name('store');
+        Route::post('/accept/{id}', [App\Http\Controllers\MarketController::class, 'accept'])->name('accept');
+        Route::post('/cancel/{id}', [App\Http\Controllers\MarketController::class, 'cancel'])->name('cancel');
     });
 });
 

@@ -27,7 +27,13 @@ class DashboardController extends Controller
         if (!$user) return redirect('/login');
 
         // Hack para servidores sem acesso ao terminal: Limpar cache de config em cada load de dashboard
-        try { \Illuminate\Support\Facades\Artisan::call('config:clear'); } catch (\Exception $e) {}
+        try { 
+            \Illuminate\Support\Facades\Artisan::call('config:clear'); 
+            // FASE 14: Sincronizar Arsenal Militar (Apenas se as novas unidades não existirem)
+            if (\DB::table('unit_types')->count() < 5) {
+                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'UnitTypeSeeder', '--force' => true]);
+            }
+        } catch (\Exception $e) {}
 
         // 1. Identificar Base Ativa
         $selectedBaseId = session('selected_base_id');

@@ -67,10 +67,31 @@ class CombatService
         $totalAttack *= $eventoMultiplicador;
         $totalDefense *= $eventoMultiplicador;
 
-        Log::channel('game')->info("[BATTLE] ATK={$totalAttack} (event x{$eventoMultiplicador}) vs DEF={$totalDefense} (event x{$eventoMultiplicador}, wall+{$wallBonus})");
+        // FASE 14: Fator Sorte (+/- 25%)
+        $luck = random_int(-25, 25) / 100;
+        $luckMultiplier = 1 + $luck;
+        $totalAttack *= $luckMultiplier;
+
+        // FASE 14: Sistema de Moral (Proteção de jogadores pequenos)
+        $moral = 100;
+        if ($attacker && $defender && $attacker->pontos > 0) {
+            // Formula: ((Defender Points / Attacker Points) * 3 + 0.3) * 100
+            // Mas limitada entre 30% e 100%
+            $moral = (($defender->pontos / $attacker->pontos) * 3 + 0.25) * 100;
+            $moral = (int) min(100, max(30, $moral));
+            $totalAttack *= ($moral / 100);
+        }
+
+        // FASE 14: Bónus Noturno (00:00 - 08:00) -> +100% Defesa
+        $hour = (int) date('H');
+        $isNight = $hour >= 0 && $hour < 8;
+        $nightBonus = $isNight ? 1.0 : 0;
+        $totalDefense *= (1 + $nightBonus);
+
+        Log::channel('game')->info("[BATTLE] ATK={$totalAttack} (Luck: {$luck}, Moral: {$moral}%) vs DEF={$totalDefense} (Night: " . ($isNight ? 'YES' : 'NO') . ")");
 
         if ($totalAttack <= 0) {
-            return $this->formatResult(false, $attackerUnits, $defenderUnits, 0, 1);
+            return $this->formatResult(false, $attackerUnits, $defenderUnits, 0, 1, 0, 0, 0, $luck, $moral, $isNight);
         }
 
         // Determinar Vencedor e Rácio de Perdas
@@ -96,7 +117,10 @@ class CombatService
             $totalDefense,
             $wallBonus,
             $atkBonus,
-            $defBonus
+            $defBonus,
+            $luck,
+            $moral,
+            $isNight
         );
     }
 
@@ -124,7 +148,10 @@ class CombatService
         float $defPower,
         float $wallBonus = 0,
         float $atkResearchBonus = 0,
-        float $defResearchBonus = 0
+        float $defResearchBonus = 0,
+        float $luck = 0,
+        int $moral = 100,
+        bool $isNight = false
     ): array {
         return [
             'winner' => $attackerWon ? 'attacker' : 'defender',
@@ -137,6 +164,10 @@ class CombatService
                 'wall_bonus' => $wallBonus,
                 'attacker_research_bonus' => $atkResearchBonus,
                 'defender_research_bonus' => $defResearchBonus,
+                'luck' => $luck,
+                'moral' => $moral,
+                'night_bonus' => $isNight ? 1.0 : 0,
+                'is_night' => $isNight
             ]
         ];
     }

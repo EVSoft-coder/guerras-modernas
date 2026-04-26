@@ -27,11 +27,11 @@ class MovementService
     }
 
     /**
-     * Inicia um movimento militar entre bases (Passo 3).
+     * Inicia um movimento militar ou logístico entre bases (Passo 3).
      */
-    public function sendTroops(Base $origin, Base $target, array $units, string $type = 'attack'): Movement
+    public function sendTroops(Base $origin, Base $target, array $units, string $type = 'attack', array $cargo = []): Movement
     {
-        return DB::transaction(function() use ($origin, $target, $units, $type) {
+        return DB::transaction(function() use ($origin, $target, $units, $type, $cargo) {
             // Sincronizar recursos antes de qualquer validação tática
             app(ResourceService::class)->syncResources($origin);
 
@@ -87,14 +87,30 @@ class MovementService
             $arrival = $departure->copy()->addSeconds($travelTimeSeconds);
 
             // 4. Criar Movement (Passo 1 - Status: moving)
-            $movement = Movement::create([
+            $movementData = [
                 'origin_id' => $origin->id,
                 'target_id' => $target->id,
                 'departure_time' => $departure,
                 'arrival_time' => $arrival,
                 'status' => 'moving',
                 'type' => $type
-            ]);
+            ];
+
+            // 4.1 Adicionar Carga (Transporte)
+            if (!empty($cargo)) {
+                $recursosOrigin = $origin->recursos;
+                foreach ($cargo as $res => $amount) {
+                    if ($amount > 0) {
+                        if ($recursosOrigin->$res < $amount) {
+                            throw new \Exception("LOGÍSTICA: Recursos insuficientes para transporte de {$res}.");
+                        }
+                        $recursosOrigin->decrement($res, $amount);
+                        $movementData["loot_{$res}"] = $amount;
+                    }
+                }
+            }
+
+            $movement = Movement::create($movementData);
 
             // 5. Inserir movement_units e Remover da Origem (Passo 3.6 / 3.7)
             foreach ($units as $typeId => $qty) {
@@ -178,6 +194,20 @@ class MovementService
             app(SpyService::class)->resolveSpyMission($movement, $base);
             
             // Após a espionagem, as unidades sobreviventes regressam
+            $survivors = $movement->units->map(fn($u) => [
+                'id' => $u->unit_type_id,
+                'quantity' => $u->quantity
+            ])->filter(fn($u) => $u['quantity'] > 0);
+
+            if ($survivors->isNotEmpty()) {
+                $this->createReturnMovement($movement, $base, $movement->origin, $survivors);
+            }
+        }
+
+        if ($movement->type === 'transporte') {
+            $this->transferLootToBase($movement, $base);
+            
+            // Comboio de suprimentos regressa vazio
             $survivors = $movement->units->map(fn($u) => [
                 'id' => $u->unit_type_id,
                 'quantity' => $u->quantity
@@ -284,7 +314,10 @@ class MovementService
             $loot = $this->calculateLoot($result['attacker_units'], $targetBase);
             
             // 5. EXECUTAR CONQUEST (Se político presente)
-            $this->handlePoliticalAction($movement, $targetBase, $result['attacker_units']);
+            $conquest = $this->handlePoliticalAction($movement, $targetBase, $result['attacker_units']);
+            if ($conquest) {
+                $result['conquest_achieved'] = true;
+            }
         }
 
         // 6. Tratar Sobreviventes
@@ -381,7 +414,7 @@ class MovementService
     /**
      * Resolve ações de conquista política baseadas na presença de unidades especiais (Fase 13).
      */
-    private function handlePoliticalAction(Movement $movement, Base $targetBase, array $attackerUnits): void
+    private function handlePoliticalAction(Movement $movement, Base $targetBase, array $attackerUnits): bool
     {
         // PASSO 4 - DETEÇÃO POLÍTICO
         $politicoCount = 0;
@@ -391,7 +424,7 @@ class MovementService
             }
         }
 
-        if ($politicoCount <= 0) return;
+        if ($politicoCount <= 0) return false;
 
         // PASSO 5 - REDUÇÃO DE LEALDADE (Tribal)
         $loyaltyService = app(LoyaltyService::class);
@@ -403,7 +436,10 @@ class MovementService
         // PASSO 6 - CONQUISTA
         if ($newLoyalty <= 0) {
             $this->executeConquest($movement, $targetBase);
+            return true;
         }
+
+        return false;
     }
 
     /**

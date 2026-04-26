@@ -18,16 +18,20 @@ interface Relatorio {
     origem_nome: string;
     destino_nome: string;
     detalhes: {
-        tropa_ataque: Record<string, number>;
-        tropa_defesa: Record<string, number>;
-        perdas_atacante: Record<string, number>;
-        perdas_defensor: Record<string, number>;
+        attacker_units: any[];
+        defender_units: any[];
         saque: Record<string, number>;
-        luck: number;
-        morale: number;
-        wallBonus: number;
-        totalAtk: number;
-        totalDef: number;
+        stats: {
+            luck: number;
+            moral: number;
+            wall_bonus: number;
+            night_bonus: number;
+            is_night: boolean;
+            attack_power: number;
+            defense_power: number;
+            attacker_research_bonus: number;
+            defender_research_bonus: number;
+        };
         coords: string;
     };
     created_at: string;
@@ -97,8 +101,7 @@ export default function Show({ relatorio }: { relatorio: Relatorio }) {
                             title="Desdobramento Ofensivo" 
                             actor={relatorio.atacante.nome}
                             base={relatorio.origem_nome}
-                            units={det.tropa_ataque}
-                            losses={det.perdas_atacante}
+                            units={det.attacker_units}
                             color="sky"
                             icon={<Sword size={18} />}
                         />
@@ -114,33 +117,40 @@ export default function Show({ relatorio }: { relatorio: Relatorio }) {
                             <div className="space-y-4">
                                 <StatRow 
                                     label="Probabilidade de Sorte" 
-                                    value={`${(det.luck * 100).toFixed(1)}%`}
+                                    value={`${(det.stats.luck * 100).toFixed(1)}%`}
                                     desc="Modificador aleatório de impacto"
-                                    color={det.luck >= 0 ? 'text-emerald-400' : 'text-red-400'}
-                                    icon={det.luck >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                                    color={det.stats.luck >= 0 ? 'text-emerald-400' : 'text-red-400'}
+                                    icon={det.stats.luck >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                                 />
                                 <StatRow 
                                     label="Moral da Tropa" 
-                                    value={`${(det.morale * 100).toFixed(0)}%`}
+                                    value={`${det.stats.moral}%`}
                                     desc="Eficiência baseada no porte do alvo"
-                                    color={det.morale === 1 ? 'text-emerald-400' : 'text-orange-400'}
+                                    color={det.stats.moral >= 100 ? 'text-emerald-400' : 'text-orange-400'}
                                     icon={<Zap size={12} />}
                                 />
                                 <StatRow 
                                     label="Defesa de Perímetro" 
-                                    value={`+${((det.wallBonus - 1) * 100).toFixed(0)}%`}
+                                    value={`+${(det.stats.wall_bonus * 100).toFixed(0)}%`}
                                     desc="Vantagem táctica da muralha"
                                     color="text-white"
                                     icon={<Shield size={12} />}
                                 />
+                                <StatRow 
+                                    label="Bónus Noturno" 
+                                    value={det.stats.is_night ? '+100%' : 'Inativo'}
+                                    desc="Operações sob cobertura da escuridão"
+                                    color={det.stats.is_night ? 'text-indigo-400' : 'text-neutral-600'}
+                                    icon={<Info size={12} />}
+                                />
                                 <div className="pt-4 border-t border-white/5 space-y-4">
                                     <div className="flex justify-between items-end">
                                         <div className="text-[10px] font-black text-neutral-500 uppercase">Força Atacante Total</div>
-                                        <div className="text-lg font-black text-white">{Math.round(det.totalAtk).toLocaleString()}</div>
+                                        <div className="text-lg font-black text-white">{Math.round(det.stats.attack_power).toLocaleString()}</div>
                                     </div>
                                     <div className="flex justify-between items-end">
                                         <div className="text-[10px] font-black text-neutral-500 uppercase">Resistência Defensiva</div>
-                                        <div className="text-lg font-black text-red-500">{Math.round(det.totalDef).toLocaleString()}</div>
+                                        <div className="text-lg font-black text-red-500">{Math.round(det.stats.defense_power).toLocaleString()}</div>
                                     </div>
                                 </div>
                             </div>
@@ -173,8 +183,7 @@ export default function Show({ relatorio }: { relatorio: Relatorio }) {
                             title="Guarnição Defensiva" 
                             actor={relatorio.defensor ? relatorio.defensor.nome : 'FORÇAS LOCAIS'}
                             base={relatorio.destino_nome}
-                            units={det.tropa_defesa}
-                            losses={det.perdas_defensor}
+                            units={det.defender_units}
                             color="red"
                             icon={<Shield size={18} />}
                         />
@@ -185,7 +194,7 @@ export default function Show({ relatorio }: { relatorio: Relatorio }) {
     );
 }
 
-const BattleForceCard = ({ title, actor, base, units, losses, color, icon }: any) => (
+const BattleForceCard = ({ title, actor, base, units, color, icon }: any) => (
     <div className="bg-neutral-900/40 border border-white/5 rounded-[2rem] p-6 space-y-4">
         <div className="flex justify-between items-start">
             <div className="space-y-1">
@@ -203,14 +212,14 @@ const BattleForceCard = ({ title, actor, base, units, losses, color, icon }: any
                 <div className="text-center">Total</div>
                 <div className="text-center">Perdas</div>
             </div>
-            {Object.entries(units).map(([unit, qty]: [any, any]) => {
-                const loss = losses[unit] || 0;
-                if (qty === 0 && loss === 0) return null;
+            {units.map((unit: any) => {
+                const qty = unit.quantity + (unit.losses || 0);
+                const loss = unit.losses || 0;
                 
                 return (
-                    <div key={unit} className="grid grid-cols-4 items-center bg-black/40 p-2 rounded-xl border border-white/5 group hover:border-white/10 transition-colors">
+                    <div key={unit.name} className="grid grid-cols-4 items-center bg-black/40 p-2 rounded-xl border border-white/5 group hover:border-white/10 transition-colors">
                         <div className="col-span-2 text-[10px] font-bold text-neutral-300 uppercase truncate">
-                            {unit.replace(/_/g, ' ')}
+                            {unit.name.replace(/_/g, ' ')}
                         </div>
                         <div className="text-center text-[11px] font-mono font-bold text-white">
                             {qty}
@@ -221,7 +230,7 @@ const BattleForceCard = ({ title, actor, base, units, losses, color, icon }: any
                     </div>
                 );
             })}
-            {Object.keys(units).length === 0 && (
+            {units.length === 0 && (
                 <div className="py-8 text-center border border-dashed border-white/10 rounded-xl text-neutral-600 text-[10px] font-black uppercase tracking-widest">
                     Sem registo de tropas
                 </div>

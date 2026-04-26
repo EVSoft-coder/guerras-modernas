@@ -33,7 +33,13 @@ class AtaqueController extends Controller
             'destino_x' => 'nullable|integer',
             'destino_y' => 'nullable|integer',
             'tropas' => 'required|array',
-            'tipo' => 'required|string|in:ataque,espionagem,conquista,reforco'
+            'tipo' => 'required|string|in:ataque,espionagem,conquista,reforco,transporte',
+            'suprimentos' => 'nullable|numeric',
+            'combustivel' => 'nullable|numeric',
+            'municoes' => 'nullable|numeric',
+            'metal' => 'nullable|numeric',
+            'energia' => 'nullable|numeric',
+            'pessoal' => 'nullable|numeric',
         ]);
 
         try {

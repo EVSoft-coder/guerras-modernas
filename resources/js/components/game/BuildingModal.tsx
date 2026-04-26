@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Logger } from '../../../../src/core/Logger';
 import { getEvolutionLevelAsset, calculateBuildingCost, calculateConstructionTime, calculateResourceProduction, parseResourceValue } from '@/lib/game-utils';
 import { getBuildingAsset, getUnitAsset } from '@/utils/assetMapper';
+import { MarketPanel } from './MarketPanel';
 
 interface BuildingModalProps {
     isOpen: boolean;
@@ -92,6 +93,8 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         if (tipoLower === 'radar_estrategico') return ['agente', 'espiao', 'drone'].some(s => k.includes(s));
         return false;
     }) : [];
+    
+    const isMarket = ['mercado', 'logistica', 'hub_de_comercio', 'armazem'].includes(tipoLower);
 
     useEffect(() => {
         if (isMilitary && availableUnits.length > 0 && !selectedUnit) setSelectedUnit(availableUnits[0].name);
@@ -153,7 +156,9 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                             </DialogDescription>
                         </header>
 
-                        {isMilitary ? (
+                        {isMarket ? (
+                            <MarketPanel baseId={building.base_id} resources={resources} />
+                        ) : isMilitary ? (
                             <div className="space-y-8">
                                 <h4 className="text-[9px] font-black uppercase text-neutral-400 tracking-[0.4em] flex items-center gap-4">
                                     <div className="w-8 h-[1px] bg-emerald-500/30" />

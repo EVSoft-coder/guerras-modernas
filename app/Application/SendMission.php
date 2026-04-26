@@ -61,7 +61,16 @@ class SendMission
             }
 
             if ($baseDestino) {
-                $this->movementService->sendTroops($baseOrigem, $baseDestino, $data['tropas'], $data['tipo']);
+                // Extrair Cargo (Fase 13)
+                $cargo = [];
+                $resourceKeys = ['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'];
+                foreach ($resourceKeys as $key) {
+                    if (isset($data[$key]) && (float)$data[$key] > 0) {
+                        $cargo[$key] = (float) $data[$key];
+                    }
+                }
+
+                $this->movementService->sendTroops($baseOrigem, $baseDestino, $data['tropas'], $data['tipo'], $cargo);
             } else {
                 throw new \Exception("COORDENADAS: O comando militar exige identificação de estrutura alvo para mobilização.");
             }
