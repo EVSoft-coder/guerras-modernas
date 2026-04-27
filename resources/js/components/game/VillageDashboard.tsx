@@ -10,6 +10,7 @@ import { useToasts } from '@/components/game/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Target, Zap, Shield, Globe, Book } from 'lucide-react';
 import { ArmyMovementPanel } from '@/components/game/ArmyMovementPanel';
+import { BUILDING_LAYOUT } from '@/config/buildingLayout';
 import { gameStateService } from '@src/services/GameStateService';
 import { eventBus, Events } from '@src/core/EventBus';
 import { WorldMapView } from '@/components/game/WorldMapView';
@@ -80,6 +81,20 @@ export function VillageDashboard({
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [isTraining, setIsTraining] = useState(false);
     const [gameMode, setGameMode] = useState<'VILLAGE' | 'WORLD_MAP'>('VILLAGE');
+
+    // 1.2 PRE-LOAD TACTICAL ASSETS (Background optimization)
+    useEffect(() => {
+        // Obter todos os assets únicos do layout
+        const assetPaths = Object.values(BUILDING_LAYOUT).map(l => `/assets/buildings/${l.assetName}`);
+        
+        // Disparar pre-fetch silencioso
+        assetPaths.forEach(path => {
+            const img = new Image();
+            img.src = path;
+        });
+
+        Logger.info(`ASSET_PRELOAD: ${assetPaths.length} tactical structures indexed.`);
+    }, []);
 
     useEffect(() => {
         if (!base) return;

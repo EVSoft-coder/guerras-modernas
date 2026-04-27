@@ -152,7 +152,10 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, d
                                 `}
                             >
                                 <div className="flex flex-col items-start gap-0.5">
-                                    <span className="text-[10px] font-black uppercase truncate max-w-[120px]">{b.nome}</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] font-black uppercase truncate max-w-[120px]">{b.nome}</span>
+                                        <span className="text-[8px] font-mono text-sky-400 opacity-60">({b.pontos || 0} pts)</span>
+                                    </div>
                                     <span className="text-[8px] font-mono opacity-60">[{b.coordenada_x}:{b.coordenada_y}]</span>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -209,9 +212,17 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, d
                         >
                             <div className="flex items-center gap-6">
                                 <div className={`p-4 rounded-2xl border-2 backdrop-blur-lg
-                                    ${selectedSector.base?.ownerId === playerBase?.ownerId ? 'bg-sky-500/10 border-sky-500/40 text-sky-400' : 'bg-red-500/10 border-red-500/40 text-red-400'}
+                                    ${selectedSector.base?.jogador_id === playerBase?.jogador_id ? 'bg-sky-500/10 border-sky-500/40 text-sky-400' : 
+                                      (selectedSector.base?.is_npc ? 'bg-neutral-500/10 border-neutral-500/40 text-neutral-400' : 'bg-red-500/10 border-red-500/40 text-red-400')}
                                 `}>
-                                    <img src="/assets/structures/base.png" className="w-12 h-12 object-contain" />
+                                    <img 
+                                        src={`/assets/structures/${
+                                            selectedSector.base?.pontos >= 3000 ? 'base_lvl4' :
+                                            selectedSector.base?.pontos >= 1000 ? 'base_lvl3' :
+                                            selectedSector.base?.pontos >= 200 ? 'base_lvl2' : 'base_lvl1'
+                                        }.png`} 
+                                        className="w-12 h-12 object-contain" 
+                                    />
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-3">
@@ -221,6 +232,11 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, d
                                         <span className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-mono text-sky-400 border border-white/5">
                                             [{selectedSector.x}:{selectedSector.y}]
                                         </span>
+                                        {selectedSector.base?.pontos && (
+                                            <span className="px-3 py-1 bg-sky-500/10 rounded-full text-[10px] font-black text-sky-400 border border-sky-500/20">
+                                                {selectedSector.base.pontos} PONTOS
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="flex items-center gap-4 text-[10px] font-black uppercase text-neutral-500 tracking-[0.15em]">
                                         <div className="flex items-center gap-2">

@@ -11,7 +11,7 @@ interface BuildingNodeProps {
     onClick?: () => void;
 }
 
-export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout, isConstructing, onClick }) => {
+export const BuildingNode = React.memo(({ type, level, layout, isConstructing, onClick }: BuildingNodeProps) => {
     const [isInvalid, setIsInvalid] = useState(false);
     const assetPath = `/assets/buildings/${layout.assetName}`;
 
@@ -113,4 +113,4 @@ export const BuildingNode: React.FC<BuildingNodeProps> = ({ type, level, layout,
             </div>
         </motion.div>
     );
-};
+});

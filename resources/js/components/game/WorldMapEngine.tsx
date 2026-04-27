@@ -33,21 +33,22 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
     const textures = useRef<Record<string, HTMLImageElement>>({});
 
     useEffect(() => {
-        const terrainTypes = ['grass', 'mountain', 'desert', 'water', 'base'];
+        const terrainTypes = ['grass', 'mountain', 'desert', 'water', 
+                             'base_lvl1', 'base_lvl2', 'base_lvl3', 'base_lvl4'];
         terrainTypes.forEach(type => {
             const img = new Image();
-            img.src = type === 'base' ? '/assets/structures/base.png' : `/assets/terrains/${type}.png`;
+            img.src = type.startsWith('base') ? `/assets/structures/${type}.png` : `/assets/terrains/${type}.png`;
             img.onload = () => { textures.current[type] = img; };
         });
     }, []);
 
-    const getTerrain = (tx: number, ty: number) => {
-        if (ty < 0 || ty > 1000 || tx < 0 || tx > 1000) return 'water';
-        const noise = (Math.sin(tx * 0.12) + Math.cos(ty * 0.15) + Math.sin(tx * 0.3 + ty * 0.2)) / 3;
-        if (noise > 0.53) return 'mountain';
-        if (noise < -0.45) return 'desert';
-        if (noise < -0.65) return 'water';
-        return 'grass';
+    const [hoveredSector, setHoveredSector] = useState<{x: number, y: number, base?: any} | null>(null);
+
+    const getBaseTexture = (pontos: number) => {
+        if (pontos < 200) return 'base_lvl1';
+        if (pontos < 1000) return 'base_lvl2';
+        if (pontos < 3000) return 'base_lvl3';
+        return 'base_lvl4';
     };
 
     const draw = useCallback(() => {
@@ -84,19 +85,27 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
                 if (img) {
                     ctx.drawImage(img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 } else {
-                    // Fallback se imagem ainda não carregou
-                    ctx.fillStyle = terrain === 'water' ? '#1e3a8a' : (terrain === 'mountain' ? '#374151' : '#064e3b');
+                    ctx.fillStyle = terrain === 'water' ? '#0f172a' : (terrain === 'mountain' ? '#1e293b' : '#064e3b');
                     ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 }
 
-                // Grid sutil
-                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                // Grelha Tática (TW Style)
+                ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+                if (x % 5 === 0) ctx.strokeStyle = 'rgba(255,255,255,0.1)';
                 ctx.lineWidth = 1;
                 ctx.strokeRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+                // Coordenadas (Apenas em zooms altos e múltiplos de 5)
+                if (zoom > 0.8 && x % 5 === 0 && y % 5 === 0) {
+                    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                    ctx.font = '8px monospace';
+                    ctx.fillText(`${x},${y}`, x * TILE_SIZE + 2, y * TILE_SIZE + 10);
+                }
             }
         }
 
         // 2. Renderizar Linhas de Marcha (Troop Movements)
+        // ... (Movimentos mantidos conforme original mas com cores TW)
         gameEntities.forEach(e => {
             const sx = e.originX * TILE_SIZE + TILE_SIZE / 2;
             const sy = e.originY * TILE_SIZE + TILE_SIZE / 2;
@@ -105,40 +114,32 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
             const cx = e.x * TILE_SIZE + TILE_SIZE / 2;
             const cy = e.y * TILE_SIZE + TILE_SIZE / 2;
 
-            // Linha Trajetória (Sutil)
             ctx.beginPath();
             ctx.setLineDash([5, 5]);
-            ctx.strokeStyle = 'rgba(251, 146, 60, 0.2)';
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.2)'; // Yellowish for movements
             ctx.moveTo(sx, sy);
             ctx.lineTo(tx, ty);
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Vetor de Movimento (Ativo)
             ctx.beginPath();
-            ctx.strokeStyle = '#fb923c';
+            ctx.strokeStyle = '#fbbf24';
             ctx.lineWidth = 2 / zoom;
             ctx.moveTo(sx, sy);
             ctx.lineTo(cx, cy);
             ctx.stroke();
 
-            // Ícone da Unidade (Triângulo Tático)
             ctx.save();
             ctx.translate(cx, cy);
             const angle = Math.atan2(ty - sy, tx - sx);
             ctx.rotate(angle);
-            
-            ctx.fillStyle = '#fb923c';
+            ctx.fillStyle = '#fbbf24';
             ctx.beginPath();
             ctx.moveTo(10 / zoom, 0);
             ctx.lineTo(-6 / zoom, -6 / zoom);
             ctx.lineTo(-6 / zoom, 6 / zoom);
             ctx.closePath();
             ctx.fill();
-            
-            // Glow do vetor
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#fb923c';
             ctx.restore();
         });
         
@@ -147,44 +148,85 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
             if (base.coordenada_x >= startX && base.coordenada_x <= endX && 
                 base.coordenada_y >= startY && base.coordenada_y <= endY) {
                 
-                const img = textures.current['base'];
+                const texKey = getBaseTexture(base.pontos || 0);
+                const img = textures.current[texKey];
                 const bx = base.coordenada_x * TILE_SIZE;
                 const by = base.coordenada_y * TILE_SIZE;
 
+                const isPlayer = base.jogador_id === playerBase?.jogador_id;
+                const isAlly = base.jogador?.alianca_id && (base.jogador.alianca_id === myAllianceId);
+                const isEnemy = !base.is_npc && !isPlayer && !isAlly;
+                const isRebel = base.is_npc;
+
+                // Color Scheme
+                const color = isPlayer ? '#3b82f6' : (isAlly ? '#fbbf24' : (isEnemy ? '#ef4444' : '#71717a'));
+
+                // Base Icon Glow
+                ctx.save();
+                ctx.shadowBlur = 15 / zoom;
+                ctx.shadowColor = color;
+                
                 if (img) {
-                    const isPlayer = base.ownerId === playerBase?.ownerId;
-                    const baseAllianceId = base.aliancaId;
-                    const dip = diplomaties.find(d => d.target_alianca_id === baseAllianceId && d.status === 'ACCEPTED');
-                    const isAlly = baseAllianceId && (baseAllianceId === myAllianceId || dip?.tipo === 'ALLY');
-                    const isEnemy = dip?.tipo === 'ENEMY' || (base.ownerId && !isAlly && !isPlayer);
+                    ctx.drawImage(img, bx + 5, by + 5, TILE_SIZE - 10, TILE_SIZE - 10);
+                } else {
+                    ctx.fillStyle = color;
+                    ctx.fillRect(bx + 20, by + 20, TILE_SIZE - 40, TILE_SIZE - 40);
+                }
+                ctx.restore();
 
-                    // Glow Effect
-                    ctx.save();
-                    ctx.shadowBlur = 20 / zoom;
-                    ctx.shadowColor = isPlayer ? '#0ea5e9' : (isAlly ? '#06b6d4' : (isEnemy ? '#ef4444' : '#f59e0b'));
+                // Identificação Tática
+                if (zoom > 0.5) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                    const labelWidth = TILE_SIZE - 10;
+                    ctx.fillRect(bx + 5, by + TILE_SIZE - 15, labelWidth, 12);
                     
-                    // Desenhar Base
-                    ctx.drawImage(img, bx + 10, by + 10, TILE_SIZE - 20, TILE_SIZE - 20);
-                    ctx.restore();
-
-                    // Etiqueta de Identificação (se zoom alto)
-                    if (zoom > 0.6) {
-                        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-                        ctx.fillRect(bx + 5, by + TILE_SIZE - 18, TILE_SIZE - 10, 14);
-                        
-                        ctx.fillStyle = isPlayer ? '#7dd3fc' : (isAlly ? '#67e8f9' : (isEnemy ? '#fca5a5' : '#fcd34d'));
-                        ctx.font = '900 8px "Inter", sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(base.nome.toUpperCase(), bx + TILE_SIZE / 2, by + TILE_SIZE - 8);
-                        
-                        // Border indicator
-                        ctx.strokeStyle = ctx.fillStyle;
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(bx + 5, by + TILE_SIZE - 18, TILE_SIZE - 10, 14);
-                    }
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '900 7px "Inter", sans-serif';
+                    ctx.textAlign = 'center';
+                    const label = base.nome.substring(0, 12) + (base.nome.length > 12 ? '..' : '');
+                    ctx.fillText(label.toUpperCase(), bx + TILE_SIZE / 2, by + TILE_SIZE - 6);
+                    
+                    // Border Bottom Color Indicator
+                    ctx.fillStyle = color;
+                    ctx.fillRect(bx + 5, by + TILE_SIZE - 4, labelWidth, 2);
                 }
             }
         });
+
+        // 5. Render Hover Tooltip
+        if (hoveredSector && !isDragging) {
+            const bx = hoveredSector.x * TILE_SIZE;
+            const by = hoveredSector.y * TILE_SIZE;
+            
+            // Highlight do setor
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 2 / zoom;
+            ctx.strokeRect(bx, by, TILE_SIZE, TILE_SIZE);
+            
+            if (hoveredSector.base) {
+                const b = hoveredSector.base;
+                const isPlayer = b.jogador_id === playerBase?.jogador_id;
+                const isAlly = b.jogador?.alianca_id && (b.jogador.alianca_id === myAllianceId);
+                const color = isPlayer ? '#3b82f6' : (isAlly ? '#fbbf24' : (b.is_npc ? '#71717a' : '#ef4444'));
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+                ctx.fillRect(bx + TILE_SIZE + 5, by, 120, 50);
+                ctx.strokeStyle = color + '66';
+                ctx.strokeRect(bx + TILE_SIZE + 5, by, 120, 50);
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 9px "Inter", sans-serif';
+                ctx.fillText(b.nome.toUpperCase(), bx + TILE_SIZE + 12, by + 15);
+                
+                ctx.font = '8px "Inter", sans-serif';
+                ctx.fillStyle = color;
+                ctx.fillText(isPlayer ? 'A TUA BASE' : (isAlly ? 'ALIADO' : (b.is_npc ? 'REBELDE' : 'INIMIGO')), bx + TILE_SIZE + 12, by + 28);
+                
+                ctx.fillStyle = '#aaa';
+                ctx.fillText(`PONTOS: ${b.pontos || 0}`, bx + TILE_SIZE + 12, by + 38);
+                ctx.fillText(`COORD: ${b.coordenada_x}|${b.coordenada_y}`, bx + TILE_SIZE + 12, by + 46);
+            }
+        }
 
         // 4. Scanlines & Tactical CRT Effect
         ctx.restore();
@@ -202,7 +244,7 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
         ctx.fillStyle = grd;
         ctx.fillRect(0, 0, width, height);
 
-    }, [center, zoom, offset, bases, gameEntities, playerBase, myAllianceId, diplomaties]);
+    }, [center, zoom, offset, bases, gameEntities, playerBase, myAllianceId, diplomaties, hoveredSector, isDragging]);
 
     useEffect(() => {
         const frame = requestAnimationFrame(draw);
@@ -215,11 +257,23 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
     };
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        if (!isDragging) return;
-        const dx = (e.clientX - lastMousePos.x) / zoom;
-        const dy = (e.clientY - lastMousePos.y) / zoom;
-        setOffset(prev => ({ x: prev.x + dx, y: prev.y + dy }));
-        setLastMousePos({ x: e.clientX, y: e.clientY });
+        const rect = canvasRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        
+        const mouseX = (e.clientX - rect.left - rect.width / 2) / zoom;
+        const mouseY = (e.clientY - rect.top - rect.height / 2) / zoom;
+        const tx = Math.floor((mouseX - offset.x) / TILE_SIZE + center.x);
+        const ty = Math.floor((mouseY - offset.y) / TILE_SIZE + center.y);
+
+        if (isDragging) {
+            const dx = (e.clientX - lastMousePos.x) / zoom;
+            const dy = (e.clientY - lastMousePos.y) / zoom;
+            setOffset(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+            setLastMousePos({ x: e.clientX, y: e.clientY });
+        } else {
+            const baseAt = bases.find(b => b.coordenada_x === tx && b.coordenada_y === ty);
+            setHoveredSector({ x: tx, y: ty, base: baseAt });
+        }
     };
 
     const handleMouseUp = () => setIsDragging(false);
@@ -233,7 +287,7 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
+            onMouseLeave={() => { setIsDragging(false); setHoveredSector(null); }}
             onClick={(e) => {
                 // Cálculo de coordenada clicada
                 const rect = canvasRef.current?.getBoundingClientRect();

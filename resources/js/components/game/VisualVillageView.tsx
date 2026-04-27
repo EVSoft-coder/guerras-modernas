@@ -51,6 +51,16 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
         return b?.nivel || 0;
     };
 
+    // Indexar edifícios para busca O(1)
+    const buildingsMap = React.useMemo(() => {
+        const map = new Map<string, any>();
+        base.edificios?.forEach(e => {
+            const key = `${(e.buildingType || e.tipo)?.toLowerCase()}-${e.pos_x}-${e.pos_y}`;
+            map.set(key, e);
+        });
+        return map;
+    }, [base.edificios]);
+
     return (
         <div ref={containerRef} className="w-full flex flex-col items-center py-6 lg:py-12 bg-[#050608]">
             <div 
@@ -98,15 +108,10 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
 
                 <div style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
                     {Object.entries(currentLayout).map(([type, layout]) => {
-                        const b = base.edificios?.find(e => {
-                            const eType = (e.buildingType || e.tipo)?.toLowerCase();
-                            const lType = type.toLowerCase();
-                            if (eType !== lType) return false;
-                            
-                            if (!e.pos_x || Number(e.pos_x) < 50) return true; 
-
-                            return Number(e.pos_x) === layout.x && Number(e.pos_y) === layout.y;
-                        });
+                        const key = `${type.toLowerCase()}-${layout.x}-${layout.y}`;
+                        // Busca O(1)
+                        const b = buildingsMap.get(key) || buildingsMap.get(`${type.toLowerCase()}-0-0`);
+                        
                         const level = b?.nivel || 0;
                         const isConstructing = (buildingQueue || []).some(q => 
                             q.type === type && q.pos_x === layout.x && q.pos_y === layout.y
