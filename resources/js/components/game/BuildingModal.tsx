@@ -105,7 +105,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         // 3. Fallback: Filtro por nome para compatibilidade com dados antigos
         const k = ut.name.toLowerCase();
         if (tipoLower === 'quartel') return ['infantaria', 'politico', 'sniper', 'engenheiro'].some(s => k.includes(s));
-        if (tipoLower === 'fabrica_municoes') return ['blindado', 'tanque', 'artilharia'].some(s => k.includes(s));
+        if (tipoLower === 'fabrica_municoes') return ['blindado', 'tanque', 'artilharia', 'apc', 'veiculo'].some(s => k.includes(s));
         if (tipoLower === 'aerodromo') return ['helicoptero'].some(s => k.includes(s));
         if (tipoLower === 'radar_estrategico') return ['agente', 'espiao', 'drone'].some(s => k.includes(s));
         return false;
