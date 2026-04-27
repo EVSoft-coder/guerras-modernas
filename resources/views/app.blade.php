@@ -11,6 +11,8 @@
         
         @viteReactRefresh
         @routes
+        <!-- PRELOAD CRITICAL ASSETS (Bypass JS Parse Delay) -->
+        <link rel="preload" as="image" href="/images/village/terrain_v30.png" fetchpriority="high">
         @vite(['resources/css/app.css', 'resources/js/app.tsx'])
         @inertiaHead
 

@@ -117,7 +117,8 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
         <img 
             src={displaySrc} 
             {...props} 
-            fetchpriority="auto" // Evita competir com o terreno principal
+            loading="lazy" 
+            fetchpriority="low" // Deixa a banda livre para o terreno
             style={{ 
                 ...props.style,
                 opacity: processedSrc ? 1 : 0.2,
