@@ -18,6 +18,20 @@ class MapaController extends Controller
     {
         $x = (int) $request->input('x', 500);
         $y = (int) $request->input('y', 500);
+        $targetId = $request->input('target_id');
+        $targetCoord = $request->input('target_coord');
+
+        if ($targetId) {
+            $targetBase = Base::find($targetId);
+            if ($targetBase) {
+                $x = $targetBase->coordenada_x;
+                $y = $targetBase->coordenada_y;
+            }
+        } elseif ($targetCoord && str_contains($targetCoord, ':')) {
+            [$tx, $ty] = explode(':', $targetCoord);
+            $x = (int)$tx;
+            $y = (int)$ty;
+        }
         
         $x = max(0, min(1000, $x));
         $y = max(0, min(1000, $y));
@@ -57,7 +71,8 @@ class MapaController extends Controller
             'gameConfig' => config('game'),
             'diplomacia' => $diplomacia,
             'userAliancaId' => $jogador->alianca_id,
-            'general' => $jogador->general()->with('skills')->first()
+            'general' => $jogador->general()->with('skills')->first(),
+            'targetId' => $request->input('target_id')
         ]);
     }
 

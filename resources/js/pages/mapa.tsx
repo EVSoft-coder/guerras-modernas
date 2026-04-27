@@ -28,7 +28,7 @@ const MapLegend = ({ color, label }: { color: string, label: string }) => (
     </div>
 );
 
-export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos, diplomacia, userAliancaId, auth, general }: any) {
+export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos, diplomacia, userAliancaId, auth, general, targetId }: any) {
     const { addToast } = useToasts();
     const [selectedTarget, setSelectedTarget] = React.useState<any>(null);
     const [isSending, setIsSending] = React.useState(false);
@@ -40,6 +40,12 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
         // Sincronizar ataques com o motor ECS
         if (ataquesEnviados) gameStateService.syncAttacks(ataquesEnviados);
         if (ataquesRecebidos) gameStateService.syncAttacks(ataquesRecebidos);
+
+        // Selecionar alvo automático se vier via URL
+        if (targetId) {
+            const target = bases.find((b: any) => b.id === parseInt(targetId));
+            if (target) setSelectedTarget(target);
+        }
 
         // Feedback de Combate em Tempo Real
         const unsubArrived = eventBus.subscribe(Events.ATTACK_ARRIVED, (ev) => {

@@ -66,14 +66,23 @@ export default function Show({ relatorio }: { relatorio: Relatorio }) {
                         <ChevronLeft size={16} /> Arquivos Centrais
                     </Link>
 
-                    {canShare && (
-                        <button 
-                            onClick={handleShare}
-                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${relatorio.partilhado_alianca ? 'bg-sky-600 text-white' : 'bg-white/5 text-neutral-500 hover:text-white border border-white/5'}`}
+                    <div className="flex items-center gap-3">
+                        {canShare && (
+                            <button 
+                                onClick={handleShare}
+                                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${relatorio.partilhado_alianca ? 'bg-sky-600 text-white' : 'bg-white/5 text-neutral-500 hover:text-white border border-white/5'}`}
+                            >
+                                <Share2 size={14} /> {relatorio.partilhado_alianca ? 'Partilhado' : 'Partilhar'}
+                            </button>
+                        )}
+                        
+                        <Link 
+                            href={`/mapa?target_id=${isAtacante ? det.target_base_id : det.origin_base_id}&target_coord=${det.coords}`}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(220,38,38,0.3)]"
                         >
-                            <Share2 size={14} /> {relatorio.partilhado_alianca ? 'Partilhado com a Coligação' : 'Partilhar com a Coligação'}
-                        </button>
-                    )}
+                            <Sword size={14} /> {isAtacante ? 'Atacar Novamente' : 'Lançar Contra-Ataque'}
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Título e Status */}

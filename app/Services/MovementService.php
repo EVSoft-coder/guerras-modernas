@@ -376,14 +376,19 @@ class MovementService
         }
 
         // 7. Relatório (Persistência em BD - Legacy)
-        \App\Models\Relatorio::create([
+        $relatorio = \App\Models\Relatorio::create([
             'atacante_id' => $originPlayerId,
             'defensor_id' => $targetBase->jogador_id,
             'vencedor_id' => $result['attacker_won'] ? $originPlayerId : $targetBase->jogador_id,
             'titulo' => "Batalha em " . $targetBase->nome,
             'origem_nome' => $originName,
             'destino_nome' => $targetBase->nome,
-            'detalhes' => array_merge($result, ['loot' => $loot])
+            'detalhes' => array_merge($result, [
+                'loot' => $loot,
+                'coords' => "{$targetBase->coordenada_x}:{$targetBase->coordenada_y}",
+                'target_base_id' => $targetBase->id,
+                'origin_base_id' => $originBase?->id
+            ])
         ]);
 
         // 8. Enviar Mensagens Automáticas (FASE 7)
@@ -392,6 +397,7 @@ class MovementService
         $defLosses = collect($result['defender_units'])->sum('losses');
 
         \App\Models\Mensagem::criarRelatorioAtaque([
+            'relatorio_id' => $relatorio->id,
             'atacante_id' => $originPlayerId,
             'defensor_id' => $targetBase->jogador_id,
             'vitoria' => $result['attacker_won'],
@@ -399,7 +405,11 @@ class MovementService
             'def_base' => $targetBase->nome,
             'atk_perdas' => $atkLosses,
             'def_perdas' => $defLosses,
-            'saque' => $loot
+            'saque' => $loot,
+            'coords' => "{$targetBase->coordenada_x}:{$targetBase->coordenada_y}",
+            'origin_coords' => $originBase ? "{$originBase->coordenada_x}:{$originBase->coordenada_y}" : null,
+            'target_base_id' => $targetBase->id,
+            'origin_base_id' => $originBase?->id
         ]);
 
         Log::channel('game')->info("[GAME_ENGINE] COMBAT_RESULT {$targetBase->id}", [

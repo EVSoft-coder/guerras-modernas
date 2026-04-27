@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Mail, MailOpen, Trash2, Send, Filter, CheckCheck, Shield, Search } from 'lucide-react';
+import { Mail, MailOpen, Trash2, Send, Filter, CheckCheck, Shield, Search, Sword, BarChart3 } from 'lucide-react';
 import { useToasts } from '@/components/game/ToastProvider';
 import { SpyReport } from '@/components/game/SpyReport';
 
@@ -247,7 +247,30 @@ export default function Mensagens({ mensagens, naoLidas, filtroAtivo }: Mensagen
                                 {viewingMsg.tipo === 'espionagem' && viewingMsg.metadata ? (
                                     <SpyReport report={viewingMsg.metadata} />
                                 ) : (
-                                    viewingMsg.corpo
+                                    <div className="space-y-6">
+                                        <div className="whitespace-pre-wrap">{viewingMsg.corpo}</div>
+                                        
+                                        {(viewingMsg.tipo === 'relatorio_ataque' || viewingMsg.tipo === 'relatorio_defesa') && viewingMsg.metadata && (
+                                            <div className="flex flex-wrap gap-3 pt-4 border-t border-white/5">
+                                                {viewingMsg.metadata.relatorio_id && (
+                                                    <Link 
+                                                        href={`/relatorios/${viewingMsg.metadata.relatorio_id}`}
+                                                        className="px-4 py-2 bg-sky-600/20 hover:bg-sky-600/40 border border-sky-500/30 text-sky-400 text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center gap-2 transition-all"
+                                                    >
+                                                        <BarChart3 size={14} /> Detalhes Tácticos
+                                                    </Link>
+                                                )}
+                                                {viewingMsg.metadata.target_base_id && (
+                                                    <Link 
+                                                        href={`/mapa?target_id=${viewingMsg.metadata.target_base_id}`}
+                                                        className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(220,38,38,0.2)]"
+                                                    >
+                                                        <Sword size={14} /> Lançar Ofensiva
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                             {viewingMsg.remetente && (

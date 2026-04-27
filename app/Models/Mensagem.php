@@ -71,6 +71,11 @@ class Mensagem extends Model
                     . ($saqueStr ? "--- Saque ---\n{$saqueStr}\n" : "Sem saque.\n")
                     . "\n— Inteligência Militar",
                 'tipo' => 'relatorio_ataque',
+                'metadata' => [
+                    'relatorio_id' => $resultado['relatorio_id'] ?? null,
+                    'target_base_id' => $resultado['target_base_id'] ?? null,
+                    'coords' => $resultado['coords'] ?? null
+                ]
             ]);
         }
 
@@ -90,6 +95,11 @@ class Mensagem extends Model
                     . ($vitoria && $saqueStr ? "--- Recursos Saqueados ---\n{$saqueStr}\n" : "")
                     . "\n— Inteligência Militar",
                 'tipo' => 'relatorio_defesa',
+                'metadata' => [
+                    'relatorio_id' => $resultado['relatorio_id'] ?? null,
+                    'target_base_id' => $resultado['origin_base_id'] ?? null, // Alvo do contra-ataque é a origem
+                    'coords' => $resultado['origin_coords'] ?? null
+                ]
             ]);
         }
     }

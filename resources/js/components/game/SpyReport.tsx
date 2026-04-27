@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@inertiajs/react';
 import { Shield, Search, Package, Home, Sword, Zap, BarChart3, Target } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -30,9 +31,19 @@ export const SpyReport: React.FC<SpyReportProps> = ({ report }) => {
                         <p className="text-[10px] text-neutral-500 uppercase font-bold">Setor: {report.base_name} (#{report.base_id})</p>
                     </div>
                 </div>
-                <div className="text-right">
-                    <span className="text-[10px] text-neutral-500 block mb-1">DATA DA INFILTRAÇÃO</span>
-                    <span className="text-xs font-mono text-white">{new Date(report.timestamp).toLocaleString()}</span>
+                <div className="flex items-center gap-4">
+                    <div className="text-right">
+                        <span className="text-[10px] text-neutral-500 block mb-1">DATA DA INFILTRAÇÃO</span>
+                        <span className="text-xs font-mono text-white">{new Date(report.timestamp).toLocaleString()}</span>
+                    </div>
+                    <Link 
+                        href={`/mapa?target_id=${report.base_id}`}
+                        className="p-3 bg-red-600 hover:bg-red-500 text-white rounded-xl shadow-[0_0_15px_rgba(220,38,38,0.3)] transition-all group flex items-center gap-2"
+                        title="Lançar Ofensiva Táctica"
+                    >
+                        <Sword size={18} className="group-hover:rotate-12 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-widest hidden md:block">Atacar</span>
+                    </Link>
                 </div>
             </div>
 
