@@ -75,6 +75,7 @@ class GameStateService
             ]),
             'units' => $base->units->map(fn($u) => [
                 'typeId' => $u->unit_type_id,
+                'unit_type_id' => $u->unit_type_id,
                 'name' => $u->type->name,
                 'quantity' => $u->quantity,
             ]),

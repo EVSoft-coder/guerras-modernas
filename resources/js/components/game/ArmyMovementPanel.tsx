@@ -78,7 +78,7 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps & { radarLevel?:
         return diff < 300000; // 5 minutos para hostis sem radar
     });
 
-    const hostileIncoming = incomingMovements.filter(m => m.type === 'attack' || m.type === 'espionagem');
+    const hostileIncoming = incomingMovements.filter(m => m.type === 'attack' || m.type === 'ataque' || m.type === 'espionagem' || m.type === 'conquista');
     const hasMovements = (ataquesEnviados?.length ?? 0) > 0 || (incomingMovements?.length ?? 0) > 0;
 
     if (!hasMovements) return null;
@@ -108,7 +108,7 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps & { radarLevel?:
                 {/* MOVIMENTOS RECEBIDOS (AMEAÇAS E REGRESSOS) */}
                 <AnimatePresence>
                     {incomingMovements?.map(movement => {
-                        const isHostile = movement.type === 'attack' || movement.type === 'espionagem';
+                        const isHostile = movement.type === 'attack' || movement.type === 'ataque' || movement.type === 'espionagem' || movement.type === 'conquista';
                         const isReturn = movement.type === 'return';
                         
                         return (

@@ -177,9 +177,13 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                             </div>
                         ) : (
                             tropasDisponiveis.map(tropa => {
-                                const utId = tropa.unit_type_id || tropa.type_id || unitTypes?.find(u => u.name === tropa.tipo || u.name === tropa.unidade)?.id;
+                                const utId = tropa.unit_type_id || tropa.type_id || unitTypes?.find(u => 
+                                    u.id === tropa.unit_type_id || 
+                                    u.name.toLowerCase() === (tropa.tipo || tropa.unidade || '').toLowerCase()
+                                )?.id;
                                 if (!utId) return null;
 
+                                const quantity = tropa.quantity ?? tropa.quantidade ?? 0;
                                 const unitName = tropa.type?.name || tropa.tipo || tropa.unidade || 'Desconhecida';
                                 const isArmored = ['tanque', 'blindado', 'helicoptero'].some(s => unitName.toLowerCase().includes(s));
                                 
@@ -195,13 +199,13 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                                 </span>
                                             </div>
                                             <Badge variant="outline" className="text-[9px] bg-sky-500/10 border-sky-500/20 text-sky-400 font-mono">
-                                                {selectedTropas[utId] || 0} / {tropa.quantidade}
+                                                {selectedTropas[utId] || 0} / {quantity}
                                             </Badge>
                                         </div>
                                         <input 
                                             type="range"
                                             min="0"
-                                            max={tropa.quantidade}
+                                            max={quantity}
                                             step="1"
                                             value={selectedTropas[utId] || 0}
                                             onChange={(e) => handleTropaChange(utId.toString(), parseInt(e.target.value))}

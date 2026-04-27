@@ -45,8 +45,8 @@ class MapService
     public function calculateDistance(Base $baseA, Base $baseB): float
     {
         return sqrt(
-            pow($baseB->x - $baseA->x, 2) + 
-            pow($baseB->y - $baseA->y, 2)
+            pow($baseB->coordenada_x - $baseA->coordenada_x, 2) + 
+            pow($baseB->coordenada_y - $baseA->coordenada_y, 2)
         );
     }
 }

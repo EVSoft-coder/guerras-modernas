@@ -45,6 +45,7 @@ export default function Dashboard(props: any) {
     const currentPopulation = state.population ?? props.population ?? null;
     const currentUnits = state.units ?? props.units ?? [];
     const currentMovements = state.movements ?? props.movements ?? [];
+    const unitTypes = state.unitTypes || props.unitTypes || [];
 
     // Default: VILLAGE -> Dashboard UI
     return (
@@ -67,9 +68,16 @@ export default function Dashboard(props: any) {
                     {gameMode === "WORLD_MAP" ? (
                         <WorldMapView 
                             playerBase={currentBase} 
-                            troops={state.units ? state.units.map((u: any) => ({ unidade: u.name, quantidade: u.quantity })) : []} 
+                            troops={(currentUnits.length > 0 ? currentUnits : (currentBase?.tropas || [])).map((u: any) => {
+                                const unitType = u.type || unitTypes.find((ut: any) => Number(ut.id) === Number(u.unit_type_id));
+                                return { 
+                                    unit_type_id: u.unit_type_id,
+                                    tipo: unitType?.name || u.name || u.unidade || u.tipo || 'unidade', 
+                                    quantity: u.quantity || u.quantidade || 0 
+                                };
+                            })} 
                             gameConfig={state.gameConfig || props.gameConfig} 
-                            unitTypes={state.unitTypes || props.unitTypes}
+                            unitTypes={unitTypes}
                             diplomaties={state.diplomaties || props.diplomaties}
                             myAllianceId={state.myAllianceId || props.myAllianceId}
                             general={state.general || props.general}
@@ -85,7 +93,15 @@ export default function Dashboard(props: any) {
                             movements={currentMovements}
                             activeEvents={state.activeEvents || props.activeEvents || []}
                             gameConfig={state.gameConfig || props.gameConfig}
-                            unitTypes={state.unitTypes || props.unitTypes}
+                            unitTypes={unitTypes}
+                            troops={(currentUnits.length > 0 ? currentUnits : (currentBase?.tropas || [])).map((u: any) => {
+                                const unitType = u.type || unitTypes.find((ut: any) => Number(ut.id) === Number(u.unit_type_id));
+                                return { 
+                                    unit_type_id: u.unit_type_id,
+                                    tipo: unitType?.name || u.name || u.unidade || u.tipo || 'unidade', 
+                                    quantity: u.quantity || u.quantidade || 0 
+                                };
+                            })}
                             unitQueue={state.unitQueue || props.unitQueue}
                             buildingQueue={state.buildingQueue || props.buildingQueue}
                             diplomaties={state.diplomaties || props.diplomaties}

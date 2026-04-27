@@ -7,17 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class UnitType extends Model
 {
     protected $fillable = [
-        'name', 'attack', 'defense', 'speed', 'carry_capacity', 
-        'cost_suprimentos', 'cost_municoes', 'cost_combustivel', 'build_time'
+        'name', 'slug', 'display_name', 'attack', 'defense', 'speed', 'carry_capacity', 
+        'cost_suprimentos', 'cost_municoes', 'cost_combustivel', 'cost_metal', 'cost_pessoal', 'build_time', 'building_type'
     ];
-
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name'] = strtolower(str_replace(' ', '_', $value));
-    }
-
-    public function getNameAttribute($value)
-    {
-        return strtolower(str_replace(' ', '_', $value));
-    }
 }

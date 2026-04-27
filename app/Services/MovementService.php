@@ -204,7 +204,7 @@ class MovementService
             $this->transferUnitsToReinforcements($movement, $base);
         }
 
-        if ($movement->type === 'attack') {
+        if ($movement->type === 'attack' || $movement->type === 'ataque') {
             $this->handleCombat($movement, $base);
         }
 
