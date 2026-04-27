@@ -26,6 +26,8 @@ ini_set('default_charset', 'UTF-8');
 mb_internal_encoding('UTF-8');
 
 Route::get('/ping', function() { return 'pong'; });
+Route::get('/admin/diagnostic', [\App\Http\Controllers\DiagnosticController::class, 'check'])->middleware(['auth']);
+Route::get('/admin/fix-movements', [\App\Http\Controllers\DiagnosticController::class, 'fixHungMovements'])->middleware(['auth']);
 Route::get('/admin/migrate', function() {
     try {
         Artisan::call('migrate', ['--force' => true]);
