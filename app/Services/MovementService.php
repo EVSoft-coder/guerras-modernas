@@ -151,7 +151,10 @@ class MovementService
     public function processMovements(Base $base): void
     {
         // 1. Selecionamos IDs candidatos (sem lock ainda para não prender a query global)
-        $candidateIds = Movement::where('target_id', $base->id)
+        $candidateIds = Movement::where(function($q) use ($base) {
+                $q->where('target_id', $base->id)
+                  ->orWhere('origin_id', $base->id);
+            })
             ->where('status', 'moving')
             ->where('arrival_time', '<=', now())
             ->whereNull('processed_at')
@@ -171,8 +174,13 @@ class MovementService
                     $q->lockForUpdate();
                 }]);
 
+                // Determinar a base de destino correta para o processamento
+                $targetBase = ($lockedMovement->target_id === $base->id) ? $base : Base::find($lockedMovement->target_id);
+                
+                if (!$targetBase) return;
+
                 // APLICAR CHEGADA (PASSO 4)
-                $this->applyArrival($lockedMovement, $base);
+                $this->applyArrival($lockedMovement, $targetBase);
             });
         }
     }
