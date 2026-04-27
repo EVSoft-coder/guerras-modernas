@@ -3,7 +3,7 @@ import { router } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Crosshair, Shield, Truck, Zap, Pickaxe, Warehouse, Eye, Plane, 
-    FlaskConical, Lock, Clock, CheckCircle2, Loader2, ChevronRight 
+    FlaskConical, Lock, Clock, CheckCircle2, Loader2, ChevronRight, Activity
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
