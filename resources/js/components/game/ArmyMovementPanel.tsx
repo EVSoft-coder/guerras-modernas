@@ -15,6 +15,7 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps & { radarLevel?:
 }) => {
     const [now, setNow] = useState(Date.now());
     const [lastKnownAttackIds, setLastKnownAttackIds] = useState<number[]>([]);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => setNow(Date.now()), 1000);
@@ -22,19 +23,26 @@ export const ArmyMovementPanel: React.FC<ArmyMovementPanelProps & { radarLevel?:
     }, []);
 
     // AUTO-REFRESH ENGINE (FASE 14)
-    // Quando qualquer movimento atinge 0, forçar um reload para processar no backend
     useEffect(() => {
+        if (isRefreshing) return;
+
         const allMovements = [...(ataquesEnviados || []), ...(ataquesRecebidos || [])];
         const hasOverdue = allMovements.some(m => new Date(m.arrival_time).getTime() <= now);
         
-        // Se temos movimentos "no passado" que ainda estão como 'moving', precisamos de refresh
         if (hasOverdue) {
+            setIsRefreshing(true);
             const timer = setTimeout(() => {
-                router.reload({ only: ['base', 'resources', 'ataquesEnviados', 'ataquesRecebidos', 'buildings', 'units'] });
-            }, 1000); // Pequeno delay para garantir que o backend vê o tempo como passado
+                router.reload({ 
+                    only: ['base', 'resources', 'ataquesEnviados', 'ataquesRecebidos', 'buildings', 'units'],
+                    onFinish: () => {
+                        // Aguardar mais um pouco antes de permitir outro refresh se ainda houver atrasos
+                        setTimeout(() => setIsRefreshing(false), 2000);
+                    }
+                });
+            }, 1000);
             return () => clearTimeout(timer);
         }
-    }, [now, ataquesEnviados, ataquesRecebidos]);
+    }, [now, ataquesEnviados, ataquesRecebidos, isRefreshing]);
 
     // ALERTA SONORO DE RADAR (FASE 12)
     useEffect(() => {
