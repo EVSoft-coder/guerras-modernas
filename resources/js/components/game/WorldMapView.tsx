@@ -236,7 +236,10 @@ export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, d
                                         <div className="w-1 h-1 bg-white/10 rounded-full" />
                                         <div className="flex items-center gap-2">
                                             <User size={12} className="text-neutral-400" />
-                                            Intel: <span className="text-white">{selectedSector.base?.jogador?.username || 'NEUTRAL'}</span>
+                                            Intel: <span className="text-white">
+                                                {selectedSector.base?.jogador?.username || 
+                                                 (selectedSector.base?.jogador_id === playerBase?.jogador_id ? playerBase?.jogador?.username : 'NEUTRAL')}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

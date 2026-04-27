@@ -142,9 +142,20 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
             ctx.fill();
             ctx.restore();
         });
-        
+        // 2.5 Preparar Bases (Garantir que a base do jogador está incluída com dados completos)
+        const allBasesToRender = [...(bases || [])];
+        const pBase = playerBase ? { 
+            ...playerBase, 
+            isPlayerBase: true,
+            jogador: playerBase.jogador || { username: 'EU' } 
+        } : null;
+
+        if (pBase && !allBasesToRender.find(b => b.id === pBase.id)) {
+            allBasesToRender.push(pBase);
+        }
+
         // 3. Renderizar Bases
-        bases.forEach(base => {
+        allBasesToRender.forEach(base => {
             if (base.coordenada_x >= startX && base.coordenada_x <= endX && 
                 base.coordenada_y >= startY && base.coordenada_y <= endY) {
                 
@@ -153,10 +164,11 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
                 const bx = base.coordenada_x * TILE_SIZE;
                 const by = base.coordenada_y * TILE_SIZE;
 
-                const isPlayer = base.jogador_id === playerBase?.jogador_id;
+                const isPlayer = base.jogador_id === playerBase?.jogador_id || 
+                                 (base.coordenada_x === playerBase?.coordenada_x && base.coordenada_y === playerBase?.coordenada_y);
                 const isAlly = base.jogador?.alianca_id && (base.jogador.alianca_id === myAllianceId);
                 const isEnemy = !base.is_npc && !isPlayer && !isAlly;
-                const isRebel = base.is_npc;
+                const isRebel = base.is_npc || (!base.jogador_id && !isPlayer);
 
                 // Color Scheme
                 const color = isPlayer ? '#3b82f6' : (isAlly ? '#fbbf24' : (isEnemy ? '#ef4444' : '#71717a'));
@@ -166,15 +178,17 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
                 
                 if (isPlayer) {
                     const pulse = (Math.sin(Date.now() / 300) + 1) / 2;
-                    ctx.shadowBlur = (15 + pulse * 10) / zoom;
-                    ctx.shadowColor = color;
+                    ctx.shadowBlur = (25 + pulse * 15) / zoom;
+                    ctx.shadowColor = '#3b82f6';
                     
-                    // Pulse ring
-                    ctx.beginPath();
-                    ctx.arc(bx + TILE_SIZE/2, by + TILE_SIZE/2, (TILE_SIZE/2 - 5) + pulse * 5, 0, Math.PI * 2);
-                    ctx.strokeStyle = `rgba(59, 130, 246, ${0.4 - pulse * 0.4})`;
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
+                    // Pulse rings (Multiple)
+                    [1, 1.5, 2].forEach(m => {
+                        ctx.beginPath();
+                        ctx.arc(bx + TILE_SIZE/2, by + TILE_SIZE/2, (TILE_SIZE/2 * m) * (0.5 + pulse * 0.5), 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${(0.4 - pulse * 0.4) / m})`;
+                        ctx.lineWidth = 2 / zoom;
+                        ctx.stroke();
+                    });
                 } else {
                     ctx.shadowBlur = 15 / zoom;
                     ctx.shadowColor = color;
@@ -183,8 +197,14 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
                 if (img) {
                     ctx.drawImage(img, bx + 5, by + 5, TILE_SIZE - 10, TILE_SIZE - 10);
                 } else {
+                    // Ultra-visible fallback if image is missing
                     ctx.fillStyle = color;
-                    ctx.fillRect(bx + 20, by + 20, TILE_SIZE - 40, TILE_SIZE - 40);
+                    ctx.beginPath();
+                    ctx.arc(bx + TILE_SIZE/2, by + TILE_SIZE/2, 15, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
                 }
                 ctx.restore();
 
@@ -221,17 +241,37 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
             }
         });
 
-        // 5. Render Hover Tooltip
-        if (hoveredSector && !isDragging) {
-            const bx = hoveredSector.x * TILE_SIZE;
-            const by = hoveredSector.y * TILE_SIZE;
+        // 5. Render Hover Tooltip & Selection Crosshair
+        const selectedBase = allBasesToRender.find(b => b.coordenada_x === center.x && b.coordenada_y === center.y);
+        
+        if (hoveredSector || selectedBase) {
+            const target = hoveredSector || { x: center.x, y: center.y, base: selectedBase };
+            const bx = target.x * TILE_SIZE;
+            const by = target.y * TILE_SIZE;
             
-            // Highlight do setor
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-            ctx.lineWidth = 2 / zoom;
-            ctx.strokeRect(bx, by, TILE_SIZE, TILE_SIZE);
+            // Selection Crosshair
+            ctx.save();
+            ctx.strokeStyle = '#00f2ff';
+            ctx.lineWidth = 3 / zoom;
+            ctx.setLineDash([10 / zoom, 5 / zoom]);
+            ctx.strokeRect(bx - 2, by - 2, TILE_SIZE + 4, TILE_SIZE + 4);
             
-            if (hoveredSector.base) {
+            // Corners
+            ctx.setLineDash([]);
+            const cl = 15 / zoom;
+            ctx.beginPath();
+            // Top Left
+            ctx.moveTo(bx - 5, by + cl); ctx.lineTo(bx - 5, by - 5); ctx.lineTo(bx + cl, by - 5);
+            // Top Right
+            ctx.moveTo(bx + TILE_SIZE + 5 - cl, by - 5); ctx.lineTo(bx + TILE_SIZE + 5, by - 5); ctx.lineTo(bx + TILE_SIZE + 5, by + cl);
+            // Bottom Right
+            ctx.moveTo(bx + TILE_SIZE + 5, by + TILE_SIZE + 5 - cl); ctx.lineTo(bx + TILE_SIZE + 5, by + TILE_SIZE + 5); ctx.lineTo(bx + TILE_SIZE + 5 - cl, by + TILE_SIZE + 5);
+            // Bottom Left
+            ctx.moveTo(bx - 5 + cl, by + TILE_SIZE + 5); ctx.lineTo(bx - 5, by + TILE_SIZE + 5); ctx.lineTo(bx - 5, by + TILE_SIZE + 5 - cl);
+            ctx.stroke();
+            ctx.restore();
+            
+            if (hoveredSector && hoveredSector.base) {
                 const b = hoveredSector.base;
                 const isPlayer = b.jogador_id === playerBase?.jogador_id;
                 const isAlly = b.jogador?.alianca_id && (b.jogador.alianca_id === myAllianceId);
@@ -287,6 +327,12 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
         grd.addColorStop(1, 'rgba(0,0,0,0.5)');
         ctx.fillStyle = grd;
         ctx.fillRect(0, 0, width, height);
+
+        // 6. Version Indicator (Debug)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText('v3.3.2_PRO_MAX', width - 10, height - 10);
 
     }, [center, zoom, offset, bases, gameEntities, playerBase, myAllianceId, diplomaties, hoveredSector, isDragging]);
 
