@@ -360,7 +360,7 @@ class MovementService
         $loot = [];
         if ($result['attacker_won']) {
             // 4. APLICAR LOOT
-            $loot = $this->calculateLoot($result['attacker_units'], $targetBase);
+            $loot = $this->calculateLoot($movement, $result['attacker_units'], $targetBase);
             
             // 5. EXECUTAR CONQUEST (Se político presente)
             $conquest = $this->handlePoliticalAction($movement, $targetBase, $result['attacker_units']);
@@ -533,7 +533,7 @@ class MovementService
     /**
      * Calcula o saque baseado na capacidade das unidades (Fase 11 + 12 Harden).
      */
-    private function calculateLoot(array $attackerUnits, Base $targetBase): array
+    private function calculateLoot(Movement $movement, array $attackerUnits, Base $targetBase): array
     {
         $totalCapacity = 0;
         foreach ($attackerUnits as $unit) {
