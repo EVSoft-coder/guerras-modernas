@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { router } from '@inertiajs/react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { PlaneTakeoff, PlaneLanding, Clock, Target, ShieldAlert, Zap, ChevronRight, Sword } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
