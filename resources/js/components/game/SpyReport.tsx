@@ -48,7 +48,7 @@ export const SpyReport: React.FC<SpyReportProps> = ({ report }) => {
                             <div key={res} className="space-y-1">
                                 <div className="flex justify-between text-[9px] uppercase font-bold">
                                     <span className="text-neutral-500">{res}</span>
-                                    <span className="text-white font-mono">{val.toLocaleString()}</span>
+                                    <span className="text-white font-mono">{(val || 0).toLocaleString()}</span>
                                 </div>
                                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                                     <motion.div 
@@ -88,13 +88,13 @@ export const SpyReport: React.FC<SpyReportProps> = ({ report }) => {
                         <Home size={12} className="text-sky-400" /> Estruturas e Infraestrutura
                     </h5>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {report.buildings?.map((b, i) => (
+                        {report.buildings?.map((b: any, i) => (
                             <div key={i} className="p-2 bg-white/5 rounded-lg border border-white/5 flex items-center justify-between group hover:border-sky-500/30 transition-colors">
                                 <span className="text-[9px] text-neutral-400 uppercase font-black truncate mr-2">
-                                    {(b.type || 'ESTRUTURA_DESCONHECIDA').replace(/_/g, ' ')}
+                                    {(b.type || b.tipo || 'ESTRUTURA_DESCONHECIDA').replace(/_/g, ' ')}
                                 </span>
                                 <span className="text-xs font-mono text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20">
-                                    LVL {b.nivel}
+                                    LVL {b.nivel || 0}
                                 </span>
                             </div>
                         ))}
@@ -117,16 +117,16 @@ export const SpyReport: React.FC<SpyReportProps> = ({ report }) => {
                         <Target size={12} /> Guarnição e Defesas Ativas
                     </h5>
                     <div className="space-y-2">
-                        {report.units?.map((u, i) => (
+                        {report.units?.map((u: any, i) => (
                             <div key={i} className="flex items-center justify-between p-2 bg-black/40 rounded-lg border border-red-500/10 hover:border-red-500/30 transition-colors">
                                 <div className="flex items-center gap-3">
                                     <Sword size={14} className="text-red-500" />
                                     <span className="text-[10px] font-black text-neutral-300 uppercase tracking-tighter">
-                                        {(u.name || 'UNIDADE_DESCONHECIDA').replace(/_/g, ' ')}
+                                        {(u.name || u.nome || 'UNIDADE_DESCONHECIDA').replace(/_/g, ' ')}
                                     </span>
                                 </div>
                                 <span className="text-sm font-mono text-white font-black">
-                                    {u.quantity.toLocaleString()}
+                                    {(u.quantity || u.quantidade || 0).toLocaleString()}
                                 </span>
                             </div>
                         ))}
