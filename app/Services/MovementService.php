@@ -167,7 +167,7 @@ class MovementService
                 if (!$lockedMovement || $lockedMovement->processed_at) return;
 
                 // LOCK UNITS (PASSO 3)
-                $lockedMovement->load(['units' => function($q) {
+                $lockedMovement->load(['units.type' => function($q) {
                     $q->lockForUpdate();
                 }]);
 

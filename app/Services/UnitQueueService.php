@@ -188,7 +188,7 @@ class UnitQueueService
         
         // Garantir que currentTime é um objeto Carbon
         if ($startTime) {
-            $currentTime = ($startTime instanceof Carbon) ? $startTime->copy() : Carbon::parse($startTime);
+            $currentTime = ($startTime instanceof \Illuminate\Support\Carbon) ? $startTime->copy() : \Illuminate\Support\Carbon::parse($startTime);
         } else {
             $currentTime = $now->copy();
         }

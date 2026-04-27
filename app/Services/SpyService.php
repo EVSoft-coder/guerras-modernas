@@ -28,6 +28,7 @@ class SpyService
         $spyUnits = [];
         
         foreach ($movement->units as $mUnit) {
+            if (!$mUnit->type) continue;
             $name = strtolower($mUnit->type->name);
             if (str_contains($name, 'espiao') || str_contains($name, 'drone')) {
                 $attackerSpyPower += $mUnit->quantity;
