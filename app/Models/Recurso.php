@@ -28,6 +28,7 @@ class Recurso extends Model
         'metal' => 'double',
         'energia' => 'double',
         'pessoal' => 'double',
+        'storage_capacity' => 'integer',
         'updated_at' => 'datetime',
     ];
 

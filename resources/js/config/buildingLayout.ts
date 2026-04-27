@@ -58,8 +58,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "assetName": "fabrica_v1.png"
     },
     "hq": {
-        "x": 386,
-        "y": 253,
+        "x": 383,
+        "y": 256,
         "w": 130,
         "h": 130,
         "anchor": "center",

@@ -107,11 +107,13 @@ const ResourceItem = ({ label, value, icon, max, color, ratePerSecond, customVal
 export function ResourceBar({ recursos, taxasPerSecond, populacao }: ResourceBarProps) {
     if (!recursos) return null;
 
+    const maxCapacity = recursos.storage_capacity || recursos.cap || 10000;
+    
     const items = [
-        { label: 'Suprimentos', value: recursos.suprimentos, max: recursos.suprimentos_max || 10000, color: 'sky', icon: <Package />, ratePerSecond: taxasPerSecond?.suprimentos || 0 },
-        { label: 'Combustível', value: recursos.combustivel, max: recursos.combustivel_max || 10000, color: 'orange', icon: <Zap />, ratePerSecond: taxasPerSecond?.combustivel || 0 },
-        { label: 'Metal', value: recursos.metal, max: recursos.metal_max || 10000, color: 'slate', icon: <Layers />, ratePerSecond: taxasPerSecond?.metal || 0 },
-        { label: 'Munições', value: recursos.municoes, max: recursos.municoes_max || 10000, color: 'red', icon: <Target />, ratePerSecond: taxasPerSecond?.municoes || 0 },
+        { label: 'Suprimentos', value: recursos.suprimentos, max: maxCapacity, color: 'sky', icon: <Package />, ratePerSecond: taxasPerSecond?.suprimentos || 0 },
+        { label: 'Combustível', value: recursos.combustivel, max: maxCapacity, color: 'orange', icon: <Zap />, ratePerSecond: taxasPerSecond?.combustivel || 0 },
+        { label: 'Metal', value: recursos.metal, max: maxCapacity, color: 'slate', icon: <Layers />, ratePerSecond: taxasPerSecond?.metal || 0 },
+        { label: 'Munições', value: recursos.municoes, max: maxCapacity, color: 'red', icon: <Target />, ratePerSecond: taxasPerSecond?.municoes || 0 },
         { label: 'Energia', value: recursos.energia, max: 1000, color: 'yellow', icon: <Zap />, ratePerSecond: taxasPerSecond?.energia || 0 },
         { 
             label: 'Guarnição', 

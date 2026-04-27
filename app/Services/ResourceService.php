@@ -50,7 +50,7 @@ class ResourceService
                 return;
             }
 
-            $lockedBase->recursos->update([
+            $lockedBase->recursos->fill([
                 'suprimentos' => $calculated['suprimentos'],
                 'combustivel' => $calculated['combustivel'],
                 'municoes'    => $calculated['municoes'],
@@ -59,9 +59,9 @@ class ResourceService
                 'energia'     => $calculated['energia'],
                 'storage_capacity' => $calculated['cap'],
                 'updated_at'  => $now
-            ]);
+            ])->save();
 
-            $lockedBase->update(['ultimo_update' => $now]);
+            $lockedBase->fill(['ultimo_update' => $now])->save();
             
             Log::channel('game')->info("[RESOURCE_DIFF] Base #{$base->id}", [
                 'before' => $before,
@@ -91,7 +91,13 @@ class ResourceService
         if (!$taxasHora) $taxasHora = $this->getRates($base);
 
         $hqLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HQ) ?: 1;
+        $housingLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HOUSING) ?: 1;
         $cap = app(EconomyService::class)->getStorageCapacity($hqLevel);
+
+        $researchBonuses = app(ResearchService::class)->getResearchBonuses($base->jogador);
+        if (isset($researchBonuses['storage_bonus']) && $researchBonuses['storage_bonus'] > 0) {
+            $cap *= (1 + $researchBonuses['storage_bonus']);
+        }
         
         // FASE CORREÇÃO: Uso estrito de ultimo_update (SSOT Temporal)
         if (!$base->ultimo_update) {
@@ -106,6 +112,8 @@ class ResourceService
 
         $deltaHours = $deltaSeconds / 3600;
 
+        $popCap = \App\Domain\Economy\EconomyRules::calculatePopulationCapacity($housingLevel);
+        
         // FASE CRÍTICA — INTEGRAÇÃO: Economia Real baseada em Delta Horário
         $resources = [];
         foreach (['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'] as $type) {
@@ -115,10 +123,13 @@ class ResourceService
             // FÓRMULA: novo = atual + (rate * delta_horas)
             $calculated = $current + ($rate * $deltaHours);
             
-            // Aplicar CAP (SSOT de Armazenamento)
-            $resources[$type] = min($calculated, (float) $cap);
+            // Aplicar CAP específico (SSOT de Armazenamento vs População)
+            $limit = ($type === 'pessoal') ? (float)$popCap : (float)$cap;
+            $resources[$type] = min($calculated, $limit);
         }
         $resources['cap'] = (float) $cap;
+        $resources['storage_capacity'] = (float) $cap; // Alias para compatibilidade
+        $resources['pop_cap'] = (float) $popCap;
 
         return $resources;
     }
@@ -146,9 +157,8 @@ class ResourceService
 
         $configProducao = config('game.production');
         $economyService = app(EconomyService::class);
-        
-        // Multiplicador do Evento Mundial de Produção
-        $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('producao');
+        $researchService = app(ResearchService::class);
+        $researchBonuses = $researchService->getResearchBonuses($base->jogador);
 
         foreach ($buildings as $edificio) {
             $tipo = \App\Domain\Building\BuildingType::normalize($edificio->tipo);
@@ -160,8 +170,18 @@ class ResourceService
                 // FÓRMULA CENTRALIZADA (SSOT via EconomyService)
                 $rate = $economyService->getBuildingProduction($tipo, $nivel);
                 
+                $finalRate = $rate * $eventoMultiplicador;
+
+                // Aplicar bónus de pesquisa se existirem
+                if ($recurso === 'energia' && isset($researchBonuses['production_bonus_energia'])) {
+                    $finalRate *= (1 + $researchBonuses['production_bonus_energia']);
+                }
+                if ($recurso === 'metal' && isset($researchBonuses['production_bonus_metal'])) {
+                    $finalRate *= (1 + $researchBonuses['production_bonus_metal']);
+                }
+
                 if (array_key_exists($recurso, $taxas)) {
-                    $taxas[$recurso] += ($rate * $eventoMultiplicador);
+                    $taxas[$recurso] += $finalRate;
                 }
             }
         }
