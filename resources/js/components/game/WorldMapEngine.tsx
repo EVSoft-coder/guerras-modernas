@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Base } from '@/types';
+import { getTerrain, TILE_SIZE } from '@/config/mapConfig';
 
 interface WorldMapEngineProps {
     center: { x: number, y: number };
@@ -12,7 +13,6 @@ interface WorldMapEngineProps {
     diplomaties?: any[];
 }
 
-const TILE_SIZE = 80;
 
 export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({ 
     center, 
@@ -161,10 +161,24 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
                 // Color Scheme
                 const color = isPlayer ? '#3b82f6' : (isAlly ? '#fbbf24' : (isEnemy ? '#ef4444' : '#71717a'));
 
-                // Base Icon Glow
+                // Base Icon Glow & Pulse for Player
                 ctx.save();
-                ctx.shadowBlur = 15 / zoom;
-                ctx.shadowColor = color;
+                
+                if (isPlayer) {
+                    const pulse = (Math.sin(Date.now() / 300) + 1) / 2;
+                    ctx.shadowBlur = (15 + pulse * 10) / zoom;
+                    ctx.shadowColor = color;
+                    
+                    // Pulse ring
+                    ctx.beginPath();
+                    ctx.arc(bx + TILE_SIZE/2, by + TILE_SIZE/2, (TILE_SIZE/2 - 5) + pulse * 5, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(59, 130, 246, ${0.4 - pulse * 0.4})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                } else {
+                    ctx.shadowBlur = 15 / zoom;
+                    ctx.shadowColor = color;
+                }
                 
                 if (img) {
                     ctx.drawImage(img, bx + 5, by + 5, TILE_SIZE - 10, TILE_SIZE - 10);
@@ -174,21 +188,35 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
                 }
                 ctx.restore();
 
-                // Identificação Tática
-                if (zoom > 0.5) {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                    const labelWidth = TILE_SIZE - 10;
-                    ctx.fillRect(bx + 5, by + TILE_SIZE - 15, labelWidth, 12);
+                // Identificação Tática (Premium Labels)
+                if (zoom > 0.4) {
+                    const labelWidth = TILE_SIZE - 4;
+                    const labelHeight = 14;
+                    const ly = by + TILE_SIZE - 12;
                     
+                    // Glassmorphism Label Background
+                    ctx.fillStyle = 'rgba(5, 8, 15, 0.85)';
+                    ctx.beginPath();
+                    ctx.roundRect(bx + 2, ly, labelWidth, labelHeight, 4);
+                    ctx.fill();
+                    ctx.strokeStyle = color + '44';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // Name Text
                     ctx.fillStyle = '#ffffff';
-                    ctx.font = '900 7px "Inter", sans-serif';
+                    ctx.font = `bold ${zoom > 0.8 ? '8px' : '7px'} "Inter", sans-serif`;
                     ctx.textAlign = 'center';
-                    const label = base.nome.substring(0, 12) + (base.nome.length > 12 ? '..' : '');
-                    ctx.fillText(label.toUpperCase(), bx + TILE_SIZE / 2, by + TILE_SIZE - 6);
+                    const label = base.nome.substring(0, 14) + (base.nome.length > 14 ? '..' : '');
+                    ctx.fillText(label.toUpperCase(), bx + TILE_SIZE / 2, ly + 10);
                     
-                    // Border Bottom Color Indicator
-                    ctx.fillStyle = color;
-                    ctx.fillRect(bx + 5, by + TILE_SIZE - 4, labelWidth, 2);
+                    // Points Tag (Side)
+                    if (zoom > 0.8) {
+                        ctx.fillStyle = color;
+                        ctx.font = 'black 6px "JetBrains Mono", monospace';
+                        ctx.textAlign = 'left';
+                        ctx.fillText(`${base.pontos || 0}P`, bx + TILE_SIZE + 2, by + 10);
+                    }
                 }
             }
         });
@@ -231,6 +259,22 @@ export const WorldMapEngine: React.FC<WorldMapEngineProps> = ({
         // 4. Scanlines & Tactical CRT Effect
         ctx.restore();
         
+        // Radar Sweep Effect
+        const sweepAngle = (Date.now() / 2000) % (Math.PI * 2);
+        const sweepGrd = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/1.5);
+        sweepGrd.addColorStop(0, 'rgba(34, 197, 94, 0.05)');
+        sweepGrd.addColorStop(1, 'rgba(34, 197, 94, 0)');
+        
+        ctx.save();
+        ctx.translate(width/2, height/2);
+        ctx.rotate(sweepAngle);
+        ctx.fillStyle = sweepGrd;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, width, -0.2, 0.2);
+        ctx.fill();
+        ctx.restore();
+
         // Scanlines
         ctx.fillStyle = 'rgba(18, 16, 16, 0.1)';
         for (let i = 0; i < height; i += 4) {

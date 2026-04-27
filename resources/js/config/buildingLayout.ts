@@ -18,6 +18,9 @@ export interface BuildingLayout {
     };
 }
 
+export const REFERENCE_WIDTH = 800;
+export const REFERENCE_HEIGHT = 600;
+
 export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
     "central_energia": {
         "x": 502,

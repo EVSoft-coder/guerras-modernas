@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Target, Search, Crosshair, Navigation, Shield, Sword, Home, ShieldAlert, List, ChevronRight, ChevronLeft, User, Map as MapIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getTerrain, TILE_SIZE } from '@/config/mapConfig';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AttackModal } from './AttackModal';
@@ -23,23 +24,7 @@ interface WorldMapViewProps {
     general?: any;
 }
 
-const TILE_SIZE = 80;
 const VIEWPORT_RANGE = 7; // Raio de tiles visuais (Total 15x15 aprox)
-
-const getTerrain = (tx: number, ty: number) => {
-    // World is now 1000x1000 (standard for global scale)
-    if (ty < 0 || ty > 1000 || tx < 0 || tx > 1000) return 'water';
-    if (ty < 3 || ty > 997 || tx < 3 || tx > 997) return 'water';
-    
-    // Deterministic Pseudo-Noise
-    const noise = (Math.sin(tx * 0.12) + Math.cos(ty * 0.15) + Math.sin(tx * 0.3 + ty * 0.2)) / 3;
-    
-    if (noise > 0.53) return 'mountain';
-    if (noise < -0.45) return 'desert';
-    if (noise < -0.65) return 'water';
-    
-    return 'grass';
-};
 
 export function WorldMapView({ playerBase, troops = [], gameConfig, unitTypes, diplomaties = [], myAllianceId, general }: WorldMapViewProps) {
     const [center, setCenter] = useState({ x: playerBase?.coordenada_x || 50, y: playerBase?.coordenada_y || 50 });

@@ -18,12 +18,12 @@ export const BuildingNode = React.memo(({ type, level, layout, isConstructing, o
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: '-50%', y: '-50%', rotate: layout.rotation || 0 }}
-            animate={{ opacity: 1, x: '-50%', y: '-50%', rotate: layout.rotation || 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="absolute cursor-pointer group building-node overflow-visible"
             style={{
-                left: `${layout.x}px`,
-                top: `${layout.y}px`,
+                left: `${layout.x - (layout.w / 2)}px`,
+                top: `${layout.y - (layout.h / 2)}px`,
                 width: `${layout.w}px`,
                 height: `${layout.h}px`,
                 zIndex: Math.floor(layout.y),
@@ -48,7 +48,8 @@ export const BuildingNode = React.memo(({ type, level, layout, isConstructing, o
                                 pointerEvents: 'none',
                                 filter: isConstructing ? 'brightness(0.3) contrast(1.5) saturate(0)' : 'none',
                                 opacity: isConstructing ? 0.6 : 1,
-                                transition: 'opacity 0.5s ease-out'
+                                transition: 'opacity 0.5s ease-out',
+                                transform: `rotate(${layout.rotation || 0}deg)`
                             }}
                             onError={() => setIsInvalid(true)}
                         />
