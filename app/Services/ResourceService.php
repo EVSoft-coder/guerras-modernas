@@ -137,14 +137,14 @@ class ResourceService
     public function getRates(Base $base): array
     {
         $edificios = $base->edificios;
-        return $this->calculateProductionRates($edificios);
+        return $this->calculateProductionRates($base, $edificios);
     }
 
     /**
      * Calcula as taxas de produção reais baseadas nos edifícios.
      * FASE ENGINE — PRODUÇÃO REAL
      */
-    private function calculateProductionRates($buildings): array
+    private function calculateProductionRates(Base $base, $buildings): array
     {
         $taxas = [
             'suprimentos' => 0,
@@ -159,6 +159,7 @@ class ResourceService
         $economyService = app(EconomyService::class);
         $researchService = app(ResearchService::class);
         $researchBonuses = $researchService->getResearchBonuses($base->jogador);
+        $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('producao');
 
         foreach ($buildings as $edificio) {
             $tipo = \App\Domain\Building\BuildingType::normalize($edificio->tipo);
