@@ -11,8 +11,8 @@ interface TransparentImageProps extends React.ImgHTMLAttributes<HTMLImageElement
 }
 
 /**
- * TransparentImage V5 — "Atomic Performance & Concurrency".
- * Sistema de cache inteligente com bloqueio de concorrência para evitar gargalos de CPU.
+ * TransparentImage V6 — "Quantum Efficiency".
+ * Utiliza ObjectURLs (Blobs) em vez de Base64 para performance extrema e baixo consumo de memória.
  */
 export const TransparentImage: React.FC<TransparentImageProps> = ({ src, tolerance = 30, targetColor, ...props }) => {
     const [processedSrc, setProcessedSrc] = useState<string | null>(src ? PROCESSED_CACHE.get(src) || null : null);
@@ -20,14 +20,13 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
     useEffect(() => {
         if (!src) return;
         
-        // Se já está no cache, atualizar estado (caso tenha sido preenchido por outro componente)
+        // Se já está no cache, atualizar estado
         if (PROCESSED_CACHE.has(src)) {
             setProcessedSrc(PROCESSED_CACHE.get(src)!);
             return;
         }
 
         const processImage = async () => {
-            // Se já existe uma promessa para esta imagem, aguardar por ela
             if (IN_FLIGHT_PROMISES.has(src)) {
                 try {
                     const result = await IN_FLIGHT_PROMISES.get(src);
@@ -38,12 +37,10 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
                 return;
             }
 
-            // Criar nova promessa de processamento
-            const processingPromise = new Promise<string>((resolve, reject) => {
+            const processingPromise = new Promise<string>((resolve) => {
                 const img = new Image();
-                img.crossOrigin = "Anonymous"; // Prevenção de Tainted Canvas
+                img.crossOrigin = "Anonymous";
                 
-                // Carregar via Blob para garantir cache do browser e evitar problemas de CORS
                 fetch(src)
                     .then(res => res.blob())
                     .then(blob => {
@@ -71,16 +68,23 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
                             const bgB = targetColor ? targetColor.b : data[2];
 
                             for (let i = 0; i < data.length; i += 4) {
-                                // Distância de Manhattan (Performance Máxima)
                                 const dist = Math.abs(data[i] - bgR) + Math.abs(data[i+1] - bgG) + Math.abs(data[i+2] - bgB);
                                 if (dist < tolerance * 1.5) data[i + 3] = 0;
                             }
 
                             ctx.putImageData(imageData, 0, 0);
-                            const finalDataUrl = canvas.toDataURL("image/png");
                             
-                            URL.revokeObjectURL(objectUrl);
-                            resolve(finalDataUrl);
+                            // MUDANÇA CRÍTICA: toBlob em vez de toDataURL (Base64)
+                            canvas.toBlob((finalBlob) => {
+                                if (finalBlob) {
+                                    const finalUrl = URL.createObjectURL(finalBlob);
+                                    URL.revokeObjectURL(objectUrl);
+                                    resolve(finalUrl);
+                                } else {
+                                    URL.revokeObjectURL(objectUrl);
+                                    resolve(src);
+                                }
+                            }, "image/png");
                         };
 
                         img.onerror = () => {
@@ -100,7 +104,6 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
             } catch (e) {
                 setProcessedSrc(src);
             } finally {
-                // Manter no cache global, mas remover da lista de promessas ativas
                 IN_FLIGHT_PROMISES.delete(src);
             }
         };
@@ -114,10 +117,12 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
         <img 
             src={displaySrc} 
             {...props} 
+            loading="lazy" // Sugestão para o browser priorizar LCP
             style={{ 
                 ...props.style,
-                opacity: processedSrc ? 1 : 0.3,
-                transition: 'opacity 0.2s ease-in-out'
+                opacity: processedSrc ? 1 : 0.2,
+                transition: 'opacity 0.15s ease-in-out',
+                contentVisibility: 'auto' // Otimização moderna de renderização
             }} 
         />
     );
