@@ -41,9 +41,9 @@ interface Relatorio {
 
 export default function Show({ relatorio }: { relatorio: Relatorio }) {
     const { auth }: any = usePage().props;
-    const isAtacante = relatorio.atacante_id === auth.user.jogador.id;
-    const isVitoria = relatorio.vencedor_id === auth.user.jogador.id;
-    const canShare = isAtacante || relatorio.defensor_id === auth.user.jogador.id;
+    const isAtacante = relatorio.atacante_id === auth.user?.id;
+    const isVitoria = relatorio.vencedor_id === auth.user?.id;
+    const canShare = isAtacante || relatorio.defensor_id === auth.user?.id;
     const det = relatorio.detalhes;
 
     const handleShare = () => {

@@ -154,7 +154,7 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                         {grid.map((row, rowIndex) => (
                             <div key={rowIndex} className="flex gap-[2px]">
                                 {row.map((cell, cellIndex) => {
-                                    const isOwn = cell.base && cell.base.jogador_id === auth.user.jogador.id;
+                                    const isOwn = cell.base && auth.user?.id && cell.base.jogador_id === auth.user.id;
                                     const isNpc = cell.base?.is_npc;
                                     const isCenter = cell.x === x && cell.y === y;
                                     const isSelected = selectedTarget?.coordenada_x === cell.x && selectedTarget?.coordenada_y === cell.y;

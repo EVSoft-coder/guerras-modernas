@@ -21,7 +21,7 @@ interface Relatorio {
 
 export default function Index({ relatorios, relatoriosAlianca }: { relatorios: Relatorio[], relatoriosAlianca: Relatorio[] }) {
     const { auth }: any = usePage().props;
-    const jogadorId = auth.user.jogador.id;
+    const jogadorId = auth.user?.id;
     const [tab, setTab] = useState<'meus' | 'alianca'>('meus');
 
     const calculateTotalLosses = (losses: any) => {
