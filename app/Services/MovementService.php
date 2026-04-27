@@ -261,23 +261,30 @@ class MovementService
             $lockedBases[$id] = Base::where('id', $id)->lockForUpdate()->first();
         }
 
-        $originBase = $lockedBases[$id1];
-        $targetBase = $lockedBases[$id2];
+        $originBase = $lockedBases[$id1] ?? null;
+        $targetBase = $lockedBases[$id2] ?? null;
         
-        if (!$originBase || !$targetBase) return;
+        if (!$targetBase) return;
+
+        // Fallback para ataques de bases apagadas (ex: Redutos Rebeldes removidos)
+        $originName = $originBase ? $originBase->nome : "COMANDO_INSURGENTE_DESCONHECIDO";
+        $originPlayerId = $originBase ? $originBase->jogador_id : null;
 
         // Sincronizar recursos do defensor antes do combate/loot (Mutação Económica)
         app(ResourceService::class)->syncResources($targetBase);
 
         // 1. Unidades Atacantes
-        $atkUnits = $movement->units->map(fn($u) => [
-            'id' => $u->unit_type_id,
-            'name' => $u->type->name,
-            'attack' => $u->type->attack,
-            'defense' => $u->type->defense,
-            'carry_capacity' => $u->type->carry_capacity,
-            'quantity' => $u->quantity
-        ])->toArray();
+        $atkUnits = $movement->units->map(function($u) {
+            if (!$u->type) return null;
+            return [
+                'id' => $u->unit_type_id,
+                'name' => $u->type->name,
+                'attack' => $u->type->attack,
+                'defense' => $u->type->defense,
+                'carry_capacity' => $u->type->carry_capacity,
+                'quantity' => $u->quantity
+            ];
+        })->filter()->toArray();
 
         // 2. Unidades Defensoras (Base + Reforços Aliados)
         $defUnitsFromBase = Unit::where('base_id', $targetBase->id)->with('type')->get()->map(function($u) {
@@ -368,11 +375,11 @@ class MovementService
 
         // 7. Relatório (Persistência em BD - Legacy)
         \App\Models\Relatorio::create([
-            'atacante_id' => $originBase->jogador_id,
+            'atacante_id' => $originPlayerId,
             'defensor_id' => $targetBase->jogador_id,
-            'vencedor_id' => $result['attacker_won'] ? $originBase->jogador_id : $targetBase->jogador_id,
+            'vencedor_id' => $result['attacker_won'] ? $originPlayerId : $targetBase->jogador_id,
             'titulo' => "Batalha em " . $targetBase->nome,
-            'origem_nome' => $originBase->nome,
+            'origem_nome' => $originName,
             'destino_nome' => $targetBase->nome,
             'detalhes' => array_merge($result, ['loot' => $loot])
         ]);
@@ -383,10 +390,10 @@ class MovementService
         $defLosses = collect($result['defender_units'])->sum('losses');
 
         \App\Models\Mensagem::criarRelatorioAtaque([
-            'atacante_id' => $originBase->jogador_id,
+            'atacante_id' => $originPlayerId,
             'defensor_id' => $targetBase->jogador_id,
             'vitoria' => $result['attacker_won'],
-            'atk_base' => $originBase->nome,
+            'atk_base' => $originName,
             'def_base' => $targetBase->nome,
             'atk_perdas' => $atkLosses,
             'def_perdas' => $defLosses,
