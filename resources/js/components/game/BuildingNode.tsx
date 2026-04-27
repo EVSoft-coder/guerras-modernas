@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { BuildingLayout } from '@/config/buildingLayout';
 import { TransparentImage } from '@/components/ui/TransparentImage';
 
