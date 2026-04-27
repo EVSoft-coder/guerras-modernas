@@ -18,15 +18,14 @@ export const BuildingNode = React.memo(({ type, level, layout, isConstructing, o
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: '-50%', y: '-50%' }}
-            animate={{ opacity: 1, x: '-50%', y: '-50%' }}
+            initial={{ opacity: 0, x: '-50%', y: '-50%', rotate: layout.rotation || 0 }}
+            animate={{ opacity: 1, x: '-50%', y: '-50%', rotate: layout.rotation || 0 }}
             className="absolute cursor-pointer group building-node overflow-visible"
             style={{
                 left: `${layout.x}px`,
                 top: `${layout.y}px`,
                 width: `${layout.w}px`,
                 height: `${layout.h}px`,
-                rotate: `${layout.rotation || 0}deg`,
                 zIndex: Math.floor(layout.y),
                 pointerEvents: 'auto'
             }}
