@@ -92,7 +92,17 @@ const ResourceItem = ({ label, value, icon, max, color, ratePerSecond, customVal
             </div>
             
             {/* Status Indicators */}
-            {isCritical && (
+            {percentage >= 100 ? (
+                <div className="absolute top-1 right-1 z-20">
+                    <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-md shadow-[0_0_10px_#ef4444] uppercase tracking-tighter"
+                    >
+                        FULL
+                    </motion.div>
+                </div>
+            ) : isCritical && (
                 <div className="absolute -top-1 -right-1 flex">
                     <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
