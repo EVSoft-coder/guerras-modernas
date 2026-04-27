@@ -18,8 +18,8 @@ export const BuildingNode = React.memo(({ type, level, layout, isConstructing, o
 
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, x: '-50%', y: '-50%' }}
+            animate={{ opacity: 1, x: '-50%', y: '-50%' }}
             className="absolute cursor-pointer group building-node overflow-visible"
             style={{
                 left: `${layout.x}px`,
@@ -28,8 +28,7 @@ export const BuildingNode = React.memo(({ type, level, layout, isConstructing, o
                 height: `${layout.h}px`,
                 rotate: `${layout.rotation || 0}deg`,
                 zIndex: Math.floor(layout.y),
-                pointerEvents: 'auto',
-                transform: 'translate(-50%, -50%)' // CRÍTICO: Centrar edifício na coordenada
+                pointerEvents: 'auto'
             }}
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}
