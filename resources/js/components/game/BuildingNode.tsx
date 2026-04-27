@@ -28,7 +28,8 @@ export const BuildingNode = React.memo(({ type, level, layout, isConstructing, o
                 height: `${layout.h}px`,
                 rotate: `${layout.rotation || 0}deg`,
                 zIndex: Math.floor(layout.y),
-                pointerEvents: 'auto'
+                pointerEvents: 'auto',
+                transform: 'translate(-50%, -50%)' // CRÍTICO: Centrar edifício na coordenada
             }}
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}
