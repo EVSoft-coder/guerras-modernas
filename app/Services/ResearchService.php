@@ -98,7 +98,7 @@ class ResearchService
     /**
      * Obtém os bónus de pesquisa de um jogador para uso no combate.
      */
-    public function getResearchBonuses(Jogador $jogador): array
+    public function getResearchBonuses(?\App\Models\Jogador $jogador): array
     {
         $bonuses = [
             'attack_bonus' => 0,
@@ -108,6 +108,10 @@ class ResearchService
             'production_bonus_energia' => 0,
             'production_bonus_metal' => 0,
         ];
+
+        if (!$jogador) {
+            return $bonuses;
+        }
 
         $researchConfig = config('research');
         

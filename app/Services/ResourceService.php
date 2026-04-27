@@ -101,7 +101,7 @@ class ResourceService
         $housingLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HOUSING) ?: 1;
         $cap = app(EconomyService::class)->getStorageCapacity($hqLevel);
 
-        $researchBonuses = app(ResearchService::class)->getResearchBonuses($base->jogador);
+        $researchBonuses = $base->jogador ? app(ResearchService::class)->getResearchBonuses($base->jogador) : [];
         if (isset($researchBonuses['storage_bonus']) && $researchBonuses['storage_bonus'] > 0) {
             $cap *= (1 + $researchBonuses['storage_bonus']);
         }
@@ -165,7 +165,7 @@ class ResourceService
         $configProducao = config('game.production');
         $economyService = app(EconomyService::class);
         $researchService = app(ResearchService::class);
-        $researchBonuses = $researchService->getResearchBonuses($base->jogador);
+        $researchBonuses = $base->jogador ? $researchService->getResearchBonuses($base->jogador) : [];
         $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('producao');
 
         foreach ($buildings as $edificio) {
