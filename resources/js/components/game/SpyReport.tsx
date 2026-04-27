@@ -91,7 +91,7 @@ export const SpyReport: React.FC<SpyReportProps> = ({ report }) => {
                         {report.buildings?.map((b, i) => (
                             <div key={i} className="p-2 bg-white/5 rounded-lg border border-white/5 flex items-center justify-between group hover:border-sky-500/30 transition-colors">
                                 <span className="text-[9px] text-neutral-400 uppercase font-black truncate mr-2">
-                                    {b.tipo.replace(/_/g, ' ')}
+                                    {(b.type || 'ESTRUTURA_DESCONHECIDA').replace(/_/g, ' ')}
                                 </span>
                                 <span className="text-xs font-mono text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20">
                                     LVL {b.nivel}
@@ -122,7 +122,7 @@ export const SpyReport: React.FC<SpyReportProps> = ({ report }) => {
                                 <div className="flex items-center gap-3">
                                     <Sword size={14} className="text-red-500" />
                                     <span className="text-[10px] font-black text-neutral-300 uppercase tracking-tighter">
-                                        {u.name.replace(/_/g, ' ')}
+                                        {(u.name || 'UNIDADE_DESCONHECIDA').replace(/_/g, ' ')}
                                     </span>
                                 </div>
                                 <span className="text-sm font-mono text-white font-black">

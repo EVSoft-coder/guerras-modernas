@@ -152,7 +152,7 @@ class SpyService
         // Nível 2: Edifícios (Requer mais sucesso)
         if ($surviving >= 2) {
             $report['buildings'] = $targetBase->edificios->map(fn($e) => [
-                'tipo' => $e->tipo, 
+                'type' => $e->tipo, 
                 'nivel' => $e->nivel
             ])->toArray();
         }
@@ -160,8 +160,8 @@ class SpyService
         // Nível 3: Unidades (Requer infiltração profunda)
         if ($surviving >= 5 || ($surviving == $totalSent && $surviving >= 1)) {
             $report['units'] = $targetBase->units->filter(fn($u) => $u->quantity > 0)->map(fn($u) => [
-                'nome' => $u->type->name,
-                'quantidade' => $u->quantity
+                'name' => $u->type->name,
+                'quantity' => $u->quantity
             ])->toArray();
         }
 
