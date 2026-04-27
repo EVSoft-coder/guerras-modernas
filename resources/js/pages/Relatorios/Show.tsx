@@ -186,13 +186,13 @@ export default function Show({ relatorio }: { relatorio: Relatorio }) {
                                 <Zap size={14} /> Espólio Capturado
                             </h3>
                             <div className="grid grid-cols-3 gap-2">
-                                {Object.entries(det.saque).map(([res, qty]) => (
+                                {det.saque && Object.entries(det.saque).map(([res, qty]) => (
                                     <div key={res} className="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col items-center">
                                         <span className="text-[8px] font-black text-neutral-500 uppercase mb-1">{res}</span>
                                         <span className="text-xs font-bold text-white">{qty.toLocaleString()}</span>
                                     </div>
                                 ))}
-                                {Object.values(det.saque).every(v => v === 0) && (
+                                {(!det.saque || Object.values(det.saque).every(v => v === 0)) && (
                                     <div className="col-span-3 py-4 text-center text-neutral-600 text-[10px] font-black uppercase italic">
                                         Transmissão: Zero recursos capturados
                                     </div>
