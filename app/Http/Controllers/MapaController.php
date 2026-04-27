@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Base;
 use App\Models\Movement;
 use App\Models\AliancaDiplomacia;
+use App\Models\UnitType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -56,8 +57,15 @@ class MapaController extends Controller
  
         $jogador = Auth::user()->jogador;
         $diplomacia = [];
-        if ($jogador->alianca_id) {
-            $diplomacia = AliancaDiplomacia::where('alianca_id', $jogador->alianca_id)->get();
+        $general = null;
+        $userAliancaId = null;
+
+        if ($jogador) {
+            $userAliancaId = $jogador->alianca_id;
+            if ($userAliancaId) {
+                $diplomacia = AliancaDiplomacia::where('alianca_id', $userAliancaId)->get();
+            }
+            $general = $jogador->general()->with('skills')->first();
         }
 
         return Inertia::render('mapa', [
@@ -70,9 +78,10 @@ class MapaController extends Controller
             'ataquesRecebidos' => Movement::where('target_id', $origemBase?->id)->where('status', 'moving')->get(),
             'gameConfig' => config('game'),
             'diplomacia' => $diplomacia,
-            'userAliancaId' => $jogador->alianca_id,
-            'general' => $jogador->general()->with('skills')->first(),
-            'targetId' => $request->input('target_id')
+            'userAliancaId' => $userAliancaId,
+            'general' => $general,
+            'targetId' => $request->input('target_id'),
+            'unitTypes' => UnitType::all()
         ]);
     }
 

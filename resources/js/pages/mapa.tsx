@@ -28,7 +28,7 @@ const MapLegend = ({ color, label }: { color: string, label: string }) => (
     </div>
 );
 
-export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos, diplomacia, userAliancaId, auth, general, targetId }: any) {
+export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataquesEnviados, ataquesRecebidos, diplomacia, userAliancaId, auth, general, targetId, unitTypes }: any) {
     const { addToast } = useToasts();
     const [selectedTarget, setSelectedTarget] = React.useState<any>(null);
     const [isSending, setIsSending] = React.useState(false);
@@ -267,9 +267,10 @@ export default function Mapa({ bases, x, y, raio, origemBase, gameConfig, ataque
                 gameConfig={gameConfig}
                 origemBase={origemBase}
                 destinoBase={selectedTarget}
-                tropasDisponiveis={origemBase?.tropas || []}
+                tropasDisponiveis={origemBase?.units || []}
                 isSending={isSending}
                 general={general}
+                unitTypes={unitTypes}
                 onEnviar={(params) => {
                     setIsSending(true);
                     const payload = {

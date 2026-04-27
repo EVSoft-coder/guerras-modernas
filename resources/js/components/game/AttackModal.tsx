@@ -38,8 +38,8 @@ export const AttackModal: React.FC<AttackModalProps> = ({
         if (isOpen && !hasInitialized) {
             const initial: Record<string, number> = {};
             tropasDisponiveis.forEach(t => {
-                const ut = unitTypes?.find(u => u.name === t.tipo || u.name === t.unidade);
-                if (ut) initial[ut.id] = 0;
+                const utId = t.type_id || unitTypes?.find(u => u.name === t.tipo || u.name === t.unidade)?.id;
+                if (utId) initial[utId] = 0;
             });
             setSelectedTropas(initial);
             setCargo({ suprimentos: 0, combustivel: 0, municoes: 0, metal: 0, energia: 0 });
@@ -177,10 +177,10 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                             </div>
                         ) : (
                             tropasDisponiveis.map(tropa => {
-                                const utId = unitTypes?.find(u => u.name === tropa.tipo || u.name === tropa.unidade)?.id;
+                                const utId = tropa.type_id || unitTypes?.find(u => u.name === tropa.tipo || u.name === tropa.unidade)?.id;
                                 if (!utId) return null;
 
-                                const unitName = (tropa.tipo || tropa.unidade || 'Desconhecida');
+                                const unitName = tropa.type?.name || tropa.tipo || tropa.unidade || 'Desconhecida';
                                 const isArmored = ['tanque', 'blindado', 'helicoptero'].some(s => unitName.toLowerCase().includes(s));
                                 
                                 return (
