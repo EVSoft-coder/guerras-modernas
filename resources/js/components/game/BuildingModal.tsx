@@ -87,8 +87,13 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     const tipoLower = building.buildingType?.toLowerCase();
     const isMilitary = ['quartel', 'aerodromo', 'radar_estrategico'].includes(tipoLower);
     const availableUnits = isMilitary ? (unitTypes || []).filter((ut, index, self) => {
-        // 1. Evitar duplicados exatos por nome na mesma lista
-        if (self.findIndex(t => t.name === ut.name) !== index) return false;
+        // 1. Evitar duplicados por nome (case-insensitive) ou slug
+        const isDuplicate = self.findIndex(t => 
+            (t.name.toLowerCase() === ut.name.toLowerCase()) || 
+            (t.slug && ut.slug && t.slug === ut.slug)
+        ) !== index;
+        
+        if (isDuplicate) return false;
 
         // 2. Se a unidade tem building_type definido na DB, usar isso como filtro primário
         if (ut.building_type) {
