@@ -38,7 +38,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
         if (isOpen && !hasInitialized) {
             const initial: Record<string, number> = {};
             tropasDisponiveis.forEach(t => {
-                const utId = t.type_id || unitTypes?.find(u => u.name === t.tipo || u.name === t.unidade)?.id;
+                const utId = t.unit_type_id || t.type_id || unitTypes?.find(u => u.name === t.tipo || u.name === t.unidade)?.id;
                 if (utId) initial[utId] = 0;
             });
             setSelectedTropas(initial);
@@ -177,7 +177,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                             </div>
                         ) : (
                             tropasDisponiveis.map(tropa => {
-                                const utId = tropa.type_id || unitTypes?.find(u => u.name === tropa.tipo || u.name === tropa.unidade)?.id;
+                                const utId = tropa.unit_type_id || tropa.type_id || unitTypes?.find(u => u.name === tropa.tipo || u.name === tropa.unidade)?.id;
                                 if (!utId) return null;
 
                                 const unitName = tropa.type?.name || tropa.tipo || tropa.unidade || 'Desconhecida';
