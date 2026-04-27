@@ -378,8 +378,8 @@ class MovementService
         // 7. Relatório (Persistência em BD - Legacy)
         $relatorio = \App\Models\Relatorio::create([
             'atacante_id' => $originPlayerId,
-            'defensor_id' => $targetBase->jogador_id,
-            'vencedor_id' => $result['attacker_won'] ? $originPlayerId : $targetBase->jogador_id,
+            'defensor_id' => $targetBase->jogador_id ?? 7, // Fallback para REBELS (ID 7) em PvE
+            'vencedor_id' => $result['attacker_won'] ? $originPlayerId : ($targetBase->jogador_id ?? 7),
             'titulo' => "Batalha em " . $targetBase->nome,
             'origem_nome' => $originName,
             'destino_nome' => $targetBase->nome,

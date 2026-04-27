@@ -269,7 +269,7 @@ CREATE TABLE `bases` (
 LOCK TABLES `bases` WRITE;
 /*!40000 ALTER TABLE `bases` DISABLE KEYS */;
 INSERT INTO `bases` VALUES
-(1,1,'Base Principal',111,608,'2026-04-27 21:56:33','2026-04-07 20:55:47','2026-04-27 21:56:33',0,NULL,100,'2026-04-14 21:28:00',94,944,'2026-04-18 11:27:08'),
+(1,1,'Base Principal',111,608,'2026-04-27 22:15:43','2026-04-07 20:55:47','2026-04-27 22:15:43',0,NULL,100,'2026-04-14 21:28:00',94,944,'2026-04-18 11:27:08'),
 (2,2,'Base Principal',193,662,'2026-04-11 08:49:37','2026-04-11 07:49:37','2026-04-17 19:14:04',0,NULL,100,'2026-04-11 08:49:37',442,375,'2026-04-18 11:27:08'),
 (3,3,'Base Principal',743,246,'2026-04-11 08:51:28','2026-04-11 07:51:28','2026-04-17 19:14:04',0,NULL,100,'2026-04-11 08:51:28',551,629,'2026-04-18 11:27:08'),
 (4,4,'Base Principal',593,694,'2026-04-11 08:59:45','2026-04-11 07:59:45','2026-04-17 19:14:04',0,NULL,100,'2026-04-11 08:59:45',492,572,'2026-04-18 11:27:08'),
@@ -4812,7 +4812,7 @@ CREATE TABLE `movement_units` (
   KEY `unit_type_id` (`unit_type_id`),
   CONSTRAINT `movement_units_ibfk_1` FOREIGN KEY (`movement_id`) REFERENCES `movements` (`id`) ON DELETE CASCADE,
   CONSTRAINT `movement_units_ibfk_2` FOREIGN KEY (`unit_type_id`) REFERENCES `unit_types` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4874,7 +4874,16 @@ INSERT INTO `movement_units` VALUES
 (50,8,9,0,'2026-04-27 21:37:00','2026-04-27 21:37:00'),
 (51,8,10,0,'2026-04-27 21:37:00','2026-04-27 21:37:00'),
 (52,9,5,60,'2026-04-27 21:42:56','2026-04-27 21:42:56'),
-(53,9,7,60,'2026-04-27 21:42:56','2026-04-27 21:42:56');
+(53,9,7,60,'2026-04-27 21:42:56','2026-04-27 21:42:56'),
+(54,10,1,200,'2026-04-27 22:15:34','2026-04-27 22:15:34'),
+(55,10,2,0,'2026-04-27 22:15:34','2026-04-27 22:15:34'),
+(56,10,3,90,'2026-04-27 22:15:34','2026-04-27 22:15:34'),
+(57,10,5,60,'2026-04-27 22:15:34','2026-04-27 22:15:34'),
+(58,10,6,80,'2026-04-27 22:15:34','2026-04-27 22:15:34'),
+(59,10,7,60,'2026-04-27 22:15:34','2026-04-27 22:15:34'),
+(60,10,8,20,'2026-04-27 22:15:34','2026-04-27 22:15:34'),
+(61,10,9,0,'2026-04-27 22:15:34','2026-04-27 22:15:34'),
+(62,10,10,55,'2026-04-27 22:15:34','2026-04-27 22:15:34');
 /*!40000 ALTER TABLE `movement_units` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4912,7 +4921,7 @@ CREATE TABLE `movements` (
   CONSTRAINT `fk_movements_general` FOREIGN KEY (`general_id`) REFERENCES `generais` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_movements_origin` FOREIGN KEY (`origin_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_movements_target` FOREIGN KEY (`target_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4930,7 +4939,8 @@ INSERT INTO `movements` VALUES
 (6,1,954,'2026-04-27 21:19:01','2026-04-27 21:20:58',NULL,'arrived',NULL,'2026-04-27 21:21:01','espionagem','2026-04-27 21:19:01','2026-04-27 21:21:01',0.00,0.00,0.00,0.00,0.00,0.00),
 (7,954,1,'2026-04-27 21:21:01','2026-04-27 21:22:58',NULL,'arrived',NULL,'2026-04-27 21:26:21','return','2026-04-27 21:21:01','2026-04-27 21:26:21',0.00,0.00,0.00,0.00,0.00,0.00),
 (8,1,954,'2026-04-27 21:37:00','2026-04-27 21:38:57',NULL,'arrived',NULL,'2026-04-27 21:42:56','espionagem','2026-04-27 21:37:00','2026-04-27 21:42:56',0.00,0.00,0.00,0.00,0.00,0.00),
-(9,954,1,'2026-04-27 21:42:56','2026-04-27 21:44:53',NULL,'arrived',NULL,'2026-04-27 21:44:54','return','2026-04-27 21:42:56','2026-04-27 21:44:54',0.00,0.00,0.00,0.00,0.00,0.00);
+(9,954,1,'2026-04-27 21:42:56','2026-04-27 21:44:53',NULL,'arrived',NULL,'2026-04-27 21:44:54','return','2026-04-27 21:42:56','2026-04-27 21:44:54',0.00,0.00,0.00,0.00,0.00,0.00),
+(10,1,954,'2026-04-27 22:15:34','2026-04-27 22:16:55',NULL,'moving',NULL,NULL,'ataque','2026-04-27 22:15:34','2026-04-27 22:15:34',0.00,0.00,0.00,0.00,0.00,0.00);
 /*!40000 ALTER TABLE `movements` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5062,7 +5072,7 @@ CREATE TABLE `recursos` (
 LOCK TABLES `recursos` WRITE;
 /*!40000 ALTER TABLE `recursos` DISABLE KEYS */;
 INSERT INTO `recursos` VALUES
-(1,1,5856.6769439744,5018.8601710934,4046.2110079988,1719,4550.0715456,6144.7620608,'2026-04-07 20:55:47','2026-04-27 21:56:33','2026-04-15 20:58:21',6274),
+(1,1,6274,6274,4767.7915413319,1719,5848.9165056,6274,'2026-04-07 20:55:47','2026-04-27 22:15:43','2026-04-15 20:58:21',6274),
 (3,2,2801,1416,1112,1120,0,0,'2026-04-11 07:49:37','2026-04-11 08:52:04','2026-04-15 20:58:21',10000),
 (4,3,2796,1415,1111,1118,0,0,'2026-04-11 07:51:28','2026-04-11 08:53:41','2026-04-15 20:58:21',10000),
 (5,4,1500,1000,800,600,0,0,'2026-04-11 07:59:45','2026-04-11 07:59:45','2026-04-15 20:58:21',10000),
@@ -6174,16 +6184,18 @@ INSERT INTO `sessions` VALUES
 ('2nYHlJwriLYEsqJjwZPwgStdxnALt3oy0bgf3mFa',NULL,'34.245.157.3','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQnEzU0szVmlxNFJTOEpXTlQxenRmV2w2Z1Y1dHRBeGNTVEJpR3RKNSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777330308),
 ('9dpUrmUWoELjiKOljQrFfyy0NLpW873kQYRiIr1M',NULL,'54.216.216.250','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoieVZTWWZJYmFXa2tscFdzdDcxcWlsWUs5WHM4Z0QzbU5rVVlPS1p0WSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777328262),
 ('bbciqVmjJzwk3nkpFygK4j1fGM0eIeG9LSUjx2dy',NULL,'54.216.216.250','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTjhlZnBueWh2YXFaSjNRbExtdlh4Slp1ZGhYSGRON25FbXhwQ3FBZyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777330497),
-('CSCY4TbPnm0J9yJewq8dqtuLaPuRzyq95v0354LZ',1,'213.22.36.106','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo2OntzOjY6Il90b2tlbiI7czo0MDoiQm9nY1RXWVFYSVlRc1I0MldUYVpjbEhFQmpzOUh6SEFra25kYldQMyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL21lbnNhZ2VucyI7czo1OiJyb3V0ZSI7czoxNToibWVuc2FnZW5zLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE2OiJzZWxlY3RlZF9iYXNlX2lkIjtpOjE7fQ==',1777330593),
+('CSCY4TbPnm0J9yJewq8dqtuLaPuRzyq95v0354LZ',1,'213.22.36.106','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo2OntzOjY6Il90b2tlbiI7czo0MDoiQm9nY1RXWVFYSVlRc1I0MldUYVpjbEhFQmpzOUh6SEFra25kYldQMyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czo5OiJkYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTY6InNlbGVjdGVkX2Jhc2VfaWQiO2k6MTt9',1777332006),
 ('dHsbHtcPZjyfeviBiZuqdGuIlu7Y6nUWNrDsMZs8',NULL,'34.249.112.203','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWEFES1dLN2MwckRTRFVPMjNhbG81OGxHNVl4aW10Vk9TUmI2bEJjTyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777329878),
 ('DO86mxw0emoLlG3pwJsJbp4XU3gvVwW9n8Qj9qXX',NULL,'52.50.237.44','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiM3NNQzAzS1Z3Z214VkJtbUxud2RRN0RDM3E4UnJVVE5BelBLYUZobyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777328735),
 ('dSb5mbvvl8xv6voXeFyUS7kU9VBfSWdnb23izWjH',NULL,'3.255.233.10','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTGZ1SDc1WUszMHM5RU5VaXh3bjB0d3ZoN2taNG1LMmZBVWJZWnhRcSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777328770),
+('etOKay7pRzbfqur8R45giJuwdHzpdpoYaPeJ0X3J',NULL,'34.245.157.3','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoidGlzOGt4UVl6blladzdkaXVWdVVMWWN1T1h3eTQ3bjUyUmpVRWFqRCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777331634),
 ('IboScWlOtmSeDfgmgXrFNQtkjbLukY2SaANy88TQ',NULL,'34.242.112.237','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNXlrb0NHUTRvZEVCN1VzY3FNd0FheFpaOTVyUGJ4Q1dvVElZV0pnciI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777326953),
 ('lDA3lulDTG1L7EAH8aX0Wa288S1RzXuQ41n1j04g',NULL,'34.244.24.81','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWTNmOFdWMVUxbG04bTlIT3o5aHZNRmJsVXRIUUx0dzUzNWxTZEkyWCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777329188),
 ('Lykjm6ke3yAmqBUa0fDzjOXK8oLyk9z3lhmeFV7j',NULL,'52.30.184.105','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQjl1bUNVWjRCeXc3Rzh5eVU4dlh3cEZaMW9Od2FQNXFkZ09jVkhMVCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777329765),
 ('nZvveEDSkiEU4pqzpolYUX0tSN02xCaH32Ip3S68',NULL,'34.242.112.237','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWjM4UnpIdnVRMFMxWkFaMlZJTE9TWkFGWExDNXRqVTJSbkpOQnZkciI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777330092),
 ('Oqj8BvX5CZrXWhOLBvjD3FQeOlyQKfDQGiN6TodZ',NULL,'34.249.112.203','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiVWMzVUJrM3ZaSVZubDBjSVEzY3ZKMThJRXYwVWFwcUpHQzdqSHZKaiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777327606),
 ('rn4ObwlxnP6fgWpH590Se8TkgKGNNUnKYZDgTQme',NULL,'34.245.157.3','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUjIzVVk3RmVoOGJVT1l1QUhJOTViR2dJbTBBamZKazhPcHBKc3ozbSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777328077),
+('rWUSalIqiUSo34MNyhAuIPRaiYGeSgVGotKdUnSP',NULL,'34.249.112.203','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUVd0UzZTMmVqVU0zS29OQk1BM2RwVFhZSjBqU3NVaEFTenV2MVNrNyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777331992),
 ('U1ETYwUH4R0JkPle8AlDxRR49SyzaFFxEKUw6iNe',NULL,'54.216.216.250','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoicmRjRmVnemc1ak1pR2xjWmZtcFN2NU5jOFFubDhqVlI4VGNBbExWNSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777327182),
 ('VOM1e7hutFE0pAaj4tltdkAMdn9dknUIxdtrGwat',NULL,'52.50.237.44','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQmp1aDVqQk1TT1h4Y1JvYlM4bHVjRmw5MGZBQVRoeGZKZm9qWTcxMyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777331018);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
@@ -6222,7 +6234,7 @@ CREATE TABLE `unit_queue` (
   KEY `idx_unit_queue_pos` (`base_id`,`position`),
   CONSTRAINT `unit_queue_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON DELETE CASCADE,
   CONSTRAINT `unit_queue_ibfk_2` FOREIGN KEY (`unit_type_id`) REFERENCES `unit_types` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6231,6 +6243,8 @@ CREATE TABLE `unit_queue` (
 
 LOCK TABLES `unit_queue` WRITE;
 /*!40000 ALTER TABLE `unit_queue` DISABLE KEYS */;
+INSERT INTO `unit_queue` VALUES
+(67,1,1,2,25,0,25,'active','2026-04-27 22:14:53','2026-04-27 22:16:58',NULL,'2026-04-27 22:14:52','2026-04-27 22:14:53',5,0,0,0,0);
 /*!40000 ALTER TABLE `unit_queue` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6244,6 +6258,8 @@ DROP TABLE IF EXISTS `unit_types`;
 CREATE TABLE `unit_types` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
+  `slug` varchar(50) DEFAULT NULL,
+  `display_name` varchar(100) DEFAULT NULL,
   `attack` int(11) NOT NULL,
   `defense` int(11) NOT NULL,
   `speed` float NOT NULL,
@@ -6251,6 +6267,8 @@ CREATE TABLE `unit_types` (
   `cost_suprimentos` int(11) NOT NULL,
   `cost_municoes` int(11) NOT NULL,
   `cost_combustivel` int(11) NOT NULL,
+  `cost_metal` int(11) DEFAULT 0,
+  `cost_pessoal` int(11) DEFAULT 1,
   `build_time` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -6266,23 +6284,16 @@ CREATE TABLE `unit_types` (
 LOCK TABLES `unit_types` WRITE;
 /*!40000 ALTER TABLE `unit_types` DISABLE KEYS */;
 INSERT INTO `unit_types` VALUES
-(1,'infantaria',10,15,10,20,100,20,0,10,'2026-04-16 22:51:20','2026-04-22 20:47:26','quartel'),
-(2,'veiculo_leve_apc',20,40,25,100,300,50,100,20,'2026-04-16 22:51:20','2026-04-22 20:47:26','fabrica_municoes'),
-(3,'tanque_combate_mbt',150,100,20,50,800,200,300,45,'2026-04-16 22:51:20','2026-04-22 20:47:26','fabrica_municoes'),
-(4,'politico',5,5,1,0,10000,2000,5000,300,NULL,'2026-04-22 20:47:26','parlamento'),
-(5,'agente_espiao',0,2,30,0,500,100,200,60,'2026-04-24 20:09:26','2026-04-24 20:09:26','radar_estrategico'),
-(6,'helicoptero_ataque',80,30,40,30,600,300,400,90,'2026-04-24 20:09:26','2026-04-24 20:09:26','aerodromo'),
-(7,'drone_reconhecimento',0,0,50,0,200,0,150,30,'2026-04-24 20:09:26','2026-04-24 20:09:26','radar_estrategico'),
-(8,'artilharia_pesada',200,20,5,0,1000,500,200,120,'2026-04-24 20:09:26','2026-04-24 20:09:26','fabrica_municoes'),
-(9,'engenheiro',5,10,8,50,300,50,100,15,'2026-04-24 20:09:26','2026-04-24 20:09:26','posto_recrutamento'),
-(10,'sniper',50,5,12,5,400,150,50,25,'2026-04-24 20:09:26','2026-04-24 20:09:26','quartel'),
-(11,'agente_espiao',0,2,30,0,500,100,200,60,NULL,NULL,'radar_estrategico'),
-(12,'helicoptero_ataque',80,30,40,30,600,300,400,90,NULL,NULL,'aerodromo'),
-(13,'drone_reconhecimento',0,0,50,0,200,0,150,30,NULL,NULL,'radar_estrategico'),
-(14,'artilharia_pesada',200,20,5,0,1000,500,200,120,NULL,NULL,'fabrica_municoes'),
-(15,'engenheiro',5,10,8,50,300,50,100,15,NULL,NULL,'posto_recrutamento'),
-(16,'sniper',50,5,12,5,400,150,50,25,NULL,NULL,'quartel'),
-(17,'Politico',5,5,1,0,10000,2000,5000,3600,NULL,NULL,NULL);
+(1,'infantaria','infantaria','Infantaria Ligeira',10,15,10,20,100,20,0,0,1,10,'2026-04-16 22:51:20','2026-04-22 20:47:26','quartel'),
+(2,'veiculo_leve_apc','blindado_apc','Blindado APC',20,40,25,100,300,50,100,0,1,20,'2026-04-16 22:51:20','2026-04-22 20:47:26','fabrica_municoes'),
+(3,'tanque_combate_mbt','tanque_combate','Tanque MBT',150,100,20,50,800,200,300,0,1,45,'2026-04-16 22:51:20','2026-04-22 20:47:26','fabrica_municoes'),
+(4,'politico','politico','Líder Político',5,5,1,0,10000,2000,5000,0,1,300,NULL,'2026-04-22 20:47:26','parlamento'),
+(5,'agente_espiao','agente_espiao','Agente Espião',0,2,30,0,500,100,200,0,1,60,'2026-04-24 20:09:26','2026-04-24 20:09:26','radar_estrategico'),
+(6,'helicoptero_ataque','helicoptero','Helicóptero de Ataque',80,30,40,30,600,300,400,0,1,90,'2026-04-24 20:09:26','2026-04-24 20:09:26','aerodromo'),
+(7,'drone_reconhecimento','drone','Drone Recon',0,0,50,0,200,0,150,0,1,30,'2026-04-24 20:09:26','2026-04-24 20:09:26','radar_estrategico'),
+(8,'artilharia_pesada','artilharia','Artilharia Pesada',200,20,5,0,1000,500,200,0,1,120,'2026-04-24 20:09:26','2026-04-24 20:09:26','fabrica_municoes'),
+(9,'engenheiro','engenheiro','Engenheiro Militar',5,10,8,50,300,50,100,0,1,15,'2026-04-24 20:09:26','2026-04-24 20:09:26','posto_recrutamento'),
+(10,'sniper','sniper','Sniper de Elite',50,5,12,5,400,150,50,0,1,25,'2026-04-24 20:09:26','2026-04-24 20:09:26','quartel');
 /*!40000 ALTER TABLE `unit_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6315,11 +6326,11 @@ CREATE TABLE `units` (
 LOCK TABLES `units` WRITE;
 /*!40000 ALTER TABLE `units` DISABLE KEYS */;
 INSERT INTO `units` VALUES
-(1,1,1,200,'2026-04-17 19:51:20','2026-04-27 21:37:00'),
-(2,1,3,90,'2026-04-17 21:39:55','2026-04-27 21:37:00'),
-(3,1,2,0,'2026-04-24 20:08:59','2026-04-27 21:37:00'),
-(4,1,6,80,'2026-04-24 20:09:26','2026-04-27 21:45:15'),
-(5,1,5,60,'2026-04-24 20:09:26','2026-04-27 21:44:54'),
+(1,1,1,0,'2026-04-17 19:51:20','2026-04-27 22:15:34'),
+(2,1,3,0,'2026-04-17 21:39:55','2026-04-27 22:15:34'),
+(3,1,2,0,'2026-04-24 20:08:59','2026-04-27 22:15:34'),
+(4,1,6,0,'2026-04-24 20:09:26','2026-04-27 22:15:34'),
+(5,1,5,0,'2026-04-24 20:09:26','2026-04-27 22:15:34'),
 (6,15,1,124,'2026-04-25 08:07:27','2026-04-25 08:07:27'),
 (7,16,1,45,'2026-04-25 08:07:27','2026-04-25 08:07:27'),
 (8,17,1,250,'2026-04-25 08:07:27','2026-04-25 08:07:27'),
@@ -7320,12 +7331,12 @@ INSERT INTO `units` VALUES
 (1003,1012,1,28,'2026-04-25 08:16:25','2026-04-25 08:16:25'),
 (1004,1013,1,40,'2026-04-25 08:16:25','2026-04-25 08:16:25'),
 (1005,1014,1,84,'2026-04-25 08:16:25','2026-04-25 08:16:25'),
-(1006,1,7,60,'2026-04-26 18:50:34','2026-04-27 21:44:54'),
-(1007,1,8,20,'2026-04-26 18:50:34','2026-04-27 21:37:00'),
-(1008,1,9,0,'2026-04-26 18:50:34','2026-04-27 21:37:00'),
-(1009,1,10,55,'2026-04-26 18:50:34','2026-04-27 21:48:40'),
-(1010,1,11,2,'2026-04-26 18:50:34','2026-04-26 18:50:57'),
-(1011,1,12,2,'2026-04-26 18:50:34','2026-04-26 18:51:23');
+(1006,1,7,0,'2026-04-26 18:50:34','2026-04-27 22:15:34'),
+(1007,1,8,0,'2026-04-26 18:50:34','2026-04-27 22:15:34'),
+(1008,1,9,0,'2026-04-26 18:50:34','2026-04-27 22:15:34'),
+(1009,1,10,0,'2026-04-26 18:50:34','2026-04-27 22:15:34'),
+(1010,1,5,-58,'2026-04-26 18:50:34','2026-04-27 22:15:34'),
+(1011,1,6,-78,'2026-04-26 18:50:34','2026-04-27 22:15:34');
 /*!40000 ALTER TABLE `units` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7342,4 +7353,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-04-28  0:04:12
+-- Dump completed on 2026-04-28  0:21:54
