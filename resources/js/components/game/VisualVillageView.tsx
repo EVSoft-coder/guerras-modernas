@@ -51,12 +51,19 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
         return b?.nivel || 0;
     };
 
-    // Indexar edifícios para busca O(1)
+    // Indexar edifícios para busca O(1) com suporte a fallback
     const buildingsMap = React.useMemo(() => {
         const map = new Map<string, any>();
         base.edificios?.forEach(e => {
-            const key = `${(e.buildingType || e.tipo)?.toLowerCase()}-${e.pos_x}-${e.pos_y}`;
+            const type = (e.buildingType || e.tipo)?.toLowerCase();
+            // 1. Indexação exata por posição
+            const key = `${type}-${e.pos_x}-${e.pos_y}`;
             map.set(key, e);
+            
+            // 2. Fallback: guardar o primeiro que aparecer deste tipo (para edifícios sem pos_x/y)
+            if (!map.has(type)) {
+                map.set(type, e);
+            }
         });
         return map;
     }, [base.edificios]);
@@ -108,9 +115,11 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
 
                 <div style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
                     {Object.entries(currentLayout).map(([type, layout]) => {
-                        const key = `${type.toLowerCase()}-${layout.x}-${layout.y}`;
-                        // Busca O(1)
-                        const b = buildingsMap.get(key) || buildingsMap.get(`${type.toLowerCase()}-0-0`);
+                        const typeLower = type.toLowerCase();
+                        const key = `${typeLower}-${layout.x}-${layout.y}`;
+                        
+                        // Busca O(1): Tenta exato, senão tenta o primeiro do tipo (fallback)
+                        const b = buildingsMap.get(key) || buildingsMap.get(typeLower);
                         
                         const level = b?.nivel || 0;
                         const isConstructing = (buildingQueue || []).some(q => 
