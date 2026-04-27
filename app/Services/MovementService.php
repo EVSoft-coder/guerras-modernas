@@ -316,13 +316,15 @@ class MovementService
         $attackerPlayer = $originBase->jogador;
         $defenderPlayer = $targetBase->jogador;
 
-        // FASE 16: Identificar Generais presentes
         $attackerGeneral = null;
         if ($movement->general_id) {
             $attackerGeneral = \App\Models\General::with('skills')->find($movement->general_id);
         }
 
-        $defenderGeneral = $defenderPlayer->general()->with('skills')->where('base_id', $targetBase->id)->first();
+        $defenderGeneral = null;
+        if ($defenderPlayer) {
+            $defenderGeneral = $defenderPlayer->general()->with('skills')->where('base_id', $targetBase->id)->first();
+        }
 
         $result = $this->combatService->resolveBattle($atkUnits, $allDefUnits, $attackerPlayer, $defenderPlayer, $targetBase, $attackerGeneral, $defenderGeneral);
 
