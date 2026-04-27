@@ -138,16 +138,16 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent z-0 pointer-events-none rounded-[3rem]" />
                 
                 {/* Premium Header */}
-                <div className="relative z-10 px-10 py-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+                <DialogHeader className="relative z-10 px-10 py-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01] flex-row space-y-0">
                     <div className="flex items-center gap-8">
                         <div className={`p-5 rounded-[2rem] border-2 backdrop-blur-xl ${isBuilt ? 'bg-sky-500/10 border-sky-500/30 text-sky-400' : 'bg-orange-500/10 border-orange-500/30 text-orange-400'}`}>
                             {isBuilt ? <Shield size={32} /> : <Activity size={32} />}
                         </div>
                         <div className="flex flex-col">
                             <div className="flex items-center gap-4 mb-2">
-                                <h2 className="text-4xl font-black uppercase text-white tracking-tighter leading-none">
+                                <DialogTitle className="text-4xl font-black uppercase text-white tracking-tighter leading-none">
                                     {config.name}
-                                </h2>
+                                </DialogTitle>
                                 <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
                                     NÍVEL_{building.nivel?.toString().padStart(2, '0')}
                                 </div>
@@ -166,7 +166,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                     <button onClick={onClose} className="p-4 hover:bg-white/5 rounded-3xl transition-all border border-transparent hover:border-white/10 group">
                         <X className="text-neutral-500 group-hover:text-white" size={32} />
                     </button>
-                </div>
+                </DialogHeader>
 
                 <div className="relative z-10 flex-1 overflow-hidden flex">
                     {/* Left Column: Visual & Intel */}
@@ -194,9 +194,9 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500">Relatório de Operações</h3>
                             </div>
                             <div className="p-8 bg-white/[0.02] rounded-[2.5rem] border border-white/5 shadow-inner">
-                                <p className="text-neutral-400 text-sm leading-relaxed font-medium">
+                                <DialogDescription className="text-neutral-400 text-sm leading-relaxed font-medium">
                                     {config.description}
-                                </p>
+                                </DialogDescription>
                             </div>
                         </div>
                         
