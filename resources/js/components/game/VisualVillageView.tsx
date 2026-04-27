@@ -110,6 +110,7 @@ export const VisualVillageView: React.FC<VillageViewProps> = ({ jogador, base, o
                         src="/images/village/terrain_v30.png" 
                         style={{ width: '800px', height: '600px', objectFit: 'fill' }}
                         alt="Tactical Terrain V30"
+                        fetchpriority="high"
                     />
                 </div>
 

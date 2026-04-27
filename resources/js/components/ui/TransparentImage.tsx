@@ -117,7 +117,7 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
         <img 
             src={displaySrc} 
             {...props} 
-            loading="lazy" // Sugestão para o browser priorizar LCP
+            fetchpriority="auto" // Evita competir com o terreno principal
             style={{ 
                 ...props.style,
                 opacity: processedSrc ? 1 : 0.2,
