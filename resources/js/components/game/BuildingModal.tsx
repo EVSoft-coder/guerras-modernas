@@ -85,7 +85,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     }) : true;
 
     const tipoLower = building.buildingType?.toLowerCase();
-    const isMilitary = ['quartel', 'aerodromo', 'radar_estrategico'].includes(tipoLower);
+    const isMilitary = ['quartel', 'aerodromo', 'radar_estrategico', 'fabrica_municoes'].includes(tipoLower);
     const availableUnits = isMilitary ? (unitTypes || []).filter((ut, index, self) => {
         // 1. Evitar duplicados por nome (case-insensitive) ou slug
         const isDuplicate = self.findIndex(t => 
@@ -97,12 +97,15 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
         // 2. Se a unidade tem building_type definido na DB, usar isso como filtro primário
         if (ut.building_type) {
+            // Mapeamento de compatibilidade para fabrica_municoes
+            if (ut.building_type === 'fabrica_municoes' && tipoLower === 'fabrica_municoes') return true;
             return ut.building_type === building.buildingType;
         }
 
         // 3. Fallback: Filtro por nome para compatibilidade com dados antigos
         const k = ut.name.toLowerCase();
-        if (tipoLower === 'quartel') return ['infantaria', 'blindado', 'tanque', 'politico', 'sniper', 'engenheiro'].some(s => k.includes(s));
+        if (tipoLower === 'quartel') return ['infantaria', 'politico', 'sniper', 'engenheiro'].some(s => k.includes(s));
+        if (tipoLower === 'fabrica_municoes') return ['blindado', 'tanque', 'artilharia'].some(s => k.includes(s));
         if (tipoLower === 'aerodromo') return ['helicoptero'].some(s => k.includes(s));
         if (tipoLower === 'radar_estrategico') return ['agente', 'espiao', 'drone'].some(s => k.includes(s));
         return false;
