@@ -55,7 +55,7 @@ class MapaController extends Controller
         $origemBase = Base::with('units.type')->find($selectedBaseId) 
             ?? Base::where('jogador_id', $jogadorId)->with('units.type')->first();
  
-        $jogador = Auth::user()->jogador;
+        $jogador = Auth::user();
         $diplomacia = [];
         $general = null;
         $userAliancaId = null;

@@ -14,7 +14,8 @@ class RelatorioController extends Controller
      */
     public function index()
     {
-        $jogadorId = Auth::user()->jogador->id;
+        $jogador = Auth::user();
+        $jogadorId = $jogador->id;
 
         $relatorios = Relatorio::where(function($q) use ($jogadorId) {
                 $q->where('atacante_id', $jogadorId)
@@ -24,7 +25,7 @@ class RelatorioController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $aliancaId = Auth::user()->jogador->alianca_id;
+        $aliancaId = $jogador->alianca_id;
         $relatoriosAlianca = [];
         if ($aliancaId) {
             $relatoriosAlianca = Relatorio::where('partilhado_alianca', true)
@@ -71,12 +72,12 @@ class RelatorioController extends Controller
     public function show($id)
     {
         $relatorio = Relatorio::with(['atacante', 'defensor'])->findOrFail($id);
-        $jogador = Auth::user()->jogador;
+        $jogador = Auth::user();
 
         // Verificar permissão: Dono, Alvo ou Aliança (se partilhado)
         $podeVer = $relatorio->atacante_id === $jogador->id || 
                    $relatorio->defensor_id === $jogador->id || 
-                   ($relatorio->partilhado_alianca && $relatorio->atacante->alianca_id === $jogador->alianca_id);
+                   ($relatorio->partilhado_alianca && $relatorio->atacante && $relatorio->atacante->alianca_id === $jogador->alianca_id);
 
         if (!$podeVer) abort(403);
         
@@ -88,7 +89,7 @@ class RelatorioController extends Controller
     public function partilhar($id)
     {
         $relatorio = Relatorio::findOrFail($id);
-        $jogadorId = Auth::user()->jogador->id;
+        $jogadorId = Auth::user()->id;
 
         if ($relatorio->atacante_id !== $jogadorId && $relatorio->defensor_id !== $jogadorId) {
             abort(403);

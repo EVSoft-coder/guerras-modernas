@@ -6129,15 +6129,15 @@ DROP TABLE IF EXISTS `relatorios`;
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `relatorios` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `vencedor_id` bigint(20) unsigned NOT NULL,
+  `vencedor_id` bigint(20) unsigned DEFAULT NULL,
   `titulo` varchar(255) NOT NULL,
   `origem_nome` varchar(255) NOT NULL,
   `destino_nome` varchar(255) NOT NULL,
   `detalhes` longtext DEFAULT NULL,
   `partilhado_alianca` tinyint(1) DEFAULT 0,
   `publico` tinyint(1) DEFAULT 0,
-  `atacante_id` bigint(20) unsigned NOT NULL,
-  `defensor_id` bigint(20) unsigned NOT NULL,
+  `atacante_id` bigint(20) unsigned DEFAULT NULL,
+  `defensor_id` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `relatorios_ibfk_1` (`vencedor_id`),
@@ -7353,4 +7353,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-04-28  0:21:54
+-- Dump completed on 2026-04-28  0:23:37

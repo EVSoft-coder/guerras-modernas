@@ -15,7 +15,7 @@ class AnalyticsController extends Controller
      */
     public function index()
     {
-        $jogador = Auth::user()->jogador;
+        $jogador = Auth::user();
         
         // Dados históricos do jogador (últimos 14 dias)
         $playerHistory = PlayerStat::where('jogador_id', $jogador->id)
