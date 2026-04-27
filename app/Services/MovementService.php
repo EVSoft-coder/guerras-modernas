@@ -569,7 +569,10 @@ class MovementService
      */
     private function createReturnMovement(Movement $originalMovement, Base $currentBase, Base $homeBase, $survivors, array $loot = []): void
     {
-        $travelTimeSeconds = (int) $originalMovement->departure_time->diffInSeconds($originalMovement->arrival_time);
+        $dep = ($originalMovement->departure_time instanceof \Illuminate\Support\Carbon) ? $originalMovement->departure_time : \Illuminate\Support\Carbon::parse($originalMovement->departure_time);
+        $arr = ($originalMovement->arrival_time instanceof \Illuminate\Support\Carbon) ? $originalMovement->arrival_time : \Illuminate\Support\Carbon::parse($originalMovement->arrival_time);
+        
+        $travelTimeSeconds = (int) $dep->diffInSeconds($arr);
         $arrival = now()->addSeconds($travelTimeSeconds);
 
         $data = array_merge([
