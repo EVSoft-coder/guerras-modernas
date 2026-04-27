@@ -76,7 +76,14 @@ class ResourceService
 
     private function hasStateChanged(Recurso $current, array $calculated): bool
     {
-        // Mudança se a diferença for > 0.1 em qualquer recurso (evitar floats irrelevantes)
+        // 1. Mudança se o CAP mudou (Upgrade de QG ou Research finalizado)
+        if ((int)$current->storage_capacity !== (int)$calculated['cap']) return true;
+
+        // 2. Mudança se o tempo delta for superior a 5 minutos (Forçar commit de tempo)
+        $lastUpdate = $current->updated_at ? Carbon::parse($current->updated_at) : null;
+        if ($lastUpdate && $lastUpdate->diffInMinutes(GameClock::now()) > 5) return true;
+
+        // 3. Mudança se a diferença for > 0.1 em qualquer recurso (evitar floats irrelevantes)
         foreach (['suprimentos', 'combustivel', 'municoes', 'metal', 'energia', 'pessoal'] as $key) {
             if (abs((float)$current->{$key} - (float)$calculated[$key]) > 0.1) return true;
         }
