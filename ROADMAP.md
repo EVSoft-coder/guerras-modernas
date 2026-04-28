@@ -32,9 +32,10 @@ Para transformar "Guerras Modernas" numa experiência completa estilo Tribal War
     - [x] +20% Produção de Recursos.
     - [x] Fila de Construção Alargada (Total 10 slots).
     - [x] Acesso exclusivo ao Alto Comando (Mass Overviews).
+- [x] **Mercado Premium:** Sistema de troca de PP por recursos entre jogadores (Peer-to-Peer).
+- [x] **Correções Críticas:** Fix no regresso automático de tropas (null pointer origin_id).
 - [ ] Gestor de Conta / Assistente de Farming (Automatização de ataques a bárbaras/rebeldes).
-- [ ] Mercado Premium (Troca de PP por recursos entre jogadores).
-- [x] UI de Loja Premium dedicada (`/premium`).
+- [ ] Visualizadores táticos avançados (Gráficos de evolução).
 
 ### ⚔️ FASE 3: Combate Avançado e Alianças (Tribos)
 - [ ] **Planeador de Ataques / Snipe:** Ferramenta da aliança para planear operações conjuntas. Identificação visual de ataques no mapa e ecrãs partilhados.

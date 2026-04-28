@@ -94,6 +94,21 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/dismiss/{id}', [App\Http\Controllers\ReinforcementController::class, 'dismiss'])->name('dismiss');
         });
 
+        // Gestão Premium e Loja
+        Route::prefix('premium')->name('premium.')->group(function () {
+            Route::get('/', [PremiumController::class, 'index'])->name('index');
+            Route::post('/buy', [PremiumController::class, 'buyPoints'])->name('buy');
+            Route::post('/activate', [PremiumController::class, 'activatePremium'])->name('activate');
+            Route::post('/reduce-time/building', [PremiumController::class, 'reduceBuildingTime'])->name('reduce.building');
+            Route::post('/reduce-time/unit', [PremiumController::class, 'reduceUnitTime'])->name('reduce.unit');
+
+            // Mercado Premium
+            Route::get('/market', [PremiumMarketController::class, 'index'])->name('market.index');
+            Route::post('/market', [PremiumMarketController::class, 'store'])->name('market.store');
+            Route::post('/market/{id}/buy', [PremiumMarketController::class, 'buy'])->name('market.buy');
+            Route::delete('/market/{id}', [PremiumMarketController::class, 'destroy'])->name('market.destroy');
+        });
+
         Route::prefix('alianca')->name('alianca.')->group(function () {
             Route::get('/', [AliancaController::class, 'index'])->name('index');
             Route::post('/store', [AliancaController::class, 'store'])->name('store');

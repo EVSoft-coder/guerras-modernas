@@ -586,8 +586,13 @@ class MovementService
     /**
      * Cria o movimento de regresso das tropas (Fase 10 + 11 Loot).
      */
-    private function createReturnMovement(Movement $originalMovement, Base $currentBase, Base $homeBase, $survivors, array $loot = []): void
+    private function createReturnMovement(Movement $originalMovement, Base $currentBase, ?Base $homeBase, $survivors, array $loot = []): void
     {
+        if (!$homeBase) {
+            Log::channel('game')->warning("[MOVEMENT] Tentativa de regresso para base inexistente (ID: {$originalMovement->origin_id}). Tropas dispersas.");
+            return;
+        }
+
         $dep = ($originalMovement->departure_time instanceof \Illuminate\Support\Carbon) ? $originalMovement->departure_time : \Illuminate\Support\Carbon::parse($originalMovement->departure_time);
         $arr = ($originalMovement->arrival_time instanceof \Illuminate\Support\Carbon) ? $originalMovement->arrival_time : \Illuminate\Support\Carbon::parse($originalMovement->arrival_time);
         

@@ -92,3 +92,17 @@ SELECT 'Oficial de Inteligência', 'hq', 30, 100, 35.0, 0, 40000, 50000, 40000, 
 FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM `unit_types` WHERE `name` = 'Oficial de Inteligência')
 ON DUPLICATE KEY UPDATE `cost_suprimentos` = 40000;
+
+-- 7. Mercado Premium
+CREATE TABLE IF NOT EXISTS `mercado_premium` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `vendedor_id` BIGINT UNSIGNED NOT NULL,
+    `recurso_tipo` VARCHAR(20) NOT NULL,
+    `quantidade` INT NOT NULL,
+    `preco_pp` INT NOT NULL,
+    `status` ENUM('open', 'completed', 'cancelled') DEFAULT 'open',
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`vendedor_id`) REFERENCES `jogadores`(`id`) ON DELETE CASCADE
+);
+

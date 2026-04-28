@@ -4,9 +4,8 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Map as MapIcon, Home, Target, Mail, Shield, Award, Crown } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Map as MapIcon, Home, Target, Mail, Shield, Award, Crown, ShoppingBag, Zap } from 'lucide-react';
 import AppLogo from './app-logo';
-import { eventBus, Events } from '@src/core/EventBus';
 
 const mainNavItems: NavItem[] = [
     {
@@ -39,6 +38,11 @@ const mainNavItems: NavItem[] = [
         url: '/premium',
         icon: Crown,
     },
+    {
+        title: 'MERCADO PREMIUM',
+        url: '/premium/market',
+        icon: ShoppingBag,
+    }
 ];
 
 const footerNavItems: NavItem[] = [
@@ -58,7 +62,7 @@ export function AppSidebar() {
     const changeMode = (mode: 'VILLAGE' | 'WORLD_MAP') => {
         if (mode === 'WORLD_MAP') console.log("CLICK MAPA");
         console.log("CLICK MUDANÇA DE MODO:", mode);
-        (window as any).eventBus.emit("GAME:CHANGE_MODE", {
+        (window as any).eventBus?.emit("GAME:CHANGE_MODE", {
             timestamp: Date.now(),
             data: { mode }
         });
