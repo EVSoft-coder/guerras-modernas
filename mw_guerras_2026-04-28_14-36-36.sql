@@ -270,7 +270,7 @@ CREATE TABLE `bases` (
 LOCK TABLES `bases` WRITE;
 /*!40000 ALTER TABLE `bases` DISABLE KEYS */;
 INSERT INTO `bases` VALUES
-(1,1,'Base Principal',111,608,'2026-04-27 22:45:13','2026-04-07 20:55:47','2026-04-28 12:48:06',0,NULL,100,'2026-04-14 21:28:00',94,944,'2026-04-18 11:27:08',94),
+(1,1,'Base Principal',111,608,'2026-04-28 12:25:39','2026-04-07 20:55:47','2026-04-28 12:25:39',0,NULL,100,'2026-04-14 21:28:00',94,944,'2026-04-18 11:27:08',94),
 (2,2,'Base Principal',193,662,'2026-04-11 08:49:37','2026-04-11 07:49:37','2026-04-28 12:48:06',0,NULL,100,'2026-04-11 08:49:37',442,375,'2026-04-18 11:27:08',15),
 (3,3,'Base Principal',743,246,'2026-04-11 08:51:28','2026-04-11 07:51:28','2026-04-28 12:48:06',0,NULL,100,'2026-04-11 08:51:28',551,629,'2026-04-18 11:27:08',15),
 (4,4,'Base Principal',593,694,'2026-04-11 08:59:45','2026-04-11 07:59:45','2026-04-28 12:48:06',0,NULL,100,'2026-04-11 08:59:45',492,572,'2026-04-18 11:27:08',15),
@@ -4592,6 +4592,7 @@ CREATE TABLE `jogadores` (
   `nivel` int(11) DEFAULT 1,
   `cargo` varchar(255) DEFAULT 'Recruta',
   `pontos_premium` int(11) NOT NULL DEFAULT 0,
+  `premium_until` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`),
@@ -4607,13 +4608,13 @@ CREATE TABLE `jogadores` (
 LOCK TABLES `jogadores` WRITE;
 /*!40000 ALTER TABLE `jogadores` DISABLE KEYS */;
 INSERT INTO `jogadores` VALUES
-(1,'admin','fotoamadorblog@gmail.com','$2y$12$UVRX7ov3VcNQB44VUpizf.uO1SVD2hQhyDwq9vdhKmKgignpbuPQq',NULL,1,NULL,'2026-04-07 20:55:47','2026-04-25 08:39:25',306,1,'Recruta',0),
-(2,'test_officer','test_officer@evsoft.pt','$2y$12$NO9jmaZ8ZuFeDc7MpQ3Y..xtHAei3x/BwklYcWyZVBTehltTTMtdO',NULL,NULL,NULL,'2026-04-11 07:49:37','2026-04-11 07:49:37',0,1,'Recruta',0),
-(3,'test_target','test_target@evsoft.pt','$2y$12$7gHmA.kak8VCCvMkdQvOGOPSyXqw5gqZhao2.7IZ1fvoLfjzXawfG',NULL,NULL,NULL,'2026-04-11 07:51:28','2026-04-11 07:51:28',0,1,'Recruta',0),
-(4,'test_target_6','test_target_6@evsoft.pt','$2y$12$iMHEVfCEudQ1QNcfhgzipuaKB8RUgHDTCwLiSTubYhRmGYYKTeRKe',NULL,NULL,NULL,'2026-04-11 07:59:45','2026-04-11 07:59:45',0,1,'Recruta',0),
-(5,'TestOfficer99','test_officer_99@evsoft.pt','$2y$12$uyhtFWHoWxaARDJF1fcSAODFbHX3TCF.AVA42uWGclCGKYOLQYxpW',NULL,NULL,NULL,'2026-04-11 08:03:36','2026-04-11 08:03:36',0,1,'Recruta',0),
-(6,'TestOfficerV2','test_officer_v2@evsoft.pt','$2y$12$F7MqbEByOMagyW.P3fk8hOQ6DCkoa/0wbwEnpXCN835WpF7J.q9Hm',NULL,NULL,NULL,'2026-04-11 08:10:06','2026-04-11 08:10:06',0,1,'Recruta',0),
-(7,'REBELS','rebels@guerras.com','$2y$12$cv2REfXIdleBXGj0m3UKDOgFTf2bPyMlpV788BsWQsfbqSSwxzbV6',NULL,NULL,NULL,'2026-04-26 19:22:37','2026-04-26 19:22:37',0,1,'Recruta',0);
+(1,'admin','fotoamadorblog@gmail.com','$2y$12$UVRX7ov3VcNQB44VUpizf.uO1SVD2hQhyDwq9vdhKmKgignpbuPQq',NULL,1,NULL,'2026-04-07 20:55:47','2026-04-25 08:39:25',306,1,'Recruta',0,NULL),
+(2,'test_officer','test_officer@evsoft.pt','$2y$12$NO9jmaZ8ZuFeDc7MpQ3Y..xtHAei3x/BwklYcWyZVBTehltTTMtdO',NULL,NULL,NULL,'2026-04-11 07:49:37','2026-04-11 07:49:37',0,1,'Recruta',0,NULL),
+(3,'test_target','test_target@evsoft.pt','$2y$12$7gHmA.kak8VCCvMkdQvOGOPSyXqw5gqZhao2.7IZ1fvoLfjzXawfG',NULL,NULL,NULL,'2026-04-11 07:51:28','2026-04-11 07:51:28',0,1,'Recruta',0,NULL),
+(4,'test_target_6','test_target_6@evsoft.pt','$2y$12$iMHEVfCEudQ1QNcfhgzipuaKB8RUgHDTCwLiSTubYhRmGYYKTeRKe',NULL,NULL,NULL,'2026-04-11 07:59:45','2026-04-11 07:59:45',0,1,'Recruta',0,NULL),
+(5,'TestOfficer99','test_officer_99@evsoft.pt','$2y$12$uyhtFWHoWxaARDJF1fcSAODFbHX3TCF.AVA42uWGclCGKYOLQYxpW',NULL,NULL,NULL,'2026-04-11 08:03:36','2026-04-11 08:03:36',0,1,'Recruta',0,NULL),
+(6,'TestOfficerV2','test_officer_v2@evsoft.pt','$2y$12$F7MqbEByOMagyW.P3fk8hOQ6DCkoa/0wbwEnpXCN835WpF7J.q9Hm',NULL,NULL,NULL,'2026-04-11 08:10:06','2026-04-11 08:10:06',0,1,'Recruta',0,NULL),
+(7,'REBELS','rebels@guerras.com','$2y$12$cv2REfXIdleBXGj0m3UKDOgFTf2bPyMlpV788BsWQsfbqSSwxzbV6',NULL,NULL,NULL,'2026-04-26 19:22:37','2026-04-26 19:22:37',0,1,'Recruta',0,NULL);
 /*!40000 ALTER TABLE `jogadores` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5084,7 +5085,7 @@ CREATE TABLE `recursos` (
 LOCK TABLES `recursos` WRITE;
 /*!40000 ALTER TABLE `recursos` DISABLE KEYS */;
 INSERT INTO `recursos` VALUES
-(1,1,4320.7867103915,5132.9932100267,6228.3981013316,1713.4759036136,7040.8832416,7296.5109888,'2026-04-07 20:55:47','2026-04-27 22:45:13','2026-04-15 20:58:21',8157),
+(1,1,8157,8157,8157,1719,8157,8157,'2026-04-07 20:55:47','2026-04-28 12:25:39','2026-04-15 20:58:21',8157),
 (3,2,2801,1416,1112,1120,0,0,'2026-04-11 07:49:37','2026-04-11 08:52:04','2026-04-15 20:58:21',10000),
 (4,3,2796,1415,1111,1118,0,0,'2026-04-11 07:51:28','2026-04-11 08:53:41','2026-04-15 20:58:21',10000),
 (5,4,1500,1000,800,600,0,0,'2026-04-11 07:59:45','2026-04-11 07:59:45','2026-04-15 20:58:21',10000),
@@ -6205,8 +6206,10 @@ INSERT INTO `sessions` VALUES
 ('dHsbHtcPZjyfeviBiZuqdGuIlu7Y6nUWNrDsMZs8',NULL,'34.249.112.203','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWEFES1dLN2MwckRTRFVPMjNhbG81OGxHNVl4aW10Vk9TUmI2bEJjTyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777329878),
 ('DO86mxw0emoLlG3pwJsJbp4XU3gvVwW9n8Qj9qXX',NULL,'52.50.237.44','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiM3NNQzAzS1Z3Z214VkJtbUxud2RRN0RDM3E4UnJVVE5BelBLYUZobyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777328735),
 ('dSb5mbvvl8xv6voXeFyUS7kU9VBfSWdnb23izWjH',NULL,'3.255.233.10','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTGZ1SDc1WUszMHM5RU5VaXh3bjB0d3ZoN2taNG1LMmZBVWJZWnhRcSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777328770),
+('eFvcyczPaiZIgHkBq2PYecXqiSny9nzmjwyN3QRu',NULL,'3.255.233.10','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoianFheHRDd2dPRzJCOW9KblI5a1JvaUtoUmc1dW9uSG83aTFPaWI2SiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777382534),
 ('etOKay7pRzbfqur8R45giJuwdHzpdpoYaPeJ0X3J',NULL,'34.245.157.3','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoidGlzOGt4UVl6blladzdkaXVWdVVMWWN1T1h3eTQ3bjUyUmpVRWFqRCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777331634),
 ('fwYOnBKGsLbQKLhvItUeAXIfUdwzrB5bwHYvg5FA',NULL,'63.32.107.198','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiZnFTMFlLNG1VMUNTY1ZNNjlOTGlLYkdYU3BQakQ5bkJEczEyNmRkYSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777332792),
+('I8fuezZAUvitMVYNzBOTaTOrwSlHC1Kip6RmiWvB',1,'213.22.36.106','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo2OntzOjY6Il90b2tlbiI7czo0MDoidzV3UDNxSnIzYUVXbnJDVlpYQWNRZkZVOHZJUE5JWGlmbVRPWllRciI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM3OiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2xvZ2luIjtzOjU6InJvdXRlIjtzOjU6ImxvZ2luIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE2OiJzZWxlY3RlZF9iYXNlX2lkIjtpOjE7fQ==',1777382766),
 ('IboScWlOtmSeDfgmgXrFNQtkjbLukY2SaANy88TQ',NULL,'34.242.112.237','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNXlrb0NHUTRvZEVCN1VzY3FNd0FheFpaOTVyUGJ4Q1dvVElZV0pnciI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777326953),
 ('JkYDaOZ3ZsPgaBIj6pxd4wZZwhShcwtJqCTZDBJo',NULL,'3.255.233.10','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiakpFdUFqNURVRUhoeEU3QzFseHNjZmF5Ym1rVGd5c3I5OElnalhIVSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777332489),
 ('lDA3lulDTG1L7EAH8aX0Wa288S1RzXuQ41n1j04g',NULL,'34.244.24.81','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWTNmOFdWMVUxbG04bTlIT3o5aHZNRmJsVXRIUUx0dzUzNWxTZEkyWCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777329188),
@@ -6217,6 +6220,7 @@ INSERT INTO `sessions` VALUES
 ('rWUSalIqiUSo34MNyhAuIPRaiYGeSgVGotKdUnSP',NULL,'34.249.112.203','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUVd0UzZTMmVqVU0zS29OQk1BM2RwVFhZSjBqU3NVaEFTenV2MVNrNyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777331992),
 ('tZdm31hMPF5Esk3MTjWqwVNDvslhALuXFj4m1NGz',NULL,'34.251.114.88','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQXFGOGYyNmV6alRGZFRxdHg4SG1XS0tKZndmQmdRanNidHd1b2xXZCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777333479),
 ('U1ETYwUH4R0JkPle8AlDxRR49SyzaFFxEKUw6iNe',NULL,'54.216.216.250','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoicmRjRmVnemc1ak1pR2xjWmZtcFN2NU5jOFFubDhqVlI4VGNBbExWNSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777327182),
+('ubemM2C52L2gfQDkjLMLK77oO6RVOBTNSlNhpZHQ',NULL,'34.252.173.183','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoibG5vS0RmTEk1ODZRVVloZzBWSTBBeTFSTlFIOU9tYWdaRUs4ZXg3YiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777382729),
 ('VOM1e7hutFE0pAaj4tltdkAMdn9dknUIxdtrGwat',NULL,'52.50.237.44','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQmp1aDVqQk1TT1h4Y1JvYlM4bHVjRmw5MGZBQVRoeGZKZm9qWTcxMyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777331018),
 ('yh3WMWEzN9JkCmyYFQWhIvWaDWaE4LFiC8Ts9ZxH',NULL,'34.246.195.42','Plesk screenshot bot https://support.plesk.com/hc/en-us/articles/10301006946066','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiZlRIeXlYZlpXNm1JWEZkZU16VE1RcjJiYUhoWFRDUjh3TTlWaUYwWiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHBzOi8vbXcuZXZzb2Z0LmNzbWFuYWdlci5vdmgvbG9naW4iO3M6NToicm91dGUiO3M6NToibG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQxOiJodHRwczovL213LmV2c29mdC5jc21hbmFnZXIub3ZoL2Rhc2hib2FyZCI7fX0=',1777332265);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
@@ -6293,7 +6297,7 @@ CREATE TABLE `unit_types` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `building_type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6312,7 +6316,8 @@ INSERT INTO `unit_types` VALUES
 (7,'drone_reconhecimento','drone','Drone Recon',0,0,50,0,200,0,150,0,1,30,'2026-04-24 20:09:26','2026-04-24 20:09:26','radar_estrategico'),
 (8,'artilharia_pesada','artilharia','Artilharia Pesada',200,20,5,0,1000,500,200,0,1,120,'2026-04-24 20:09:26','2026-04-24 20:09:26','fabrica_municoes'),
 (9,'engenheiro','engenheiro','Engenheiro Militar',5,10,8,50,300,50,100,0,1,15,'2026-04-24 20:09:26','2026-04-24 20:09:26','posto_recrutamento'),
-(10,'sniper','sniper','Sniper de Elite',50,5,12,5,400,150,50,0,1,25,'2026-04-24 20:09:26','2026-04-24 20:09:26','quartel');
+(10,'sniper','sniper','Sniper de Elite',50,5,12,5,400,150,50,0,1,25,'2026-04-24 20:09:26','2026-04-24 20:09:26','quartel'),
+(18,'Oficial de Inteligência',NULL,NULL,30,100,35,0,40000,50000,40000,0,1,10800,'2026-04-28 13:23:54','2026-04-28 13:23:54','hq');
 /*!40000 ALTER TABLE `unit_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7372,4 +7377,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-04-28 13:48:29
+-- Dump completed on 2026-04-28 14:36:44

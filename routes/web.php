@@ -15,6 +15,8 @@ use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UnitRecruitmentController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\PremiumController;
+use App\Http\Controllers\PremiumMarketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,15 +96,15 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/dismiss/{id}', [App\Http\Controllers\ReinforcementController::class, 'dismiss'])->name('dismiss');
         });
 
-        // Gestão Premium e Loja
+        // 💰 Sistema Premium e Mercado
         Route::prefix('premium')->name('premium.')->group(function () {
             Route::get('/', [PremiumController::class, 'index'])->name('index');
             Route::post('/buy', [PremiumController::class, 'buyPoints'])->name('buy');
-            Route::post('/activate', [PremiumController::class, 'activatePremium'])->name('activate');
-            Route::post('/reduce-time/building', [PremiumController::class, 'reduceBuildingTime'])->name('reduce.building');
-            Route::post('/reduce-time/unit', [PremiumController::class, 'reduceUnitTime'])->name('reduce.unit');
+            Route::post('/activate', [PremiumController::class, 'activate'])->name('activate');
+            Route::post('/reduce-time/building', [PremiumController::class, 'reduceBuilding'])->name('reduce.building');
+            Route::post('/reduce-time/unit', [PremiumController::class, 'reduceUnit'])->name('reduce.unit');
 
-            // Mercado Premium
+            // Mercado Premium (Peer-to-Peer)
             Route::get('/market', [PremiumMarketController::class, 'index'])->name('market.index');
             Route::post('/market', [PremiumMarketController::class, 'store'])->name('market.store');
             Route::post('/market/{id}/buy', [PremiumMarketController::class, 'buy'])->name('market.buy');
@@ -182,14 +184,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // 💰 FASE 2: Sistema Premium
-    Route::prefix('premium')->name('premium.')->group(function () {
-        Route::get('/', [App\Http\Controllers\PremiumController::class, 'index'])->name('index');
-        Route::post('/reduce-building', [App\Http\Controllers\PremiumController::class, 'reduceBuilding'])->name('reduce.building');
-        Route::post('/reduce-unit', [App\Http\Controllers\PremiumController::class, 'reduceUnit'])->name('reduce.unit');
-        Route::post('/activate', [App\Http\Controllers\PremiumController::class, 'activate'])->name('activate');
-        Route::post('/buy-points', [App\Http\Controllers\PremiumController::class, 'buyPoints'])->name('buy');
-    });
+
 });
 
 // Admin
@@ -219,6 +214,23 @@ Route::middleware(['auth', 'can:admin-only'])->group(function () {
             return "[ERRO TÁTICO]: " . $e->getMessage();
         }
     })->name('admin.deploy.refresh');
+
+    Route::get('/mw-git-pull', function() {
+        try {
+            $output = shell_exec('git pull origin main 2>&1');
+            return "
+                <div style='background:#0a0c10; color:#0f0; padding:40px; font-family:monospace; border:2px solid #0f0;'>
+                    <h1>[SINCRONIZAÇÃO GIT]</h1>
+                    <pre>{$output}</pre>
+                    <hr style='border:1px solid #0f0; margin:20px 0;'>
+                    <a href='/mw-deploy-refresh' style='color:#fff; text-decoration:underline;'>RECALIBRAR CACHE</a> | 
+                    <a href='/dashboard' style='color:#fff; text-decoration:underline;'>VOLTAR AO COMANDO</a>
+                </div>
+            ";
+        } catch (\Exception $e) {
+            return "[ERRO DE SINCRONIZAÇÃO]: " . $e->getMessage();
+        }
+    })->name('admin.git.pull');
 
     Route::get('/mw-deploy-migrate', function() {
         try {
