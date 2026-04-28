@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Clock, Hammer, Shield, ChevronUp, ChevronDown, X, Loader2, Sword } from 'lucide-react';
+import { Activity, Clock, Hammer, Shield, ChevronUp, ChevronDown, X, Loader2, Sword, Zap } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { router } from '@inertiajs/react';
 
