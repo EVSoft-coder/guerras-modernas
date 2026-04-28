@@ -57,6 +57,14 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
         }))
     ].sort((a, b) => a.position - b.position);
 
+    const handleHalveTime = (id: number, type: string) => {
+        if (type === 'construcao') {
+            router.post(route('premium.reduce.building'), { queue_id: id });
+        } else {
+            router.post(route('premium.reduce.unit'), { queue_id: id });
+        }
+    };
+
     const handleCancel = (id: number, type: string) => {
         if (type === 'construcao') {
             router.post(`/base/upgrade/cancelar/${id}`);
@@ -104,6 +112,7 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
                                 onCancel={() => handleCancel(item.id, item.buildingType)}
                                 onMoveUp={() => handleMoveUp(item.id, item.buildingType)}
                                 onMoveDown={() => handleMoveDown(item.id, item.buildingType)}
+                                onHalve={() => handleHalveTime(item.id, item.buildingType)}
                                 isLast={index === unifiedQueue.length - 1}
                             />
                         ))
@@ -125,7 +134,7 @@ export const ProductionQueue: React.FC<ProductionQueueProps> = ({
     );
 };
 
-const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: any) => {
+const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, onHalve, isLast }: any) => {
     const [currentTime, setCurrentTime] = useState(new Date().getTime());
     const [hasTriggeredReload, setHasTriggeredReload] = useState(false);
 
@@ -210,6 +219,13 @@ const QueueItem = ({ item, isFirst, onCancel, onMoveUp, onMoveDown, isLast }: an
 
                 {/* CONTROLOS TÁCTICOS */}
                 <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <button 
+                        onClick={onHalve}
+                        className="p-1.5 bg-white/5 hover:bg-amber-500/20 rounded-lg text-neutral-500 hover:text-amber-400 transition-all border border-transparent hover:border-amber-500/20"
+                        title="Reduzir tempo em 50% (30 PP)"
+                    >
+                        <Zap size={14} className="fill-amber-500/20" />
+                    </button>
                     {!isFirst && (
                         <button 
                             onClick={onMoveUp}

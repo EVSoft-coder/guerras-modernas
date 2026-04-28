@@ -28,8 +28,12 @@ class MassCommandController extends Controller
     {
         $jogador = auth()->user();
         
+        if (!$jogador->ePremium()) {
+            return redirect()->route('premium.index')->with('error', 'O acesso ao Alto Comando requer uma Conta Premium ativa.');
+        }
+
         $bases = Base::where('jogador_id', $jogador->id)
-            ->with(['recursos', 'edificios', 'units.type', 'groups', 'buildingQueue', 'unitQueue'])
+            ->with(['recursos', 'edificios', 'units.type', 'groups', 'buildingQueue', 'unitQueue', 'movements', 'incomingMovements'])
             ->get();
 
         $basesData = $bases->map(function ($base) {
@@ -50,6 +54,10 @@ class MassCommandController extends Controller
                 'queues' => [
                     'buildings' => $base->buildingQueue->count(),
                     'units' => $base->unitQueue->count()
+                ],
+                'movements' => [
+                    'outgoing' => $base->movements->where('status', 'moving')->count(),
+                    'incoming' => $base->incomingMovements->where('status', 'moving')->count()
                 ]
             ];
         });

@@ -194,6 +194,13 @@ class ResourceService
             }
         }
 
+        // FASE PREMIUM: +20% Produção de Recursos
+        if ($base->jogador && $base->jogador->ePremium()) {
+            foreach ($taxas as $key => $val) {
+                $taxas[$key] *= 1.2;
+            }
+        }
+
         return $taxas;
     }
 }

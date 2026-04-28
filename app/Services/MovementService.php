@@ -479,7 +479,7 @@ class MovementService
         // PASSO 4 - DETEÇÃO POLÍTICO
         $politicoCount = 0;
         foreach ($attackerUnits as $unit) {
-            if (isset($unit['name']) && strtolower($unit['name']) === 'politico') {
+            if (isset($unit['name']) && strtolower($unit['name']) === 'oficial de inteligência') {
                 $politicoCount += (int) $unit['quantity'];
             }
         }

@@ -14,7 +14,7 @@ export const VillageView: React.FC<VillageViewProps> = ({ base, onBuildingClick,
     const bConfigs = Object.values(buildingConfigs);
     const playerBuildings = React.useMemo(() => {
         return (base.edificios?.map(eb => {
-            let type = (eb.buildingType || eb.tipo)?.toLowerCase();
+            const type = (eb.buildingType || eb.tipo)?.toLowerCase();
             return { id: eb.id, type, level: eb.nivel };
         }) || []);
     }, [base.edificios]);

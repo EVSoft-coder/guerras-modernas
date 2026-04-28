@@ -152,6 +152,9 @@ class BuildingQueueService
             ]);
         }
 
+        // FASE 1 - ESTATÍSTICAS DE PONTOS: Aumentar pontos da base por nível construído
+        $base->increment('pontos');
+
         $item->delete();
         Log::channel('game')->info("[GAME_ENGINE] BUILD_FINISH {$base->id}", [
             'type' => $type,
@@ -245,8 +248,10 @@ class BuildingQueueService
     public function validateAvailableQueue(Base $base)
     {
         $count = BuildingQueue::where('base_id', $base->id)->whereNull('cancelled_at')->count();
-        if ($count >= 5) {
-            throw new \Exception("ENGENHARIA: Fila de construção saturada (Máx: 5 projetos).");
+        $limit = ($base->jogador && $base->jogador->ePremium()) ? 10 : 5;
+        
+        if ($count >= $limit) {
+            throw new \Exception("ENGENHARIA: Fila de construção saturada (Máx: {$limit} projetos).");
         }
     }
 }

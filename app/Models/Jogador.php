@@ -20,6 +20,15 @@ class Jogador extends Authenticatable
         'xp',
         'nivel',
         'cargo',
+        'pontos_premium',
+        'premium_until',
+    ];
+
+    protected $casts = [
+        'pontos_premium' => 'integer',
+        'premium_until' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     protected $hidden = [
@@ -81,5 +90,10 @@ class Jogador extends Authenticatable
     {
         $horasProtecao = config('game.speed.protection_hours', 24);
         return $this->created_at->addHours($horasProtecao)->isFuture();
+    }
+
+    public function ePremium()
+    {
+        return $this->premium_until && $this->premium_until->isFuture();
     }
 }

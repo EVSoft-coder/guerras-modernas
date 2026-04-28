@@ -166,6 +166,15 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}', [App\Http\Controllers\TemplateController::class, 'destroy'])->name('destroy');
         });
     });
+
+    // 💰 FASE 2: Sistema Premium
+    Route::prefix('premium')->name('premium.')->group(function () {
+        Route::get('/', [App\Http\Controllers\PremiumController::class, 'index'])->name('index');
+        Route::post('/reduce-building', [App\Http\Controllers\PremiumController::class, 'reduceBuilding'])->name('reduce.building');
+        Route::post('/reduce-unit', [App\Http\Controllers\PremiumController::class, 'reduceUnit'])->name('reduce.unit');
+        Route::post('/activate', [App\Http\Controllers\PremiumController::class, 'activate'])->name('activate');
+        Route::post('/buy-points', [App\Http\Controllers\PremiumController::class, 'buyPoints'])->name('buy');
+    });
 });
 
 // Admin

@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Map as MapIcon, Home, Target, Mail, Shield, Award } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Map as MapIcon, Home, Target, Mail, Shield, Award, Crown } from 'lucide-react';
 import AppLogo from './app-logo';
 import { eventBus, Events } from '@src/core/EventBus';
 
@@ -33,6 +33,11 @@ const mainNavItems: NavItem[] = [
         title: 'MENSAGENS',
         url: '/mensagens',
         icon: Mail,
+    },
+    {
+        title: 'ÁREA PREMIUM',
+        url: '/premium',
+        icon: Crown,
     },
 ];
 

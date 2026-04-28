@@ -27,7 +27,8 @@ class Base extends Model
         'ultimo_update',
         'is_protected',
         'protection_until',
-        'loyalty'
+        'loyalty',
+        'loyalty_updated_at'
     ];
 
     protected $casts = [
@@ -35,6 +36,7 @@ class Base extends Model
         'protection_until' => 'datetime',
         'ultimo_update' => 'datetime',
         'loyalty' => 'integer',
+        'loyalty_updated_at' => 'datetime',
     ];
 
 

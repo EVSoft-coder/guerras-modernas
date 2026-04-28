@@ -39,14 +39,13 @@ class MapaController extends Controller
  
         $raio = 15;
         
-        $bases = Base::with(['jogador.alianca', 'recursos', 'edificios:id,base_id,nivel'])
+        $bases = Base::with(['jogador.alianca', 'recursos'])
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
             ->get()
             ->map(function ($base) {
                 $base->is_npc = is_null($base->jogador_id);
-                $base->pontos = $base->edificios->sum('nivel') + ($base->is_npc ? 0 : 10);
-                unset($base->edificios);
+                // Pontos já vêm da base de dados ($base->pontos)
                 return $base;
             });
  
@@ -95,14 +94,12 @@ class MapaController extends Controller
         $y = $request->input('y', 500);
         $raio = $request->input('raio', 15);
  
-        $bases = Base::with(['jogador:id,username,alianca_id', 'edificios:id,base_id,nivel'])
+        $bases = Base::with(['jogador:id,username,alianca_id'])
             ->whereBetween('coordenada_x', [$x - $raio, $x + $raio])
             ->whereBetween('coordenada_y', [$y - $raio, $y + $raio])
-            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'loyalty'])
+            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'loyalty', 'pontos'])
             ->map(function ($base) {
                 $base->is_npc = is_null($base->jogador_id);
-                $base->pontos = $base->edificios->sum('nivel') + ($base->is_npc ? 0 : 10);
-                unset($base->edificios);
                 return $base;
             });
 
@@ -123,14 +120,12 @@ class MapaController extends Controller
         $minY = $cy * $size;
         $maxY = $minY + $size - 1;
 
-        $bases = Base::with(['jogador:id,username,alianca_id', 'edificios:id,base_id,nivel'])
+        $bases = Base::with(['jogador:id,username,alianca_id'])
             ->whereBetween('coordenada_x', [$minX, $maxX])
             ->whereBetween('coordenada_y', [$minY, $maxY])
-            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'loyalty'])
+            ->get(['id', 'jogador_id', 'nome', 'coordenada_x', 'coordenada_y', 'loyalty', 'pontos'])
             ->map(function ($base) {
                 $base->is_npc = is_null($base->jogador_id);
-                $base->pontos = $base->edificios->sum('nivel') + ($base->is_npc ? 0 : 10);
-                unset($base->edificios); // Não enviar edifícios no chunk
                 return $base;
             });
 

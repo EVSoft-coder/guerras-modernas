@@ -70,7 +70,7 @@ export class Pathfinding {
                 const gScore = current.g + 1; // Custo uniforme
                 let bestG = false;
 
-                let openNode = openList.find(n => n.x === neighbor.x && n.y === neighbor.y);
+                const openNode = openList.find(n => n.x === neighbor.x && n.y === neighbor.y);
 
                 if (!openNode) {
                     bestG = true;

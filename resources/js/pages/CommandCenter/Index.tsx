@@ -16,7 +16,8 @@ import {
     Search,
     TrendingUp,
     Activity,
-    Target as TargetIcon
+    Target as TargetIcon,
+    Sword
 } from 'lucide-react';
 import { 
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, 
@@ -35,6 +36,10 @@ interface BaseData {
     queues: {
         buildings: number;
         units: number;
+    };
+    movements: {
+        outgoing: number;
+        incoming: number;
     };
 }
 
@@ -322,6 +327,7 @@ function OverviewTable({ bases }: { bases: BaseData[] }) {
                         <th className="px-6 py-4">Recursos</th>
                         <th className="px-6 py-4">Capacidade</th>
                         <th className="px-6 py-4">Unidades</th>
+                        <th className="px-6 py-4">Movimentos</th>
                         <th className="px-6 py-4">Filas</th>
                         <th className="px-6 py-4">Ações</th>
                     </tr>
@@ -355,6 +361,20 @@ function OverviewTable({ bases }: { bases: BaseData[] }) {
                             </td>
                             <td className="px-6 py-4">
                                 <span className="text-white font-mono">{base.units.reduce((acc, u) => acc + u.quantity, 0)}</span>
+                            </td>
+                            <td className="px-6 py-4">
+                                <div className="flex gap-2">
+                                    {base.movements.outgoing > 0 && (
+                                        <div className="flex items-center gap-1 text-[10px] text-sky-400 font-bold bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20" title="Ataques em curso">
+                                            <Sword size={10} /> {base.movements.outgoing}
+                                        </div>
+                                    )}
+                                    {base.movements.incoming > 0 && (
+                                        <div className="flex items-center gap-1 text-[10px] text-red-500 font-bold bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 animate-pulse" title="Ataques a chegar">
+                                            <ShieldAlert size={10} /> {base.movements.incoming}
+                                        </div>
+                                    )}
+                                </div>
                             </td>
                             <td className="px-6 py-4">
                                 <div className="flex gap-2">

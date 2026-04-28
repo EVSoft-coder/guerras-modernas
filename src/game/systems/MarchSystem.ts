@@ -75,7 +75,7 @@ export class MarchSystem implements GameSystem {
         const distance = Math.sqrt(dx * dx + dy * dy);
         
         // Timing constants (matched with AttackSystem for consistency during refactor)
-        let baseSpeed = 10; 
+        const baseSpeed = 10; 
         const travelMultiplier = 5;
         const travelTimeMs = (distance / baseSpeed) * (3600 / travelMultiplier) * 1000;
 

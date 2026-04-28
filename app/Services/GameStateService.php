@@ -61,7 +61,10 @@ class GameStateService
             'jogador' => $jogador ? [
                 'id' => $jogador->id,
                 'username' => $jogador->username,
-                'name' => $jogador->username, // Fallback para compatibilidade
+                'name' => $jogador->username,
+                'pontos_premium' => $jogador->pontos_premium,
+                'premium_until' => $jogador->premium_until ? $jogador->premium_until->toISOString() : null,
+                'e_premium' => $jogador->ePremium(),
             ] : null,
             'base' => $base->only(['id', 'nome', 'coordenada_x', 'coordenada_y', 'ultimo_update', 'loyalty']),
             'bases' => $jogador ? $jogador->bases->map(fn($b) => ['id' => $b->id, 'nome' => $b->nome]) : [],
