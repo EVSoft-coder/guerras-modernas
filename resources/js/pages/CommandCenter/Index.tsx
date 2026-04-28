@@ -69,7 +69,7 @@ export default function CommandCenter(props: {
     playerHistory: any[];
     allianceHistory: any[];
 }) {
-    const [activeTab, setActiveTab] = useState<'overview' | 'recruit' | 'templates' | 'groups' | 'intel'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'recruit' | 'templates' | 'groups' | 'intel' | 'supports'>('overview');
     const [filterGroup, setFilterGroup] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -201,6 +201,12 @@ export default function CommandCenter(props: {
                             icon={<Search className="w-4 h-4" />}
                             label="Intel"
                         />
+                        <TabButton 
+                            active={activeTab === 'supports'} 
+                            onClick={() => setActiveTab('supports')}
+                            icon={<ShieldAlert className="w-4 h-4" />}
+                            label="Reforços"
+                        />
                     </div>
                 </div>
 
@@ -284,6 +290,9 @@ export default function CommandCenter(props: {
                                 playerHistory={props.playerHistory}
                                 allianceHistory={props.allianceHistory}
                             />
+                        )}
+                        {activeTab === 'supports' && (
+                            <SupportsPanel bases={filteredBases} />
                         )}
                     </motion.div>
                 </AnimatePresence>
@@ -635,6 +644,89 @@ function IntelPanel({ playerHistory, allianceHistory }: { playerHistory: any[], 
                                 <Bar dataKey="total_units" fill="#f43f5e" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+function SupportsPanel({ bases }: { bases: any[] }) {
+    const handleRecall = (id: number) => {
+        router.post(route('command.supports.recall', id), {}, {
+            onSuccess: () => toast.success('Tropas em marcha de regresso!')
+        });
+    };
+
+    return (
+        <div className="p-6 space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Tropas Estacionadas nas Minhas Bases */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <ShieldAlert className="w-5 h-5 text-blue-500" />
+                        TROPAS ESTACIONADAS (DEFESA)
+                    </h3>
+                    <div className="space-y-3">
+                        {bases.map(base => (
+                            base.reinforcements.length > 0 && (
+                                <div key={base.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                    <div className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest border-b border-white/5 pb-2">
+                                        Base: {base.nome}
+                                    </div>
+                                    <div className="space-y-2">
+                                        {base.reinforcements.map((r: any) => (
+                                            <div key={r.id} className="flex items-center justify-between bg-black/20 p-2 rounded-lg border border-white/5">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-white font-bold">{r.quantity}x {r.unit_name}</span>
+                                                    <span className="text-[10px] text-gray-500">Origem: {r.origin_base} ({r.jogador})</span>
+                                                </div>
+                                                <button 
+                                                    onClick={() => handleRecall(r.id)}
+                                                    className="text-[10px] bg-red-500/20 text-red-400 px-3 py-1 rounded border border-red-500/30 hover:bg-red-500 hover:text-white transition-all uppercase font-bold"
+                                                >
+                                                    Devolver
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        ))}
+                    </div>
+                </div>
+
+                {/* Minhas Tropas noutras Bases */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <Sword className="w-5 h-5 text-rose-500" />
+                        MEUS APOIOS EXTERNOS
+                    </h3>
+                    <div className="space-y-3">
+                        {bases.map(base => (
+                            base.my_supports.length > 0 && (
+                                <div key={base.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                    <div className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest border-b border-white/5 pb-2">
+                                        Origem: {base.nome}
+                                    </div>
+                                    <div className="space-y-2">
+                                        {base.my_supports.map((r: any) => (
+                                            <div key={r.id} className="flex items-center justify-between bg-black/20 p-2 rounded-lg border border-white/5">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-white font-bold">{r.quantity}x {r.unit_name}</span>
+                                                    <span className="text-[10px] text-gray-500">Destino: {r.target_base} ({r.jogador})</span>
+                                                </div>
+                                                <button 
+                                                    onClick={() => handleRecall(r.id)}
+                                                    className="text-[10px] bg-sky-500/20 text-sky-400 px-3 py-1 rounded border border-sky-500/30 hover:bg-sky-500 hover:text-white transition-all uppercase font-bold"
+                                                >
+                                                    Retirar
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        ))}
                     </div>
                 </div>
             </div>

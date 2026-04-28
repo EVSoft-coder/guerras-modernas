@@ -152,8 +152,8 @@ class BuildingQueueService
             ]);
         }
 
-        // FASE 1 - ESTATÍSTICAS DE PONTOS: Aumentar pontos da base por nível construído
-        $base->increment('pontos');
+        // FASE 1 - ESTATÍSTICAS DE PONTOS: Recalcular pontos reais da base
+        app(\App\Services\PointsService::class)->recalculateBasePoints($base);
 
         $item->delete();
         Log::channel('game')->info("[GAME_ENGINE] BUILD_FINISH {$base->id}", [

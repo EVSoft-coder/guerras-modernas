@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Map as MapIcon, Home, Target, Mail, Shield, Award, Crown, ShoppingBag, Zap } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Map as MapIcon, Home, Target, Mail, Shield, Award, Crown, ShoppingBag, Zap, Crosshair, Calculator } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -42,6 +42,16 @@ const mainNavItems: NavItem[] = [
         title: 'MERCADO PREMIUM',
         url: '/premium/market',
         icon: ShoppingBag,
+    },
+    {
+        title: 'ASSISTENTE FARMING',
+        url: '/premium/farming',
+        icon: Crosshair,
+    },
+    {
+        title: 'SIMULADOR COMBATE',
+        url: '/premium/simulator',
+        icon: Calculator,
     }
 ];
 

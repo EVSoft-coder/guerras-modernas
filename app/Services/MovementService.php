@@ -383,6 +383,8 @@ class MovementService
             'titulo' => "Batalha em " . $targetBase->nome,
             'origem_nome' => $originName,
             'destino_nome' => $targetBase->nome,
+            'origem_base_id' => $originBase?->id,
+            'destino_base_id' => $targetBase->id,
             'detalhes' => array_merge($result, [
                 'loot' => $loot,
                 'coords' => "{$targetBase->coordenada_x}:{$targetBase->coordenada_y}",

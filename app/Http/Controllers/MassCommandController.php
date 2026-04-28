@@ -18,10 +18,13 @@ class MassCommandController extends Controller
     protected $resourceService;
     protected $massActionService;
 
-    public function __construct(ResourceService $resourceService, MassActionService $massActionService)
+    protected $movementService;
+
+    public function __construct(ResourceService $resourceService, MassActionService $massActionService, \App\Services\MovementService $movementService)
     {
         $this->resourceService = $resourceService;
         $this->massActionService = $massActionService;
+        $this->movementService = $movementService;
     }
 
     public function index()
@@ -58,7 +61,27 @@ class MassCommandController extends Controller
                 'movements' => [
                     'outgoing' => $base->movements->where('status', 'moving')->count(),
                     'incoming' => $base->incomingMovements->where('status', 'moving')->count()
-                ]
+                ],
+                'reinforcements' => \App\Models\Reinforcement::where('target_base_id', $base->id)
+                    ->with('type', 'originBase.jogador')
+                    ->get()
+                    ->map(fn($r) => [
+                        'id' => $r->id,
+                        'origin_base' => $r->originBase->nome,
+                        'jogador' => $r->originBase->jogador->nome ?? 'Desconhecido',
+                        'unit_name' => $r->type->display_name ?? $r->type->name,
+                        'quantity' => $r->quantity
+                    ]),
+                'my_supports' => \App\Models\Reinforcement::where('origin_base_id', $base->id)
+                    ->with('type', 'targetBase.jogador')
+                    ->get()
+                    ->map(fn($r) => [
+                        'id' => $r->id,
+                        'target_base' => $r->targetBase->nome,
+                        'jogador' => $r->targetBase->jogador->nome ?? 'Desconhecido',
+                        'unit_name' => $r->type->display_name ?? $r->type->name,
+                        'quantity' => $r->quantity
+                    ])
             ];
         });
 
@@ -107,5 +130,35 @@ class MassCommandController extends Controller
         $this->massActionService->applyTemplate(auth()->user(), $template, $request->base_ids);
 
         return redirect()->back()->with('success', 'Template aplicado às bases selecionadas.');
+    }
+    public function recallReinforcement($id)
+    {
+        $reinforcement = \App\Models\Reinforcement::findOrFail($id);
+        $jogador = auth()->user();
+        
+        // Verificar se o jogador é o dono das tropas ou o dono da base onde estão
+        $originBase = \App\Models\Base::find($reinforcement->origin_base_id);
+        $targetBase = \App\Models\Base::find($reinforcement->target_base_id);
+        
+        if ($originBase->jogador_id !== $jogador->id && $targetBase->jogador_id !== $jogador->id) {
+            abort(403);
+        }
+
+        // Criar movimento de retorno (usando tipo 'ataque' para a própria base é seguro)
+        $units = [[
+            'id' => $reinforcement->unit_type_id,
+            'quantity' => $reinforcement->quantity
+        ]];
+
+        $this->movementService->sendTroops(
+            $targetBase, 
+            $originBase, 
+            $units, 
+            'ataque'
+        );
+        
+        $reinforcement->delete();
+
+        return redirect()->back()->with('success', 'Tropas em marcha de regresso.');
     }
 }

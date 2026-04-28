@@ -20,27 +20,24 @@
 Para transformar "Guerras Modernas" numa experiência completa estilo Tribal Wars, as seguintes fases são necessárias:
 
 ### 🛡️ FASE 1: Gestão de Múltiplas Bases (O Core)
-- [x] **Sistema de Conquista (Nobres):** Implementar unidade especial (ex: "Oficial de Inteligência" ou "Comandante Operacional") que diminui a "Lealdade" (Loyalty) das bases inimigas. Quando a lealdade chega a 0, a base muda de dono.
-- [x] **Estatísticas de Pontos:** Implementar o cálculo real de pontos baseado na tabela `edificios`. Criar um Cron Job ou Observer que atualiza a coluna `pontos` na tabela `bases` sempre que um edifício é concluído.
-- [x] **Gestão Massiva:** Telas estilo "Overviews" para recrutar, construir e ver movimentos em dezenas de aldeias de uma vez.
+- [x] **Sistema de Conquista (Nobres):** Unidade especial e lógica de lealdade integradas.
+- [x] **Estatísticas de Pontos:** Implementado `PointsService` com recálculo automático em cada construção concluída.
+- [x] **Gestão Massiva:** Telas estilo "Overviews" para recrutar e gerir apoios em massa.
 
 ### 💰 FASE 2: Monetização e Contas Premium (EM PROGRESSO)
-- [x] **Pontos Premium:** Implementada a moeda premium e o sistema de saldo (`pontos_premium`).
+- [x] **Pontos Premium:** Implementada a moeda premium e o sistema de saldo.
 - [x] **Funcionalidades Premium:** 
-  - [x] Redução de tempo de construção/recrutamento pela metade (30 pontos premium).
-  - [x] Conta Premium ativa:
-    - [x] +20% Produção de Recursos.
-    - [x] Fila de Construção Alargada (Total 10 slots).
-    - [x] Acesso exclusivo ao Alto Comando (Mass Overviews).
-- [x] **Mercado Premium:** Sistema de troca de PP por recursos entre jogadores (Peer-to-Peer).
-- [x] **Correções Críticas:** Fix no regresso automático de tropas (null pointer origin_id).
-- [ ] Gestor de Conta / Assistente de Farming (Automatização de ataques a bárbaras/rebeldes).
+  - [x] Redução de tempo (30 PP).
+  - [x] Conta Premium ativa (+20% recursos, 10 slots).
+  - [x] Alto Comando (Mass Overviews).
+- [x] **Mercado Premium:** Peer-to-Peer.
+- [x] **Assistente de Farming:** Automatização de ataques a bárbaras/rebeldes.
 - [ ] Visualizadores táticos avançados (Gráficos de evolução).
 
 ### ⚔️ FASE 3: Combate Avançado e Alianças (Tribos)
-- [ ] **Planeador de Ataques / Snipe:** Ferramenta da aliança para planear operações conjuntas. Identificação visual de ataques no mapa e ecrãs partilhados.
-- [ ] **Acampamento / Suportes:** Permitir que unidades de defesa permaneçam na base aliada para ajudar a defendê-la (já existe a tabela `reinforcements`, necessita ser ativada no motor de combate e UI).
-- [ ] **Simulador de Combate:** Uma ferramenta na UI (Praça de Reunião/Comando Central) para testar desfechos de batalhas incluindo sorte, moral e nível de muralha.
+- [ ] **Planeador de Ataques / Snipe:** Planeamento de operações conjuntas.
+- [x] **Acampamento / Suportes:** Ativada a tabela `reinforcements` e interface de gestão no Alto Comando.
+- [x] **Simulador de Combate:** Ferramenta tática de simulação com sorte, moral e muralha.
 
 ### 🏆 FASE 4: Endgame (Fim de Mundo)
 - [ ] **Segredos / Artefactos:** Bases especiais ou itens que a aliança precisa de segurar durante X tempo para ganhar o mundo.

@@ -109,6 +109,15 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/market', [PremiumMarketController::class, 'store'])->name('market.store');
             Route::post('/market/{id}/buy', [PremiumMarketController::class, 'buy'])->name('market.buy');
             Route::delete('/market/{id}', [PremiumMarketController::class, 'destroy'])->name('market.destroy');
+
+            // Assistente de Farming (Fase 2)
+            Route::get('/farming', [\App\Http\Controllers\FarmingController::class, 'index'])->name('farming.index');
+            Route::post('/farming/templates', [\App\Http\Controllers\FarmingController::class, 'storeTemplate'])->name('farming.templates.store');
+            Route::post('/farming/attack', [\App\Http\Controllers\FarmingController::class, 'attack'])->name('farming.attack');
+
+            // Simulador de Combate (Fase 3)
+            Route::get('/simulator', [\App\Http\Controllers\SimulatorController::class, 'index'])->name('simulator.index');
+            Route::post('/simulator/simulate', [\App\Http\Controllers\SimulatorController::class, 'simulate'])->name('simulator.simulate');
         });
 
         Route::prefix('alianca')->name('alianca.')->group(function () {
@@ -167,6 +176,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [App\Http\Controllers\MassCommandController::class, 'index'])->name('index');
         Route::post('/recruit', [App\Http\Controllers\MassCommandController::class, 'recruitMass'])->name('recruit');
         Route::post('/templates/apply', [App\Http\Controllers\MassCommandController::class, 'applyTemplate'])->name('templates.apply');
+        Route::post('/supports/{id}/recall', [App\Http\Controllers\MassCommandController::class, 'recallReinforcement'])->name('supports.recall');
         
         // Gestão de Grupos
         Route::prefix('groups')->name('groups.')->group(function () {
