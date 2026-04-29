@@ -87,8 +87,12 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     }) : true;
 
     const tipoLower = building.buildingType?.toLowerCase();
+    const isHQ = tipoLower === 'hq';
     const isAcademy = tipoLower === 'academia_militar';
     const isMilitary = ['hq', 'quartel', 'aerodromo', 'radar_estrategico', 'fabrica_municoes'].includes(tipoLower);
+    
+    // Obter todos os edifícios da base para validar requisitos
+    const currentBuildings = (building?.base?.edificios || buildings || []);
     
     const availableUnits = isMilitary ? (unitTypes || []).filter((ut, index, self) => {
         // 1. Evitar duplicados
@@ -100,13 +104,10 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         if (isDuplicate) return false;
 
         // 2. Unidade específica: Político (Nobre)
-        // No Tribal Wars, ele é recrutado na Academia. 
-        // Mas o USER pediu especificamente para ser no HQ se chegar a um certo nível.
         if (ut.name.toLowerCase().includes('politico')) {
             if (tipoLower !== 'hq') return false;
-            // Verificar requisitos no config ou Hardcoded (HQ 20 + Academia 1)
-            const hqLevel = building.buildingType === 'hq' ? building.nivel : 0;
-            const academy = (building.base?.edificios || []).find((b: any) => b.buildingType === 'academia_militar');
+            const hqLevel = building.nivel || 0;
+            const academy = currentBuildings.find((b: any) => (b.buildingType || b.tipo) === 'academia_militar');
             const academyLevel = academy?.nivel || 0;
             return hqLevel >= 20 && academyLevel >= 1;
         }
@@ -125,6 +126,29 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         if (tipoLower === 'radar_estrategico') return ['agente', 'espiao', 'drone'].some(s => k.includes(s));
         return false;
     }) : [];
+
+    // Lista de edifícios disponíveis para construção (Apenas se for HQ)
+    const constructionList = isHQ ? Object.entries(buildingsConfig).map(([type, cfg]: [string, any]) => {
+        const currentB = currentBuildings.find((b: any) => (b.buildingType || b.tipo) === type);
+        const currentLvl = currentB?.nivel || 0;
+        
+        // Validar requisitos
+        const reqs = cfg.requires || {};
+        const metRequirements = Object.entries(reqs).every(([reqType, reqLvl]) => {
+            const b = currentBuildings.find((b: any) => (b.buildingType || b.tipo) === reqType);
+            return (b?.nivel || 0) >= (reqLvl as number);
+        });
+
+        return {
+            type,
+            name: cfg.name,
+            level: currentLvl,
+            metRequirements,
+            requirements: reqs,
+            cost: cfg.cost,
+            time_base: cfg.time_base
+        };
+    }).filter(item => item.type !== 'hq') : []; // HQ não se constrói a si próprio na lista
     
     const isMarket = ['mercado', 'logistica', 'hub_de_comercio', 'armazem'].includes(tipoLower);
 
@@ -294,6 +318,63 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                         {canAfford && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />}
                                     </Button>
                                 </div>
+
+                                {/* Menu de Construção (Apenas HQ) */}
+                                {isHQ && (
+                                    <div className="tactical-panel p-10 space-y-10 border-sky-500/10">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-1.5 h-8 bg-sky-500 rounded-full" />
+                                            <h3 className="text-2xl font-black uppercase text-white tracking-tighter">Menu de Engenharia Civil</h3>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 gap-6">
+                                            {constructionList.map(item => {
+                                                const canBuild = item.metRequirements;
+                                                const isBuilt = item.level > 0;
+                                                
+                                                return (
+                                                    <div 
+                                                        key={item.type}
+                                                        className={`p-8 rounded-[2.5rem] border transition-all duration-500 flex items-center justify-between group ${canBuild ? 'bg-black/40 border-white/5 hover:border-white/20' : 'bg-red-500/5 border-red-500/10 opacity-60'}`}
+                                                    >
+                                                        <div className="flex items-center gap-8">
+                                                            <div className="relative">
+                                                                <img src={getBuildingAsset(item.type, isBuilt ? 1 : 'blueprint')} className="w-20 h-20 object-contain grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all" alt={item.name} />
+                                                                {!canBuild && <X className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500" size={40} />}
+                                                            </div>
+                                                            <div className="flex flex-col gap-2">
+                                                                <h4 className="text-xl font-black uppercase text-white tracking-tighter">{item.name}</h4>
+                                                                <div className="flex items-center gap-4">
+                                                                    <Badge className={isBuilt ? 'bg-emerald-500/20 text-emerald-400' : 'bg-neutral-500/20 text-neutral-400'}>
+                                                                        {isBuilt ? `Nível ${item.level}` : 'Não Construído'}
+                                                                    </Badge>
+                                                                    {Object.entries(item.requirements).map(([reqType, reqLvl]) => {
+                                                                        const b = currentBuildings.find((b: any) => (b.buildingType || b.tipo) === reqType);
+                                                                        const hasReq = (b?.nivel || 0) >= (reqLvl as number);
+                                                                        return (
+                                                                            <span key={reqType} className={`text-[9px] font-black uppercase tracking-widest ${hasReq ? 'text-neutral-500' : 'text-red-500'}`}>
+                                                                                {reqType}: Lvl {reqLvl as number}
+                                                                            </span>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        {canBuild && (
+                                                            <Button 
+                                                                onClick={() => onUpgrade(item.type)}
+                                                                className="h-14 px-8 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-black uppercase tracking-widest text-[9px]"
+                                                            >
+                                                                {isBuilt ? 'UPGRADE' : 'CONSTRUIR'}
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Military Section */}
                                 {isMilitary && (

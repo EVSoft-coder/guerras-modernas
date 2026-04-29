@@ -197,11 +197,25 @@ export function VillageDashboard({
 
     const handleUpgrade = (buildingType: string) => {
         setIsUpgrading(true);
+        
+        let posX = selectedPos?.x;
+        let posY = selectedPos?.y;
+
+        // FASE ISO: Se o edifício que estamos a construir é diferente do aberto (ex: construir via HQ)
+        // ou se não temos posição capturada, usamos o layout padrão para garantir que aparece no sítio certo.
+        if (buildingType !== selectedBuildingType || !posX || !posY) {
+            const layout = BUILDING_LAYOUT[buildingType];
+            if (layout) {
+                posX = layout.x;
+                posY = layout.y;
+            }
+        }
+
         eventBus.emit(Events.BUILDING_UPGRADE_REQUEST, {
             base_id: base.id,
             tipo: buildingType,
-            pos_x: selectedPos?.x || 0,
-            pos_y: selectedPos?.y || 0
+            pos_x: posX || 0,
+            pos_y: posY || 0
         });
         setSelectedBuildingId(null);
         setSelectedPos(null);

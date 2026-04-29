@@ -69,7 +69,8 @@ return [
             'cost' => ['suprimentos' => 400, 'municoes' => 200, 'pessoal' => 5],
             'time_base' => 20,
             'scaling' => 1.3,
-            'description' => 'Sistema de barreiras físicas e eletrónicas de última geração. Além da proteção física, fornece bónus táticos de visibilidade e cobertura, aumentando exponencialmente a eficácia defensiva da guarnição estacionada.'
+            'description' => 'Sistema de barreiras físicas e eletrónicas de última geração. Além da proteção física, fornece bónus táticos de visibilidade e cobertura, aumentando exponencialmente a eficácia defensiva da guarnição estacionada.',
+            'requires' => ['hq' => 1]
         ],
         'mina_suprimentos' => [
             'name' => 'Complexo de Logística (Mina)',
@@ -118,49 +119,56 @@ return [
             'cost' => ['suprimentos' => 400, 'combustivel' => 50, 'municoes' => 50, 'pessoal' => 5],
             'time_base' => 20,
             'scaling' => 1.4,
-            'description' => 'Coordena o recrutamento e treino básico de novos recrutas. Níveis superiores aumentam o fluxo de pessoal disponível para treinamento militar.'
+            'description' => 'Coordena o recrutamento e treino básico de novos recrutas. Níveis superiores aumentam o fluxo de pessoal disponível para treinamento militar.',
+            'requires' => ['hq' => 1]
         ],
         'quartel' => [
             'name' => 'Comando de Operações Terrestres',
             'cost' => ['suprimentos' => 600, 'combustivel' => 200, 'municoes' => 200, 'pessoal' => 20],
             'time_base' => 30,
             'scaling' => 1.6,
-            'description' => 'O núcleo da força militar terrestre. Permite o treino de infantaria especializada, veículos APC e os poderosos tanques de combate MBT.'
+            'description' => 'O núcleo da força militar terrestre. Permite o treino de infantaria especializada, veículos APC e os poderosos tanques de combate MBT.',
+            'requires' => ['hq' => 3]
         ],
         'aerodromo' => [
             'name' => 'Base Aérea Tática',
             'cost' => ['suprimentos' => 1000, 'combustivel' => 800, 'municoes' => 500, 'pessoal' => 30],
             'time_base' => 60,
             'scaling' => 1.8,
-            'description' => 'Hangar e pista de descolagem para helicópteros de ataque e unidades de suporte aéreo. Fundamental para garantir a supremacia do espaço aéreo regional.'
+            'description' => 'Hangar e pista de descolagem para helicópteros de ataque e unidades de suporte aéreo. Fundamental para garantir a supremacia do espaço aéreo regional.',
+            'requires' => ['hq' => 15, 'quartel' => 10]
         ],
         'radar_estrategico' => [
             'name' => 'Centro de Inteligência e Radar',
             'cost' => ['suprimentos' => 1500, 'combustivel' => 1200, 'municoes' => 300, 'pessoal' => 15],
             'time_base' => 90,
             'scaling' => 1.7,
-            'description' => 'Ouve as transmissões inimigas e varre o horizonte em busca de ameaças. Essencial para operações de espionagem e deteção antecipada de exércitos em movimento.'
+            'description' => 'Ouve as transmissões inimigas e varre o horizonte em busca de ameaças. Essencial para operações de espionagem e deteção antecipada de exércitos em movimento.',
+            'requires' => ['hq' => 5]
         ],
         'centro_pesquisa' => [
             'name' => 'Laboratórios de I&D Militar',
             'cost' => ['suprimentos' => 2000, 'combustivel' => 1000, 'municoes' => 1000, 'pessoal' => 40],
             'time_base' => 120,
             'scaling' => 1.9,
-            'description' => 'Onde o futuro da guerra é desenhado. Desbloqueia novas tecnologias, unidades avançadas e bónus de produção através de investigação científica.'
+            'description' => 'Onde o futuro da guerra é desenhado. Desbloqueia novas tecnologias, unidades avançadas e bónus de produção através de investigação científica.',
+            'requires' => ['hq' => 5]
         ],
         'academia_militar' => [
             'name' => 'Academia Militar',
             'cost' => ['suprimentos' => 3000, 'metal' => 2000, 'pessoal' => 10, 'energia' => 500],
             'time_base' => 150,
             'scaling' => 2.5,
-            'description' => 'Centro de formação estratégica de alto nível. Essencial para a cunhagem de moedas e para desbloquear o treino de Líderes Políticos no Centro de Comando.'
+            'description' => 'Centro de formação estratégica de alto nível. Essencial para a cunhagem de moedas e para desbloquear o treino de Líderes Políticos no Centro de Comando.',
+            'requires' => ['hq' => 20, 'mercado' => 10]
         ],
         'mercado' => [
             'name' => 'Hub de Comércio e Logística',
             'cost' => ['suprimentos' => 1000, 'combustivel' => 500, 'metal' => 200, 'pessoal' => 5],
             'time_base' => 45,
             'scaling' => 1.5,
-            'description' => 'Facilita a troca de recursos entre bases aliadas e permite o acesso ao mercado global para conversão de excedentes.'
+            'description' => 'Facilita a troca de recursos entre bases aliadas e permite o acesso ao mercado global para conversão de excedentes.',
+            'requires' => ['hq' => 10]
         ],
     ],
 
