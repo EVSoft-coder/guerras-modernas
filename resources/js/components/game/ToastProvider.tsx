@@ -27,17 +27,6 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setTimeout(() => removeToast(id), 5000);
     }, []);
 
-    const { props } = usePage();
-    useEffect(() => {
-        const flash = props.flash as any;
-        if (flash?.success) {
-            addToast(flash.success, 'success');
-        }
-        if (flash?.error) {
-            addToast(flash.error, 'error');
-        }
-    }, [props.flash]);
-
     const removeToast = useCallback((id: number) => {
         setToasts(prev => prev.filter(toast => toast.id !== id));
     }, []);
@@ -54,6 +43,27 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             </div>
         </ToastContext.Provider>
     );
+};
+
+/**
+ * Componente que escuta as flash messages do Inertia e as converte em Toasts.
+ * Deve ser renderizado dentro do contexto do Inertia (ex: dentro de um Layout).
+ */
+export const FlashListener = () => {
+    const { addToast } = useToasts();
+    const { props } = usePage();
+
+    useEffect(() => {
+        const flash = props.flash as any;
+        if (flash?.success) {
+            addToast(flash.success, 'success');
+        }
+        if (flash?.error) {
+            addToast(flash.error, 'error');
+        }
+    }, [props.flash]);
+
+    return null;
 };
 
 export const useToasts = () => {

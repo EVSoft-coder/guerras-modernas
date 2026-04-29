@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import AuthLayoutTemplate from '@/layouts/auth/auth-simple-layout';
+import { FlashListener } from '@/components/game/ToastProvider';
 
 export default function AuthLayout({ children, title, description, ...props }: { children: React.ReactNode; title: string; description: string }) {
     useEffect(() => {
@@ -16,6 +16,7 @@ export default function AuthLayout({ children, title, description, ...props }: {
 
     return (
         <AuthLayoutTemplate title={title} description={description} {...props}>
+            <FlashListener />
             {children}
         </AuthLayoutTemplate>
     );
