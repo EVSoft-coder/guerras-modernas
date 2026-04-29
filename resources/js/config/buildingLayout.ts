@@ -155,6 +155,6 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "w": 85,
         "h": 85,
         "anchor": "center",
-        "assetName": "parlamento_v1.png"
+        "assetName": "../placeholders/building_parlamento.svg"
     }
 };

@@ -23,7 +23,7 @@ export const getBuildingAsset = (type: string, level: number | 'blueprint' = 1):
     if (t === 'mina_suprimentos') assetBase = 'mina_suprimentos';
     if (t === 'refinaria') assetBase = 'refinaria';
     if (t === 'posto_recrutamento') assetBase = 'recrutamento';
-    if (t === 'academia_militar') assetBase = 'parlamento'; // Reaproveitar asset do parlamento por enquanto
+    if (t === 'academia_militar') return '/assets/placeholders/building_parlamento.svg';
 
     // HQ tem hq_v1, hq_v2 e hq_elite_v1
     if (t === 'hq') {
