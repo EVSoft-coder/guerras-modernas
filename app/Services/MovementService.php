@@ -176,7 +176,7 @@ class MovementService
                     ->lockForUpdate()
                     ->first();
 
-                if (!$lockedMovement || $lockedMovement->processed_at) return;
+                if (!$lockedMovement || $lockedMovement->processed_at) continue;
 
                 // LOCK UNITS (PASSO 3)
                 $lockedMovement->load(['units.type' => function($q) {
@@ -184,14 +184,14 @@ class MovementService
                 }]);
 
                 // Determinar a base de destino correta para o processamento
-                $targetBase = ($lockedMovement->target_id === $base->id) ? $base : Base::find($lockedMovement->target_id);
+                $targetBase = ($lockedMovement->target_id === ($base->id ?? null)) ? $base : Base::find($lockedMovement->target_id);
                 
-                if (!$targetBase) return;
+                if (!$targetBase) continue;
 
                 // APLICAR CHEGADA (PASSO 4)
                 $this->applyArrival($lockedMovement, $targetBase);
-            });
-        }
+            }
+        });
     }
 
     /**
