@@ -45,15 +45,14 @@ Para transformar "Guerras Modernas" numa experiência completa estilo Tribal War
 
 ---
 
-## 🛡️ ESTADO DA AUDITORIA (28 de Abril)
+### 🛡️ ESTADO DA AUDITORIA (29 de Abril)
 
 | Componente | Estado | Notas |
 | :--- | :--- | :--- |
-| **Código Fonte (Frontend)** | ⚠️ Tech Debt | Correção de erro no `vite.config.js` aplicada. Existem ~500 avisos de linting no TypeScript (`any` types), que deverão ser mitigados progressivamente. |
-| **Base de Dados** | ⚠️ Ajustes | Criado `db_adjustments.sql` para otimização de queries, introdução da coluna `pontos` e `pontos_premium`. |
-| **Recrutamento / Fila** | ✅ OK | Funcional, mas a fila de edifícios está limitada. Conta premium pode expandir isto. |
-| **Combate** | ✅ OK | PvP e PvE (Rebeldes) operacionais. Falta a mecânica de baixar lealdade para conquista. |
-| **Mapa Mundo** | ✅ OK | Design modernizado. Precisará de otimização de carregamento se o mapa passar de 1000x1000. |
+| **Código Fonte (Frontend)** | ✅ Melhorado | Introduzidos Tipos Fortes (`resources/js/types/game.ts`). Migração de `any` iniciada no CommandCenter e Dashboard. |
+| **Integridade de Pontos** | ✅ Estável | Mapeamento de edifícios corrigido e recálculo em tempo real (Conquista/Build). |
+| **Processamento de Movimentos**| ✅ Estável | Otimizado via Global Ticker para evitar lag em ataques massivos. |
+| **Segurança de Transações** | ✅ Estável | Locks pessimistas aplicados em recrutamento e combate. |
 
 ---
 

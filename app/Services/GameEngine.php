@@ -76,8 +76,15 @@ class GameEngine
             $this->buildingQueueService->processQueue($lockedBase);
             $this->unitQueueService->processQueue($lockedBase);
 
-            // 5. Processar Movimentos
+            // 5. Processar Movimentos (Foco na Base Atual + Global Ticker)
+            // O Ticker Global processa uma pequena fatia de movimentos aleatórios pendentes no mundo
+            // para garantir que ataques a jogadores offline sejam resolvidos sem dependência de login.
             $this->movementService->processMovements($lockedBase);
+            
+            if (rand(1, 10) === 1) {
+                // 10% de chance de processar movimentos globais pendentes
+                $this->movementService->processMovements(null);
+            }
             
             Log::channel('game')->info("[GAME_ENGINE] Ciclo atómico finalizado para base {$base->id}");
         }, 5);

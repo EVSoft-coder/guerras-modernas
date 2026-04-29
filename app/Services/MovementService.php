@@ -148,20 +148,29 @@ class MovementService
     /**
      * Processa movimentos que chegaram ao destino (Passo 4 - Harden).
      */
-    public function processMovements(Base $base): void
+    public function processMovements(?Base $base = null): void
     {
-        // 1. Selecionamos IDs candidatos (sem lock ainda para não prender a query global)
-        $candidateIds = Movement::where(function($q) use ($base) {
-                $q->where('target_id', $base->id)
-                  ->orWhere('origin_id', $base->id);
-            })
-            ->where('status', 'moving')
-            ->where('arrival_time', '<=', now())
-            ->whereNull('processed_at')
-            ->pluck('id');
+        DB::transaction(function () use ($base) {
+            $now = now();
+            
+            $query = Movement::where('status', 'moving')
+                ->where('arrival_time', '<=', $now)
+                ->orderBy('arrival_time', 'asc');
 
-        foreach ($candidateIds as $id) {
-            DB::transaction(function() use ($id, $base) {
+            if ($base) {
+                // Foco na base atual
+                $query->where(function($q) use ($base) {
+                    $q->where('target_id', $base->id)
+                      ->orWhere('origin_id', $base->id);
+                });
+            } else {
+                // Global Ticker: Processar apenas um lote para evitar timeouts
+                $query->limit(20);
+            }
+
+            $candidateIds = $query->pluck('id');
+
+            foreach ($candidateIds as $id) {
                 // LOCK MOVEMENT (PASSO 1)
                 $lockedMovement = Movement::where('id', $id)
                     ->lockForUpdate()
@@ -286,8 +295,8 @@ class MovementService
             ];
         })->filter()->toArray();
 
-        // 2. Unidades Defensoras (Base + Reforços Aliados)
-        $defUnitsFromBase = Unit::where('base_id', $targetBase->id)->with('type')->get()->map(function($u) {
+        // 2. Unidades Defensoras (Base + Reforços Aliados) - HARDEN: Lock For Update
+        $defUnitsFromBase = Unit::where('base_id', $targetBase->id)->lockForUpdate()->with('type')->get()->map(function($u) {
             return [
                 'origin' => 'base',
                 'id' => $u->unit_type_id,
@@ -298,7 +307,7 @@ class MovementService
             ];
         })->filter(fn($u) => $u['quantity'] > 0)->toArray();
 
-        $reinforcements = Reinforcement::where('target_base_id', $targetBase->id)->with('type')->get();
+        $reinforcements = Reinforcement::where('target_base_id', $targetBase->id)->lockForUpdate()->with('type')->get();
         $defUnitsFromReinforcements = $reinforcements->map(function($r) {
             return [
                 'origin' => 'reinforcement',
@@ -521,6 +530,12 @@ class MovementService
         $targetBase->nome = "Província de " . ($movement->origin->jogador->username ?? "Jogador {$newOwnerId}");
         $targetBase->save();
 
+        // PASSO 4 - ATUALIZAÇÃO DE RANKING (Fase Harden)
+        $pointsService = app(PointsService::class);
+        $pointsService->recalculateBasePoints($targetBase);
+        if ($oldOwnerId) $pointsService->recalculatePlayerPoints($oldOwnerId);
+        $pointsService->recalculatePlayerPoints($newOwnerId);
+
         DB::table('building_queue')->where('base_id', $targetBase->id)->delete();
         DB::table('unit_queue')->where('base_id', $targetBase->id)->delete();
         DB::table('tropas')->where('base_id', $targetBase->id)->delete();
@@ -529,7 +544,7 @@ class MovementService
         DB::table('movements')->where('target_id', $targetBase->id)->where('status', 'moving')->update(['status' => 'cancelled', 'processed_at' => now()]);
         DB::table('movements')->where('origin_id', $targetBase->id)->where('status', 'moving')->update(['status' => 'cancelled', 'processed_at' => now()]);
 
-        Log::channel('game')->emergency("[CONQUEST] SETOR {$targetBase->id} CAPTURADO por {$newOwnerId} (Antigo: {$oldOwnerId}). Limpeza total executada.");
+        Log::channel('game')->emergency("[CONQUEST] SETOR {$targetBase->id} CAPTURADO por {$newOwnerId} (Antigo: {$oldOwnerId}). Limpeza total e recalculação de pontos executada.");
     }
 
     /**

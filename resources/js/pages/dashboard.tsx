@@ -8,6 +8,26 @@ import { useGameMode } from '@/hooks/use-game-mode';
 import { useGameEntities } from '@/hooks/use-game-entities';
 import { resourceSystem } from '@src/game/systems/ResourceSystem';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BaseData, ResourceSet, Unit, UnitType } from '@/types/game';
+
+interface DashboardState {
+    base?: BaseData;
+    resources?: ResourceSet;
+    buildings?: any[];
+    units?: Unit[];
+    movements?: any[];
+    unitTypes?: UnitType[];
+    gameConfig?: any;
+    diplomaties?: any[];
+    myAllianceId?: number;
+    general?: any;
+    population?: any;
+    activeEvents?: any[];
+    unitQueue?: any[];
+    buildingQueue?: any[];
+    reinforcements?: any[];
+    stationedOutside?: any[];
+}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,7 +40,7 @@ const breadcrumbs: BreadcrumbItem[] = [
  * ROOT UI: Orquestrador de Vistas Tácticas.
  * Gere a transição entre Dashboard (Vila) e WorldMapView baseado no estado ECS.
  */
-export default function Dashboard(props: any) {
+export default function Dashboard(props: { state?: DashboardState } & any) {
     const gameMode = useGameMode();
     const state = props.state || {}; // FASE LIMPEZA: Prioridade ao estado unificado
     

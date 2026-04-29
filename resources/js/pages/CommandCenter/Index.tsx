@@ -24,42 +24,7 @@ import {
     AreaChart, Area, BarChart, Bar, Legend 
 } from 'recharts';
 import { toast } from 'sonner';
-
-interface BaseData {
-    id: number;
-    nome: string;
-    coordenadas: string;
-    resources: any;
-    buildings: any[];
-    units: any[];
-    groups: number[];
-    queues: {
-        buildings: number;
-        units: number;
-    };
-    movements: {
-        outgoing: number;
-        incoming: number;
-    };
-}
-
-interface UnitType {
-    id: number;
-    name: string;
-    code: string;
-}
-
-interface Group {
-    id: number;
-    name: string;
-    color: string;
-}
-
-interface Template {
-    id: number;
-    name: string;
-    steps: any[];
-}
+import { BaseData, UnitType, Group, Template } from '@/types/game';
 
 export default function CommandCenter(props: {
     bases: BaseData[];
