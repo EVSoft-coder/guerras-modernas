@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { router } from '@inertiajs/react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,11 +22,12 @@ interface BuildingModalProps {
     population: any;
     unitTypes?: any[];
     resources: any;
+    nobleInfo?: any;
 }
 
 export const BuildingModal: React.FC<BuildingModalProps> = ({ 
     isOpen, onClose, building, gameConfig, 
-    onUpgrade, onTrain, isUpgrading, isTraining, population, unitTypes, resources
+    onUpgrade, onTrain, isUpgrading, isTraining, population, unitTypes, resources, nobleInfo
 }) => {
     if (!building) return null;
 
@@ -85,9 +87,11 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
     }) : true;
 
     const tipoLower = building.buildingType?.toLowerCase();
-    const isMilitary = ['quartel', 'aerodromo', 'radar_estrategico', 'fabrica_municoes'].includes(tipoLower);
+    const isAcademy = tipoLower === 'academia_militar';
+    const isMilitary = ['hq', 'quartel', 'aerodromo', 'radar_estrategico', 'fabrica_municoes'].includes(tipoLower);
+    
     const availableUnits = isMilitary ? (unitTypes || []).filter((ut, index, self) => {
-        // 1. Evitar duplicados por nome (case-insensitive) ou slug
+        // 1. Evitar duplicados
         const isDuplicate = self.findIndex(t => 
             (t.name.toLowerCase() === ut.name.toLowerCase()) || 
             (t.slug && ut.slug && t.slug === ut.slug)
@@ -95,16 +99,27 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         
         if (isDuplicate) return false;
 
-        // 2. Se a unidade tem building_type definido na DB, usar isso como filtro primário
+        // 2. Unidade específica: Político (Nobre)
+        // No Tribal Wars, ele é recrutado na Academia. 
+        // Mas o USER pediu especificamente para ser no HQ se chegar a um certo nível.
+        if (ut.name.toLowerCase().includes('politico')) {
+            if (tipoLower !== 'hq') return false;
+            // Verificar requisitos no config ou Hardcoded (HQ 20 + Academia 1)
+            const hqLevel = building.buildingType === 'hq' ? building.nivel : 0;
+            const academy = (building.base?.edificios || []).find((b: any) => b.buildingType === 'academia_militar');
+            const academyLevel = academy?.nivel || 0;
+            return hqLevel >= 20 && academyLevel >= 1;
+        }
+
+        // 3. Outras unidades (Quartel, Fábrica, etc.)
         if (ut.building_type) {
-            // Mapeamento de compatibilidade para fabrica_municoes
             if (ut.building_type === 'fabrica_municoes' && tipoLower === 'fabrica_municoes') return true;
             return ut.building_type === building.buildingType;
         }
 
-        // 3. Fallback: Filtro por nome para compatibilidade com dados antigos
+        // 4. Fallback: Filtro por nome
         const k = ut.name.toLowerCase();
-        if (tipoLower === 'quartel') return ['infantaria', 'politico', 'sniper', 'engenheiro'].some(s => k.includes(s));
+        if (tipoLower === 'quartel') return ['infantaria', 'sniper', 'engenheiro'].some(s => k.includes(s));
         if (tipoLower === 'fabrica_municoes') return ['blindado', 'tanque', 'artilharia', 'apc', 'veiculo'].some(s => k.includes(s));
         if (tipoLower === 'aerodromo') return ['helicoptero'].some(s => k.includes(s));
         if (tipoLower === 'radar_estrategico') return ['agente', 'espiao', 'drone'].some(s => k.includes(s));
@@ -353,6 +368,84 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
+                                    </div>
+                                )}
+
+                                {/* Academia Militar: Cunhagem de Moedas */}
+                                {isAcademy && (
+                                    <div className="tactical-panel p-10 space-y-10 bg-sky-500/[0.02] border-sky-500/10">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-1.5 h-8 bg-sky-500 rounded-full" />
+                                                <h3 className="text-2xl font-black uppercase text-white tracking-tighter">Cunhagem de Moedas de Ouro</h3>
+                                            </div>
+                                            <div className="flex items-center gap-3 bg-black/40 px-6 py-3 rounded-full border border-white/10 shadow-inner">
+                                                <Cpu size={16} className="text-sky-400" />
+                                                <span className="text-xs font-black uppercase tracking-widest text-neutral-300">Moedas_Atuais: {nobleInfo?.moedas || 0}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            <div className="space-y-6">
+                                                <div className="p-8 bg-white/[0.02] rounded-[2.5rem] border border-white/5">
+                                                    <p className="text-neutral-400 text-sm leading-relaxed">
+                                                        As moedas de ouro são necessárias para aumentar a capacidade de treino de Líderes Políticos. 
+                                                        Quanto mais moedas cunhar, mais slots de conquista terá disponíveis.
+                                                    </p>
+                                                </div>
+                                                
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    <div className="flex items-center justify-between p-6 bg-black/40 rounded-3xl border border-white/5">
+                                                        <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Capacidade Atual</span>
+                                                        <span className="text-xl font-black text-white">{nobleInfo?.capacidade || 0} Líderes</span>
+                                                    </div>
+                                                    <div className="flex items-center justify-between p-6 bg-black/40 rounded-3xl border border-white/5">
+                                                        <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Em Uso / Ocupados</span>
+                                                        <span className="text-xl font-black text-orange-500">{nobleInfo?.emUso || 0} Slots</span>
+                                                    </div>
+                                                    <div className="flex items-center justify-between p-6 bg-sky-500/10 rounded-3xl border border-sky-500/20">
+                                                        <span className="text-[10px] font-black text-sky-500 uppercase tracking-widest">Moedas p/ Próximo Slot</span>
+                                                        <span className="text-xl font-black text-sky-400">{nobleInfo?.moedasParaProximo || 0} Moedas</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-6">
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    {/* Custos da Moeda (Fixos TW Style) */}
+                                                    {[
+                                                        { res: 'suprimentos', amount: 28000, icon: '📦' },
+                                                        { res: 'combustivel', amount: 30000, icon: '⛽' },
+                                                        { res: 'municoes', amount: 25000, icon: '🚀' }
+                                                    ].map(cost => {
+                                                        const playerAmount = parseResourceValue(resources?.[cost.res] || 0);
+                                                        const hasEnough = playerAmount >= cost.amount;
+                                                        return (
+                                                            <div key={cost.res} className={`flex items-center justify-between bg-black/40 p-4 rounded-3xl border ${hasEnough ? 'border-white/5' : 'border-red-500/30'}`}>
+                                                                <div className="flex items-center gap-3">
+                                                                    <span className="text-sm">{cost.icon}</span>
+                                                                    <span className="text-[9px] uppercase text-neutral-500 font-black tracking-widest">{cost.res}</span>
+                                                                </div>
+                                                                <span className={`text-xs font-military-mono font-black ${hasEnough ? 'text-white' : 'text-red-500'}`}>
+                                                                    {cost.amount.toLocaleString()}
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                <Button 
+                                                    onClick={() => router.post('/academy/mint', {})} 
+                                                    className="w-full h-24 bg-sky-600 hover:bg-sky-500 text-white font-black uppercase tracking-[0.4em] text-[10px] rounded-[2rem] shadow-[0_25px_60px_rgba(14,165,233,0.3)] active:scale-95 transition-all group/btn relative overflow-hidden"
+                                                >
+                                                    <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
+                                                    <span className="relative z-10 flex items-center justify-center gap-6">
+                                                        <Zap size={24} />
+                                                        CUNHAR_MOEDA_DE_OURO
+                                                    </span>
+                                                </Button>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </>

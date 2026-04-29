@@ -32,7 +32,7 @@ export function VillageDashboard({
     diplomaties = STABLE_EMPTY_ARRAY, myAllianceId,
     reinforcements = STABLE_EMPTY_ARRAY, stationedOutside = STABLE_EMPTY_ARRAY,
     research = null, researchBonuses = {}, researchConfig = null,
-    activeEvents = [], radarLevel = 0
+    activeEvents = [], radarLevel = 0, nobleInfo = null
 }: DashboardProps & { 
     research?: any; 
     researchBonuses?: any; 
@@ -41,6 +41,7 @@ export function VillageDashboard({
     reinforcements?: any[];
     stationedOutside?: any[];
     radarLevel?: number;
+    nobleInfo?: any;
 }) {
     // 0. ECS ENGINE INTEGRATION
     const { globalState } = useGameEntities();
@@ -479,6 +480,7 @@ export function VillageDashboard({
                 population={population}
                 unitTypes={unitTypes}
                 resources={resources}
+                nobleInfo={nobleInfo}
             />
             <TutorialOverlay />
         </div>

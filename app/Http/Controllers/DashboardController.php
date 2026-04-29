@@ -113,7 +113,8 @@ class DashboardController extends Controller
                 'base' => $state['base'],
                 'resources' => $state['resources'],
                 'buildings' => $state['buildings'],
-                'activeEvents' => $activeEvents
+                'activeEvents' => $activeEvents,
+                'nobleInfo' => $state['nobleInfo']
             ]);
         } catch (\Exception $e) {
             \Log::error('[DASHBOARD_FATAL] ' . $e->getMessage(), [

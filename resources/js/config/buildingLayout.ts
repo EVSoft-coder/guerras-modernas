@@ -148,5 +148,13 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 80,
         "anchor": "center",
         "assetName": "recrutamento_v1.png"
+    },
+    "academia_militar": {
+        "x": 260,
+        "y": 120,
+        "w": 85,
+        "h": 85,
+        "anchor": "center",
+        "assetName": "parlamento_v1.png"
     }
 };

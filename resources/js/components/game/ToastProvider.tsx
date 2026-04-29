@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import { usePage } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Info, AlertTriangle, CheckCircle, X, Zap } from 'lucide-react';
 
@@ -25,6 +26,17 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setToasts(prev => [...prev, { id, message, type }]);
         setTimeout(() => removeToast(id), 5000);
     }, []);
+
+    const { props } = usePage();
+    useEffect(() => {
+        const flash = props.flash as any;
+        if (flash?.success) {
+            addToast(flash.success, 'success');
+        }
+        if (flash?.error) {
+            addToast(flash.error, 'error');
+        }
+    }, [props.flash]);
 
     const removeToast = useCallback((id: number) => {
         setToasts(prev => prev.filter(toast => toast.id !== id));

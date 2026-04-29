@@ -98,11 +98,11 @@ export const buildingConfigs: Record<string, BuildingDefinition> = {
         cost: { suprimentos: 150, pessoal: 0 },
         timeBase: 60,
     },
-    parlamento: {
-        id: 'parlamento',
-        name: 'Parlamento & Diplomacia',
+    academia_militar: {
+        id: 'academia_militar',
+        name: 'Academia Militar',
         cost: { suprimentos: 3000, metal: 2000, pessoal: 10, energia: 500 },
         timeBase: 1800,
-        requires: { qg: 10 }
+        requires: { qg: 20 }
     },
 };

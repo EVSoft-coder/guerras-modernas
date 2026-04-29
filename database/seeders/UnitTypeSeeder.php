@@ -113,6 +113,21 @@ class UnitTypeSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name' => 'Líder Político',
+                'slug' => 'politico',
+                'building_type' => 'hq',
+                'attack' => 1,
+                'defense' => 1,
+                'speed' => 8.0,
+                'carry_capacity' => 0,
+                'cost_suprimentos' => 40000,
+                'cost_municoes' => 50000,
+                'cost_combustivel' => 50000,
+                'build_time' => 3600,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

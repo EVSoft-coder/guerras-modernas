@@ -35,6 +35,15 @@ class UnitQueueService
             // 1. Lock e Sync de Recursos (Mutação Crítica)
             app(ResourceService::class)->syncResources($base);
             $rec = $base->recursos()->lockForUpdate()->first();
+
+            // 1.5 Validação de Capacidade de Nobres (Fase 4.1)
+            if ($unitType->slug === 'politico' || str_contains(strtolower($unitType->name), 'politico')) {
+                $jogador = $base->jogador;
+                $slotsDisponiveis = $jogador->slotsNobresDisponiveis();
+                if ($slotsDisponiveis < $quantidade) {
+                    throw new \Exception("DIPLOMACIA: Capacidade de Líderes Políticos insuficiente. Cunhe mais moedas na Academia Militar.");
+                }
+            }
             
             // 2. Cálculo de Custos (Sincronizado com EconomyService)
             $economy = app(EconomyService::class);

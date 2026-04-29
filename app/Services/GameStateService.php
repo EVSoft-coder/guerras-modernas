@@ -98,6 +98,13 @@ class GameStateService
             'relatoriosGlobal' => \App\Models\Relatorio::with(['atacante', 'defensor'])->latest('id')->limit(10)->get(),
             'reinforcements' => \App\Models\Reinforcement::where('target_base_id', $base->id)->with(['type', 'originBase.jogador'])->get(),
             'stationedOutside' => \App\Models\Reinforcement::where('origin_base_id', $base->id)->with(['type', 'targetBase.jogador'])->get(),
+            'nobleInfo' => $jogador ? [
+                'moedas' => $jogador->moedas,
+                'capacidade' => $jogador->totalNobresCapacidade(),
+                'emUso' => $jogador->nobresEmUso(),
+                'disponiveis' => $jogador->slotsNobresDisponiveis(),
+                'moedasParaProximo' => $jogador->moedasParaProximoNobre(),
+            ] : null,
         ];
     }
 }

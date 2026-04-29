@@ -27,6 +27,13 @@ interface DashboardState {
     buildingQueue?: any[];
     reinforcements?: any[];
     stationedOutside?: any[];
+    nobleInfo?: {
+        moedas: number;
+        capacidade: number;
+        emUso: number;
+        disponiveis: number;
+        moedasParaProximo: number;
+    };
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -127,6 +134,7 @@ export default function Dashboard(props: { state?: DashboardState } & any) {
                             diplomaties={state.diplomaties || props.diplomaties}
                             reinforcements={state.reinforcements}
                             stationedOutside={state.stationedOutside}
+                            nobleInfo={state.nobleInfo || props.nobleInfo}
                         />
                     )}
                 </motion.div>

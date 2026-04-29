@@ -26,7 +26,7 @@ return [
             'radar_estrategico'=> ['base' => ['suprimentos' => 1500, 'combustivel' => 1200, 'municoes' => 300, 'pessoal' => 15], 'factor' => 1.5],
             'centro_pesquisa'  => ['base' => ['suprimentos' => 2000, 'combustivel' => 1000, 'municoes' => 1000, 'pessoal' => 40], 'factor' => 1.5],
             'posto_recrutamento'=> ['base' => ['suprimentos' => 400, 'combustivel' => 50, 'municoes' => 50, 'pessoal' => 5], 'factor' => 1.3],
-            'parlamento'       => ['base' => ['suprimentos' => 5000, 'metal' => 5000, 'pessoal' => 10], 'factor' => 1.8],
+            'academia_militar' => ['base' => ['suprimentos' => 5000, 'metal' => 5000, 'pessoal' => 10], 'factor' => 1.8],
         ],
     ],
 

@@ -147,6 +147,11 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/upgrade', [\App\Http\Controllers\GeneralController::class, 'upgradeSkill'])->name('upgrade');
             Route::post('/rename', [\App\Http\Controllers\GeneralController::class, 'rename'])->name('rename');
         });
+
+        // 🏛️ FASE 4.1: Academia Militar (Cunhagem de Moedas)
+        Route::prefix('academy')->name('academy.')->group(function () {
+            Route::post('/mint', [App\Http\Controllers\AcademyController::class, 'mint'])->name('mint');
+        });
     });
 
     // Outros

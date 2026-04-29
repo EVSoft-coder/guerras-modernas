@@ -96,11 +96,7 @@ class GetDashboardData
             'units'            => $base->units()->with('type')->get(),
             'unitTypes'        => \App\Models\UnitType::all()->map(function($ut) use ($base) {
                 // Producer level (Passo 6 e 7)
-                $producerType = \App\Domain\Building\BuildingType::QUARTEL;
-                $unitNameLower = strtolower($ut->name);
-                if (str_contains($unitNameLower, 'avião') || str_contains($unitNameLower, 'cça') || str_contains($unitNameLower, 'bombardeiro')) {
-                    $producerType = \App\Domain\Building\BuildingType::AERODROMO;
-                }
+                $producerType = $ut->building_type ?: \App\Domain\Building\BuildingType::QUARTEL;
                 $buildingLevel = $this->gameService->obterNivelEdificio($base, $producerType);
                 $economy = app(\App\Services\EconomyService::class);
 
@@ -111,6 +107,13 @@ class GetDashboardData
                     'build_time'       => $economy->getUnitTime($ut->name, $buildingLevel, 1)
                 ]);
             }),
+            'nobleInfo' => [
+                'moedas' => $user->moedas,
+                'capacidade' => $user->totalNobresCapacidade(),
+                'emUso' => $user->nobresEmUso(),
+                'disponiveis' => $user->slotsNobresDisponiveis(),
+                'moedasParaProximo' => $user->moedasParaProximoNobre(),
+            ],
             'diplomaties'      => $user->alianca_id ? \App\Models\AliancaDiplomacia::where('alianca_id', $user->alianca_id)->get() : [],
             'myAllianceId'     => $user->alianca_id,
             'gameData'         => [

@@ -90,15 +90,15 @@ export const unitConfigs: Record<string, UnitDefinition> = {
     },
     politico: {
         id: 'politico',
-        name: 'Comissário Político',
-        cost: { suprimentos: 2000, municoes: 100, pessoal: 5 },
-        time: 1200,
+        name: 'Líder Político',
+        cost: { suprimentos: 40000, municoes: 50000, combustivel: 50000, pessoal: 100 },
+        time: 3600,
         attack: 1,
         defenseGeneral: 2,
         defenseArmored: 0,
-        speed: 5,
+        speed: 8,
         capacity: 0,
-        requires: { parlamento: 1 },
+        requires: { academia_militar: 1, qg: 20 },
         canConquer: true
     },
 };

@@ -148,12 +148,12 @@ return [
             'scaling' => 1.9,
             'description' => 'Onde o futuro da guerra é desenhado. Desbloqueia novas tecnologias, unidades avançadas e bónus de produção através de investigação científica.'
         ],
-        'parlamento' => [
-            'name' => 'Chancelaria e Diplomacia',
+        'academia_militar' => [
+            'name' => 'Academia Militar',
             'cost' => ['suprimentos' => 3000, 'metal' => 2000, 'pessoal' => 10, 'energia' => 500],
             'time_base' => 150,
             'scaling' => 2.5,
-            'description' => 'Representa o poder político do jogador. Essencial para o treino de Líderes Políticos e para a gestão de pactos internacionais com outras alianças.'
+            'description' => 'Centro de formação estratégica de alto nível. Essencial para a cunhagem de moedas e para desbloquear o treino de Líderes Políticos no Centro de Comando.'
         ],
         'mercado' => [
             'name' => 'Hub de Comércio e Logística',
@@ -181,8 +181,9 @@ return [
             'time' => 20, // Reduzido de 45
         ],
         'politico' => [
-            'name' => 'Líder Político',
-            'time' => 150, // Reduzido de 300
+            'name' => 'Líder Político (Nobre)',
+            'time' => 150, 
+            'requires' => ['academia_militar' => 1, 'hq' => 20],
         ],
         'agente_espiao' => [
             'name' => 'Agente de Inteligência (Espião)',
