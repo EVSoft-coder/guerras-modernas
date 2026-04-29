@@ -46,11 +46,11 @@ class UnitQueueService
             }
             
             // 2. Cálculo de Custos (Sincronizado com EconomyService)
-            $economy = app(EconomyService::class);
+            $economy = app(\App\Services\EconomyService::class);
             $buildingLevel = (new GameService($this->timeService))->obterNivelEdificio($base, $unitType->building_type);
             
-            $costs = $economy->getUnitCost($unitType->name, $buildingLevel);
-            $baseDurationPerUnit = $economy->getUnitTime($unitType->name, $buildingLevel);
+            $costs = $economy->getUnitCost($unitType->name, $buildingLevel, $quantidade, $unitType->slug);
+            $baseDurationPerUnit = $economy->getUnitTime($unitType->name, $buildingLevel, $quantidade, $unitType->slug);
 
             // Multiplicador do Evento Mundial de Recrutamento (Aumenta velocidade -> Reduz tempo)
             $eventoMultiplicador = \App\Models\EventoMundo::getMultiplicadorAtivo('recrutamento');

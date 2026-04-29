@@ -102,9 +102,11 @@ class EconomyService
      * Calcula o custo de uma unidade baseado no nível do edifício produtor.
      * PASSO 6: Escalar com building level
      */
-    public function getUnitCost(string $unitName, int $buildingLevel, int $quantity = 1): array
+    public function getUnitCost(string $unitName, int $buildingLevel, int $quantity = 1, ?string $slug = null): array
     {
-        $config = config("game.units.{$unitName}");
+        $key = $slug ?: $unitName;
+        $config = config("game.units.{$key}");
+        if (!$config && $slug) $config = config("game.units.{$unitName}"); // Fallback
         if (!$config) return [];
 
         $baseCosts = $config['cost'] ?? [];
@@ -125,9 +127,14 @@ class EconomyService
      * Calcula o tempo de treino de uma unidade.
      * PASSO 7: Reduzir com building level
      */
-    public function getUnitTime(string $unitName, int $buildingLevel, int $quantity = 1): int
+    public function getUnitTime(string $unitName, int $buildingLevel, int $quantity = 1, ?string $slug = null): int
     {
-        $baseTime = config("game.units.{$unitName}.time", 30);
+        $key = $slug ?: $unitName;
+        $config = config("game.units.{$key}");
+        if (!$config && $slug) $config = config("game.units.{$unitName}");
+        if (!$config) return 0;
+
+        $baseTime = $config['time'] ?? 30;
         $reductionFactor = config('economy.units.time_reduction_per_level', 0.03);
 
         // Cada nível reduz 3% do tempo base de forma composta

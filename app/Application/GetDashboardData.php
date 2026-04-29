@@ -101,10 +101,10 @@ class GetDashboardData
                 $economy = app(\App\Services\EconomyService::class);
 
                 return array_merge($ut->toArray(), [
-                    'cost_suprimentos' => $economy->getUnitCost($ut->name, $buildingLevel, 1)['suprimentos'] ?? 0,
-                    'cost_combustivel' => $economy->getUnitCost($ut->name, $buildingLevel, 1)['combustivel'] ?? 0,
-                    'cost_municoes'    => $economy->getUnitCost($ut->name, $buildingLevel, 1)['municoes'] ?? 0,
-                    'build_time'       => $economy->getUnitTime($ut->name, $buildingLevel, 1)
+                    'cost_suprimentos' => $economy->getUnitCost($ut->name, $buildingLevel, 1, $ut->slug)['suprimentos'] ?? 0,
+                    'cost_combustivel' => $economy->getUnitCost($ut->name, $buildingLevel, 1, $ut->slug)['combustivel'] ?? 0,
+                    'cost_municoes'    => $economy->getUnitCost($ut->name, $buildingLevel, 1, $ut->slug)['municoes'] ?? 0,
+                    'build_time'       => $economy->getUnitTime($ut->name, $buildingLevel, 1, $ut->slug)
                 ]);
             }),
             'nobleInfo' => [
