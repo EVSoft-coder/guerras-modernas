@@ -49,6 +49,11 @@ export const getUnitAsset = (type: string): string => {
         .replace(/-+/g, '-')                            // Remove hífens duplicados
         .replace(/^-|-$/g, '');                         // Remove hífens no início e fim
     
+    // Mapeamentos explícitos para nomes que não batem com o slugify padrão ou arquivo
+    if (t === 'lider-politico' || t === 'politico') return '/images/unidades/politico.png';
+    if (t === 'oficial-de-inteligencia' || t === 'espiao' || t === 'agente-espiao') return '/images/unidades/agente-espiao.png';
+    if (t === 'tanque-de-combate-mbt') return '/images/unidades/tanque-combate-mbt.png';
+
     // Caminho padrão para unidades com arte final
     return `/images/unidades/${t}.png`;
 };
