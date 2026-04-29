@@ -156,5 +156,13 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 85,
         "anchor": "center",
         "assetName": "../placeholders/building_parlamento.svg"
+    },
+    "mercado": {
+        "x": 580,
+        "y": 450,
+        "w": 80,
+        "h": 80,
+        "anchor": "center",
+        "assetName": "../placeholders/building_unknown.svg"
     }
 };
