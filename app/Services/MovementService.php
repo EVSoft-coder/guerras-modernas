@@ -56,7 +56,11 @@ class MovementService
             $unitTypes = UnitType::whereIn('id', array_keys($units))->get();
 
             foreach ($unitTypes as $unitType) {
-                $qty = $units[$unitType->id];
+                $qty = (int) ($units[$unitType->id] ?? 0);
+                
+                if ($qty <= 0) {
+                    throw new \Exception("LOGÍSTICA: Quantidade inválida para " . $unitType->name);
+                }
                 
                 // Verificar disponibilidade na base (via units table)
                 $current = Unit::where('base_id', $origin->id)
