@@ -367,7 +367,7 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onCl
                         <div 
                             id="CalibrationCanvas"
                             ref={canvasRef}
-                            className="relative shadow-[0_0_100px_rgba(0,0,0,0.8)] border-2 border-gray-800 rounded-sm overflow-hidden"
+                            className="relative shadow-[0_0_100px_rgba(0,0,0,0.8)] outline outline-1 outline-gray-800 rounded-sm overflow-hidden"
                             style={{ 
                                 width: `${REFERENCE_WIDTH}px`, 
                                 height: `${REFERENCE_HEIGHT}px`,
@@ -403,16 +403,14 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onCl
                                             targetColor={b.transparency?.targetColor}
                                             tolerance={b.transparency?.tolerance || 30}
                                             onClick={(e) => handleSampleColor(e, type)}
-                                            className={`w-full h-full object-contain transition-all ${
-                                                selected === type ? 'drop-shadow-[0_0_20px_rgba(6,182,212,0.6)] brightness-125' : 'drop-shadow-2xl'
-                                            }`}
+                                            className="w-full h-full object-contain pointer-events-none"
                                             style={{
                                                 transform: `rotate(${b.rotation || 0}deg)`,
-                                                pointerEvents: isDropperActive ? 'auto' : 'none',
-                                                filter: `
-                                                    ${b.vividness ? `saturate(${b.vividness})` : ''}
-                                                    ${b.brightness ? `brightness(${b.brightness})` : ''}
-                                                `.trim() || 'none'
+                                                filter: [
+                                                    selected === type ? 'drop-shadow(0 0 20px rgba(6,182,212,0.6)) brightness(1.25)' : 'drop-shadow(0 20px 50px rgba(0,0,0,0.5))',
+                                                    b.vividness ? `saturate(${b.vividness})` : '',
+                                                    b.brightness ? `brightness(${b.brightness})` : ''
+                                                ].filter(Boolean).join(' ')
                                             }}
                                             alt={type} 
                                         />

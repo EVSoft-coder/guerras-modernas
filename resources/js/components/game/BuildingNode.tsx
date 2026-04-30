@@ -41,17 +41,15 @@ export const BuildingNode = React.memo(({ type, level, layout, isConstructing, o
                             alt={type}
                             targetColor={layout.transparency?.targetColor}
                             tolerance={layout.transparency?.tolerance || 30}
+                            className="w-full h-full object-contain pointer-events-none"
                             style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'contain',
-                                pointerEvents: 'none',
                                 transform: `rotate(${layout.rotation || 0}deg)`,
-                                filter: `
-                                    ${isConstructing ? 'brightness(0.3) contrast(1.5) saturate(0)' : ''}
-                                    ${layout.vividness ? `saturate(${layout.vividness})` : ''}
-                                    ${layout.brightness ? `brightness(${layout.brightness})` : ''}
-                                `.trim() || 'none'
+                                filter: [
+                                    isHovered ? 'brightness(1.2)' : '',
+                                    isConstructing ? 'brightness(0.3) contrast(1.5) saturate(0)' : '',
+                                    layout.vividness ? `saturate(${layout.vividness})` : '',
+                                    layout.brightness ? `brightness(${layout.brightness})` : ''
+                                ].filter(Boolean).join(' ') || 'none'
                             }}
                             onError={() => setIsInvalid(true)}
                         />
