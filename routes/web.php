@@ -334,7 +334,7 @@ Route::middleware(['auth', 'can:admin-only'])->group(function () {
                 </div>
             ";
         } catch (\Exception $e) {
-            return \"[ERRO DE FIX]: \" . $e->getMessage();
+            return "[ERRO DE FIX]: " . $e->getMessage();
         }
     })->name('admin.fix.storage');
 });
