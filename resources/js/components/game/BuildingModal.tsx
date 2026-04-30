@@ -107,9 +107,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
         if (ut.name.toLowerCase().includes('politico')) {
             if (tipoLower !== 'hq') return false;
             const hqLevel = building.nivel || 0;
-            const academy = currentBuildings.find((b: any) => (b.buildingType || b.tipo) === 'academia_militar');
-            const academyLevel = academy?.nivel || 0;
-            return hqLevel >= 20 && academyLevel >= 1;
+            return hqLevel >= 20;
         }
 
         // 3. Outras unidades (Quartel, Fábrica, etc.)
@@ -452,13 +450,13 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                     </div>
                                 )}
 
-                                {/* Academia Militar: Cunhagem de Moedas */}
-                                {isAcademy && (
+                                {/* Centro de Comando Nível 20: Cunhagem de Moedas */}
+                                {isHQ && building.nivel >= 20 && (
                                     <div className="tactical-panel p-10 space-y-10 bg-sky-500/[0.02] border-sky-500/10">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-1.5 h-8 bg-sky-500 rounded-full" />
-                                                <h3 className="text-2xl font-black uppercase text-white tracking-tighter">Cunhagem de Moedas de Ouro</h3>
+                                                <h3 className="text-2xl font-black uppercase text-white tracking-tighter">Cunhagem de Moedas de Ouro (HQ)</h3>
                                             </div>
                                             <div className="flex items-center gap-3 bg-black/40 px-6 py-3 rounded-full border border-white/10 shadow-inner">
                                                 <Cpu size={16} className="text-sky-400" />

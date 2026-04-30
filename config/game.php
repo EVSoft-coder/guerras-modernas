@@ -154,14 +154,6 @@ return [
             'description' => 'Onde o futuro da guerra é desenhado. Desbloqueia novas tecnologias, unidades avançadas e bónus de produção através de investigação científica.',
             'requires' => ['hq' => 5]
         ],
-        'academia_militar' => [
-            'name' => 'Academia Militar',
-            'cost' => ['suprimentos' => 3000, 'metal' => 2000, 'pessoal' => 10, 'energia' => 500],
-            'time_base' => 150,
-            'scaling' => 2.5,
-            'description' => 'Centro de formação estratégica de alto nível. Essencial para a cunhagem de moedas e para desbloquear o treino de Líderes Políticos no Centro de Comando.',
-            'requires' => ['hq' => 20, 'mercado' => 10]
-        ],
         'mercado' => [
             'name' => 'Hub de Comércio e Logística',
             'cost' => ['suprimentos' => 1000, 'combustivel' => 500, 'metal' => 200, 'pessoal' => 5],
@@ -191,7 +183,7 @@ return [
         'politico' => [
             'name' => 'Líder Político (Nobre)',
             'time' => 150, 
-            'requires' => ['academia_militar' => 1, 'hq' => 20],
+            'requires' => ['hq' => 20],
         ],
         'agente_espiao' => [
             'name' => 'Agente de Inteligência (Espião)',

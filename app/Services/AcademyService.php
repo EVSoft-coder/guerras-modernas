@@ -36,11 +36,11 @@ class AcademyService
                 }
             }
 
-            // Verificar se tem Academia Militar (Parlamento renomeado)
+            // Verificar se tem Centro de Comando Nível 20
             $gameService = new GameService();
-            $level = $gameService->obterNivelEdificio($base, 'academia_militar');
-            if ($level < 1) {
-                throw new \Exception("ENGENHARIA: Necessita de uma Academia Militar para cunhar moedas.");
+            $level = $gameService->obterNivelEdificio($base, 'hq');
+            if ($level < 20) {
+                throw new \Exception("ENGENHARIA: Necessita de um Centro de Comando (HQ) Nível 20 para cunhar moedas.");
             }
 
             // Debitar recursos
