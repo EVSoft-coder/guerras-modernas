@@ -96,7 +96,7 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
                 "g": 59,
                 "b": 49
             },
-            "tolerance": 43
+            "tolerance": 32
         }
     },
     "muralha": {
@@ -150,8 +150,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "assetName": "recrutamento_v1.png"
     },
     "armazem": {
-        "x": 333,
-        "y": 276,
+        "x": 367,
+        "y": 354,
         "w": 66,
         "h": 66,
         "anchor": "center",
@@ -162,15 +162,23 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
                 "g": 61,
                 "b": 74
             },
-            "tolerance": 80
+            "tolerance": 96
         }
     },
     "mercado": {
-        "x": 572,
-        "y": 395,
+        "x": 569,
+        "y": 370,
         "w": 58,
         "h": 53,
         "anchor": "center",
-        "assetName": "mercado_v1.png"
+        "assetName": "mercado_v1.png",
+        "transparency": {
+            "targetColor": {
+                "r": 193,
+                "g": 218,
+                "b": 227
+            },
+            "tolerance": 90
+        }
     }
 };
