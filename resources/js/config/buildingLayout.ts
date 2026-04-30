@@ -84,8 +84,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "rotation": 2
     },
     "aerodromo": {
-        "x": 603,
-        "y": 314,
+        "x": 620,
+        "y": 306,
         "w": 80,
         "h": 80,
         "anchor": "center",
@@ -150,18 +150,26 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "assetName": "recrutamento_v1.png"
     },
     "armazem": {
-        "x": 260,
-        "y": 120,
-        "w": 85,
-        "h": 85,
+        "x": 333,
+        "y": 276,
+        "w": 66,
+        "h": 66,
         "anchor": "center",
-        "assetName": "armazem_v1.png"
+        "assetName": "armazem_v1.png",
+        "transparency": {
+            "targetColor": {
+                "r": 43,
+                "g": 61,
+                "b": 74
+            },
+            "tolerance": 80
+        }
     },
     "mercado": {
-        "x": 580,
-        "y": 450,
-        "w": 80,
-        "h": 80,
+        "x": 572,
+        "y": 395,
+        "w": 58,
+        "h": 53,
         "anchor": "center",
         "assetName": "../placeholders/building_unknown.svg"
     }
