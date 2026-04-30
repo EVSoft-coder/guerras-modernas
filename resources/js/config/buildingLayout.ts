@@ -105,7 +105,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
             },
             "tolerance": 32
         },
-        "vividness": 2.3
+        "vividness": 2.3,
+        "brightness": 1.2
     },
     "muralha": {
         "x": 659,
@@ -163,8 +164,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "assetName": "recrutamento_v1.png"
     },
     "armazem": {
-        "x": 396,
-        "y": 413,
+        "x": 402,
+        "y": 426,
         "w": 66,
         "h": 66,
         "anchor": "center",
@@ -178,7 +179,7 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
             "tolerance": 75
         },
         "vividness": 3,
-        "brightness": 1.3
+        "brightness": 1.6
     },
     "mercado": {
         "x": 566,
@@ -195,6 +196,7 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
             },
             "tolerance": 90
         },
-        "vividness": 2.7
+        "vividness": 3,
+        "brightness": 1.35
     }
 };
