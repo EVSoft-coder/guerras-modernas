@@ -31,7 +31,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 80,
         "anchor": "center",
         "assetName": "energia_v1.png",
-        "rotation": -1
+        "rotation": -1,
+        "vividness": 1.8
     },
     "radar_estrategico": {
         "x": 262,
@@ -40,7 +41,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 80,
         "anchor": "center",
         "assetName": "radar_v1.png",
-        "rotation": -2
+        "rotation": -2,
+        "vividness": 2.1
     },
     "centro_pesquisa": {
         "x": 503,
@@ -49,7 +51,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 80,
         "anchor": "center",
         "assetName": "pesquisa_v1.png",
-        "rotation": -3
+        "rotation": -3,
+        "vividness": 2
     },
     "fabrica_municoes": {
         "x": 228,
@@ -57,7 +60,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "w": 80,
         "h": 80,
         "anchor": "center",
-        "assetName": "fabrica_v1.png"
+        "assetName": "fabrica_v1.png",
+        "vividness": 2
     },
     "hq": {
         "x": 383,
@@ -74,7 +78,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
                 "b": 58
             },
             "tolerance": 49
-        }
+        },
+        "vividness": 1.9
     },
     "quartel": {
         "x": 492,
@@ -99,7 +104,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
                 "b": 67
             },
             "tolerance": 32
-        }
+        },
+        "vividness": 2.3
     },
     "muralha": {
         "x": 659,
@@ -108,7 +114,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 88,
         "anchor": "center",
         "assetName": "muralha_v1.png",
-        "rotation": -8
+        "rotation": -8,
+        "vividness": 1.8
     },
     "mina_metal": {
         "x": 99,
@@ -116,7 +123,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "w": 71,
         "h": 71,
         "anchor": "center",
-        "assetName": "mina_metal_v1.png"
+        "assetName": "mina_metal_v1.png",
+        "vividness": 2
     },
     "mina_suprimentos": {
         "x": 202,
@@ -125,15 +133,17 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 71,
         "anchor": "center",
         "assetName": "mina_suprimentos_v1.png",
-        "rotation": -1
+        "rotation": 2,
+        "vividness": 1.4
     },
     "refinaria": {
-        "x": 619,
-        "y": 237,
+        "x": 625,
+        "y": 236,
         "w": 80,
         "h": 80,
         "anchor": "center",
-        "assetName": "refinaria_v1.png"
+        "assetName": "refinaria_v1.png",
+        "vividness": 1.9
     },
     "housing": {
         "x": 330,
@@ -141,7 +151,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "w": 71,
         "h": 71,
         "anchor": "center",
-        "assetName": "housing_v1.png"
+        "assetName": "housing_v1.png",
+        "vividness": 1.8
     },
     "posto_recrutamento": {
         "x": 388,
@@ -152,24 +163,26 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "assetName": "recrutamento_v1.png"
     },
     "armazem": {
-        "x": 385,
-        "y": 393,
+        "x": 396,
+        "y": 413,
         "w": 66,
         "h": 66,
         "anchor": "center",
         "assetName": "armazem_v1.png",
         "transparency": {
             "targetColor": {
-                "r": 43,
-                "g": 61,
-                "b": 74
+                "r": 33,
+                "g": 56,
+                "b": 81
             },
-            "tolerance": 96
-        }
+            "tolerance": 75
+        },
+        "vividness": 3,
+        "brightness": 1.3
     },
     "mercado": {
         "x": 566,
-        "y": 355,
+        "y": 349,
         "w": 58,
         "h": 53,
         "anchor": "center",
@@ -181,6 +194,7 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
                 "b": 227
             },
             "tolerance": 90
-        }
+        },
+        "vividness": 2.7
     }
 };
