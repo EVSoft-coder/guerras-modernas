@@ -234,7 +234,7 @@ Route::middleware(['auth', 'can:admin-only'])->group(function () {
 
     Route::get('/mw-git-pull', function() {
         try {
-            $output = shell_exec('git pull origin main 2>&1');
+            $output = shell_exec('git pull origin master 2>&1');
             return "
                 <div style='background:#0a0c10; color:#0f0; padding:40px; font-family:monospace; border:2px solid #0f0;'>
                     <h1>[SINCRONIZAÇÃO GIT]</h1>
