@@ -9,36 +9,31 @@ class EconomyRules
     /**
      * Calcula a produção por minuto de um recurso específico.
      */
-    public static function calculateProductionPerMinute(string $resource, int $buildingLevel): float
+    public static function calculateProductionPerMinute(string $buildingType, int $buildingLevel): float
     {
-        $baseProd = config("game.production.{$resource}", 10);
-        $speed = config('game.speed.resources', 1);
-
-        if ($buildingLevel <= 0) return 0;
-
-        // Formula: base * level^1.2 (Implementação Escalável)
-        $porHora = ($baseProd * $speed) * pow($buildingLevel, 1.2);
-        
-        return $porHora / 60;
+        return app(\App\Services\EconomyService::class)->getBuildingProduction($buildingType, $buildingLevel) / 60;
     }
  
     /**
-     * Define o limite de armazenamento com base no nível do QG.
+     * Define o limite de armazenamento com base no nível do Armazém.
      */
-    public static function calculateStorageCapacity(int $qgLevel): int
+    public static function calculateStorageCapacity(int $armazemLevel): int
     {
-        return 1000 * pow(2, $qgLevel);
+        return app(\App\Services\EconomyService::class)->getStorageCapacity($armazemLevel);
     }
     
     /**
      * Calcula a capacidade total de população (slots).
-     * Escala inspirada no Tribal Wars (Level 30 ~ 24000)
      */
-    public static function calculatePopulationCapacity(int $complexoLevel): int
+    public static function calculatePopulationCapacity(int $housingLevel): int
     {
-        if ($complexoLevel <= 0) return 200; // Mínimo absoluto para survival
+        if ($housingLevel <= 0) return 200;
         
-        // Formula: 200 * 1.18^level
-        return (int) (200 * pow(1.18, $complexoLevel));
+        $config = config('game.production.housing');
+        $base = $config['base'] ?? 100;
+        $factor = $config['factor'] ?? 1.15;
+
+        // Formula exponencial baseada no balanço global
+        return (int) ($base * 2 * pow($factor, $housingLevel));
     }
 }
