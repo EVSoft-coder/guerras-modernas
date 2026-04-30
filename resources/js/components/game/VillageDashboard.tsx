@@ -211,15 +211,27 @@ export function VillageDashboard({
             }
         }
 
-        eventBus.emit(Events.BUILDING_UPGRADE_REQUEST, {
+        router.post('/buildings/upgrade', {
             base_id: base.id,
             tipo: buildingType,
             pos_x: posX || 0,
             pos_y: posY || 0
+        }, {
+            onSuccess: () => {
+                setIsUpgrading(false);
+                setSelectedBuildingId(null);
+                setSelectedBuildingType(null);
+                addToast('Estrutura autorizada. Engenheiros a caminho.', 'success');
+            },
+            onError: (err) => {
+                setIsUpgrading(false);
+                const errorMsg = Object.values(err)[0] as string || 'Falha na autorização.';
+                addToast(errorMsg, 'error');
+            }
         });
+
         setSelectedBuildingId(null);
         setSelectedPos(null);
-        addToast('Pedido de atualização estrutural enviado ao Comando.', 'info');
     };
 
     const handleTrain = (unidade: string, quantidade: number) => {
