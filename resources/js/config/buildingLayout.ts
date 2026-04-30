@@ -16,6 +16,8 @@ export interface BuildingLayout {
         targetColor: { r: number, g: number, b: number };
         tolerance: number;
     };
+    vividness?: number; // Saturação (1.0 = normal, >1.0 = mais vivo)
+    brightness?: number; // Brilho (1.0 = normal)
 }
 
 export const REFERENCE_WIDTH = 800;
@@ -92,9 +94,9 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "assetName": "aerodromo_v1.png",
         "transparency": {
             "targetColor": {
-                "r": 69,
-                "g": 59,
-                "b": 49
+                "r": 45,
+                "g": 57,
+                "b": 67
             },
             "tolerance": 32
         }
@@ -150,8 +152,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "assetName": "recrutamento_v1.png"
     },
     "armazem": {
-        "x": 367,
-        "y": 354,
+        "x": 385,
+        "y": 393,
         "w": 66,
         "h": 66,
         "anchor": "center",
@@ -166,8 +168,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         }
     },
     "mercado": {
-        "x": 569,
-        "y": 370,
+        "x": 566,
+        "y": 355,
         "w": 58,
         "h": 53,
         "anchor": "center",

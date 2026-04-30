@@ -296,6 +296,38 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onCl
                                             className="w-full h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
                                         />
                                     </div>
+
+                                    {/* Controlo de Vivacidade e Brilho */}
+                                    <div className="space-y-4 p-4 bg-orange-500/5 border border-orange-500/20 rounded-xl">
+                                        <div className="flex items-center gap-2 text-orange-400">
+                                            <Sliders className="w-4 h-4" />
+                                            <span className="text-[10px] uppercase font-bold tracking-wider">Ajuste Visual</span>
+                                        </div>
+                                        
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between text-[10px] font-mono">
+                                                <span className="text-gray-500 uppercase">Vivacidade</span>
+                                                <span className="text-orange-400">{selectedBuilding.vividness || 1.0}x</span>
+                                            </div>
+                                            <input 
+                                                type="range" min="1.0" max="3.0" step="0.1"
+                                                value={selectedBuilding.vividness || 1.0}
+                                                onChange={(e) => updateProperty(selected!, 'vividness', parseFloat(e.target.value))}
+                                                className="w-full h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                                            />
+                                            
+                                            <div className="flex justify-between text-[10px] font-mono">
+                                                <span className="text-gray-500 uppercase">Brilho</span>
+                                                <span className="text-orange-400">{selectedBuilding.brightness || 1.0}x</span>
+                                            </div>
+                                            <input 
+                                                type="range" min="0.5" max="2.0" step="0.05"
+                                                value={selectedBuilding.brightness || 1.0}
+                                                onChange={(e) => updateProperty(selected!, 'brightness', parseFloat(e.target.value))}
+                                                className="w-full h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center text-center p-4">
@@ -376,7 +408,11 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onCl
                                             }`}
                                             style={{
                                                 transform: `rotate(${b.rotation || 0}deg)`,
-                                                pointerEvents: isDropperActive ? 'auto' : 'none'
+                                                pointerEvents: isDropperActive ? 'auto' : 'none',
+                                                filter: `
+                                                    ${b.vividness ? `saturate(${b.vividness})` : ''}
+                                                    ${b.brightness ? `brightness(${b.brightness})` : ''}
+                                                `.trim() || 'none'
                                             }}
                                             alt={type} 
                                         />

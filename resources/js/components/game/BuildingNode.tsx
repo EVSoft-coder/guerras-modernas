@@ -46,10 +46,12 @@ export const BuildingNode = React.memo(({ type, level, layout, isConstructing, o
                                 height: '100%',
                                 objectFit: 'contain',
                                 pointerEvents: 'none',
-                                filter: isConstructing ? 'brightness(0.3) contrast(1.5) saturate(0)' : 'none',
-                                opacity: isConstructing ? 0.6 : 1,
-                                transition: 'opacity 0.5s ease-out',
-                                transform: `rotate(${layout.rotation || 0}deg)`
+                                transform: `rotate(${layout.rotation || 0}deg)`,
+                                filter: `
+                                    ${isConstructing ? 'brightness(0.3) contrast(1.5) saturate(0)' : ''}
+                                    ${layout.vividness ? `saturate(${layout.vividness})` : ''}
+                                    ${layout.brightness ? `brightness(${layout.brightness})` : ''}
+                                `.trim() || 'none'
                             }}
                             onError={() => setIsInvalid(true)}
                         />
