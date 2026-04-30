@@ -32,6 +32,13 @@ class MovementService
     public function sendTroops(Base $origin, Base $target, array $units, string $type = 'attack', array $cargo = [], ?int $generalId = null): Movement
     {
         return DB::transaction(function() use ($origin, $target, $units, $type, $cargo, $generalId) {
+            // 0. Filtrar unidades com quantidade zero ou negativa
+            $units = array_filter($units, fn($q) => (int)$q > 0);
+            
+            if (empty($units)) {
+                throw new \Exception("LOGÍSTICA: Nenhuma unidade operacional selecionada para a missão.");
+            }
+
             // Sincronizar recursos antes de qualquer validação tática
             app(ResourceService::class)->syncResources($origin);
 

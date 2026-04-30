@@ -369,15 +369,20 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                                     : 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
                                 }`}
                                 disabled={!hasTropasSelected || isSending || (missionType === 'transporte' && totalCargo > (stats?.capacidade || 0))}
-                                onClick={() => onEnviar({ 
-                                    destino_id: destinoBase?.id || null, 
-                                    destino_x: destinoBase?.coordenada_x, 
-                                    destino_y: destinoBase?.coordenada_y, 
-                                    tropas: selectedTropas, 
-                                    tipo: missionType,
-                                    general_id: mobilizarGeneral ? general?.id : null,
-                                    ...cargo
-                                })}
+                                onClick={() => {
+                                    const filteredTropas = Object.fromEntries(
+                                        Object.entries(selectedTropas).filter(([_, qty]) => qty > 0)
+                                    );
+                                    onEnviar({ 
+                                        destino_id: destinoBase?.id || null, 
+                                        destino_x: destinoBase?.coordenada_x, 
+                                        destino_y: destinoBase?.coordenada_y, 
+                                        tropas: filteredTropas, 
+                                        tipo: missionType,
+                                        general_id: mobilizarGeneral ? general?.id : null,
+                                        ...cargo
+                                    });
+                                }}
                             >
                                 {isSending ? (
                                     <Loader2 size={16} className="animate-spin" />
