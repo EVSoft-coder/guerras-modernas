@@ -22,14 +22,47 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onCl
     const [isDropperActive, setIsDropperActive] = useState(false);
     const [viewMode, setViewMode] = useState<'PROPERTIES' | 'LIBRARY'>('PROPERTIES');
 
+    const handleActivateDropper = async (type: string) => {
+        // @ts-ignore - EyeDropper is a modern browser API
+        if (window.EyeDropper) {
+            // @ts-ignore
+            const dropper = new window.EyeDropper();
+            try {
+                const result = await dropper.open();
+                const hex = result.sRGBHex;
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                
+                setLayout(prev => ({
+                    ...prev,
+                    [type]: {
+                        ...prev[type],
+                        transparency: {
+                            ...prev[type].transparency,
+                            targetColor: { r, g, b },
+                            tolerance: prev[type].transparency?.tolerance || 30
+                        }
+                    }
+                }));
+            } catch (e) {
+                // Silently fail if user cancels
+            }
+        } else {
+            setIsDropperActive(true);
+        }
+    };
+
     const handleSampleColor = async (e: React.MouseEvent, type: string) => {
         if (!isDropperActive) return;
+        e.stopPropagation(); // Evita selecionar outro edifício
         
         const img = e.currentTarget as HTMLImageElement;
         const rect = img.getBoundingClientRect();
         
-        const rx = (e.clientX - rect.left) / rect.width;
-        const ry = (e.clientY - rect.top) / rect.height;
+        // Coordenadas relativas ao elemento visual
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
         
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -42,7 +75,15 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onCl
         tempImg.onload = () => {
             canvas.width = tempImg.width;
             canvas.height = tempImg.height;
+            
+            // Desenhar imagem no canvas para ler o pixel
             ctx.drawImage(tempImg, 0, 0);
+            
+            // Mapear coordenadas do click para as coordenadas internas da imagem
+            // Nota: Isso ainda é afetado por rotação se não usarmos EyeDropper, 
+            // mas o stopPropagation ajuda a garantir que o click chegue aqui.
+            const rx = x / rect.width;
+            const ry = y / rect.height;
             
             const px = Math.floor(rx * tempImg.width);
             const py = Math.floor(ry * tempImg.height);
@@ -192,7 +233,7 @@ export const LayoutCalibrator: React.FC<LayoutCalibratorProps> = ({ onSave, onCl
                                         </div>
                                         
                                         <Button
-                                            onClick={() => setIsDropperActive(!isDropperActive)}
+                                            onClick={() => handleActivateDropper(selected!)}
                                             className={`w-full text-[10px] h-9 tracking-widest transition-all ${
                                                 isDropperActive 
                                                     ? 'bg-purple-600 text-white animate-pulse' 
