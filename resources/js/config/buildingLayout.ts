@@ -32,7 +32,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "anchor": "center",
         "assetName": "energia_v1.png",
         "rotation": -1,
-        "vividness": 1.8
+        "vividness": 2.4,
+        "brightness": 1.25
     },
     "radar_estrategico": {
         "x": 262,
@@ -42,7 +43,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "anchor": "center",
         "assetName": "radar_v1.png",
         "rotation": -2,
-        "vividness": 2.1
+        "vividness": 2.1,
+        "brightness": 1.3
     },
     "centro_pesquisa": {
         "x": 503,
@@ -55,13 +57,14 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "vividness": 2
     },
     "fabrica_municoes": {
-        "x": 228,
-        "y": 267,
+        "x": 231,
+        "y": 263,
         "w": 80,
         "h": 80,
         "anchor": "center",
         "assetName": "fabrica_v1.png",
-        "vividness": 2
+        "vividness": 2,
+        "brightness": 1.3
     },
     "hq": {
         "x": 383,
@@ -88,7 +91,9 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 80,
         "anchor": "center",
         "assetName": "quartel_v1.png",
-        "rotation": 2
+        "rotation": 2,
+        "vividness": 2.2,
+        "brightness": 1.25
     },
     "aerodromo": {
         "x": 620,
@@ -105,8 +110,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
             },
             "tolerance": 32
         },
-        "vividness": 2.3,
-        "brightness": 1.2
+        "vividness": 2.9,
+        "brightness": 1.45
     },
     "muralha": {
         "x": 659,
@@ -119,23 +124,25 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "vividness": 1.8
     },
     "mina_metal": {
-        "x": 99,
-        "y": 259,
+        "x": 97,
+        "y": 262,
         "w": 71,
         "h": 71,
         "anchor": "center",
         "assetName": "mina_metal_v1.png",
-        "vividness": 2
+        "vividness": 2,
+        "brightness": 1.3
     },
     "mina_suprimentos": {
-        "x": 202,
-        "y": 326,
+        "x": 200,
+        "y": 327,
         "w": 71,
         "h": 71,
         "anchor": "center",
         "assetName": "mina_suprimentos_v1.png",
-        "rotation": 2,
-        "vividness": 1.4
+        "rotation": -1,
+        "vividness": 1.9,
+        "brightness": 1.2
     },
     "refinaria": {
         "x": 625,
@@ -144,7 +151,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 80,
         "anchor": "center",
         "assetName": "refinaria_v1.png",
-        "vividness": 1.9
+        "vividness": 2.4,
+        "brightness": 1.2
     },
     "housing": {
         "x": 330,
@@ -153,7 +161,8 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "h": 71,
         "anchor": "center",
         "assetName": "housing_v1.png",
-        "vividness": 1.8
+        "vividness": 2.5,
+        "brightness": 1.25
     },
     "posto_recrutamento": {
         "x": 388,
@@ -161,11 +170,13 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "w": 80,
         "h": 80,
         "anchor": "center",
-        "assetName": "recrutamento_v1.png"
+        "assetName": "recrutamento_v1.png",
+        "vividness": 2.3,
+        "brightness": 1.35
     },
     "armazem": {
-        "x": 402,
-        "y": 426,
+        "x": 410,
+        "y": 435,
         "w": 66,
         "h": 66,
         "anchor": "center",
@@ -197,6 +208,6 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
             "tolerance": 90
         },
         "vividness": 3,
-        "brightness": 1.35
+        "brightness": 1.55
     }
 };
