@@ -20,16 +20,18 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
     useEffect(() => {
         if (!src) return;
         
+        const cacheKey = `${src}_${targetColor?.r || 'X'}_${targetColor?.g || 'X'}_${targetColor?.b || 'X'}_${tolerance}`;
+        
         // Se já está no cache, atualizar estado
-        if (PROCESSED_CACHE.has(src)) {
-            setProcessedSrc(PROCESSED_CACHE.get(src)!);
+        if (PROCESSED_CACHE.has(cacheKey)) {
+            setProcessedSrc(PROCESSED_CACHE.get(cacheKey)!);
             return;
         }
 
         const processImage = async () => {
-            if (IN_FLIGHT_PROMISES.has(src)) {
+            if (IN_FLIGHT_PROMISES.has(cacheKey)) {
                 try {
-                    const result = await IN_FLIGHT_PROMISES.get(src);
+                    const result = await IN_FLIGHT_PROMISES.get(cacheKey);
                     setProcessedSrc(result || null);
                 } catch (e) {
                     setProcessedSrc(src);
@@ -95,16 +97,16 @@ export const TransparentImage: React.FC<TransparentImageProps> = ({ src, toleran
                     .catch(() => resolve(src));
             });
 
-            IN_FLIGHT_PROMISES.set(src, processingPromise);
+            IN_FLIGHT_PROMISES.set(cacheKey, processingPromise);
 
             try {
                 const result = await processingPromise;
-                PROCESSED_CACHE.set(src, result);
+                PROCESSED_CACHE.set(cacheKey, result);
                 setProcessedSrc(result);
             } catch (e) {
                 setProcessedSrc(src);
             } finally {
-                IN_FLIGHT_PROMISES.delete(src);
+                IN_FLIGHT_PROMISES.delete(cacheKey);
             }
         };
 
