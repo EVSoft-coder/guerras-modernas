@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import AuthLayoutTemplate from '@/layouts/auth/auth-simple-layout';
 import { FlashListener } from '@/components/game/ToastProvider';
 
