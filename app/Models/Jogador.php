@@ -134,7 +134,8 @@ class Jogador extends Authenticatable
         // 3. Nobres em movimento (ataque/apoio)
         $emMovimento = DB::table('movement_units')
             ->join('movements', 'movement_units.movement_id', '=', 'movements.id')
-            ->where('movements.jogador_id', $this->id)
+            ->join('bases', 'movements.origin_id', '=', 'bases.id')
+            ->where('bases.jogador_id', $this->id)
             ->where('movement_units.unit_type_id', $tipoPolitico->id)
             ->sum('movement_units.quantity');
 

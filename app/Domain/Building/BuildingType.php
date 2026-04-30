@@ -15,8 +15,6 @@ class BuildingType
     const AERODROMO = 'aerodromo';
     const RADAR_ESTRATEGICO = 'radar_estrategico';
     const CENTRO_PESQUISA = 'centro_pesquisa';
-    const ACADEMIA_MILITAR = 'academia_militar';
-    const PARLAMENTO = 'academia_militar'; // Alias legado
     const FACTORY = 'mina_metal';
     const SOLAR = 'central_energia';
     const MINA_METAL = 'mina_metal'; 
@@ -53,10 +51,6 @@ class BuildingType
             'minasuprimentos' => self::MINA_SUPRIMENTOS,
             'mina de suprimentos' => self::MINA_SUPRIMENTOS,
             'mina' => self::MINA_SUPRIMENTOS,
-            'parlamento' => self::ACADEMIA_MILITAR,
-            'academia' => self::ACADEMIA_MILITAR,
-            'academia_militar' => self::ACADEMIA_MILITAR,
-            'academia militar' => self::ACADEMIA_MILITAR,
             'refinaria' => self::REFINARIA,
             'refinaria de combustível' => self::REFINARIA,
             'aerodromo' => self::AERODROMO,
@@ -97,7 +91,7 @@ class BuildingType
     public static function all(): array
     {
         return [
-            self::PARLAMENTO, self::MINA_METAL, self::CENTRAL_ENERGIA, self::HOUSING
+            self::MINA_METAL, self::CENTRAL_ENERGIA, self::HOUSING
         ];
     }
 }

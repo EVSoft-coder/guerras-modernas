@@ -41,7 +41,7 @@ class UnitQueueService
                 $jogador = $base->jogador;
                 $slotsDisponiveis = $jogador->slotsNobresDisponiveis();
                 if ($slotsDisponiveis < $quantidade) {
-                    throw new \Exception("DIPLOMACIA: Capacidade de Líderes Políticos insuficiente. Cunhe mais moedas na Academia Militar.");
+                    throw new \Exception("DIPLOMACIA: Capacidade de Líderes Políticos insuficiente. Cunhe mais moedas no Centro de Comando (HQ).");
                 }
             }
             

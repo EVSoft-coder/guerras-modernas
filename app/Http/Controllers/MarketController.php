@@ -135,4 +135,120 @@ class MarketController extends Controller
             return response()->json(['status' => 'success', 'message' => 'Oferta cancelada e recursos devolvidos.']);
         });
     }
+
+    /**
+     * Envia recursos para outra base (Logística).
+     */
+    public function send(Request $request)
+    {
+        $data = $request->validate([
+            'origin_id' => 'required|exists:bases,id',
+            'target_x' => 'required|numeric',
+            'target_y' => 'required|numeric',
+            'suprimentos' => 'nullable|numeric|min:0',
+            'combustivel' => 'nullable|numeric|min:0',
+            'municoes' => 'nullable|numeric|min:0',
+            'metal' => 'nullable|numeric|min:0',
+        ]);
+
+        $user = Auth::user();
+        $origin = $user->bases()->findOrFail($data['origin_id']);
+        
+        $target = Base::where('coordenada_x', $data['target_x'])
+            ->where('coordenada_y', $data['target_y'])
+            ->first();
+
+        if (!$target) {
+            throw new \Exception("LOGÍSTICA: Coordenadas de destino inválidas.");
+        }
+
+        if ($target->id === $origin->id) {
+            throw new \Exception("LOGÍSTICA: Não podes enviar recursos para a mesma base.");
+        }
+
+        return DB::transaction(function() use ($origin, $target, $data) {
+            app(ResourceService::class)->syncResources($origin);
+            $rec = $origin->recursos;
+            
+            $totalPayload = 0;
+            $resourcesToSend = ['suprimentos', 'combustivel', 'municoes', 'metal'];
+            
+            foreach ($resourcesToSend as $res) {
+                $amount = (int)($data[$res] ?? 0);
+                if ($amount > 0) {
+                    if ($rec->{$res} < $amount) {
+                        throw new \Exception("LOGÍSTICA: Suprimentos de " . strtoupper($res) . " insuficientes.");
+                    }
+                    $totalPayload += $amount;
+                }
+            }
+
+            if ($totalPayload <= 0) {
+                throw new \Exception("LOGÍSTICA: Define a quantidade de recursos a enviar.");
+            }
+
+            $gameService = new GameService();
+            $marketLevel = $gameService->obterNivelEdificio($origin, 'mercado');
+            $merchantsTotal = $marketLevel;
+            
+            $merchantsBusy = Movement::where('origin_id', $origin->id)
+                ->where('type', 'transporte')
+                ->where('status', 'moving')
+                ->count();
+
+            if (($merchantsBusy + ceil($totalPayload / 1000)) > $merchantsTotal) {
+                throw new \Exception("LOGÍSTICA: Comerciantes insuficientes. Nível de Mercado: {$marketLevel}.");
+            }
+
+            foreach ($resourcesToSend as $res) {
+                $amount = (int)($data[$res] ?? 0);
+                if ($amount > 0) {
+                    $rec->decrement($res, $amount);
+                }
+            }
+
+            $distancia = sqrt(pow($target->coordenada_x - $origin->coordenada_x, 2) + pow($target->coordenada_y - $origin->coordenada_y, 2));
+            $segundosViajem = 60 + ($distancia * 10);
+
+            Movement::create([
+                'origin_id' => $origin->id,
+                'target_id' => $target->id,
+                'type' => 'transporte',
+                'status' => 'moving',
+                'departure_time' => now(),
+                'arrival_time' => now()->addSeconds($segundosViajem),
+                'loot_suprimentos' => $data['suprimentos'] ?? 0,
+                'loot_combustivel' => $data['combustivel'] ?? 0,
+                'loot_municoes' => $data['municoes'] ?? 0,
+                'loot_metal' => $data['metal'] ?? 0,
+            ]);
+
+            return response()->json(['status' => 'success', 'message' => "Comboio logístico enviado para {$target->nome}."]);
+        });
+    }
+
+    /**
+     * Lista os movimentos logísticos ativos da base.
+     */
+    public function movements(Request $request)
+    {
+        $baseId = $request->query('base_id');
+        if (!$baseId) {
+            return response()->json([]);
+        }
+
+        $user = Auth::user();
+        $base = $user->bases()->findOrFail($baseId);
+
+        $movements = \App\Models\Movement::with(['origin', 'target'])
+            ->where(function($query) use ($base) {
+                $query->where('origin_id', $base->id)
+                      ->orWhere('target_id', $base->id);
+            })
+            ->where('type', 'transporte')
+            ->where('status', 'moving')
+            ->get();
+
+        return response()->json($movements);
+    }
 }

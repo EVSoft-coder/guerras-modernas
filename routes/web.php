@@ -174,6 +174,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/offer', [App\Http\Controllers\MarketController::class, 'store'])->name('store');
         Route::post('/accept/{id}', [App\Http\Controllers\MarketController::class, 'accept'])->name('accept');
         Route::post('/cancel/{id}', [App\Http\Controllers\MarketController::class, 'cancel'])->name('cancel');
+        Route::post('/send', [App\Http\Controllers\MarketController::class, 'send'])->name('send');
+        Route::get('/movements', [App\Http\Controllers\MarketController::class, 'movements'])->name('movements');
     });
 
     // 🎖️ FASE 17: Alto Comando (Gestão de Massa)

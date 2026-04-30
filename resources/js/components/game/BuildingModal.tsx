@@ -88,7 +88,6 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
 
     const tipoLower = building.buildingType?.toLowerCase();
     const isHQ = tipoLower === 'hq';
-    const isAcademy = tipoLower === 'academia_militar';
     const isMilitary = ['hq', 'quartel', 'aerodromo', 'radar_estrategico', 'fabrica_municoes'].includes(tipoLower);
     
     // Obter todos os edifícios da base para validar requisitos
@@ -177,8 +176,6 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                 return `-${(level * 4)}% Tempo Pesq.`;
             case 'mercado':
                 return `+${level} Comerciantes`;
-            case 'parlamento':
-                return `+${(level * 10)}% Influência`;
             default:
                 return `Nível Operacional ${level}`;
         }
@@ -275,7 +272,7 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                     {/* Right Column: Operations & Actions */}
                     <div className="flex-1 overflow-y-auto p-12 custom-scrollbar space-y-12">
                         {isMarket ? (
-                            <MarketPanel resources={resources} building={building} gameConfig={gameConfig} />
+                            <MarketPanel baseId={building.base_id || building.base?.id} resources={resources} building={building} />
                         ) : (
                             <>
                                 {/* Upgrade Section */}
