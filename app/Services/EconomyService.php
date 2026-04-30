@@ -90,12 +90,15 @@ class EconomyService
      * Calcula a capacidade de armazenamento total.
      * FASE CAP: storage = base * (factor ^ nível)
      */
-    public function getStorageCapacity(int $hqLevel): int
+    public function getStorageCapacity(int $armazemLevel): int
     {
-        $base = config('economy.storage.base', 800);
-        $factor = config('economy.storage.factor', 1.25);
+        $base = config('economy.storage.base', 1000);
+        $factor = config('economy.storage.factor', 1.3);
 
-        return (int) ($base * pow($factor, $hqLevel));
+        // Nível mínimo de 1 para evitar bases com 0 de capacidade
+        $level = max(1, $armazemLevel);
+
+        return (int) ($base * pow($factor, $level));
     }
 
     /**

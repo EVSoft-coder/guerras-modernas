@@ -162,6 +162,13 @@ return [
             'description' => 'Facilita a troca de recursos entre bases aliadas e permite o acesso ao mercado global para conversão de excedentes.',
             'requires' => ['hq' => 10]
         ],
+        'armazem' => [
+            'name' => 'Depósito de Recursos (Armazém)',
+            'cost' => ['suprimentos' => 200, 'combustivel' => 100, 'pessoal' => 5],
+            'time_base' => 10,
+            'scaling' => 1.25,
+            'description' => 'Garante a segurança e integridade de todos os recursos da base. Níveis superiores aumentam drasticamente a capacidade máxima de armazenamento de Suprimentos, Combustível, Metal e Munições.',
+        ],
     ],
 
     /**

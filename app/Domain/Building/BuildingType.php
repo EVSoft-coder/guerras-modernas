@@ -21,6 +21,7 @@ class BuildingType
     const CENTRAL_ENERGIA = 'central_energia';
     const HOUSING = 'housing';
     const MERCADO = 'mercado';
+    const ARMAZEM = 'armazem';
  
     /**
      * Aliases para compatibilidade com nomes legados ou front-end.
@@ -78,6 +79,10 @@ class BuildingType
             'complexohabitacional' => self::HOUSING,
             'complexo residencial' => self::HOUSING,
             'housing' => self::HOUSING,
+            'armazem' => self::ARMAZEM,
+            'deposito' => self::ARMAZEM,
+            'armazém' => self::ARMAZEM,
+            'depósito' => self::ARMAZEM,
         ];
 
         if (isset($map[$raw])) {

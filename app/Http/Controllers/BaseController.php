@@ -191,6 +191,7 @@ class BaseController extends Controller
                 ['tipo' => \App\Domain\Building\BuildingType::FABRICA_MUNICOES, 'nivel' => 1, 'pos_x' => 135, 'pos_y' => 300],
                 ['tipo' => \App\Domain\Building\BuildingType::HOUSING, 'nivel' => 1, 'pos_x' => 268, 'pos_y' => 415],
                 ['tipo' => \App\Domain\Building\BuildingType::POSTO_RECRUTAMENTO, 'nivel' => 1, 'pos_x' => 665, 'pos_y' => 300],
+                ['tipo' => \App\Domain\Building\BuildingType::ARMAZEM, 'nivel' => 1, 'pos_x' => 135, 'pos_y' => 185],
             ]);
         });
 

@@ -149,13 +149,13 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "anchor": "center",
         "assetName": "recrutamento_v1.png"
     },
-    "academia_militar": {
+    "armazem": {
         "x": 260,
         "y": 120,
         "w": 85,
         "h": 85,
         "anchor": "center",
-        "assetName": "../placeholders/building_parlamento.svg"
+        "assetName": "armazem_v1.png"
     },
     "mercado": {
         "x": 580,

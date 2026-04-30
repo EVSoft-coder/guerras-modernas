@@ -97,9 +97,9 @@ class ResourceService
 
         if (!$taxasHora) $taxasHora = $this->getRates($base);
 
-        $hqLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HQ) ?: 1;
+        $armazemLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::ARMAZEM) ?: 0;
         $housingLevel = app(GameService::class)->obterNivelEdificio($base, \App\Domain\Building\BuildingType::HOUSING) ?: 1;
-        $cap = app(EconomyService::class)->getStorageCapacity($hqLevel);
+        $cap = app(EconomyService::class)->getStorageCapacity($armazemLevel);
 
         $researchBonuses = $base->jogador ? app(ResearchService::class)->getResearchBonuses($base->jogador) : [];
         if (isset($researchBonuses['storage_bonus']) && $researchBonuses['storage_bonus'] > 0) {

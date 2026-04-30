@@ -26,6 +26,7 @@ return [
             'radar_estrategico'=> ['base' => ['suprimentos' => 1500, 'combustivel' => 1200, 'municoes' => 300, 'pessoal' => 15], 'factor' => 1.5],
             'centro_pesquisa'  => ['base' => ['suprimentos' => 2000, 'combustivel' => 1000, 'municoes' => 1000, 'pessoal' => 40], 'factor' => 1.5],
             'posto_recrutamento'=> ['base' => ['suprimentos' => 400, 'combustivel' => 50, 'municoes' => 50, 'pessoal' => 5], 'factor' => 1.3],
+            'armazem'          => ['base' => ['suprimentos' => 200, 'combustivel' => 100, 'pessoal' => 5], 'factor' => 1.25],
             'academia_militar' => ['base' => ['suprimentos' => 5000, 'metal' => 5000, 'pessoal' => 10], 'factor' => 1.8],
         ],
     ],
@@ -42,8 +43,8 @@ return [
     ],
 
     'storage' => [
-        'base' => 1000,                   // Capacidade base aumentada (de 800)
-        'factor' => 1.3,                  // Fator aumentado para caber mais recursos
+        'base' => 1200,                   // Capacidade base aumentada (de 1000)
+        'factor' => 1.35,                 // Fator aumentado para garantir que a capacidade cresce mais rápido que o custo do HQ
     ],
 
     'units' => [
