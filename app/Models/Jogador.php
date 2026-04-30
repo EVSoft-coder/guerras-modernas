@@ -118,7 +118,7 @@ class Jogador extends Authenticatable
 
     public function nobresEmUso(): int
     {
-        $tipoPolitico = UnitType::where('name', 'politico')->first();
+        $tipoPolitico = UnitType::where('slug', 'politico')->first();
         if (!$tipoPolitico) return 0;
 
         // 1. Nobres existentes nas bases

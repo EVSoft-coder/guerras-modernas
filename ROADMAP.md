@@ -20,8 +20,12 @@
 Para transformar "Guerras Modernas" numa experiência completa estilo Tribal Wars, as seguintes fases são necessárias:
 
 ### 🛡️ FASE 1: Gestão de Múltiplas Bases (O Core)
-- [x] **Sistema de Conquista (Nobres):** Unidade especial e lógica de lealdade integradas.
-- [x] **Estatísticas de Pontos:** Implementado `PointsService` com recálculo automático em cada construção concluída.
+- [x] **Recrutamento Centralizado no HQ:** Políticos e Moedas agora operam no Centro de Comando (HQ Nível 20).
+- [ ] **Escalonamento de Custos (Coins):** Implementar lógica de custo progressivo para moedas de ouro.
+- [ ] **Mercado (Trading Hub):** Finalizar interface e lógica de troca de recursos.
+- [ ] **Sistema de Conquista (Nobres):** Unidade especial e lógica de lealdade integradas.
+- [ ] **Visão Global Império:** Painel para gerir múltiplas bases simultaneamente.
+- [ ] **Dashboard de Guerra:** Estatísticas em tempo real de conquistas da aliança.
 - [x] **Gestão Massiva:** Telas estilo "Overviews" para recrutar e gerir apoios em massa.
 
 ### 💰 FASE 2: Monetização e Contas Premium (EM PROGRESSO)

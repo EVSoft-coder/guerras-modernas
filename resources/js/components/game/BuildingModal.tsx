@@ -435,13 +435,24 @@ export const BuildingModal: React.FC<BuildingModalProps> = ({
                                                     </div>
                                                     <Button 
                                                         onClick={() => onTrain(selectedUnit, trainQty)} 
-                                                        disabled={isTraining} 
+                                                        disabled={isTraining || (selectedUnit?.toLowerCase().includes('politico') && (nobleInfo?.disponiveis || 0) < trainQty)} 
                                                         className="w-full h-24 bg-emerald-600 hover:bg-emerald-500 text-black font-black uppercase tracking-[0.4em] text-[10px] rounded-[2rem] shadow-[0_25px_60px_rgba(16,185,129,0.3)] active:scale-95 transition-all group/btn relative overflow-hidden"
                                                     >
                                                         <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
-                                                        <span className="relative z-10 flex items-center justify-center gap-6">
-                                                            {isTraining ? <Loader2 size={24} className="animate-spin" /> : <Sword size={24} />}
-                                                            CONFIRMAR_ORDEM_OPERACIONAL
+                                                        <span className="relative z-10 flex items-center justify-center gap-6 text-center px-4">
+                                                            {isTraining ? (
+                                                                <Loader2 size={24} className="animate-spin" />
+                                                            ) : (selectedUnit?.toLowerCase().includes('politico') && (nobleInfo?.disponiveis || 0) < trainQty) ? (
+                                                                <AlertTriangle size={24} className="text-red-500" />
+                                                            ) : (
+                                                                <Sword size={24} />
+                                                            )}
+                                                            {isTraining 
+                                                                ? 'PROCESSANDO_MOBILIZAÇÃO...' 
+                                                                : (selectedUnit?.toLowerCase().includes('politico') && (nobleInfo?.disponiveis || 0) < trainQty)
+                                                                    ? `SLOTS_INSUFICIENTES (PRECISA_${trainQty}_MOEDAS)`
+                                                                    : 'CONFIRMAR_ORDEM_OPERACIONAL'
+                                                            }
                                                         </span>
                                                     </Button>
                                                 </motion.div>
