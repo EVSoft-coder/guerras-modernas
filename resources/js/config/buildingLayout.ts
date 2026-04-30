@@ -171,6 +171,6 @@ export const BUILDING_LAYOUT: Record<string, BuildingLayout> = {
         "w": 58,
         "h": 53,
         "anchor": "center",
-        "assetName": "../placeholders/building_unknown.svg"
+        "assetName": "mercado_v1.png"
     }
 };
