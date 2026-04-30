@@ -303,38 +303,4 @@ Route::middleware(['auth', 'can:admin-only'])->group(function () {
         return response()->json(['grown' => $grown, 'message' => "{$grown} aldeias NPC cresceram."]);
     })->name('admin.npc.grow');
 
-    Route::get('/mw-fix-storage-balance', function() {
-        try {
-            \Illuminate\Support\Facades\DB::statement("
-                INSERT INTO edificios (base_id, tipo, nivel, pos_x, pos_y, created_at, updated_at)
-                SELECT b.id, 'armazem', e_hq.nivel, 260, 120, NOW(), NOW()
-                FROM bases b
-                JOIN edificios e_hq ON e_hq.base_id = b.id AND e_hq.tipo = 'hq'
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM edificios e2 WHERE e2.base_id = b.id AND e2.tipo = 'armazem'
-                )
-            ");
-
-            \Illuminate\Support\Facades\DB::statement("
-                UPDATE recursos r
-                JOIN bases b ON r.base_id = b.id
-                JOIN edificios e ON e.base_id = b.id AND e.tipo = 'armazem'
-                SET r.storage_capacity = (1200 * POW(1.35, e.nivel))
-            ");
-
-            return "
-                <div style='background:#0a0c10; color:#0f0; padding:40px; font-family:monospace; border:2px solid #0f0;'>
-                    <h1>[FIX DE ARMAZENAMENTO APLICADO]</h1>
-                    <p>> Armazéns Injetados: OK</p>
-                    <p>> Capacidades Recalibradas: OK</p>
-                    <hr style='border:1px solid #0f0; margin:20px 0;'>
-                    <p>Fórmula Ativa: 1200 * (1.35 ^ nível_armazem)</p>
-                    <br>
-                    <a href='/dashboard' style='color:#fff; text-decoration:underline;'>VOLTAR AO COMANDO</a>
-                </div>
-            ";
-        } catch (\Exception $e) {
-            return "[ERRO DE FIX]: " . $e->getMessage();
-        }
-    })->name('admin.fix.storage');
 });
